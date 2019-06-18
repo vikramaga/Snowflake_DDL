@@ -2,6 +2,11 @@ create or replace database TEST;
 
 create or replace schema PUBLIC;
 
+CREATE OR REPLACE FUNCTION "SUBSTRACTION"(A NUMBER, B NUMBER)
+RETURNS NUMBER(38,0)
+LANGUAGE SQL
+COMMENT='substraction of two numbers'
+AS 'a-b';
 create or replace schema STG;
 
 create or replace TABLE INSTRUMENT (
