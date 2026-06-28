@@ -1,0 +1,31 @@
+name: Unified AI Agent System
+
+on:
+  workflow_dispatch:           # manual trigger anytime
+  schedule:
+    - cron: "0 1 * * 1"     # Mondays only 6:30 AM IST (cost-optimized)
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic yfinance pandas numpy
+
+      - name: Run Master Orchestrator
+        env:
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          EMAIL_FROM:         ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD:     ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:           ${{ secrets.EMAIL_TO }}
+          FALLBACK_TICKERS:   "HOOD,CRDO,ALAB"
+        run: python orchestrator.py
