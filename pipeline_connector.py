@@ -49,7 +49,7 @@ SCANNER_REGISTRY = [
     },
     {
         "name":    "MA Compression Breakout",
-        "module":  "scanner_ma_compression",
+        "module":  "nasdaq_ma_compression_breakout",  # ← actual filename
         "fn":      "run_scan",
         "weight":  1.1,
     },
