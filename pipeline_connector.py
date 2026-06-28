@@ -55,7 +55,7 @@ SCANNER_REGISTRY = [
     },
     {
         "name":    "SMA50/150 Retest + EMA20",
-        "module":  "scanner_sma_retest",
+        "module":  "sma50_150_retest"   # ← actual filename,
         "fn":      "run_scan",
         "weight":  1.0,
     },
