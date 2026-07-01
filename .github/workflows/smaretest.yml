@@ -32,7 +32,7 @@ jobs:
           GMAIL_USER: ${{ secrets.EMAIL_FROM }}
           GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_TO:   ${{ secrets.EMAIL_TO }}
-        run: python SMA50_150_retest.py
+        run: python smaretest.py
 
       - name: Upload results
         uses: actions/upload-artifact@v4
