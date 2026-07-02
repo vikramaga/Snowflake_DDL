@@ -137,29 +137,29 @@ CFG = {
 
     # ── Phase 2: SMA150 breakout ─────────────────────────────
     # The SMA150 cross must be within last cross_lookback bars
-    "cross_lookback"            : 5,
+    "cross_lookback"            : 10,   # was 5 — allow slightly older cross
     # Previous N bars before cross must all be below SMA150
-    "pre_cross_below_bars"      : 3,   # confirm it was below recently
+    "pre_cross_below_bars"      : 1,    # was 3 — only 1 bar must be below
 
     # ── Volume confirmation ───────────────────────────────────
-    "vol_avg_bars"              : 50,   # 50-day avg for baseline
-    "min_vol_mult"              : 1.5,  # breakout bar vol >= 1.5x avg
+    "vol_avg_bars"              : 20,    # 20-day avg (was 50 — more responsive)
+    "min_vol_mult"              : 0.8,   # breakout bar vol >= 0.8x avg (was 1.5)
     # Tier thresholds
-    "tier1_months"              : 252,  # 12 months bear
-    "tier1_vol_mult"            : 2.5,
-    "tier2_months"              : 189,  # 9 months bear
-    "tier2_vol_mult"            : 2.0,
-    "tier3_months"              : 147,  # 7 months bear
-    "tier3_vol_mult"            : 1.5,
+    "tier1_months"              : 252,   # 12 months bear
+    "tier1_vol_mult"            : 1.5,   # was 2.5
+    "tier2_months"              : 189,   # 9 months bear
+    "tier2_vol_mult"            : 1.2,   # was 2.0
+    "tier3_months"              : 147,   # 7 months bear
+    "tier3_vol_mult"            : 0.8,   # was 1.5
 
     # ── Phase 3: Quality filters ──────────────────────────────
     # Price must not be too far above SMA150 (not chasing)
-    "max_above_sma150_pct"      : 15.0,
+    "max_above_sma150_pct"      : 30.0,  # was 15.0 — allow more room
     # RSI check
-    "rsi_min"                   : 30,
+    "rsi_min"                   : 20,    # was 30 — allow more oversold
     # SMA150 slope: check over last slope_bars — should be flat or rising
     "sma150_slope_bars"         : 20,
-    "max_downslope_pct"         : -3.0,  # reject if still steeply declining
+    "max_downslope_pct"         : -8.0,  # was -3.0 — allow steeper decline
 
     # ── Filters ───────────────────────────────────────────────
     "min_avg_volume"            : 80_000,
@@ -534,10 +534,11 @@ print(f"""
 
   Tune if mostly ❌:
     min_bear_bars    147 → 105  (5 months instead of 7)
-    min_vol_mult     1.5 → 1.2
-    max_above_sma150 15 → 25
-    max_downslope    -3 → -5
-    rsi_min          30 → 20
+    min_vol_mult     0.8 → 0.5  (any volume is fine)
+    max_above_sma150  30 → 50
+    max_downslope     -8 → -15
+    rsi_min           20 → 10
+    cross_lookback    10 → 15
 """)
 print("━"*65+"\n")
 
@@ -1154,9 +1155,10 @@ print("""
 
   ⚙️  TUNE IF 0 RESULTS
   min_bear_bars   147 → 105  (5 months)
-  min_vol_mult    1.5 → 1.2
-  max_above_sma150 15 → 25
-  max_downslope    -3 → -5
-  rsi_min          30 → 20
+  min_vol_mult    0.8 → 0.5  (any volume)
+  max_above_sma150 30 → 50
+  max_downslope    -8 → -15
+  rsi_min          20 → 10
+  cross_lookback   10 → 15
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
