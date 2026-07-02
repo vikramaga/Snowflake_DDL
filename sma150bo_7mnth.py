@@ -1,39 +1,29 @@
 # ============================================================
-# NASDAQ — 7-Month Bear → SMA150 Breakout Scanner
+# NASDAQ — Extended Below SMA150 → SMA150 Breakout (AXON Pattern)
 # ============================================================
 #
 # PATTERN:
 #
-#  PHASE 1 — EXTENDED BEAR (7+ months below SMA50 + SMA150)
-#    Price has been BELOW both SMA50 AND SMA150 for at least
-#    min_bear_bars trading days (~7 months = 147 bars)
-#    All those bars: close < SMA50  AND  close < SMA150
-#    = Stock was in a deep downtrend / base-building phase
+#  PHASE 1 — BELOW SMA150 FOR 3+ MONTHS  (not necessarily SMA50)
+#    Price close was BELOW SMA150 for at least min_bear_bars
+#    consecutive bars — price may still be above SMA50
+#    AXON example: pulled back to SMA150 zone for several months,
+#    never deep bear — just consolidating below the 150-day line
 #
 #  PHASE 2 — SMA150 BREAKOUT WITH VOLUME
-#    Most recent bar (Bar[-1]):
-#      Close > SMA150   ← first close above SMA150
-#      This close is within cross_lookback bars of the cross
-#    Volume on the breakout bar >= vol_mult × 50-day avg volume
-#    = Institutional buying confirmed the breakout
+#    Previous close < SMA150  →  Current close >= SMA150
+#    Volume on breakout bar >= vol_mult × 20-day avg
+#    = Institutional reclaim of the key long-term level
 #
 #  PHASE 3 — QUALITY FILTERS
-#    SMA150 is flattening OR turning up (slope check)
-#    Price closed above SMA150 — not just a wick poke
-#    RSI > rsi_min (not exhausted)
+#    SMA150 slope not steeply declining (flattening or turning up)
+#    Price not too extended above SMA150
+#    RSI >= rsi_min
 #
-# SCORING (0-100):
-#    Bear duration              0-30  (longer below = bigger spring)
-#    Volume on breakout         0-25  (conviction of buyers)
-#    SMA150 slope               0-15  (flat/rising = better)
-#    Price vs SMA150 distance   0-15  (not too extended)
-#    RSI momentum               0-10  (health check)
-#    SMA50 gap                  0-5   (next resistance)
-#
-# TIERS:
-#    🏆 Tier 1  bear >= 12 months + vol >= 2.5× + SMA150 turning up
-#    🥈 Tier 2  bear >= 9 months  + vol >= 2.0×
-#    🥉 Tier 3  bear >= 7 months  + vol >= 1.5×
+# TIERS (by duration below SMA150 + volume):
+#    🏆 Tier 1  >= 7 months below SMA150  + vol >= 1.5×
+#    🥈 Tier 2  >= 5 months below SMA150  + vol >= 1.2×
+#    🥉 Tier 3  >= 3 months below SMA150  + vol >= 0.8×
 #
 # ============================================================
 
@@ -130,36 +120,37 @@ CFG = {
     "sma150_period"             : 150,
     "ema20_period"              : 20,
 
-    # ── Phase 1: Extended bear duration ───────────────────────
-    # Minimum consecutive bars where close < SMA50 AND close < SMA150
-    # 7 months ≈ 147 trading days
-    "min_bear_bars"             : 147,
+    # ── Phase 1: Below SMA150 duration ────────────────────────
+    # Minimum consecutive bars where close < SMA150
+    # (SMA50 condition REMOVED — AXON was above SMA50 while below SMA150)
+    # 3 months ≈ 63 trading bars
+    "min_bear_bars"             : 63,    # 3 months minimum (was 147)
 
     # ── Phase 2: SMA150 breakout ─────────────────────────────
     # The SMA150 cross must be within last cross_lookback bars
-    "cross_lookback"            : 10,   # was 5 — allow slightly older cross
-    # Previous N bars before cross must all be below SMA150
-    "pre_cross_below_bars"      : 1,    # was 3 — only 1 bar must be below
+    # AXON crossed SMA150 recently — allow up to 15 bars lookback
+    "cross_lookback"            : 15,
+    "pre_cross_below_bars"      : 1,
 
     # ── Volume confirmation ───────────────────────────────────
-    "vol_avg_bars"              : 20,    # 20-day avg (was 50 — more responsive)
-    "min_vol_mult"              : 0.8,   # breakout bar vol >= 0.8x avg (was 1.5)
-    # Tier thresholds
-    "tier1_months"              : 252,   # 12 months bear
-    "tier1_vol_mult"            : 1.5,   # was 2.5
-    "tier2_months"              : 189,   # 9 months bear
-    "tier2_vol_mult"            : 1.2,   # was 2.0
-    "tier3_months"              : 147,   # 7 months bear
-    "tier3_vol_mult"            : 0.8,   # was 1.5
+    "vol_avg_bars"              : 20,
+    "min_vol_mult"              : 0.8,
+    # Tier thresholds (by months below SMA150)
+    "tier1_bars"                : 147,   # 7 months
+    "tier1_vol_mult"            : 1.5,
+    "tier2_bars"                : 105,   # 5 months
+    "tier2_vol_mult"            : 1.2,
+    "tier3_bars"                : 63,    # 3 months
+    "tier3_vol_mult"            : 0.8,
 
     # ── Phase 3: Quality filters ──────────────────────────────
-    # Price must not be too far above SMA150 (not chasing)
-    "max_above_sma150_pct"      : 30.0,  # was 15.0 — allow more room
-    # RSI check
-    "rsi_min"                   : 20,    # was 30 — allow more oversold
-    # SMA150 slope: check over last slope_bars — should be flat or rising
+    # Price vs SMA150 — AXON is ~22% above SMA150 after breakout
+    "max_above_sma150_pct"      : 50.0,  # very wide — don't reject extended moves
+    "rsi_min"                   : 20,
+    # SMA150 slope — AXON's SMA150 is still declining during breakout
+    # Set very permissive — we care about price breakout, not MA direction
     "sma150_slope_bars"         : 20,
-    "max_downslope_pct"         : -8.0,  # was -3.0 — allow steeper decline
+    "max_downslope_pct"         : -99.0, # effectively disabled
 
     # ── Filters ───────────────────────────────────────────────
     "min_avg_volume"            : 80_000,
@@ -287,26 +278,26 @@ def detect_pattern(sym, df):
         if c_i >= s150_i: return None   # was above before cross — false signal
 
     # ─────────────────────────────────────────────────────────
-    # PHASE 1: Extended bear — price below BOTH SMA50 + SMA150
-    # Count consecutive bars ending at cross_bar-1
+    # PHASE 1: Below SMA150 — count consecutive bars
+    # AXON pattern: price below SMA150 only (may be above SMA50)
+    # Count going backwards from cross_bar-1
     # ─────────────────────────────────────────────────────────
     bear_bars   = 0
-    bear_start  = cross_bar - 1   # last bar before the cross
+    bear_start  = cross_bar - 1
 
     for i in range(bear_start, -1, -1):
         c_i   = float(df["Close"].iloc[i])
-        s50_i = float(sma50_s.iloc[i])   if not np.isnan(sma50_s.iloc[i])  else np.nan
-        s150_i= float(sma150_s.iloc[i])  if not np.isnan(sma150_s.iloc[i]) else np.nan
-        if np.isnan(s50_i) or np.isnan(s150_i): break
-        # Both must be below for the bar to count
-        if c_i < s50_i and c_i < s150_i:
+        s150_i= float(sma150_s.iloc[i]) if not np.isnan(sma150_s.iloc[i]) else np.nan
+        if np.isnan(s150_i): break
+        # Only SMA150 check — price can be above SMA50 (AXON pattern)
+        if c_i < s150_i:
             bear_bars += 1
         else:
-            break   # first bar where price was above either MA = end of streak
+            break   # first bar above SMA150 = end of streak
 
     if bear_bars < CFG["min_bear_bars"]: return None
 
-    bear_months = round(bear_bars / 21, 1)   # approx months
+    bear_months = round(bear_bars / 21, 1)
 
     # ─────────────────────────────────────────────────────────
     # PHASE 2b: Volume on breakout bar
@@ -329,21 +320,17 @@ def detect_pattern(sym, df):
     if sma150_slope_pct < CFG["max_downslope_pct"]: return None
 
     # ─────────────────────────────────────────────────────────
-    # TIER CLASSIFICATION
+    # TIER CLASSIFICATION  (by duration below SMA150 + volume)
     # ─────────────────────────────────────────────────────────
-    if bear_bars >= CFG["tier1_months"] and vol_mult >= CFG["tier1_vol_mult"]:
+    if bear_bars >= CFG["tier1_bars"] and vol_mult >= CFG["tier1_vol_mult"]:
         tier       = 1
-        tier_label = "🏆 TIER 1 — 12m+ Bear + Vol ≥2.5×"
-    elif bear_bars >= CFG["tier2_months"] and vol_mult >= CFG["tier2_vol_mult"]:
+        tier_label = "🏆 TIER 1 — 7mo+ Below SMA150 + Vol ≥1.5×"
+    elif bear_bars >= CFG["tier2_bars"] and vol_mult >= CFG["tier2_vol_mult"]:
         tier       = 2
-        tier_label = "🥈 TIER 2 — 9m+ Bear + Vol ≥2.0×"
-    elif bear_bars >= CFG["tier3_months"] and vol_mult >= CFG["tier1_vol_mult"]:
-        # Must still have at least 2.5× vol for tier but bear >= 12m
-        tier       = 3
-        tier_label = "🥉 TIER 3 — 7m+ Bear + Vol ≥1.5×"
+        tier_label = "🥈 TIER 2 — 5mo+ Below SMA150 + Vol ≥1.2×"
     else:
         tier       = 3
-        tier_label = "🥉 TIER 3 — 7m+ Bear + Vol ≥1.5×"
+        tier_label = "🥉 TIER 3 — 3mo+ Below SMA150 + Vol ≥0.8×"
 
     # Price vs SMA50 (next resistance level)
     dist_sma50_pct  = (price - cur_sma50) / cur_sma50 * 100
@@ -533,12 +520,10 @@ print(f"""
     🥉  7+ months bear  + vol >= 1.5×
 
   Tune if mostly ❌:
-    min_bear_bars    147 → 105  (5 months instead of 7)
-    min_vol_mult     0.8 → 0.5  (any volume is fine)
-    max_above_sma150  30 → 50
-    max_downslope     -8 → -15
-    rsi_min           20 → 10
-    cross_lookback    10 → 15
+    min_bear_bars     63 → 42  (2 months instead of 3)
+    min_vol_mult     0.8 → 0.5 (any volume is fine)
+    max_above_sma150  50 → 80  (allow very extended moves)
+    cross_lookback    15 → 20
 """)
 print("━"*65+"\n")
 
@@ -632,11 +617,10 @@ print(f"{'━'*65}")
 # ── Results ───────────────────────────────────────────────────
 if not results:
     print("\n  No matches. Try relaxing:")
-    print("   min_bear_bars    147 → 105")
-    print("   min_vol_mult     1.5 → 1.2")
-    print("   max_above_sma150  15 → 25")
-    print("   max_downslope     -3 → -5")
-    print("   rsi_min           30 → 20")
+    print("   min_bear_bars     63 → 42  (2 months)")
+    print("   min_vol_mult     0.8 → 0.5")
+    print("   max_above_sma150  50 → 80")
+    print("   cross_lookback    15 → 20")
 
 # Sort by tier first, then score
 results.sort(key=lambda x: (x["Tier"], -x["Score"]))
@@ -1154,11 +1138,9 @@ print("""
   Bars_Since_Break = 0   catching it on the actual breakout day
 
   ⚙️  TUNE IF 0 RESULTS
-  min_bear_bars   147 → 105  (5 months)
-  min_vol_mult    0.8 → 0.5  (any volume)
-  max_above_sma150 30 → 50
-  max_downslope    -8 → -15
-  rsi_min          20 → 10
-  cross_lookback   10 → 15
+  min_bear_bars    63 → 42  (2 months)
+  min_vol_mult    0.8 → 0.5
+  max_above_sma150 50 → 80
+  cross_lookback   15 → 20
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
