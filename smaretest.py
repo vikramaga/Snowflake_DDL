@@ -914,50 +914,59 @@ def _send_email(rl, csv_path):
 
     eto = [e.strip() for e in et.split(",") if e.strip()]
     cnt = len(rl)
-    t1  = sum(1 for r in rl if "150" in r.get("Retest_Level","") and "50" in r.get("Retest_Level",""))
-    t2  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA150")
-    t3  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA50")
 
-    print(f"[Email] Sending to {et}  ({cnt} results)...")
+    try:
+        t1  = sum(1 for r in rl if "150" in str(r.get("Retest_Level","")) and "50" in str(r.get("Retest_Level","")))
+        t2  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA150")
+        t3  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA50")
 
-    th_e = "".join(
-        f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
-        f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
-        f'white-space:nowrap">{c}</th>'
-        for c in ["Ticker","Price","Score","Retest_Level",
-                  "Retest_Depth_%","Bars_Since_Cross","Cross_Dist_%","RSI"]
-    )
-    rows_e = ""
-    for i, r in enumerate(rl[:50]):
-        bg  = "#fff" if i % 2 == 0 else "#f0f9ff"
-        lvl = r.get("Retest_Level","—")
-        lvl_color = ("#22c55e" if "+" in lvl else
-                     "#f472b6" if "150" in lvl else "#3b82f6")
-        rows_e += (
-            f'<tr style="background:{bg}">'
-            f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{r["Ticker"]}</td>'
-            f'<td style="padding:6px 11px;font-size:12px">${r["Price"]:.2f}</td>'
-            f'<td style="padding:6px 11px;font-size:12px;font-weight:700;'
-            f'background:#166534;color:#fff;text-align:center">{r["Score"]:.0f}</td>'
-            f'<td style="padding:6px 11px;font-size:12px;color:{lvl_color};font-weight:600">{lvl}</td>'
-            f'<td style="padding:6px 11px;font-size:12px">{r.get("Retest_Depth_%",0):.2f}%</td>'
-            f'<td style="padding:6px 11px;font-size:12px;color:'
-            f'{"#22c55e" if r.get("Bars_Since_Cross",99)==0 else "#94a3b8"};font-weight:700">'
-            f'{r.get("Bars_Since_Cross",0)}d</td>'
-            f'<td style="padding:6px 11px;font-size:12px">{r.get("Cross_Dist_%",0):+.2f}%</td>'
-            f'<td style="padding:6px 11px;font-size:12px">{r.get("RSI",0):.1f}</td>'
-            f'</tr>'
+        print(f"[Email] Sending to {et}  ({cnt} results)...")
+
+        th_e = "".join(
+            f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
+            f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
+            f'white-space:nowrap">{c}</th>'
+            for c in ["Ticker","Price","Score","Retest_Level",
+                      "Retest_Depth_%","Bars_Since_Cross","Cross_Dist_%","RSI"]
         )
+        rows_e = ""
+        for i, r in enumerate(rl[:50]):
+            bg  = "#fff" if i % 2 == 0 else "#f0f9ff"
+            lvl = str(r.get("Retest_Level","—"))
+            lvl_color = ("#22c55e" if "+" in lvl else
+                         "#f472b6" if "150" in lvl else "#3b82f6")
+            ticker = r.get("Ticker","—")
+            price  = r.get("Price",0) or 0
+            score  = r.get("Score",0) or 0
+            depth  = r.get("Retest_Depth_%",0) or 0
+            bsc    = r.get("Bars_Since_Cross",99)
+            cdist  = r.get("Cross_Dist_%",0) or 0
+            rsi    = r.get("RSI",0) or 0
+            rows_e += (
+                f'<tr style="background:{bg}">'
+                f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
+                f'<td style="padding:6px 11px;font-size:12px">${float(price):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;font-weight:700;'
+                f'background:#166534;color:#fff;text-align:center">{float(score):.0f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:{lvl_color};font-weight:600">{lvl}</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(depth):.2f}%</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:'
+                f'{"#22c55e" if bsc==0 else "#94a3b8"};font-weight:700">'
+                f'{bsc}d</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(cdist):+.2f}%</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(rsi):.1f}</td>'
+                f'</tr>'
+            )
 
-    no_results_msg = ""
-    if cnt == 0:
-        no_results_msg = (
-            '<tr><td colspan="8" style="padding:20px;text-align:center;'
-            'color:#64748b;font-size:13px">No matches found today — '
-            'market conditions did not trigger the pattern</td></tr>'
-        )
+        no_results_msg = ""
+        if cnt == 0:
+            no_results_msg = (
+                '<tr><td colspan="8" style="padding:20px;text-align:center;'
+                'color:#64748b;font-size:13px">No matches found today — '
+                'market conditions did not trigger the pattern</td></tr>'
+            )
 
-    html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
+        html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
 background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px 0">
 <tr><td>
@@ -996,32 +1005,45 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </td></tr></table>
 </body></html>"""
 
-    plain_e = (
-        f"SMA Retest + EMA20 Cross — {datetime.today().strftime('%Y-%m-%d')}\n"
-        f"{cnt} matches  (🏆Both:{t1}  🥈SMA150:{t2}  🥉SMA50:{t3})\n"
-        + "="*60 + "\n"
-        + ("\n".join(
-            f"{r['Ticker']:<7} ${r['Price']:.2f}  Score:{r['Score']:.0f}  "
-            f"{r.get('Retest_Level','—')}  Depth:{r.get('Retest_Depth_%',0):.1f}%  "
-            f"Cross:{r.get('Bars_Since_Cross',0)}d ago"
-            for r in rl[:50]
-           ) if rl else "No matches today")
-        + "\n\nFull results in CSV attachment."
-    )
+        plain_lines = [
+            f"SMA Retest + EMA20 Cross — {datetime.today().strftime('%Y-%m-%d')}",
+            f"{cnt} matches  (🏆Both:{t1}  🥈SMA150:{t2}  🥉SMA50:{t3})",
+            "="*60,
+        ]
+        if rl:
+            for r in rl[:50]:
+                ticker = r.get("Ticker","—")
+                price  = r.get("Price",0) or 0
+                score  = r.get("Score",0) or 0
+                lvl    = r.get("Retest_Level","—")
+                depth  = r.get("Retest_Depth_%",0) or 0
+                bsc    = r.get("Bars_Since_Cross",0) or 0
+                plain_lines.append(
+                    f"{ticker:<7} ${float(price):.2f}  Score:{float(score):.0f}  "
+                    f"{lvl}  Depth:{float(depth):.1f}%  Cross:{bsc}d ago"
+                )
+        else:
+            plain_lines.append("No matches today")
+        plain_lines.append("\nFull results in CSV attachment.")
+        plain_e = "\n".join(plain_lines)
 
-    subj = (f"📊 SMA Retest+EMA20 — {cnt} signal{'s' if cnt!=1 else ''}"
-            f"  (🏆{t1} 🥈{t2} 🥉{t3}) — "
-            f"{datetime.today().strftime('%Y-%m-%d')}")
+        subj = (f"📊 SMA Retest+EMA20 — {cnt} signal{'s' if cnt!=1 else ''}"
+                f"  (🏆{t1} 🥈{t2} 🥉{t3}) — "
+                f"{datetime.today().strftime('%Y-%m-%d')}")
 
-    msg = MIMEMultipart("mixed")
-    msg["Subject"] = subj
-    msg["From"]    = gu
-    msg["To"]      = ", ".join(eto)
+        msg = MIMEMultipart("mixed")
+        msg["Subject"] = subj
+        msg["From"]    = gu
+        msg["To"]      = ", ".join(eto)
 
-    alt = MIMEMultipart("alternative")
-    alt.attach(MIMEText(plain_e, "plain"))
-    alt.attach(MIMEText(html_e,  "html"))
-    msg.attach(alt)
+        alt = MIMEMultipart("alternative")
+        alt.attach(MIMEText(plain_e, "plain"))
+        alt.attach(MIMEText(html_e,  "html"))
+        msg.attach(alt)
+
+    except Exception as e:
+        print(f"[Email] ❌  Failed to build email body: {type(e).__name__}: {e}")
+        return
 
     # Attach CSV
     if csv_path and os.path.exists(csv_path):
@@ -1056,7 +1078,11 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
     except Exception as e:
         print(f"[Email] ❌  Unexpected error: {type(e).__name__}: {e}")
 
-_send_email(results, fpath)
+try:
+    _send_email(results, fpath)
+except Exception as e:
+    print(f"[Email] ❌  Unexpected top-level error: {type(e).__name__}: {e}")
+    print("[Email]    Continuing — CSV and charts are still saved.")
 
 if _IN_NOTEBOOK:
     try:
