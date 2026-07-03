@@ -890,8 +890,10 @@ print(f"  📋 TradingView → {tv}")
 # ── Email with CSV attached ───────────────────────────────
 def _send_email(rl, csv_path):
     import smtplib
-    from email.mime.base import MIMEBase
-    from email import encoders
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text      import MIMEText
+    from email.mime.base      import MIMEBase
+    from email                import encoders
 
     # Use module-level vars (already read at startup)
     gu = _GMAIL_USER
