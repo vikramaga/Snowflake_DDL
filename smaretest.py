@@ -669,134 +669,138 @@ if not results:
     print("   cross_lookback             5 → 10")
     print("   max_close_below_sma150_pct 1.5 → 3")
     print("   rsi_min                   35 → 25")
-else:
-    results.sort(key=lambda x: x["Score"], reverse=True)
 
-    COLS = [
-        "Ticker","Price","Score",
-        "Retest_Level","Retest_Both","Retest_Bar_Date",
-        "Retest_Depth_%","Bars_Retest_to_Cross","Max_Below_SMA150_%",
-        "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
-        "EMA20","SMA50","SMA150",
-        "Dist_EMA20_%","Dist_SMA50_%","Dist_SMA150_%","SMA50_vs_SMA150_%",
-        "RSI","MACD_Hist","Avg_Vol_20d",
-    ]
-    df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
-                            for r in results])
+# Sort by score (always runs, even on empty list)
+results.sort(key=lambda x: x["Score"], reverse=True)
+
+# ── Always build df_out and save/email (even if 0 results) ────
+ts      = datetime.today().strftime("%Y%m%d_%H%M")
+out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
+
+COLS = [
+    "Ticker","Price","Score",
+    "Retest_Level","Retest_Both","Retest_Bar_Date",
+    "Retest_Depth_%","Bars_Retest_to_Cross","Max_Below_SMA150_%",
+    "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
+    "EMA20","SMA50","SMA150",
+    "Dist_EMA20_%","Dist_SMA50_%","Dist_SMA150_%","SMA50_vs_SMA150_%",
+    "RSI","MACD_Hist","Avg_Vol_20d",
+]
+df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
+                        for r in results]) if results else pd.DataFrame(columns=COLS)
+if not df_out.empty:
     df_out = df_out[[c for c in COLS if c in df_out.columns]]
     df_out.reset_index(drop=True, inplace=True)
 
-    ts = datetime.today().strftime("%Y%m%d_%H%M")
+FMT = {
+    "Price"               : lambda v: f"${v:.2f}",
+    "Score"               : lambda v: f"{v:.0f}",
+    "EMA20"               : lambda v: f"${v:.2f}",
+    "SMA50"               : lambda v: f"${v:.2f}",
+    "SMA150"              : lambda v: f"${v:.2f}",
+    "Retest_Depth_%"      : lambda v: f"{v:.2f}%",
+    "Max_Below_SMA150_%"  : lambda v: f"{v:.2f}%",
+    "Bars_Retest_to_Cross": lambda v: f"{int(v)}",
+    "Bars_Since_Cross"    : lambda v: f"{int(v)}",
+    "Cross_Vol_x"         : lambda v: f"{v:.2f}×",
+    "Dist_EMA20_%"        : lambda v: f"{v:+.2f}%",
+    "Dist_SMA50_%"        : lambda v: f"{v:+.2f}%",
+    "Dist_SMA150_%"       : lambda v: f"{v:+.2f}%",
+    "SMA50_vs_SMA150_%"   : lambda v: f"{v:+.2f}%",
+    "RSI"                 : lambda v: f"{v:.1f}",
+    "MACD_Hist"           : lambda v: f"{v:.4f}",
+    "Avg_Vol_20d"         : lambda v: f"{v:,.0f}",
+}
 
-    FMT = {
-        "Price"               : lambda v: f"${v:.2f}",
-        "Score"               : lambda v: f"{v:.0f}",
-        "EMA20"               : lambda v: f"${v:.2f}",
-        "SMA50"               : lambda v: f"${v:.2f}",
-        "SMA150"              : lambda v: f"${v:.2f}",
-        "Retest_Depth_%"      : lambda v: f"{v:.2f}%",
-        "Max_Below_SMA150_%"  : lambda v: f"{v:.2f}%",
-        "Bars_Retest_to_Cross": lambda v: f"{int(v)}",
-        "Bars_Since_Cross"    : lambda v: f"{int(v)}",
-        "Cross_Vol_x"         : lambda v: f"{v:.2f}×",
-        "Dist_EMA20_%"        : lambda v: f"{v:+.2f}%",
-        "Dist_SMA50_%"        : lambda v: f"{v:+.2f}%",
-        "Dist_SMA150_%"       : lambda v: f"{v:+.2f}%",
-        "SMA50_vs_SMA150_%"   : lambda v: f"{v:+.2f}%",
-        "RSI"                 : lambda v: f"{v:.1f}",
-        "MACD_Hist"           : lambda v: f"{v:.4f}",
-        "Avg_Vol_20d"         : lambda v: f"{v:,.0f}",
-    }
+def fmt_v(col, val):
+    if val is None or (isinstance(val, float) and np.isnan(val)): return "—"
+    try:
+        if col in FMT: return FMT[col](val)
+    except Exception: pass
+    return str(val) if str(val) not in ("nan","None","") else "—"
 
-    def fmt_v(col, val):
-        if val is None or (isinstance(val, float) and np.isnan(val)): return "—"
-        try:
-            if col in FMT: return FMT[col](val)
-        except Exception: pass
-        return str(val) if str(val) not in ("nan","None","") else "—"
+# ── Group by Retest_Level for display ─────────────────────────
+groups = {
+    "SMA50 + SMA150": [r for r in results if r.get("Retest_Both") == "✅"],
+    "SMA50"          : [r for r in results if r.get("Retest_Level") == "SMA50" and r.get("Retest_Both") != "✅"],
+    "SMA150"         : [r for r in results if r.get("Retest_Level") == "SMA150" and r.get("Retest_Both") != "✅"],
+}
+group_colors = {
+    "SMA50 + SMA150": "#22c55e",
+    "SMA50"          : "#3b82f6",
+    "SMA150"         : "#f472b6",
+}
+group_icons = {
+    "SMA50 + SMA150": "🏆",
+    "SMA50"          : "🔵",
+    "SMA150"         : "🩷",
+}
 
-    # ── Group by Retest_Level for display ─────────────────────
-    groups = {
-        "SMA50 + SMA150": [r for r in results if r.get("Retest_Both") == "✅"],
-        "SMA50"          : [r for r in results if r.get("Retest_Level") == "SMA50" and r.get("Retest_Both") != "✅"],
-        "SMA150"         : [r for r in results if r.get("Retest_Level") == "SMA150" and r.get("Retest_Both") != "✅"],
-    }
-    group_colors = {
-        "SMA50 + SMA150": "#22c55e",
-        "SMA50"          : "#3b82f6",
-        "SMA150"         : "#f472b6",
-    }
-    group_icons = {
-        "SMA50 + SMA150": "🏆",
-        "SMA50"          : "🔵",
-        "SMA150"         : "🩷",
-    }
+if _IN_NOTEBOOK and results:
+    DISP = ["Ticker","Price","Score",
+            "Retest_Level","Retest_Both","Retest_Depth_%","Bars_Retest_to_Cross",
+            "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
+            "EMA20","SMA50","SMA150","Dist_EMA20_%","RSI","MACD_Hist"]
+    DISP = [c for c in DISP if c in df_out.columns]
 
-    if _IN_NOTEBOOK:
-        DISP = ["Ticker","Price","Score",
-                "Retest_Level","Retest_Both","Retest_Depth_%","Bars_Retest_to_Cross",
-                "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
-                "EMA20","SMA50","SMA150","Dist_EMA20_%","RSI","MACD_Hist"]
-        DISP = [c for c in DISP if c in df_out.columns]
+    html_sections = ""
+    for grp_name, grp_rows in groups.items():
+        if not grp_rows: continue
+        gc  = group_colors[grp_name]
+        ico = group_icons[grp_name]
 
-        html_sections = ""
-        for grp_name, grp_rows in groups.items():
-            if not grp_rows: continue
-            gc  = group_colors[grp_name]
-            ico = group_icons[grp_name]
+        th = "".join(
+            f'<th style="background:#0f172a;color:#e2e8f0;padding:9px 12px;'
+            f'font-size:11px;font-weight:700;text-align:center;'
+            f'border-bottom:2px solid {gc};white-space:nowrap">{c}</th>'
+            for c in DISP
+        )
+        rows_html = ""
+        for i, r in enumerate(grp_rows):
+            bg  = "#ffffff" if i%2==0 else "#f0f9ff"
+            tds = ""
+            for col in DISP:
+                raw  = r.get(col)
+                disp = fmt_v(col, raw)
+                sty  = ""
+                if col == "Score":
+                    try:
+                        v = float(raw)
+                        g = int(min(220, 80 + v*1.4))
+                        sty = f"background:rgb(20,{g},60);color:#fff;font-weight:700;text-align:center"
+                    except Exception: pass
+                elif col == "Retest_Level":
+                    sty = f"color:{gc};font-weight:700"
+                elif col == "Retest_Both":
+                    sty = "text-align:center;font-size:14px"
+                elif col in ("Dist_EMA20_%","Dist_SMA50_%"):
+                    try:
+                        v = float(str(raw).replace("%","").replace("+",""))
+                        clr = "#22c55e" if v >= 0 else "#ef4444"
+                        sty = f"color:{clr};font-weight:600"
+                    except Exception: pass
+                elif col == "Bars_Since_Cross":
+                    try:
+                        v = int(float(raw))
+                        if v == 0: sty = "color:#22c55e;font-weight:700;text-align:center"
+                        elif v <= 1: sty = "color:#86efac;text-align:center"
+                    except Exception: pass
+                tds += (f'<td style="padding:7px 12px;font-size:12px;'
+                        f'border-bottom:1px solid #e2e8f0;white-space:nowrap;{sty}">'
+                        f'{disp}</td>')
+            rows_html += f'<tr style="background:{bg}">{tds}</tr>\n'
 
-            th = "".join(
-                f'<th style="background:#0f172a;color:#e2e8f0;padding:9px 12px;'
-                f'font-size:11px;font-weight:700;text-align:center;'
-                f'border-bottom:2px solid {gc};white-space:nowrap">{c}</th>'
-                for c in DISP
-            )
-            rows_html = ""
-            for i, r in enumerate(grp_rows):
-                bg  = "#ffffff" if i%2==0 else "#f0f9ff"
-                tds = ""
-                for col in DISP:
-                    raw  = r.get(col)
-                    disp = fmt_v(col, raw)
-                    sty  = ""
-                    if col == "Score":
-                        try:
-                            v = float(raw)
-                            g = int(min(220, 80 + v*1.4))
-                            sty = f"background:rgb(20,{g},60);color:#fff;font-weight:700;text-align:center"
-                        except Exception: pass
-                    elif col == "Retest_Level":
-                        sty = f"color:{gc};font-weight:700"
-                    elif col == "Retest_Both":
-                        sty = "text-align:center;font-size:14px"
-                    elif col in ("Dist_EMA20_%","Dist_SMA50_%"):
-                        try:
-                            v = float(str(raw).replace("%","").replace("+",""))
-                            clr = "#22c55e" if v >= 0 else "#ef4444"
-                            sty = f"color:{clr};font-weight:600"
-                        except Exception: pass
-                    elif col == "Bars_Since_Cross":
-                        try:
-                            v = int(float(raw))
-                            if v == 0: sty = "color:#22c55e;font-weight:700;text-align:center"
-                            elif v <= 1: sty = "color:#86efac;text-align:center"
-                        except Exception: pass
-                    tds += (f'<td style="padding:7px 12px;font-size:12px;'
-                            f'border-bottom:1px solid #e2e8f0;white-space:nowrap;{sty}">'
-                            f'{disp}</td>')
-                rows_html += f'<tr style="background:{bg}">{tds}</tr>\n'
-
-            html_sections += f"""
+        html_sections += f"""
 <div style="margin:14px 0">
   <div style="background:linear-gradient(90deg,{gc}22,#0f172a);
-              border-left:4px solid {gc};border-radius:6px 6px 0 0;
-              padding:10px 18px;display:flex;align-items:center;gap:10px">
+          border-left:4px solid {gc};border-radius:6px 6px 0 0;
+          padding:10px 18px;display:flex;align-items:center;gap:10px">
     <span style="font-size:18px">{ico}</span>
     <span style="color:#f1f5f9;font-size:15px;font-weight:700">{grp_name} Retest</span>
     <span style="color:{gc};font-size:12px;margin-left:8px">{len(grp_rows)} stock{'s' if len(grp_rows)!=1 else ''}</span>
   </div>
   <div style="overflow-x:auto;border:1px solid #e2e8f0;border-top:none;
-              border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+          border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
     <table style="border-collapse:collapse;width:100%;min-width:700px">
       <thead><tr>{th}</tr></thead>
       <tbody>{rows_html}</tbody>
@@ -804,10 +808,10 @@ else:
   </div>
 </div>"""
 
-        header_html = f"""
+    header_html = f"""
 <div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);
-            border-radius:10px;padding:18px 24px;margin-bottom:8px;
-            font-family:'Segoe UI',Arial,sans-serif">
+        border-radius:10px;padding:18px 24px;margin-bottom:8px;
+        font-family:'Segoe UI',Arial,sans-serif">
   <h2 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
     📈 SMA50 / SMA150 Retest → EMA20 Cross
   </h2>
@@ -821,10 +825,10 @@ else:
   </p>
 </div>"""
 
-        legend_html = """
+    legend_html = """
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;
-            padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
-            font-family:'Segoe UI',Arial,sans-serif">
+        padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
+        font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
   Retest = candle LOW touched SMA within ±3% &nbsp;·&nbsp;
   Bars_Retest_to_Cross = how many bars between the retest and the EMA20 cross &nbsp;·&nbsp;
@@ -833,36 +837,36 @@ else:
   <b style="color:#22c55e">🏆 Both</b> = strongest (SMA50 AND SMA150 both touched)
 </div>"""
 
-        display_html(header_html + html_sections + legend_html)
+    display_html(header_html + html_sections + legend_html)
 
-    else:
-        # ASCII table
-        CLI_COLS = ["Ticker","Price","Score",
-                    "Retest_Level","Retest_Depth_%","Bars_Retest_to_Cross",
-                    "EMA20_Cross_Date","Bars_Since_Cross","Dist_EMA20_%","RSI"]
-        CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
-        col_w = {c: max(len(c), max(
-            len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
-        ))+2 for c in CLI_COLS}
-        top  = "┬".join("─"*col_w[c] for c in CLI_COLS)
-        sep  = "┼".join("─"*col_w[c] for c in CLI_COLS)
-        bot  = "┴".join("─"*col_w[c] for c in CLI_COLS)
-        hdr  = "│".join(c.center(col_w[c]) for c in CLI_COLS)
-        inner= sum(col_w.values()) + len(CLI_COLS) - 1
-        print()
-        print(f"  ╔{'═'*inner}╗")
-        tit  = f"  SMA50/SMA150 Retest + EMA20 Cross   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
-        print(f"  ║{tit.center(inner)}║")
-        print(f"  ╚{'═'*inner}╝\n")
-        print(f"  ┌{top}┐")
-        print(f"  │{hdr}│")
-        print(f"  ├{sep}┤")
-        for i,(_, row_) in enumerate(df_out.iterrows()):
-            cells=[fmt_v(c,row_.get(c)).center(col_w[c]) for c in CLI_COLS]
-            print(f"  │{'│'.join(cells)}│")
-            if i<len(df_out)-1: print(f"  ├{sep}┤")
-        print(f"  └{bot}┘")
-        print(f"""
+elif results:
+    # ASCII table (CLI/GitHub Actions mode)
+    CLI_COLS = ["Ticker","Price","Score",
+                "Retest_Level","Retest_Depth_%","Bars_Retest_to_Cross",
+                "EMA20_Cross_Date","Bars_Since_Cross","Dist_EMA20_%","RSI"]
+    CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
+    col_w = {c: max(len(c), max(
+        len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
+    ))+2 for c in CLI_COLS}
+    top  = "┬".join("─"*col_w[c] for c in CLI_COLS)
+    sep  = "┼".join("─"*col_w[c] for c in CLI_COLS)
+    bot  = "┴".join("─"*col_w[c] for c in CLI_COLS)
+    hdr  = "│".join(c.center(col_w[c]) for c in CLI_COLS)
+    inner= sum(col_w.values()) + len(CLI_COLS) - 1
+    print()
+    print(f"  ╔{'═'*inner}╗")
+    tit  = f"  SMA50/SMA150 Retest + EMA20 Cross   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    print(f"  ║{tit.center(inner)}║")
+    print(f"  ╚{'═'*inner}╝\n")
+    print(f"  ┌{top}┐")
+    print(f"  │{hdr}│")
+    print(f"  ├{sep}┤")
+    for i,(_, row_) in enumerate(df_out.iterrows()):
+        cells=[fmt_v(c,row_.get(c)).center(col_w[c]) for c in CLI_COLS]
+        print(f"  │{'│'.join(cells)}│")
+        if i<len(df_out)-1: print(f"  ├{sep}┤")
+    print(f"  └{bot}┘")
+    print(f"""
   COLUMN KEY
   ──────────────────────────────────────────────────────
   Retest_Level       which SMA was retested
@@ -872,195 +876,195 @@ else:
   Dist_EMA20_%       how far price is above EMA20 now
   ──────────────────────────────────────────────────────""")
 
-    # Save
-    out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
-    fpath   = os.path.join(out_dir, f"sma_retest_ema20_cross_{ts}.csv")
-    df_out.to_csv(fpath, index=False)
-    print(f"\n  💾 CSV → {fpath}")
-    tv = os.path.join(out_dir, f"tv_sma_retest_{ts}.txt")
-    with open(tv,"w") as f:
-        f.write(f"###SMA Retest EMA20 Cross {datetime.today().strftime('%Y-%m-%d')}\n")
-        for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
-    print(f"  📋 TradingView → {tv}")
+# Save
+out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
+fpath   = os.path.join(out_dir, f"sma_retest_ema20_cross_{ts}.csv")
+df_out.to_csv(fpath, index=False)
+print(f"\n  💾 CSV → {fpath}")
+tv = os.path.join(out_dir, f"tv_sma_retest_{ts}.txt")
+with open(tv,"w") as f:
+    f.write(f"###SMA Retest EMA20 Cross {datetime.today().strftime('%Y-%m-%d')}\n")
+    for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
+print(f"  📋 TradingView → {tv}")
 
-    # ── Email with CSV attached ───────────────────────────────
-    def _send_email(rl, csv_path):
-        import smtplib
-        from email.mime.base import MIMEBase
-        from email import encoders
+# ── Email with CSV attached ───────────────────────────────
+def _send_email(rl, csv_path):
+    import smtplib
+    from email.mime.base import MIMEBase
+    from email import encoders
 
-        # Use module-level vars (already read at startup)
-        gu = _GMAIL_USER
-        gp = _GMAIL_PASS
-        et = _EMAIL_TO
+    # Use module-level vars (already read at startup)
+    gu = _GMAIL_USER
+    gp = _GMAIL_PASS
+    et = _EMAIL_TO
 
-        if not gu:
-            print("[Email] ❌  GMAIL_USER secret is empty")
-            print("         → Repo → Settings → Secrets → Actions → GMAIL_USER")
-            return
-        if not gp:
-            print("[Email] ❌  GMAIL_PASS secret is empty")
-            print("         → Must be a Gmail App Password (16 chars, no spaces)")
-            print("         → Get one at: myaccount.google.com/apppasswords")
-            return
-        if not et:
-            print("[Email] ❌  EMAIL_TO secret is empty")
-            print("         → Repo → Settings → Secrets → Actions → EMAIL_TO")
-            return
+    if not gu:
+        print("[Email] ❌  GMAIL_USER secret is empty")
+        print("         → Repo → Settings → Secrets → Actions → GMAIL_USER")
+        return
+    if not gp:
+        print("[Email] ❌  GMAIL_PASS secret is empty")
+        print("         → Must be a Gmail App Password (16 chars, no spaces)")
+        print("         → Get one at: myaccount.google.com/apppasswords")
+        return
+    if not et:
+        print("[Email] ❌  EMAIL_TO secret is empty")
+        print("         → Repo → Settings → Secrets → Actions → EMAIL_TO")
+        return
 
-        eto = [e.strip() for e in et.split(",") if e.strip()]
-        cnt = len(rl)
-        t1  = sum(1 for r in rl if "150" in r.get("Retest_Level","") and "50" in r.get("Retest_Level",""))
-        t2  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA150")
-        t3  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA50")
+    eto = [e.strip() for e in et.split(",") if e.strip()]
+    cnt = len(rl)
+    t1  = sum(1 for r in rl if "150" in r.get("Retest_Level","") and "50" in r.get("Retest_Level",""))
+    t2  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA150")
+    t3  = sum(1 for r in rl if r.get("Retest_Level","") == "SMA50")
 
-        print(f"[Email] Sending to {et}  ({cnt} results)...")
+    print(f"[Email] Sending to {et}  ({cnt} results)...")
 
-        th_e = "".join(
-            f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
-            f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
-            f'white-space:nowrap">{c}</th>'
-            for c in ["Ticker","Price","Score","Retest_Level",
-                      "Retest_Depth_%","Bars_Since_Cross","Cross_Dist_%","RSI"]
+    th_e = "".join(
+        f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
+        f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
+        f'white-space:nowrap">{c}</th>'
+        for c in ["Ticker","Price","Score","Retest_Level",
+                  "Retest_Depth_%","Bars_Since_Cross","Cross_Dist_%","RSI"]
+    )
+    rows_e = ""
+    for i, r in enumerate(rl[:50]):
+        bg  = "#fff" if i % 2 == 0 else "#f0f9ff"
+        lvl = r.get("Retest_Level","—")
+        lvl_color = ("#22c55e" if "+" in lvl else
+                     "#f472b6" if "150" in lvl else "#3b82f6")
+        rows_e += (
+            f'<tr style="background:{bg}">'
+            f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{r["Ticker"]}</td>'
+            f'<td style="padding:6px 11px;font-size:12px">${r["Price"]:.2f}</td>'
+            f'<td style="padding:6px 11px;font-size:12px;font-weight:700;'
+            f'background:#166534;color:#fff;text-align:center">{r["Score"]:.0f}</td>'
+            f'<td style="padding:6px 11px;font-size:12px;color:{lvl_color};font-weight:600">{lvl}</td>'
+            f'<td style="padding:6px 11px;font-size:12px">{r.get("Retest_Depth_%",0):.2f}%</td>'
+            f'<td style="padding:6px 11px;font-size:12px;color:'
+            f'{"#22c55e" if r.get("Bars_Since_Cross",99)==0 else "#94a3b8"};font-weight:700">'
+            f'{r.get("Bars_Since_Cross",0)}d</td>'
+            f'<td style="padding:6px 11px;font-size:12px">{r.get("Cross_Dist_%",0):+.2f}%</td>'
+            f'<td style="padding:6px 11px;font-size:12px">{r.get("RSI",0):.1f}</td>'
+            f'</tr>'
         )
-        rows_e = ""
-        for i, r in enumerate(rl[:50]):
-            bg  = "#fff" if i % 2 == 0 else "#f0f9ff"
-            lvl = r.get("Retest_Level","—")
-            lvl_color = ("#22c55e" if "+" in lvl else
-                         "#f472b6" if "150" in lvl else "#3b82f6")
-            rows_e += (
-                f'<tr style="background:{bg}">'
-                f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{r["Ticker"]}</td>'
-                f'<td style="padding:6px 11px;font-size:12px">${r["Price"]:.2f}</td>'
-                f'<td style="padding:6px 11px;font-size:12px;font-weight:700;'
-                f'background:#166534;color:#fff;text-align:center">{r["Score"]:.0f}</td>'
-                f'<td style="padding:6px 11px;font-size:12px;color:{lvl_color};font-weight:600">{lvl}</td>'
-                f'<td style="padding:6px 11px;font-size:12px">{r.get("Retest_Depth_%",0):.2f}%</td>'
-                f'<td style="padding:6px 11px;font-size:12px;color:'
-                f'{"#22c55e" if r.get("Bars_Since_Cross",99)==0 else "#94a3b8"};font-weight:700">'
-                f'{r.get("Bars_Since_Cross",0)}d</td>'
-                f'<td style="padding:6px 11px;font-size:12px">{r.get("Cross_Dist_%",0):+.2f}%</td>'
-                f'<td style="padding:6px 11px;font-size:12px">{r.get("RSI",0):.1f}</td>'
-                f'</tr>'
-            )
 
-        no_results_msg = ""
-        if cnt == 0:
-            no_results_msg = (
-                '<tr><td colspan="8" style="padding:20px;text-align:center;'
-                'color:#64748b;font-size:13px">No matches found today — '
-                'market conditions did not trigger the pattern</td></tr>'
-            )
+    no_results_msg = ""
+    if cnt == 0:
+        no_results_msg = (
+            '<tr><td colspan="8" style="padding:20px;text-align:center;'
+            'color:#64748b;font-size:13px">No matches found today — '
+            'market conditions did not trigger the pattern</td></tr>'
+        )
 
-        html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
+    html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
 background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px 0">
 <tr><td>
 <table width="100%" cellpadding="0" cellspacing="0"
-       style="max-width:900px;margin:0 auto;background:#fff;
-              border-radius:12px;overflow:hidden;
-              box-shadow:0 4px 20px rgba(0,0,0,0.08)">
+   style="max-width:900px;margin:0 auto;background:#fff;
+          border-radius:12px;overflow:hidden;
+          box-shadow:0 4px 20px rgba(0,0,0,0.08)">
   <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:22px 28px">
-    <h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-      📊 SMA Retest + EMA20 Cross Above
-    </h1>
-    <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
-      {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-      {cnt} total &nbsp;·&nbsp;
-      🏆 Both:{t1} &nbsp; 🥈 SMA150:{t2} &nbsp; 🥉 SMA50:{t3}
-    </p>
+<h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
+  📊 SMA Retest + EMA20 Cross Above
+</h1>
+<p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
+  {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
+  {cnt} total &nbsp;·&nbsp;
+  🏆 Both:{t1} &nbsp; 🥈 SMA150:{t2} &nbsp; 🥉 SMA50:{t3}
+</p>
   </td></tr>
   <tr><td style="padding:16px">
-    <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
-      <table style="border-collapse:collapse;width:100%;min-width:600px">
-        <thead><tr>{th_e}</tr></thead>
-        <tbody>{rows_e or no_results_msg}</tbody>
-      </table>
-    </div>
-    <p style="font-size:11px;color:#64748b;margin:8px 0 0">
-      📎 Full results attached as CSV
-    </p>
+<div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
+  <table style="border-collapse:collapse;width:100%;min-width:600px">
+    <thead><tr>{th_e}</tr></thead>
+    <tbody>{rows_e or no_results_msg}</tbody>
+  </table>
+</div>
+<p style="font-size:11px;color:#64748b;margin:8px 0 0">
+  📎 Full results attached as CSV
+</p>
   </td></tr>
   <tr><td style="background:#f8fafc;padding:12px 28px;
-                 border-top:1px solid #e2e8f0;text-align:center">
-    <p style="margin:0;color:#94a3b8;font-size:10px">
-      ⚠️ Not financial advice &nbsp;·&nbsp; Auto-generated by GitHub Actions
-    </p>
+             border-top:1px solid #e2e8f0;text-align:center">
+<p style="margin:0;color:#94a3b8;font-size:10px">
+  ⚠️ Not financial advice &nbsp;·&nbsp; Auto-generated by GitHub Actions
+</p>
   </td></tr>
 </table>
 </td></tr></table>
 </body></html>"""
 
-        plain_e = (
-            f"SMA Retest + EMA20 Cross — {datetime.today().strftime('%Y-%m-%d')}\n"
-            f"{cnt} matches  (🏆Both:{t1}  🥈SMA150:{t2}  🥉SMA50:{t3})\n"
-            + "="*60 + "\n"
-            + ("\n".join(
-                f"{r['Ticker']:<7} ${r['Price']:.2f}  Score:{r['Score']:.0f}  "
-                f"{r.get('Retest_Level','—')}  Depth:{r.get('Retest_Depth_%',0):.1f}%  "
-                f"Cross:{r.get('Bars_Since_Cross',0)}d ago"
-                for r in rl[:50]
-               ) if rl else "No matches today")
-            + "\n\nFull results in CSV attachment."
-        )
+    plain_e = (
+        f"SMA Retest + EMA20 Cross — {datetime.today().strftime('%Y-%m-%d')}\n"
+        f"{cnt} matches  (🏆Both:{t1}  🥈SMA150:{t2}  🥉SMA50:{t3})\n"
+        + "="*60 + "\n"
+        + ("\n".join(
+            f"{r['Ticker']:<7} ${r['Price']:.2f}  Score:{r['Score']:.0f}  "
+            f"{r.get('Retest_Level','—')}  Depth:{r.get('Retest_Depth_%',0):.1f}%  "
+            f"Cross:{r.get('Bars_Since_Cross',0)}d ago"
+            for r in rl[:50]
+           ) if rl else "No matches today")
+        + "\n\nFull results in CSV attachment."
+    )
 
-        subj = (f"📊 SMA Retest+EMA20 — {cnt} signal{'s' if cnt!=1 else ''}"
-                f"  (🏆{t1} 🥈{t2} 🥉{t3}) — "
-                f"{datetime.today().strftime('%Y-%m-%d')}")
+    subj = (f"📊 SMA Retest+EMA20 — {cnt} signal{'s' if cnt!=1 else ''}"
+            f"  (🏆{t1} 🥈{t2} 🥉{t3}) — "
+            f"{datetime.today().strftime('%Y-%m-%d')}")
 
-        msg = MIMEMultipart("mixed")
-        msg["Subject"] = subj
-        msg["From"]    = gu
-        msg["To"]      = ", ".join(eto)
+    msg = MIMEMultipart("mixed")
+    msg["Subject"] = subj
+    msg["From"]    = gu
+    msg["To"]      = ", ".join(eto)
 
-        alt = MIMEMultipart("alternative")
-        alt.attach(MIMEText(plain_e, "plain"))
-        alt.attach(MIMEText(html_e,  "html"))
-        msg.attach(alt)
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(plain_e, "plain"))
+    alt.attach(MIMEText(html_e,  "html"))
+    msg.attach(alt)
 
-        # Attach CSV
-        if csv_path and os.path.exists(csv_path):
-            try:
-                with open(csv_path, "rb") as f:
-                    part = MIMEBase("application", "octet-stream")
-                    part.set_payload(f.read())
-                encoders.encode_base64(part)
-                part.add_header("Content-Disposition",
-                    f"attachment; filename={os.path.basename(csv_path)}")
-                msg.attach(part)
-                sz = os.path.getsize(csv_path)
-                print(f"[Email] 📎 Attached: {os.path.basename(csv_path)} ({sz:,} bytes)")
-            except Exception as e:
-                print(f"[Email] ⚠️  CSV attach failed: {e}")
-
-        # Send
+    # Attach CSV
+    if csv_path and os.path.exists(csv_path):
         try:
-            print(f"[Email] Connecting to smtp.gmail.com:465 ...")
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
-                srv.login(gu, gp.replace(" ", ""))
-                srv.sendmail(gu, eto, msg.as_string())
-            print(f"[Email] ✅  Sent successfully to: {', '.join(eto)}")
-            print(f"[Email]    Subject: {subj}")
-        except smtplib.SMTPAuthenticationError:
-            print("[Email] ❌  AUTHENTICATION FAILED")
-            print("         GMAIL_PASS must be a Gmail App Password, NOT your login password")
-            print("         Generate one: myaccount.google.com/apppasswords")
-            print("         → Google Account → Security → 2-Step Verification → App Passwords")
-        except smtplib.SMTPException as e:
-            print(f"[Email] ❌  SMTP error: {e}")
+            with open(csv_path, "rb") as f:
+                part = MIMEBase("application", "octet-stream")
+                part.set_payload(f.read())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition",
+                f"attachment; filename={os.path.basename(csv_path)}")
+            msg.attach(part)
+            sz = os.path.getsize(csv_path)
+            print(f"[Email] 📎 Attached: {os.path.basename(csv_path)} ({sz:,} bytes)")
         except Exception as e:
-            print(f"[Email] ❌  Unexpected error: {type(e).__name__}: {e}")
+            print(f"[Email] ⚠️  CSV attach failed: {e}")
 
-    _send_email(results, fpath)
+    # Send
+    try:
+        print(f"[Email] Connecting to smtp.gmail.com:465 ...")
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
+            srv.login(gu, gp.replace(" ", ""))
+            srv.sendmail(gu, eto, msg.as_string())
+        print(f"[Email] ✅  Sent successfully to: {', '.join(eto)}")
+        print(f"[Email]    Subject: {subj}")
+    except smtplib.SMTPAuthenticationError:
+        print("[Email] ❌  AUTHENTICATION FAILED")
+        print("         GMAIL_PASS must be a Gmail App Password, NOT your login password")
+        print("         Generate one: myaccount.google.com/apppasswords")
+        print("         → Google Account → Security → 2-Step Verification → App Passwords")
+    except smtplib.SMTPException as e:
+        print(f"[Email] ❌  SMTP error: {e}")
+    except Exception as e:
+        print(f"[Email] ❌  Unexpected error: {type(e).__name__}: {e}")
 
-    if _IN_NOTEBOOK:
-        try:
-            from google.colab import files
-            files.download(fpath); files.download(tv)
-        except Exception: pass
-    else:
-        print("  (CI: files in workspace, email sent)")
+_send_email(results, fpath)
+
+if _IN_NOTEBOOK:
+    try:
+        from google.colab import files
+        files.download(fpath); files.download(tv)
+    except Exception: pass
+else:
+    print("  (CI: files in workspace, email sent)")
 
 # ── Charts for top 5 ──────────────────────────────────────────
 if results:
