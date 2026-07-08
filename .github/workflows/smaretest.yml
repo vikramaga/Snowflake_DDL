@@ -1,4 +1,4 @@
-name: SMAretest
+name: SMAretest2
 
 on:
   
@@ -32,7 +32,7 @@ jobs:
           GMAIL_USER: ${{ secrets.EMAIL_FROM }}
           GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_TO:   ${{ secrets.EMAIL_TO }}
-        run: python smaretest.py
+        run: python smaretest2.py
 
       - name: Upload results
         uses: actions/upload-artifact@v4
