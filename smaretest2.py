@@ -1,39 +1,36 @@
 # ============================================================
-# NASDAQ — SMA50/SMA150/EMA20 Retest + EMA20 Cross
+# NASDAQ — SMA50 Retest + EMA20 + Camarilla S3 Cross
 # ============================================================
 #
-# EXACT 3-PHASE PATTERN:
+# EXACT 4-CONDITION PATTERN:
 #
-#  PHASE 1 — BULL STRUCTURE  (prerequisite)
-#      Price is above BOTH SMA50 and SMA150
-#      SMA50 > SMA150  (uptrend confirmed)
-#      EMA20 > SMA50 > SMA150  (full bull stack preferred)
+#  C1 — BULL STRUCTURE  (prerequisite)
+#      Price is currently ABOVE SMA150
+#      (long-term uptrend intact)
 #
-#  PHASE 2 — RETEST OF SMA50, SMA150, OR EMA20  (the pullback)
-#      In the last retest_lookback bars, price came down
-#      and TOUCHED one or more of: SMA50, SMA150, EMA20
-#        Touch = candle LOW came within retest_touch_pct% of the level
+#  C2 — RETEST OF SMA50 ONLY  (the pullback — SMA50 specific)
+#      In the last retest_lookback bars, price pulled back and
+#      candle LOW touched SMA50 (within retest_touch_pct%)
+#      Price must NOT have also retested SMA150 in that window —
+#      this isolates the shallower SMA50-only pullback pattern
 #      Price did NOT close below SMA150 by more than
 #        max_close_below_pct% (support held)
-#      This is the "retest" — buyers defended the key level
 #
-#  PHASE 3 — CROSSED ABOVE EMA20  (the entry signal)
+#  C3 — CURRENTLY ABOVE EMA20
+#      Current price > EMA20  (short-term trend reclaimed)
+#
+#  C4 — JUST CROSSED ABOVE CAMARILLA MONTHLY S3
 #      EXACT 1-bar cross (most recent bar):
-#        Bar[-2] close < EMA20[-2]   ← was below EMA20
-#        Bar[-1] close >= EMA20[-1]  ← crossed above today
-#      The cross happened AFTER the retest low
-#      = price bounced off the retest level and is now
-#        reclaiming EMA20 — the entry trigger
+#        Bar[-2] close < Camarilla S3   ← was below S3 yesterday
+#        Bar[-1] close >= Camarilla S3  ← crossed above today
+#      Camarilla S3 = Close - (High - Low) × 1.1 / 4
+#      (calculated from the prior completed month's H/L/C)
+#      = A key institutional support/pivot level just reclaimed
 #
 # LOGIC FLOW:
-#   Strong uptrend → Pullback to SMA50/SMA150/EMA20 → Hold support
-#   → Bounce begins → Crosses above EMA20 → BUY
-#
-# WHICH LEVEL(S) WERE RETESTED:
-#   EMA20         → shallowest pullback, fastest continuation setups
-#   SMA50         → tighter pullback, usually higher quality setups
-#   SMA150        → deeper pullback, bigger potential recovery move
-#   Multiple      → very strong support confluence (highest priority)
+#   Uptrend (price > SMA150) → Shallow pullback to SMA50 only
+#   → Price reclaims EMA20 → Price reclaims Camarilla S3
+#   = Confluence of short-term trend + monthly pivot support
 #
 # ============================================================
 
@@ -126,32 +123,31 @@ CFG = {
     "sma50_period"              : 50,
     "sma150_period"             : 150,
 
-    # ── Phase 1: Bull structure ───────────────────────────────
-    # SMA50 must be above SMA150
-    "require_sma50_above_sma150": True,
+    # ── C1: Bull structure ────────────────────────────────────
     # Price must be above SMA150 currently
     "require_price_above_sma150": True,
 
-    # ── Phase 2: Retest ───────────────────────────────────────
+    # ── C2: Retest — SMA50 ONLY (not SMA150, not EMA20) ───────
     # Look for retest in last N bars
     "retest_lookback"           : 30,
-    # Candle LOW must have come within X% of SMA50 or SMA150
+    # Candle LOW must have come within X% of SMA50
     "retest_touch_pct"          : 3.0,
     # Price must NOT have closed below SMA150 by more than X%
     "max_close_below_sma150_pct": 1.5,
-    # Minimum bars from retest low to the EMA20 cross
-    # (ensures we waited for confirmation)
-    "min_bars_after_retest"     : 0,
+    # If True, reject if price ALSO touched SMA150 in the same
+    # window — enforces "SMA50 only" (not a deeper SMA150 dip)
+    "require_sma50_only"        : True,
 
-    # ── Phase 3: EMA20 cross ──────────────────────────────────
-    # Exact 1-bar cross within last cross_lookback bars
-    "cross_lookback"            : 5,
-    # Cross must have happened AFTER the retest
-    # (enforced by timeline check)
+    # ── C3: Currently above EMA20 ──────────────────────────────
+    # (checked directly on current bar — no lookback needed)
+
+    # ── C4: Camarilla S3 exact 1-bar cross ────────────────────
+    # Bar[-2] close < Cam_S3   AND   Bar[-1] close >= Cam_S3
+    "cam_cross_lookback"        : 5,
 
     # ── Volume ────────────────────────────────────────────────
     "vol_avg_bars"              : 20,
-    # Volume on cross bar >= mult x avg
+    # Volume on the S3 cross bar >= mult x avg
     "cross_vol_mult"            : 0.8,
 
     # ── RSI ───────────────────────────────────────────────────
@@ -184,6 +180,62 @@ def calc_macd(close, fast=12, slow=26, signal=9):
     macd  = ema_f - ema_s
     sig   = calc_ema(macd, signal)
     return macd, sig, macd - sig
+
+def cam_s3(high, low, close):
+    """Camarilla S3 support level formula."""
+    return close - (high - low) * 1.1 / 4.0
+
+def get_monthly_cam_s3(df):
+    """
+    Returns the Camarilla S3 level for the CURRENT (in-progress)
+    month, computed from last month's completed High/Low/Close.
+    This is the standard approach — pivot levels for the current
+    month are derived from the PRIOR completed month's range.
+    Returns None if not enough data.
+    """
+    df = df.copy()
+    df.index = pd.to_datetime(df.index)
+    today = pd.Timestamp.today().normalize()
+    prev_month = today.to_period("M") - 1
+
+    sub = df[df.index.to_period("M") == prev_month]
+    if len(sub) < 5:
+        return None
+
+    hi = float(sub["High"].max())
+    lo = float(sub["Low"].min())
+    cl = float(sub["Close"].iloc[-1])
+    return round(cam_s3(hi, lo, cl), 4)
+
+def build_cam_s3_series(df):
+    """
+    Builds a per-bar Camarilla S3 series: for each bar, the S3
+    level is derived from the PRIOR completed month's H/L/C.
+    This lets us detect the exact bar where price crossed above
+    its month's S3 level.
+    """
+    df = df.copy()
+    df.index = pd.to_datetime(df.index)
+    periods = df.index.to_period("M")
+    unique_months = sorted(periods.unique())
+
+    # Precompute S3 for every month using the PRIOR month's H/L/C
+    month_s3 = {}
+    for i, mp in enumerate(unique_months):
+        if i == 0:
+            continue   # no prior month available
+        prev_mp = unique_months[i-1]
+        sub = df[periods == prev_mp]
+        if len(sub) < 5:
+            continue
+        hi = float(sub["High"].max())
+        lo = float(sub["Low"].min())
+        cl = float(sub["Close"].iloc[-1])
+        month_s3[mp] = cam_s3(hi, lo, cl)
+
+    # Map each bar to its month's S3 level
+    s3_values = [month_s3.get(mp, np.nan) for mp in periods]
+    return pd.Series(s3_values, index=df.index)
 
 # ── Download ──────────────────────────────────────────────────
 def _clean(df, min_bars=60):
@@ -236,10 +288,12 @@ def download(symbols, days):
 # ── Core detection ────────────────────────────────────────────
 def detect_pattern(sym, df):
     """
-    P1: Bull structure  — SMA50 > SMA150, price above SMA150
-    P2: Retest          — price touched SMA50 or SMA150 in last N bars
-    P3: EMA20 cross     — exact 1-bar: prev below, today above EMA20
-                          cross happened AFTER the retest low
+    C1: Bull structure    — price currently above SMA150
+    C2: SMA50-only retest — price touched SMA50 (not SMA150) in
+                             last N bars, support held
+    C3: Above EMA20       — current price > EMA20
+    C4: Cam S3 cross      — exact 1-bar: prev below, today above
+                             the monthly Camarilla S3 level
     """
     df      = df.copy(); df.index = pd.to_datetime(df.index)
     n       = len(df)
@@ -248,7 +302,7 @@ def detect_pattern(sym, df):
 
     if price   < CFG["min_price"]:      return None
     if avg_vol < CFG["min_avg_volume"]: return None
-    if n < 3: return None
+    if n < 30: return None
 
     # ── Compute MAs ───────────────────────────────────────────
     ema20_s  = calc_ema(df["Close"], CFG["ema20_period"])
@@ -256,109 +310,111 @@ def detect_pattern(sym, df):
     sma150_s = df["Close"].rolling(CFG["sma150_period"]).mean()
     rsi_s    = calc_rsi(df["Close"])
     macd_s, _, hist_s = calc_macd(df["Close"])
+    cam_s3_s = build_cam_s3_series(df)
 
     cur_ema20  = float(ema20_s.iloc[-1])
     cur_sma50  = float(sma50_s.iloc[-1])
     cur_sma150 = float(sma150_s.iloc[-1])
     cur_rsi    = float(rsi_s.iloc[-1]) if not np.isnan(rsi_s.iloc[-1]) else 50
-    cur_macd   = float(macd_s.iloc[-1]) if not np.isnan(macd_s.iloc[-1]) else 0
     cur_hist   = float(hist_s.iloc[-1]) if not np.isnan(hist_s.iloc[-1]) else 0
+    cur_cam_s3 = float(cam_s3_s.iloc[-1]) if not np.isnan(cam_s3_s.iloc[-1]) else None
 
     if any(np.isnan([cur_ema20, cur_sma50, cur_sma150])): return None
+    if cur_cam_s3 is None: return None   # not enough history for S3
     if cur_rsi < CFG["rsi_min"]: return None
 
     # ─────────────────────────────────────────────────────────
-    # PHASE 1: BULL STRUCTURE
+    # C1: BULL STRUCTURE — price currently above SMA150
     # ─────────────────────────────────────────────────────────
-    if CFG["require_sma50_above_sma150"] and cur_sma50 <= cur_sma150:
-        return None
-
     if CFG["require_price_above_sma150"] and price < cur_sma150:
         return None
 
     # ─────────────────────────────────────────────────────────
-    # PHASE 3: EMA20 EXACT 1-BAR CROSS  (check this first —
-    # it's a hard gate before we do the slower retest search)
+    # C3: CURRENTLY ABOVE EMA20  (check early — fast gate)
     # ─────────────────────────────────────────────────────────
-    cl = CFG["cross_lookback"]
-    ema20_cross_bar  = None
-    ema20_cross_date = None
+    if price < cur_ema20:
+        return None
 
-    for i in range(max(1, n - cl), n):
+    # ─────────────────────────────────────────────────────────
+    # C4: CAMARILLA S3 EXACT 1-BAR CROSS
+    # Bar[-2] close < S3   AND   Bar[-1] close >= S3
+    # ─────────────────────────────────────────────────────────
+    ccl = CFG["cam_cross_lookback"]
+    cam_cross_bar  = None
+    cam_cross_date = None
+
+    for i in range(max(1, n - ccl), n):
         pc  = float(df["Close"].iloc[i-1])
         cc  = float(df["Close"].iloc[i])
-        pe  = float(ema20_s.iloc[i-1]) if not np.isnan(ema20_s.iloc[i-1]) else np.nan
-        ce  = float(ema20_s.iloc[i])   if not np.isnan(ema20_s.iloc[i])   else np.nan
-        if np.isnan(pe) or np.isnan(ce): continue
-        # Exact 1-bar cross
-        if pc < pe and cc >= ce:
-            ema20_cross_bar  = i
-            ema20_cross_date = df.index[i]
+        ps3 = float(cam_s3_s.iloc[i-1]) if not np.isnan(cam_s3_s.iloc[i-1]) else np.nan
+        cs3 = float(cam_s3_s.iloc[i])   if not np.isnan(cam_s3_s.iloc[i])   else np.nan
+        if np.isnan(ps3) or np.isnan(cs3): continue
+        # Exact 1-bar cross above Camarilla S3
+        if pc < ps3 and cc >= cs3:
+            cam_cross_bar  = i
+            cam_cross_date = df.index[i]
 
-    if ema20_cross_bar is None: return None   # no EMA20 cross found
+    if cam_cross_bar is None: return None   # no S3 cross found
 
-    # Volume on cross bar
-    cross_vol  = float(df["Volume"].iloc[ema20_cross_bar])
-    cross_vm   = cross_vol / avg_vol if avg_vol > 0 else 0
+    # Volume on the S3 cross bar
+    cross_vol = float(df["Volume"].iloc[cam_cross_bar])
+    cross_vm  = cross_vol / avg_vol if avg_vol > 0 else 0
     if cross_vm < CFG["cross_vol_mult"]: return None
 
     # ─────────────────────────────────────────────────────────
-    # PHASE 2: RETEST OF SMA50 OR SMA150
-    # Search in the retest_lookback bars BEFORE the EMA20 cross
-    # The retest low must have occurred before the cross
+    # C2: SMA50-ONLY RETEST
+    # Search in the retest_lookback bars BEFORE the S3 cross
+    # Must have touched SMA50, must NOT have also touched SMA150
     # ─────────────────────────────────────────────────────────
-    rt_lb = CFG["retest_lookback"]
+    rt_lb     = CFG["retest_lookback"]
     touch_pct = CFG["retest_touch_pct"] / 100
 
-    # Search window: from rt_lb bars before cross, up to (cross - min_bars_after)
-    rt_search_start = max(0, ema20_cross_bar - rt_lb)
-    rt_search_end   = max(0, ema20_cross_bar - CFG["min_bars_after_retest"])
+    rt_search_start = max(0, cam_cross_bar - rt_lb)
+    rt_search_end   = cam_cross_bar   # up to (not including) the cross bar
 
     retest_sma50  = False
     retest_sma150 = False
-    retest_ema20  = False
-    retest_bar    = None          # bar where the deepest retest occurred
-    retest_price  = float("inf") # lowest close during retest window
-    retest_which  = []
+    retest_bar    = None
+    retest_price  = float("inf")
 
-    for i in range(rt_search_start, rt_search_end + 1):
+    for i in range(rt_search_start, rt_search_end):
         lo   = float(df["Low"].iloc[i])
         cl_i = float(df["Close"].iloc[i])
         s50  = float(sma50_s.iloc[i])  if not np.isnan(sma50_s.iloc[i])  else np.nan
         s150 = float(sma150_s.iloc[i]) if not np.isnan(sma150_s.iloc[i]) else np.nan
-        e20  = float(ema20_s.iloc[i])  if not np.isnan(ema20_s.iloc[i])  else np.nan
 
         if np.isnan(s50) or np.isnan(s150): continue
 
         # Check if candle LOW touched SMA50 (within touch_pct)
         if s50 > 0 and abs(lo - s50) / s50 <= touch_pct:
             retest_sma50 = True
+            if cl_i < retest_price:
+                retest_price = cl_i
+                retest_bar   = i
 
-        # Check if candle LOW touched SMA150 (within touch_pct)
+        # Track if SMA150 was ALSO touched (to enforce "SMA50 only")
         if s150 > 0 and abs(lo - s150) / s150 <= touch_pct:
             retest_sma150 = True
 
-        # Check if candle LOW touched EMA20 (within touch_pct)
-        if not np.isnan(e20) and e20 > 0 and abs(lo - e20) / e20 <= touch_pct:
-            retest_ema20 = True
+    # Must have retested SMA50
+    if not retest_sma50: return None
 
-        # Track the deepest close for retest bar
-        if cl_i < retest_price:
-            retest_price = cl_i
-            retest_bar   = i
+    # Enforce "SMA50 only" — reject if SMA150 was also touched
+    if CFG["require_sma50_only"] and retest_sma150:
+        return None
 
-    # Must have retested at least one of SMA50, SMA150, or EMA20
-    if not retest_sma50 and not retest_sma150 and not retest_ema20: return None
-
-    # Determine which level(s) were retested — build label from all matches
-    if retest_sma50:  retest_which.append("SMA50")
-    if retest_sma150: retest_which.append("SMA150")
-    if retest_ema20:  retest_which.append("EMA20")
-    retest_label = " + ".join(retest_which)
+    # If SMA50 touch found but no distinct low bar tracked, use
+    # the deepest close in the window as a fallback reference
+    if retest_bar is None:
+        for i in range(rt_search_start, rt_search_end):
+            cl_i = float(df["Close"].iloc[i])
+            if cl_i < retest_price:
+                retest_price = cl_i
+                retest_bar   = i
 
     # ── Validate: price did not close significantly below SMA150 ─
     max_close_below_s150 = 0.0
-    for i in range(rt_search_start, ema20_cross_bar + 1):
+    for i in range(rt_search_start, cam_cross_bar + 1):
         cl_i = float(df["Close"].iloc[i])
         s150 = float(sma150_s.iloc[i]) if not np.isnan(sma150_s.iloc[i]) else cur_sma150
         pct_below = (s150 - cl_i) / s150 * 100 if s150 > 0 else 0
@@ -367,65 +423,55 @@ def detect_pattern(sym, df):
 
     if max_close_below_s150 > CFG["max_close_below_sma150_pct"]: return None
 
-    # ── Retest must be BEFORE the EMA20 cross ─────────────────
-    if retest_bar is not None and retest_bar >= ema20_cross_bar:
-        return None   # retest happened after cross — wrong order
+    # ── Retest must be BEFORE the Camarilla S3 cross ──────────
+    if retest_bar is not None and retest_bar >= cam_cross_bar:
+        return None   # wrong order
 
     # ── Metrics ───────────────────────────────────────────────
-    bars_since_cross  = n - 1 - ema20_cross_bar
-    bars_from_retest  = ema20_cross_bar - retest_bar if retest_bar is not None else 0
+    bars_since_cross  = n - 1 - cam_cross_bar
+    bars_from_retest  = cam_cross_bar - retest_bar if retest_bar is not None else 0
     dist_ema20_pct    = (price - cur_ema20) / cur_ema20 * 100
     dist_sma50_pct    = (price - cur_sma50) / cur_sma50 * 100
     dist_sma150_pct   = (price - cur_sma150) / cur_sma150 * 100
+    dist_cam_s3_pct   = (price - cur_cam_s3) / cur_cam_s3 * 100 if cur_cam_s3 else 0
     sma50_vs_sma150   = (cur_sma50 - cur_sma150) / cur_sma150 * 100
 
-    # Retest depth: how close the low got to the retested level(s)
-    # Use the TIGHTEST (smallest) depth among all levels touched —
-    # that represents the most precise support/resistance test
+    # Retest depth: how close the low got to SMA50
     if retest_bar is not None:
         rt_lo  = float(df["Low"].iloc[retest_bar])
-        s50_rt = float(sma50_s.iloc[retest_bar])  if not np.isnan(sma50_s.iloc[retest_bar])  else cur_sma50
-        s150_rt= float(sma150_s.iloc[retest_bar]) if not np.isnan(sma150_s.iloc[retest_bar]) else cur_sma150
-        e20_rt = float(ema20_s.iloc[retest_bar])  if not np.isnan(ema20_s.iloc[retest_bar])  else cur_ema20
-
-        depths = []
-        if "SMA50"  in retest_which: depths.append(abs(rt_lo - s50_rt)  / s50_rt  * 100)
-        if "SMA150" in retest_which: depths.append(abs(rt_lo - s150_rt) / s150_rt * 100)
-        if "EMA20"  in retest_which: depths.append(abs(rt_lo - e20_rt)  / e20_rt  * 100)
-        retest_depth_pct = min(depths) if depths else 0.0
+        s50_rt = float(sma50_s.iloc[retest_bar]) if not np.isnan(sma50_s.iloc[retest_bar]) else cur_sma50
+        retest_depth_pct = abs(rt_lo - s50_rt) / s50_rt * 100 if s50_rt > 0 else 0.0
     else:
         retest_depth_pct = 0.0
+
+    # Camarilla S3 value at the cross bar (for reference)
+    cross_cam_s3 = float(cam_s3_s.iloc[cam_cross_bar])
+    cross_close  = float(df["Close"].iloc[cam_cross_bar])
 
     # ── Score (0-100) ─────────────────────────────────────────
     score = 0
 
-    # Retest quality (0-30): tighter retest = better
-    score += max(0, 30 - int(retest_depth_pct * 5))
+    # Retest quality (0-25): tighter SMA50 retest = better
+    score += max(0, 25 - int(retest_depth_pct * 5))
 
-    # Multiple levels retested = bonus (scales with count)
-    levels_touched = len(retest_which)
-    if levels_touched >= 3:
-        score += 20   # SMA50 + SMA150 + EMA20 — maximum confluence
-    elif levels_touched == 2:
-        score += 12
-    else:
-        score += 0
+    # Camarilla S3 cross freshness (0-25): today = 25
+    score += max(0, 25 - bars_since_cross * 5)
 
-    # EMA20 cross freshness (0-20): today = 20, yesterday = 15...
-    score += max(0, 20 - bars_since_cross * 5)
-
-    # Bars from retest to cross (0-15): faster = better
+    # Bars from retest to S3 cross (0-20): faster = better
     if bars_from_retest <= 3:
-        score += 15
+        score += 20
     elif bars_from_retest <= 7:
-        score += 10
+        score += 14
     elif bars_from_retest <= 15:
-        score += 5
+        score += 8
 
-    # Volume on cross (0-10)
+    # Distance above EMA20 (0-10): closer to EMA20 = fresher
+    score += max(0, 10 - int(abs(dist_ema20_pct) * 2))
+
+    # Volume on S3 cross (0-10)
     score += min(10, int(cross_vm * 4))
 
-    # MACD turning up (0-5)
+    # MACD momentum (0-5)
     score += 5 if cur_hist > 0 else 0
 
     # RSI health (0-5)
@@ -437,28 +483,26 @@ def detect_pattern(sym, df):
         "Ticker"              : sym,
         "Price"               : round(price, 2),
         "Score"               : score,
-        # Retest info
-        "Retest_Level"        : retest_label,
-        "Retest_Count"        : levels_touched,
-        "Retest_Both"         : "✅" if levels_touched >= 2 else "—",
-        "Retest_SMA50"        : "✅" if retest_sma50  else "—",
-        "Retest_SMA150"       : "✅" if retest_sma150 else "—",
-        "Retest_EMA20"        : "✅" if retest_ema20  else "—",
-        "Retest_Bar_Date"     : df.index[retest_bar].strftime("%Y-%m-%d") if retest_bar is not None else "—",
+        # Retest info (SMA50 only)
+        "Retest_Bar_Date"     : df.index[retest_bar].strftime("%Y-%m-%d") if retest_bar is not None else "\u2014",
         "Retest_Depth_%"      : round(retest_depth_pct, 2),
         "Bars_Retest_to_Cross": bars_from_retest,
         "Max_Below_SMA150_%"  : round(max_close_below_s150, 2),
-        # EMA20 cross
-        "EMA20_Cross_Date"    : ema20_cross_date.strftime("%Y-%m-%d"),
+        # Camarilla S3 cross
+        "Cam_S3_Cross_Date"   : cam_cross_date.strftime("%Y-%m-%d"),
         "Bars_Since_Cross"    : bars_since_cross,
+        "Cam_S3_Level"        : round(cross_cam_s3, 2),
+        "Cam_S3_Cross_Close"  : round(cross_close, 2),
         "Cross_Vol_x"         : round(cross_vm, 2),
         # MA levels
         "EMA20"               : round(cur_ema20, 2),
         "SMA50"               : round(cur_sma50, 2),
         "SMA150"              : round(cur_sma150, 2),
+        "Cam_S3"              : round(cur_cam_s3, 2),
         "Dist_EMA20_%"        : round(dist_ema20_pct, 2),
         "Dist_SMA50_%"        : round(dist_sma50_pct, 2),
         "Dist_SMA150_%"       : round(dist_sma150_pct, 2),
+        "Dist_Cam_S3_%"       : round(dist_cam_s3_pct, 2),
         "SMA50_vs_SMA150_%"   : round(sma50_vs_sma150, 2),
         # Indicators
         "RSI"                 : round(cur_rsi, 1),
@@ -469,32 +513,31 @@ def detect_pattern(sym, df):
         "_ema20"              : ema20_s,
         "_sma50"              : sma50_s,
         "_sma150"             : sma150_s,
-        "_cross_bar"          : ema20_cross_bar,
+        "_cam_s3_series"      : cam_s3_s,
+        "_cross_bar"          : cam_cross_bar,
         "_retest_bar"         : retest_bar,
     }
+
 
 # ── Live print ────────────────────────────────────────────────
 LIVE_COLS = [
     "Ticker","Price","Score",
-    "Retest_Level","Retest_Count","Retest_Bar_Date","Retest_Depth_%",
-    "Bars_Retest_to_Cross",
-    "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
-    "EMA20","SMA50","SMA150","Dist_EMA20_%","RSI",
+    "Retest_Bar_Date","Retest_Depth_%","Bars_Retest_to_Cross",
+    "Cam_S3_Cross_Date","Bars_Since_Cross","Cam_S3","Cross_Vol_x",
+    "EMA20","SMA50","SMA150","Dist_EMA20_%","Dist_Cam_S3_%","RSI",
 ]
 _CW = {
     "Ticker":8,"Price":10,"Score":7,
-    "Retest_Level":22,"Retest_Count":13,"Retest_Bar_Date":15,"Retest_Depth_%":13,
-    "Bars_Retest_to_Cross":20,
-    "EMA20_Cross_Date":16,"Bars_Since_Cross":16,"Cross_Vol_x":12,
-    "EMA20":9,"SMA50":9,"SMA150":9,"Dist_EMA20_%":12,"RSI":6,
+    "Retest_Bar_Date":15,"Retest_Depth_%":13,"Bars_Retest_to_Cross":20,
+    "Cam_S3_Cross_Date":18,"Bars_Since_Cross":16,"Cam_S3":10,"Cross_Vol_x":12,
+    "EMA20":9,"SMA50":9,"SMA150":9,"Dist_EMA20_%":13,"Dist_Cam_S3_%":14,"RSI":6,
 }
 _CF = {
     "Price":"${:.2f}","Score":"{:.0f}",
-    "Retest_Count":"{:.0f}",
     "Retest_Depth_%":"{:.2f}%","Bars_Retest_to_Cross":"{:.0f}",
-    "Bars_Since_Cross":"{:.0f}","Cross_Vol_x":"{:.2f}×",
+    "Bars_Since_Cross":"{:.0f}","Cam_S3":"${:.2f}","Cross_Vol_x":"{:.2f}×",
     "EMA20":"${:.2f}","SMA50":"${:.2f}","SMA150":"${:.2f}",
-    "Dist_EMA20_%":"{:+.2f}%","RSI":"{:.1f}",
+    "Dist_EMA20_%":"{:+.2f}%","Dist_Cam_S3_%":"{:+.2f}%","RSI":"{:.1f}",
 }
 _hdr_done = False
 
@@ -503,7 +546,7 @@ def _live_header():
     if _hdr_done: return
     sep = "━" * 200
     print(f"\n{sep}")
-    print("  📊  LIVE MATCHES  —  SMA50/SMA150/EMA20 Retest + EMA20 Cross")
+    print("  📊  LIVE MATCHES  —  SMA50 Retest + EMA20 + Camarilla S3 Cross")
     print(sep)
     print("".join(f"  {c:<{_CW.get(c,10)}}" for c in LIVE_COLS))
     print("  " + "─"*198)
@@ -554,36 +597,38 @@ for sym in DIAG:
     try:
         df_d = diag_data[sym]
         p    = float(df_d["Close"].iloc[-1])
-        s50  = float(df_d["Close"].rolling(50).mean().iloc[-1])
         s150 = float(df_d["Close"].rolling(150).mean().iloc[-1])
         t    = lambda b: "✅" if b else "❌"
-        p1   = s50 > s150 and p > s150
+        p1   = p > s150
         r    = detect_pattern(sym, df_d)
         if r:
             print(f"  {sym:<7} ${p:>7.2f}  {t(p1):>4}  "
-                  f"{r['Retest_Level']:>22}  "
-                  f"{r['EMA20_Cross_Date']:>8}  "
+                  f"{r['Retest_Bar_Date']:>22}  "
+                  f"{r['Cam_S3_Cross_Date']:>8}  "
                   f"{r['Score']:>6}  ✅")
         else:
             print(f"  {sym:<7} ${p:>7.2f}  {t(p1):>4}  "
-                  f"{'no retest':>22}  {'—':>8}  {'—':>6}  ❌")
+                  f"{'no match':>22}  {'—':>8}  {'—':>6}  ❌")
     except Exception as e:
         print(f"  {sym:<7} error: {e}")
 
 print(f"""
   Pattern:
-    P1  Bull structure  : SMA50 > SMA150, price > SMA150
-    P2  Retest          : candle LOW touched SMA50, SMA150, or EMA20
+    C1  Bull structure  : price currently above SMA150
+    C2  SMA50-only retest: candle LOW touched SMA50 (NOT SMA150)
                           within ±{CFG['retest_touch_pct']}% in last {CFG['retest_lookback']} bars
-    P3  EMA20 cross     : Bar[-2] close < EMA20  AND  Bar[-1] close >= EMA20
-                          cross must happen AFTER the retest
+    C3  Above EMA20     : current price > EMA20
+    C4  Cam S3 cross    : Bar[-2] close < Camarilla S3
+                          Bar[-1] close >= Camarilla S3 (exact 1-bar)
+                          cross must happen AFTER the SMA50 retest
 
   Tune if mostly ❌:
     retest_touch_pct    {CFG['retest_touch_pct']} → 5    (wider retest zone)
     retest_lookback     {CFG['retest_lookback']} → 40   (look further back)
-    cross_lookback      {CFG['cross_lookback']} → 10   (wider cross window)
+    cam_cross_lookback  {CFG['cam_cross_lookback']} → 10   (wider cross window)
     rsi_min             {CFG['rsi_min']} → 25
     max_close_below_sma150_pct {CFG['max_close_below_sma150_pct']} → 3
+    require_sma50_only  True → False (allow SMA150 also touched)
 """)
 print("━"*65+"\n")
 
@@ -680,9 +725,10 @@ if not results:
     print("\n  No matches. Try:")
     print("   retest_touch_pct           3 → 5")
     print("   retest_lookback           30 → 40")
-    print("   cross_lookback             5 → 10")
+    print("   cam_cross_lookback         5 → 10")
     print("   max_close_below_sma150_pct 1.5 → 3")
     print("   rsi_min                   35 → 25")
+    print("   require_sma50_only      True → False")
 
 # Sort by score (always runs, even on empty list)
 results.sort(key=lambda x: x["Score"], reverse=True)
@@ -693,12 +739,10 @@ out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 
 COLS = [
     "Ticker","Price","Score",
-    "Retest_Level","Retest_Count","Retest_Bar_Date",
-    "Retest_SMA50","Retest_SMA150","Retest_EMA20",
-    "Retest_Depth_%","Bars_Retest_to_Cross","Max_Below_SMA150_%",
-    "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
+    "Retest_Bar_Date","Retest_Depth_%","Bars_Retest_to_Cross","Max_Below_SMA150_%",
+    "Cam_S3_Cross_Date","Bars_Since_Cross","Cam_S3","Cam_S3_Cross_Close","Cross_Vol_x",
     "EMA20","SMA50","SMA150",
-    "Dist_EMA20_%","Dist_SMA50_%","Dist_SMA150_%","SMA50_vs_SMA150_%",
+    "Dist_EMA20_%","Dist_SMA50_%","Dist_SMA150_%","Dist_Cam_S3_%","SMA50_vs_SMA150_%",
     "RSI","MACD_Hist","Avg_Vol_20d",
 ]
 df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
@@ -713,7 +757,8 @@ FMT = {
     "EMA20"               : lambda v: f"${v:.2f}",
     "SMA50"               : lambda v: f"${v:.2f}",
     "SMA150"              : lambda v: f"${v:.2f}",
-    "Retest_Count"        : lambda v: f"{int(v)}",
+    "Cam_S3"              : lambda v: f"${v:.2f}",
+    "Cam_S3_Cross_Close"  : lambda v: f"${v:.2f}",
     "Retest_Depth_%"      : lambda v: f"{v:.2f}%",
     "Max_Below_SMA150_%"  : lambda v: f"{v:.2f}%",
     "Bars_Retest_to_Cross": lambda v: f"{int(v)}",
@@ -722,6 +767,7 @@ FMT = {
     "Dist_EMA20_%"        : lambda v: f"{v:+.2f}%",
     "Dist_SMA50_%"        : lambda v: f"{v:+.2f}%",
     "Dist_SMA150_%"       : lambda v: f"{v:+.2f}%",
+    "Dist_Cam_S3_%"       : lambda v: f"{v:+.2f}%",
     "SMA50_vs_SMA150_%"   : lambda v: f"{v:+.2f}%",
     "RSI"                 : lambda v: f"{v:.1f}",
     "MACD_Hist"           : lambda v: f"{v:.4f}",
@@ -735,96 +781,66 @@ def fmt_v(col, val):
     except Exception: pass
     return str(val) if str(val) not in ("nan","None","") else "—"
 
-# ── Group by Retest_Count for display (works for any combination) ─
-groups = {
-    "Triple Confluence (SMA50+SMA150+EMA20)": [r for r in results if r.get("Retest_Count",0) >= 3],
-    "Double Confluence"                      : [r for r in results if r.get("Retest_Count",0) == 2],
-    "EMA20 Only"                             : [r for r in results if r.get("Retest_Count",0) == 1 and r.get("Retest_EMA20") == "✅"],
-    "SMA50 Only"                             : [r for r in results if r.get("Retest_Count",0) == 1 and r.get("Retest_SMA50") == "✅"],
-    "SMA150 Only"                            : [r for r in results if r.get("Retest_Count",0) == 1 and r.get("Retest_SMA150") == "✅"],
-}
-group_colors = {
-    "Triple Confluence (SMA50+SMA150+EMA20)": "#22c55e",
-    "Double Confluence"                      : "#a78bfa",
-    "EMA20 Only"                             : "#fbbf24",
-    "SMA50 Only"                             : "#3b82f6",
-    "SMA150 Only"                            : "#f472b6",
-}
-group_icons = {
-    "Triple Confluence (SMA50+SMA150+EMA20)": "🏆",
-    "Double Confluence"                      : "🥈",
-    "EMA20 Only"                             : "🟡",
-    "SMA50 Only"                             : "🔵",
-    "SMA150 Only"                            : "🩷",
-}
-
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Price","Score",
-            "Retest_Level","Retest_Count","Retest_Depth_%","Bars_Retest_to_Cross",
-            "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
-            "EMA20","SMA50","SMA150","Dist_EMA20_%","RSI","MACD_Hist"]
+            "Retest_Bar_Date","Retest_Depth_%","Bars_Retest_to_Cross",
+            "Cam_S3_Cross_Date","Bars_Since_Cross","Cam_S3","Cross_Vol_x",
+            "EMA20","SMA50","SMA150","Dist_EMA20_%","Dist_Cam_S3_%","RSI","MACD_Hist"]
     DISP = [c for c in DISP if c in df_out.columns]
 
-    html_sections = ""
-    for grp_name, grp_rows in groups.items():
-        if not grp_rows: continue
-        gc  = group_colors[grp_name]
-        ico = group_icons[grp_name]
+    gc = "#22c55e"   # single accent colour for this pattern
 
-        th = "".join(
-            f'<th style="background:#0f172a;color:#e2e8f0;padding:9px 12px;'
-            f'font-size:11px;font-weight:700;text-align:center;'
-            f'border-bottom:2px solid {gc};white-space:nowrap">{c}</th>'
-            for c in DISP
-        )
-        rows_html = ""
-        for i, r in enumerate(grp_rows):
-            bg  = "#ffffff" if i%2==0 else "#f0f9ff"
-            tds = ""
-            for col in DISP:
-                raw  = r.get(col)
-                disp = fmt_v(col, raw)
-                sty  = ""
-                if col == "Score":
-                    try:
-                        v = float(raw)
-                        g = int(min(220, 80 + v*1.4))
-                        sty = f"background:rgb(20,{g},60);color:#fff;font-weight:700;text-align:center"
-                    except Exception: pass
-                elif col == "Retest_Level":
-                    sty = f"color:{gc};font-weight:700"
-                elif col == "Retest_Count":
-                    try:
-                        v = int(float(raw))
-                        if v >= 3: sty = "color:#22c55e;font-weight:800;text-align:center;font-size:14px"
-                        elif v == 2: sty = "color:#a78bfa;font-weight:700;text-align:center"
-                        else: sty = "text-align:center;color:#94a3b8"
-                    except Exception: pass
-                elif col in ("Dist_EMA20_%","Dist_SMA50_%"):
-                    try:
-                        v = float(str(raw).replace("%","").replace("+",""))
-                        clr = "#22c55e" if v >= 0 else "#ef4444"
-                        sty = f"color:{clr};font-weight:600"
-                    except Exception: pass
-                elif col == "Bars_Since_Cross":
-                    try:
-                        v = int(float(raw))
-                        if v == 0: sty = "color:#22c55e;font-weight:700;text-align:center"
-                        elif v <= 1: sty = "color:#86efac;text-align:center"
-                    except Exception: pass
-                tds += (f'<td style="padding:7px 12px;font-size:12px;'
-                        f'border-bottom:1px solid #e2e8f0;white-space:nowrap;{sty}">'
-                        f'{disp}</td>')
-            rows_html += f'<tr style="background:{bg}">{tds}</tr>\n'
+    th = "".join(
+        f'<th style="background:#0f172a;color:#e2e8f0;padding:9px 12px;'
+        f'font-size:11px;font-weight:700;text-align:center;'
+        f'border-bottom:2px solid {gc};white-space:nowrap">{c}</th>'
+        for c in DISP
+    )
+    rows_html = ""
+    for i, r in enumerate(results):
+        bg  = "#ffffff" if i%2==0 else "#f0f9ff"
+        tds = ""
+        for col in DISP:
+            raw  = r.get(col)
+            disp = fmt_v(col, raw)
+            sty  = ""
+            if col == "Score":
+                try:
+                    v = float(raw)
+                    g = int(min(220, 80 + v*1.4))
+                    sty = f"background:rgb(20,{g},60);color:#fff;font-weight:700;text-align:center"
+                except Exception: pass
+            elif col in ("Dist_EMA20_%","Dist_SMA50_%","Dist_Cam_S3_%"):
+                try:
+                    v = float(str(raw).replace("%","").replace("+",""))
+                    clr = "#22c55e" if v >= 0 else "#ef4444"
+                    sty = f"color:{clr};font-weight:600"
+                except Exception: pass
+            elif col == "Bars_Since_Cross":
+                try:
+                    v = int(float(raw))
+                    if v == 0: sty = "color:#22c55e;font-weight:700;text-align:center"
+                    elif v <= 1: sty = "color:#86efac;text-align:center"
+                except Exception: pass
+            elif col == "Retest_Depth_%":
+                try:
+                    v = float(str(raw).replace("%",""))
+                    if v <= 1.0: sty = "color:#22c55e;font-weight:700"
+                    elif v <= 2.0: sty = "color:#86efac"
+                except Exception: pass
+            tds += (f'<td style="padding:7px 12px;font-size:12px;'
+                    f'border-bottom:1px solid #e2e8f0;white-space:nowrap;{sty}">'
+                    f'{disp}</td>')
+        rows_html += f'<tr style="background:{bg}">{tds}</tr>\n'
 
-        html_sections += f"""
+    table_html = f"""
 <div style="margin:14px 0">
   <div style="background:linear-gradient(90deg,{gc}22,#0f172a);
           border-left:4px solid {gc};border-radius:6px 6px 0 0;
           padding:10px 18px;display:flex;align-items:center;gap:10px">
-    <span style="font-size:18px">{ico}</span>
-    <span style="color:#f1f5f9;font-size:15px;font-weight:700">{grp_name} Retest</span>
-    <span style="color:{gc};font-size:12px;margin-left:8px">{len(grp_rows)} stock{'s' if len(grp_rows)!=1 else ''}</span>
+    <span style="font-size:18px">🎯</span>
+    <span style="color:#f1f5f9;font-size:15px;font-weight:700">SMA50 Retest → EMA20 → Camarilla S3 Cross</span>
+    <span style="color:{gc};font-size:12px;margin-left:8px">{len(results)} stock{'s' if len(results)!=1 else ''}</span>
   </div>
   <div style="overflow-x:auto;border:1px solid #e2e8f0;border-top:none;
           border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
@@ -840,15 +856,11 @@ if _IN_NOTEBOOK and results:
         border-radius:10px;padding:18px 24px;margin-bottom:8px;
         font-family:'Segoe UI',Arial,sans-serif">
   <h2 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-    📈 SMA50 / SMA150 Retest → EMA20 Cross
+    📈 SMA50 Retest + EMA20 + Camarilla S3 Cross
   </h2>
   <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
     {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
     <b style="color:#22c55e">{len(results)} matches</b> from {len(TICKERS)} tickers
-    &nbsp;·&nbsp;
-    🏆 Both: {len(groups.get('SMA50 + SMA150',[]))} &nbsp;
-    🔵 SMA50: {len(groups.get('SMA50',[]))} &nbsp;
-    🩷 SMA150: {len(groups.get('SMA150',[]))}
   </p>
 </div>"""
 
@@ -857,20 +869,21 @@ if _IN_NOTEBOOK and results:
         padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
-  Retest = candle LOW touched SMA50, SMA150, or EMA20 within ±3% &nbsp;·&nbsp;
-  Bars_Retest_to_Cross = how many bars between the retest and the EMA20 cross &nbsp;·&nbsp;
-  Retest_Depth_% = how close the low came to the level (0% = exact touch) &nbsp;·&nbsp;
-  Bars_Since_Cross 0 = today &nbsp;·&nbsp;
-  <b style="color:#22c55e">🏆 Triple</b> = strongest (SMA50 + SMA150 + EMA20 all touched)
+  Price above SMA150 &nbsp;·&nbsp;
+  Retested SMA50 only (not SMA150) &nbsp;·&nbsp;
+  Currently above EMA20 &nbsp;·&nbsp;
+  Just crossed above monthly Camarilla S3 &nbsp;·&nbsp;
+  Retest_Depth_% = how close the low came to SMA50 (0% = exact touch) &nbsp;·&nbsp;
+  Bars_Since_Cross 0 = S3 crossed today
 </div>"""
 
-    display_html(header_html + html_sections + legend_html)
+    display_html(header_html + table_html + legend_html)
 
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
     CLI_COLS = ["Ticker","Price","Score",
-                "Retest_Level","Retest_Count","Retest_Depth_%","Bars_Retest_to_Cross",
-                "EMA20_Cross_Date","Bars_Since_Cross","Dist_EMA20_%","RSI"]
+                "Retest_Depth_%","Bars_Retest_to_Cross",
+                "Cam_S3_Cross_Date","Bars_Since_Cross","Dist_EMA20_%","Dist_Cam_S3_%","RSI"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -882,7 +895,7 @@ elif results:
     inner= sum(col_w.values()) + len(CLI_COLS) - 1
     print()
     print(f"  ╔{'═'*inner}╗")
-    tit  = f"  SMA50/SMA150/EMA20 Retest + EMA20 Cross   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    tit  = f"  SMA50 Retest + EMA20 + Cam S3 Cross   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
     print(f"  ║{tit.center(inner)}║")
     print(f"  ╚{'═'*inner}╝\n")
     print(f"  ┌{top}┐")
@@ -896,12 +909,11 @@ elif results:
     print(f"""
   COLUMN KEY
   ──────────────────────────────────────────────────────
-  Retest_Level       which level(s) were retested (SMA50/SMA150/EMA20)
-  Retest_Count       how many levels were touched (1-3, higher = stronger)
-  Retest_Depth_%     0% = exact touch, lower = better
-  Bars_Retest_Cross  bars between retest and EMA20 cross
-  Bars_Since_Cross   0 = cross happened today
+  Retest_Depth_%     0% = exact touch on SMA50, lower = better
+  Bars_Retest_Cross  bars between SMA50 retest and Cam S3 cross
+  Bars_Since_Cross   0 = Camarilla S3 crossed today
   Dist_EMA20_%       how far price is above EMA20 now
+  Dist_Cam_S3_%      how far price is above Camarilla S3 now
   ──────────────────────────────────────────────────────""")
 
 # Save
@@ -946,33 +958,25 @@ def _send_email(rl, csv_path):
     cnt = len(rl)
 
     try:
-        t1  = sum(1 for r in rl if r.get("Retest_Count",0) >= 3)   # triple confluence
-        t2  = sum(1 for r in rl if r.get("Retest_Count",0) == 2)   # double confluence
-        t3  = sum(1 for r in rl if r.get("Retest_Count",0) == 1)   # single level
-
         print(f"[Email] Sending to {et}  ({cnt} results)...")
 
         th_e = "".join(
             f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
-            for c in ["Ticker","Price","Score","Retest_Level",
-                      "Retest_Depth_%","Bars_Since_Cross","Dist_EMA20_%","RSI"]
+            for c in ["Ticker","Price","Score","Retest_Depth_%",
+                      "Bars_Since_Cross","Dist_EMA20_%","Dist_Cam_S3_%","RSI"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
             bg  = "#fff" if i % 2 == 0 else "#f0f9ff"
-            lvl = str(r.get("Retest_Level","—"))
-            lvl_color = ("#22c55e" if r.get("Retest_Count",0) >= 3 else
-                         "#a78bfa" if r.get("Retest_Count",0) == 2 else
-                         "#fbbf24" if "EMA20" in lvl else
-                         "#f472b6" if "SMA150" in lvl else "#3b82f6")
             ticker = r.get("Ticker","—")
             price  = r.get("Price",0) or 0
             score  = r.get("Score",0) or 0
             depth  = r.get("Retest_Depth_%",0) or 0
             bsc    = r.get("Bars_Since_Cross",99)
-            cdist  = r.get("Dist_EMA20_%",0) or 0
+            edist  = r.get("Dist_EMA20_%",0) or 0
+            s3dist = r.get("Dist_Cam_S3_%",0) or 0
             rsi    = r.get("RSI",0) or 0
             rows_e += (
                 f'<tr style="background:{bg}">'
@@ -980,12 +984,12 @@ def _send_email(rl, csv_path):
                 f'<td style="padding:6px 11px;font-size:12px">${float(price):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700;'
                 f'background:#166534;color:#fff;text-align:center">{float(score):.0f}</td>'
-                f'<td style="padding:6px 11px;font-size:12px;color:{lvl_color};font-weight:600">{lvl}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">{float(depth):.2f}%</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:'
                 f'{"#22c55e" if bsc==0 else "#94a3b8"};font-weight:700">'
                 f'{bsc}d</td>'
-                f'<td style="padding:6px 11px;font-size:12px">{float(cdist):+.2f}%</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(edist):+.2f}%</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(s3dist):+.2f}%</td>'
                 f'<td style="padding:6px 11px;font-size:12px">{float(rsi):.1f}</td>'
                 f'</tr>'
             )
@@ -1008,12 +1012,11 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
           box-shadow:0 4px 20px rgba(0,0,0,0.08)">
   <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:22px 28px">
 <h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-  📊 SMA50/SMA150/EMA20 Retest + EMA20 Cross Above
+  📊 SMA50 Retest + EMA20 + Camarilla S3 Cross
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-  {cnt} total &nbsp;·&nbsp;
-  🏆 Triple:{t1} &nbsp; 🥈 Double:{t2} &nbsp; 🔹 Single:{t3}
+  {cnt} match{'es' if cnt!=1 else ''} found
 </p>
   </td></tr>
   <tr><td style="padding:16px">
@@ -1038,8 +1041,8 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </body></html>"""
 
         plain_lines = [
-            f"SMA50/SMA150/EMA20 Retest + EMA20 Cross — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches  (🏆Triple:{t1}  🥈Double:{t2}  🔹Single:{t3})",
+            f"SMA50 Retest + EMA20 + Camarilla S3 Cross — {datetime.today().strftime('%Y-%m-%d')}",
+            f"{cnt} matches",
             "="*60,
         ]
         if rl:
@@ -1047,21 +1050,19 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 ticker = r.get("Ticker","—")
                 price  = r.get("Price",0) or 0
                 score  = r.get("Score",0) or 0
-                lvl    = r.get("Retest_Level","—")
                 depth  = r.get("Retest_Depth_%",0) or 0
                 bsc    = r.get("Bars_Since_Cross",0) or 0
                 plain_lines.append(
                     f"{ticker:<7} ${float(price):.2f}  Score:{float(score):.0f}  "
-                    f"{lvl}  Depth:{float(depth):.1f}%  Cross:{bsc}d ago"
+                    f"SMA50 Depth:{float(depth):.1f}%  S3 Cross:{bsc}d ago"
                 )
         else:
             plain_lines.append("No matches today")
         plain_lines.append("\nFull results in CSV attachment.")
         plain_e = "\n".join(plain_lines)
 
-        subj = (f"📊 SMA/EMA20 Retest+Cross — {cnt} signal{'s' if cnt!=1 else ''}"
-                f"  (🏆{t1} 🥈{t2} 🔹{t3}) — "
-                f"{datetime.today().strftime('%Y-%m-%d')}")
+        subj = (f"📊 SMA50 Retest + Cam S3 Cross — {cnt} signal{'s' if cnt!=1 else ''}"
+                f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
         msg["Subject"] = subj
@@ -1136,6 +1137,7 @@ if results:
         ema20 = r["_ema20"].reindex(df_p.index)
         sma50 = r["_sma50"].reindex(df_p.index)
         sma150= r["_sma150"].reindex(df_p.index)
+        cams3 = r["_cam_s3_series"].reindex(df_p.index)
         n_p   = len(df_p)
         fn    = len(r["_df"]); off = fn - n_p
 
@@ -1152,37 +1154,30 @@ if results:
                  boxstyle="square,pad=0",facecolor=clr,edgecolor=clr,lw=0.4,zorder=3)
             ax.add_patch(rect)
 
-        # MAs (matching chart colours)
+        # MAs + Camarilla S3 (matching chart colours)
         ax.plot(range(n_p), ema20.values,  color="#34d399", lw=1.6, label="EMA20 🟢", zorder=5)
         ax.plot(range(n_p), sma50.values,  color="#3b82f6", lw=1.5, label="SMA50 🔵", zorder=4)
         ax.plot(range(n_p), sma150.values, color="#f472b6", lw=1.5, ls="-.", label="SMA150 🩷", zorder=4)
+        ax.plot(range(n_p), cams3.values,  color="#f59e0b", lw=1.4, ls=":",  label="Cam S3 🟠", zorder=4)
 
-        # Retest zone shading
+        # SMA50 retest zone shading
         rt_pos = r["_retest_bar"] - off if r["_retest_bar"] is not None else None
         if rt_pos is not None and 0 <= rt_pos < n_p:
             ax.scatter([rt_pos],[float(df_p["Low"].iloc[rt_pos])],
                        color="#fbbf24", s=120, zorder=7, marker="v",
-                       label=f"Retest {r['Retest_Level']}")
+                       label=f"SMA50 Retest {r['Retest_Bar_Date']}")
             ax.axvline(rt_pos, color="#fbbf24", lw=1.0, ls=":", alpha=0.6)
 
-        # EMA20 cross bar
+        ax.axhspan(float(r["SMA50"])*0.97, float(r["SMA50"])*1.03,
+                   alpha=0.05, color="#3b82f6", zorder=1)
+
+        # Camarilla S3 cross bar
         xp = r["_cross_bar"] - off
         if 0 <= xp < n_p:
-            ax.axvline(xp, color="#34d399", lw=1.8, ls="--", alpha=0.9)
+            ax.axvline(xp, color="#f59e0b", lw=1.8, ls="--", alpha=0.9)
             ax.scatter([xp],[float(df_p["Close"].iloc[xp])],
-                       color="#34d399", s=180, zorder=8, marker="^",
-                       label=f"EMA20 Cross {r['EMA20_Cross_Date']}")
-
-        # SMA/EMA zone shading — shade whichever level(s) were retested
-        if r.get("Retest_SMA50") == "✅":
-            ax.axhspan(float(r["SMA50"])*0.97, float(r["SMA50"])*1.03,
-                       alpha=0.05, color="#3b82f6", zorder=1)
-        if r.get("Retest_SMA150") == "✅":
-            ax.axhspan(float(r["SMA150"])*0.97, float(r["SMA150"])*1.03,
-                       alpha=0.05, color="#f472b6", zorder=1)
-        if r.get("Retest_EMA20") == "✅":
-            ax.axhspan(float(r["EMA20"])*0.97, float(r["EMA20"])*1.03,
-                       alpha=0.08, color="#fbbf24", zorder=1)
+                       color="#f59e0b", s=180, zorder=8, marker="^",
+                       label=f"Cam S3 Cross {r['Cam_S3_Cross_Date']}")
 
         tick_step = max(1, n_p//8)
         ax.set_xticks(range(0, n_p, tick_step))
@@ -1192,8 +1187,8 @@ if results:
         ax.set_xlim(-0.5, n_p-0.5)
         ax.set_title(
             f"{r['Ticker']}  ${r['Price']:.2f}  |  Score {r['Score']}/100  |  "
-            f"Retest: {r['Retest_Level']} (depth {r['Retest_Depth_%']:.1f}%)  |  "
-            f"→  EMA20 cross {r['EMA20_Cross_Date']} "
+            f"SMA50 Retest {r['Retest_Bar_Date']} (depth {r['Retest_Depth_%']:.1f}%)  |  "
+            f"→  Cam S3 cross {r['Cam_S3_Cross_Date']} "
             f"({r['Bars_Since_Cross']}d ago)  ({r['Bars_Retest_to_Cross']}bars later)  |  "
             f"RSI {r['RSI']:.0f}",
             color="#e2e8f0", fontsize=8, fontweight="bold", pad=6)
@@ -1204,9 +1199,9 @@ if results:
         ax.grid(color="#1e3a5f", ls="--", lw=0.4, alpha=0.4, axis="y")
 
     plt.suptitle(
-        f"SMA50/SMA150 Retest → EMA20 Cross Entry  ·  "
+        f"SMA50 Retest → EMA20 → Camarilla S3 Cross  ·  "
         f"{datetime.today().strftime('%Y-%m-%d')}\n"
-        f"🟢 EMA20  🔵 SMA50  🩷 SMA150  ▼ = Retest Low  ★ = EMA20 Cross",
+        f"🟢 EMA20  🔵 SMA50  🩷 SMA150  🟠 Cam S3  ▼ = SMA50 Retest  ▲ = S3 Cross",
         color="#60a5fa", fontsize=10, fontweight="bold", y=1.001)
     plt.tight_layout()
     cp = os.path.join(os.environ.get("GITHUB_WORKSPACE", os.getcwd()),
@@ -1224,44 +1219,48 @@ print("""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   📋 PATTERN EXPLAINED
 
-  P1  BULL STRUCTURE  (prerequisite)
-      SMA50 > SMA150  (uptrend confirmed)
+  C1  BULL STRUCTURE  (prerequisite)
       Price > SMA150  (above long-term support)
-      = Stock was in a healthy uptrend before the pullback
+      = Stock is in a healthy long-term uptrend
 
-  P2  RETEST  (the pullback)
-      Price pulled back and candle LOW touched one or more of:
-        EMA20 (🟡 yellow)  — shortest-term, shallowest pullback
-        SMA50 (🔵 blue)    — medium-term support
-        SMA150 (🩷 pink)   — long-term support
+  C2  SMA50-ONLY RETEST  (the pullback — SMA50 specific)
+      Price pulled back and candle LOW touched SMA50 (🔵 blue)
+      Price did NOT also touch SMA150 in the same window
+        (that would be a deeper SMA150 retest, not this pattern)
       Support held — no significant close below SMA150
-      = Buyers defended the key level
+      = A shallow, controlled pullback to medium-term support
 
-  P3  EMA20 CROSS  (the entry signal)
-      Bar[-2] close < EMA20   ← was below EMA20 yesterday
-      Bar[-1] close >= EMA20  ← crossed above EMA20 today
-      Cross happened AFTER the retest low
-      = Momentum returning — earliest confirmation
+  C3  CURRENTLY ABOVE EMA20
+      Price is now trading above EMA20 (🟢 green)
+      = Short-term trend has been reclaimed
 
-  PRIORITY (highest to lowest):
-    🏆  Triple confluence (SMA50+SMA150+EMA20) = maximum support strength
-    🥈  Double confluence (any 2 levels)        = very strong
-    🟡  EMA20 only    = shallow pullback, fastest continuation
-    🔵  SMA50 only    = tighter pullback, often higher quality
-    🩷  SMA150 only   = deeper dip, bigger potential recovery
+  C4  CAMARILLA S3 EXACT 1-BAR CROSS  (the entry trigger)
+      Bar[-2] close < Camarilla S3   ← was below S3 yesterday
+      Bar[-1] close >= Camarilla S3  ← crossed above S3 today
+      Camarilla S3 (🟠 orange) = Close - (High-Low) × 1.1 / 4
+      calculated from the PRIOR completed month's range
+      = Price just reclaimed a key monthly pivot support level
+
+  LOGIC FLOW:
+    Uptrend (price > SMA150)
+      → Shallow pullback to SMA50 only (not SMA150)
+      → Price reclaims EMA20
+      → Price reclaims Camarilla S3
+      = Confluence entry: short-term trend + monthly pivot support
 
   💡 BEST SETUPS
-  Retest_Count = 3       all levels defended = strongest possible setup
-  Retest_Depth_% < 1%   almost exact touch = clean retest
-  Bars_Since_Cross = 0  cross happened today = fresh entry
+  Retest_Depth_% < 1%       almost exact SMA50 touch = clean retest
+  Bars_Since_Cross = 0      Cam S3 crossed today = freshest entry
   Bars_Retest_to_Cross ≤ 5  quick recovery = strong momentum
-  RSI 45–65             healthy, not overbought
+  Dist_EMA20_% small         price just above EMA20, not extended
+  RSI 45–65                  healthy, not overbought
 
   ⚙️  TUNE IF 0 RESULTS
   retest_touch_pct           3 → 5
   retest_lookback           30 → 40
-  cross_lookback             5 → 10
+  cam_cross_lookback         5 → 10
   max_close_below_sma150_pct 1.5 → 3
   rsi_min                   35 → 25
+  require_sma50_only      True → False  (allow SMA150 also touched)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
