@@ -491,4 +491,777 @@ _CW = {
 _CF = {
     "Price":"${:.2f}","Score":"{:.0f}",
     "Retest_Count":"{:.0f}",
-  
+    "Retest_Depth_%":"{:.2f}%","Bars_Retest_to_Cross":"{:.0f}",
+    "Bars_Since_Cross":"{:.0f}","Cross_Vol_x":"{:.2f}×",
+    "EMA20":"${:.2f}","SMA50":"${:.2f}","SMA150":"${:.2f}",
+    "Dist_EMA20_%":"{:+.2f}%","RSI":"{:.1f}",
+}
+_hdr_done = False
+
+def _live_header():
+    global _hdr_done
+    if _hdr_done: return
+    sep = "━" * 200
+    print(f"\n{sep}")
+    print("  📊  LIVE MATCHES  —  SMA50/SMA150/EMA20 Retest + EMA20 Cross")
+    print(sep)
+    print("".join(f"  {c:<{_CW.get(c,10)}}" for c in LIVE_COLS))
+    print("  " + "─"*198)
+    _hdr_done = True
+
+def live_print(r):
+    _live_header()
+    row = ""
+    for c in LIVE_COLS:
+        val=r.get(c,"—"); w=_CW.get(c,10); fmt=_CF.get(c)
+        try:   s=fmt.format(val) if (fmt and val not in("—",None)) else str(val)
+        except: s=str(val)
+        row += f"  {s:<{w}}"
+    print(row)
+
+# ── Health check ──────────────────────────────────────────────
+print("━"*65)
+print("  STEP 1  DATA CHECK")
+print("━"*65)
+chk = download(["AAPL","MSFT","NVDA"], 200)
+if not chk: print("❌  No data.")
+else:
+    for s, d in chk.items():
+        p    = float(d["Close"].iloc[-1])
+        e20  = float(calc_ema(d["Close"], 20).iloc[-1])
+        s50  = float(d["Close"].rolling(50).mean().iloc[-1])
+        s150 = float(d["Close"].rolling(150).mean().iloc[-1])
+        print(f"  ✅ {s}: ${p:.2f}  EMA20=${e20:.2f}  SMA50=${s50:.2f}  "
+              f"SMA150=${s150:.2f}  "
+              f"Stack:{'✅' if e20>s50>s150 else '❌'}  {d.index[-1].date()}")
+print()
+
+# ── Diagnostic ────────────────────────────────────────────────
+print("━"*65)
+print("  STEP 2  DIAGNOSTIC (10 sample stocks)")
+print("━"*65+"\n")
+
+DIAG = ["AAPL","MSFT","NVDA","AMD","PLTR","META","CRWD","AVGO","DDOG","MU"]
+diag_data = download(DIAG, CFG["history_days"])
+print(f"  Downloaded {len(diag_data)}/{len(DIAG)}\n")
+print(f"  {'SYM':<7} {'P':>8}  {'P1':>4}  {'RETEST':>12}  "
+      f"{'EMA20X':>8}  {'SCORE':>6}  RESULT")
+print("  "+"─"*60)
+
+for sym in DIAG:
+    if sym not in diag_data:
+        print(f"  {sym:<7} — no data"); continue
+    try:
+        df_d = diag_data[sym]
+        p    = float(df_d["Close"].iloc[-1])
+        s50  = float(df_d["Close"].rolling(50).mean().iloc[-1])
+        s150 = float(df_d["Close"].rolling(150).mean().iloc[-1])
+        t    = lambda b: "✅" if b else "❌"
+        p1   = s50 > s150 and p > s150
+        r    = detect_pattern(sym, df_d)
+        if r:
+            print(f"  {sym:<7} ${p:>7.2f}  {t(p1):>4}  "
+                  f"{r['Retest_Level']:>22}  "
+                  f"{r['EMA20_Cross_Date']:>8}  "
+                  f"{r['Score']:>6}  ✅")
+        else:
+            print(f"  {sym:<7} ${p:>7.2f}  {t(p1):>4}  "
+                  f"{'no retest':>22}  {'—':>8}  {'—':>6}  ❌")
+    except Exception as e:
+        print(f"  {sym:<7} error: {e}")
+
+print(f"""
+  Pattern:
+    P1  Bull structure  : SMA50 > SMA150, price > SMA150
+    P2  Retest          : candle LOW touched SMA50, SMA150, or EMA20
+                          within ±{CFG['retest_touch_pct']}% in last {CFG['retest_lookback']} bars
+    P3  EMA20 cross     : Bar[-2] close < EMA20  AND  Bar[-1] close >= EMA20
+                          cross must happen AFTER the retest
+
+  Tune if mostly ❌:
+    retest_touch_pct    {CFG['retest_touch_pct']} → 5    (wider retest zone)
+    retest_lookback     {CFG['retest_lookback']} → 40   (look further back)
+    cross_lookback      {CFG['cross_lookback']} → 10   (wider cross window)
+    rsi_min             {CFG['rsi_min']} → 25
+    max_close_below_sma150_pct {CFG['max_close_below_sma150_pct']} → 3
+""")
+print("━"*65+"\n")
+
+# ── Ticker list ───────────────────────────────────────────────
+print("━"*65)
+print("  STEP 3  FETCH TICKERS")
+print("━"*65)
+
+def get_tickers():
+    pool = set()
+    hdrs = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    for url, label in [
+        ("https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt","nasdaqlisted"),
+        ("https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt", "otherlisted"),
+    ]:
+        try:
+            r  = requests.get(url, headers=hdrs, timeout=20); r.raise_for_status()
+            df = pd.read_csv(io.StringIO(r.text), sep="|")
+            df.columns = [c.strip() for c in df.columns]
+            sc = next((c for c in ["Symbol","ACT Symbol","Nasdaq Symbol"] if c in df.columns),None)
+            ec = next((c for c in ["ETF","Is ETF"] if c in df.columns),None)
+            if not sc: continue
+            b = len(pool)
+            for _, row in df.iterrows():
+                s = str(row[sc]).strip()
+                if not s or s=="nan": continue
+                if any(x in s for x in ["^","/","."," ","-"]): continue
+                if s.endswith(tuple("WRUPQ")): continue
+                if not(s.isalpha() and 1<=len(s)<=5): continue
+                if ec and str(row.get(ec,"")).strip().upper()=="Y": continue
+                pool.add(s.upper())
+            print(f"  ✅ {label:<18}: +{len(pool)-b:>4} → {len(pool)}")
+        except Exception as e: print(f"  ⚠️  {label}: {e}")
+    try:
+        r = requests.get(
+            "https://api.nasdaq.com/api/screener/stocks"
+            "?tableonly=true&limit=10000&exchange=nasdaq&download=true",
+            headers={**hdrs,"Referer":"https://www.nasdaq.com/"}, timeout=25)
+        r.raise_for_status()
+        rows = r.json()["data"]["rows"]
+        t    = {row["symbol"].strip() for row in rows
+                if row.get("symbol","").strip().isalpha()
+                and 1<=len(row["symbol"].strip())<=5}
+        b = len(pool); pool |= t
+        print(f"  ✅ {'NASDAQ API':<18}: +{len(pool)-b:>4} → {len(pool)}")
+    except Exception as e: print(f"  ⚠️  NASDAQ API: {e}")
+    static = {
+        "AAPL","MSFT","NVDA","AMZN","META","GOOGL","GOOG","TSLA","AVGO","COST",
+        "NFLX","AMD","INTC","CSCO","ADBE","QCOM","TXN","AMAT","MU","KLAC",
+        "LRCX","MRVL","MELI","PANW","CRWD","SNPS","CDNS","TEAM","WDAY","PLTR",
+        "ALAB","SMCI","HOOD","COIN","SOFI","UPST","DDOG","SNOW","MDB","REGN",
+        "VRTX","ISRG","LULU","FTNT","IDXX","SBUX","TMUS","RBRK","NET","MARA",
+        "QUBT","RGTI","ASTS","RKLB","IONQ","FSLR","PYPL","ROKU","ROST","POOL",
+        "AMGN","GILD","INTU","MCHP","MNST","NXPI","XEL","ACLS","IRTC","UPST",
+    }
+    b = len(pool); pool |= static
+    print(f"  ✅ {'Static fallback':<18}: +{len(pool)-b:>4} → {len(pool)}")
+    clean = sorted({s.upper() for s in pool if isinstance(s,str)
+                    and s.isalpha() and 1<=len(s)<=5})
+    print(f"\n  🎯 Total: {len(clean)} tickers")
+    return clean
+
+TICKERS = get_tickers(); print()
+
+# ── Main scan ─────────────────────────────────────────────────
+print("━"*65)
+print(f"  STEP 4  SCANNING {len(TICKERS)} TICKERS")
+print("━"*65+"\n")
+
+_hdr_done = False; results = []; no_data = 0
+batches = [TICKERS[i:i+CFG["batch_size"]] for i in range(0,len(TICKERS),CFG["batch_size"])]
+
+with tqdm(total=len(TICKERS), desc="Scanning", unit="stk",
+          bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]") as pbar:
+    for batch in batches:
+        data_map = download(batch, CFG["history_days"])
+        no_data += len(batch) - len(data_map)
+        for sym in batch:
+            pbar.update(1)
+            if sym not in data_map: continue
+            try:
+                r = detect_pattern(sym, data_map[sym])
+                if r: results.append(r); live_print(r)
+            except Exception: pass
+        time.sleep(CFG["batch_sleep"])
+
+got = len(TICKERS)-no_data; pct = got/max(len(TICKERS),1)*100
+print(f"\n{'━'*65}")
+print(f"  SCAN COMPLETE | {len(TICKERS)} tickers | {got} ({pct:.0f}%) | ✅ {len(results)} matches")
+print(f"{'━'*65}")
+
+# ── Results ───────────────────────────────────────────────────
+if not results:
+    print("\n  No matches. Try:")
+    print("   retest_touch_pct           3 → 5")
+    print("   retest_lookback           30 → 40")
+    print("   cross_lookback             5 → 10")
+    print("   max_close_below_sma150_pct 1.5 → 3")
+    print("   rsi_min                   35 → 25")
+
+# Sort by score (always runs, even on empty list)
+results.sort(key=lambda x: x["Score"], reverse=True)
+
+# ── Always build df_out and save/email (even if 0 results) ────
+ts      = datetime.today().strftime("%Y%m%d_%H%M")
+out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
+
+COLS = [
+    "Ticker","Price","Score",
+    "Retest_Level","Retest_Count","Retest_Bar_Date",
+    "Retest_SMA50","Retest_SMA150","Retest_EMA20",
+    "Retest_Depth_%","Bars_Retest_to_Cross","Max_Below_SMA150_%",
+    "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
+    "EMA20","SMA50","SMA150",
+    "Dist_EMA20_%","Dist_SMA50_%","Dist_SMA150_%","SMA50_vs_SMA150_%",
+    "RSI","MACD_Hist","Avg_Vol_20d",
+]
+df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
+                        for r in results]) if results else pd.DataFrame(columns=COLS)
+if not df_out.empty:
+    df_out = df_out[[c for c in COLS if c in df_out.columns]]
+    df_out.reset_index(drop=True, inplace=True)
+
+FMT = {
+    "Price"               : lambda v: f"${v:.2f}",
+    "Score"               : lambda v: f"{v:.0f}",
+    "EMA20"               : lambda v: f"${v:.2f}",
+    "SMA50"               : lambda v: f"${v:.2f}",
+    "SMA150"              : lambda v: f"${v:.2f}",
+    "Retest_Count"        : lambda v: f"{int(v)}",
+    "Retest_Depth_%"      : lambda v: f"{v:.2f}%",
+    "Max_Below_SMA150_%"  : lambda v: f"{v:.2f}%",
+    "Bars_Retest_to_Cross": lambda v: f"{int(v)}",
+    "Bars_Since_Cross"    : lambda v: f"{int(v)}",
+    "Cross_Vol_x"         : lambda v: f"{v:.2f}×",
+    "Dist_EMA20_%"        : lambda v: f"{v:+.2f}%",
+    "Dist_SMA50_%"        : lambda v: f"{v:+.2f}%",
+    "Dist_SMA150_%"       : lambda v: f"{v:+.2f}%",
+    "SMA50_vs_SMA150_%"   : lambda v: f"{v:+.2f}%",
+    "RSI"                 : lambda v: f"{v:.1f}",
+    "MACD_Hist"           : lambda v: f"{v:.4f}",
+    "Avg_Vol_20d"         : lambda v: f"{v:,.0f}",
+}
+
+def fmt_v(col, val):
+    if val is None or (isinstance(val, float) and np.isnan(val)): return "—"
+    try:
+        if col in FMT: return FMT[col](val)
+    except Exception: pass
+    return str(val) if str(val) not in ("nan","None","") else "—"
+
+# ── Group by Retest_Count for display (works for any combination) ─
+groups = {
+    "Triple Confluence (SMA50+SMA150+EMA20)": [r for r in results if r.get("Retest_Count",0) >= 3],
+    "Double Confluence"                      : [r for r in results if r.get("Retest_Count",0) == 2],
+    "EMA20 Only"                             : [r for r in results if r.get("Retest_Count",0) == 1 and r.get("Retest_EMA20") == "✅"],
+    "SMA50 Only"                             : [r for r in results if r.get("Retest_Count",0) == 1 and r.get("Retest_SMA50") == "✅"],
+    "SMA150 Only"                            : [r for r in results if r.get("Retest_Count",0) == 1 and r.get("Retest_SMA150") == "✅"],
+}
+group_colors = {
+    "Triple Confluence (SMA50+SMA150+EMA20)": "#22c55e",
+    "Double Confluence"                      : "#a78bfa",
+    "EMA20 Only"                             : "#fbbf24",
+    "SMA50 Only"                             : "#3b82f6",
+    "SMA150 Only"                            : "#f472b6",
+}
+group_icons = {
+    "Triple Confluence (SMA50+SMA150+EMA20)": "🏆",
+    "Double Confluence"                      : "🥈",
+    "EMA20 Only"                             : "🟡",
+    "SMA50 Only"                             : "🔵",
+    "SMA150 Only"                            : "🩷",
+}
+
+if _IN_NOTEBOOK and results:
+    DISP = ["Ticker","Price","Score",
+            "Retest_Level","Retest_Count","Retest_Depth_%","Bars_Retest_to_Cross",
+            "EMA20_Cross_Date","Bars_Since_Cross","Cross_Vol_x",
+            "EMA20","SMA50","SMA150","Dist_EMA20_%","RSI","MACD_Hist"]
+    DISP = [c for c in DISP if c in df_out.columns]
+
+    html_sections = ""
+    for grp_name, grp_rows in groups.items():
+        if not grp_rows: continue
+        gc  = group_colors[grp_name]
+        ico = group_icons[grp_name]
+
+        th = "".join(
+            f'<th style="background:#0f172a;color:#e2e8f0;padding:9px 12px;'
+            f'font-size:11px;font-weight:700;text-align:center;'
+            f'border-bottom:2px solid {gc};white-space:nowrap">{c}</th>'
+            for c in DISP
+        )
+        rows_html = ""
+        for i, r in enumerate(grp_rows):
+            bg  = "#ffffff" if i%2==0 else "#f0f9ff"
+            tds = ""
+            for col in DISP:
+                raw  = r.get(col)
+                disp = fmt_v(col, raw)
+                sty  = ""
+                if col == "Score":
+                    try:
+                        v = float(raw)
+                        g = int(min(220, 80 + v*1.4))
+                        sty = f"background:rgb(20,{g},60);color:#fff;font-weight:700;text-align:center"
+                    except Exception: pass
+                elif col == "Retest_Level":
+                    sty = f"color:{gc};font-weight:700"
+                elif col == "Retest_Count":
+                    try:
+                        v = int(float(raw))
+                        if v >= 3: sty = "color:#22c55e;font-weight:800;text-align:center;font-size:14px"
+                        elif v == 2: sty = "color:#a78bfa;font-weight:700;text-align:center"
+                        else: sty = "text-align:center;color:#94a3b8"
+                    except Exception: pass
+                elif col in ("Dist_EMA20_%","Dist_SMA50_%"):
+                    try:
+                        v = float(str(raw).replace("%","").replace("+",""))
+                        clr = "#22c55e" if v >= 0 else "#ef4444"
+                        sty = f"color:{clr};font-weight:600"
+                    except Exception: pass
+                elif col == "Bars_Since_Cross":
+                    try:
+                        v = int(float(raw))
+                        if v == 0: sty = "color:#22c55e;font-weight:700;text-align:center"
+                        elif v <= 1: sty = "color:#86efac;text-align:center"
+                    except Exception: pass
+                tds += (f'<td style="padding:7px 12px;font-size:12px;'
+                        f'border-bottom:1px solid #e2e8f0;white-space:nowrap;{sty}">'
+                        f'{disp}</td>')
+            rows_html += f'<tr style="background:{bg}">{tds}</tr>\n'
+
+        html_sections += f"""
+<div style="margin:14px 0">
+  <div style="background:linear-gradient(90deg,{gc}22,#0f172a);
+          border-left:4px solid {gc};border-radius:6px 6px 0 0;
+          padding:10px 18px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:18px">{ico}</span>
+    <span style="color:#f1f5f9;font-size:15px;font-weight:700">{grp_name} Retest</span>
+    <span style="color:{gc};font-size:12px;margin-left:8px">{len(grp_rows)} stock{'s' if len(grp_rows)!=1 else ''}</span>
+  </div>
+  <div style="overflow-x:auto;border:1px solid #e2e8f0;border-top:none;
+          border-radius:0 0 8px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+    <table style="border-collapse:collapse;width:100%;min-width:700px">
+      <thead><tr>{th}</tr></thead>
+      <tbody>{rows_html}</tbody>
+    </table>
+  </div>
+</div>"""
+
+    header_html = f"""
+<div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);
+        border-radius:10px;padding:18px 24px;margin-bottom:8px;
+        font-family:'Segoe UI',Arial,sans-serif">
+  <h2 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
+    📈 SMA50 / SMA150 Retest → EMA20 Cross
+  </h2>
+  <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
+    {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
+    <b style="color:#22c55e">{len(results)} matches</b> from {len(TICKERS)} tickers
+    &nbsp;·&nbsp;
+    🏆 Both: {len(groups.get('SMA50 + SMA150',[]))} &nbsp;
+    🔵 SMA50: {len(groups.get('SMA50',[]))} &nbsp;
+    🩷 SMA150: {len(groups.get('SMA150',[]))}
+  </p>
+</div>"""
+
+    legend_html = """
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;
+        padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
+        font-family:'Segoe UI',Arial,sans-serif">
+  <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
+  Retest = candle LOW touched SMA50, SMA150, or EMA20 within ±3% &nbsp;·&nbsp;
+  Bars_Retest_to_Cross = how many bars between the retest and the EMA20 cross &nbsp;·&nbsp;
+  Retest_Depth_% = how close the low came to the level (0% = exact touch) &nbsp;·&nbsp;
+  Bars_Since_Cross 0 = today &nbsp;·&nbsp;
+  <b style="color:#22c55e">🏆 Triple</b> = strongest (SMA50 + SMA150 + EMA20 all touched)
+</div>"""
+
+    display_html(header_html + html_sections + legend_html)
+
+elif results:
+    # ASCII table (CLI/GitHub Actions mode)
+    CLI_COLS = ["Ticker","Price","Score",
+                "Retest_Level","Retest_Count","Retest_Depth_%","Bars_Retest_to_Cross",
+                "EMA20_Cross_Date","Bars_Since_Cross","Dist_EMA20_%","RSI"]
+    CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
+    col_w = {c: max(len(c), max(
+        len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
+    ))+2 for c in CLI_COLS}
+    top  = "┬".join("─"*col_w[c] for c in CLI_COLS)
+    sep  = "┼".join("─"*col_w[c] for c in CLI_COLS)
+    bot  = "┴".join("─"*col_w[c] for c in CLI_COLS)
+    hdr  = "│".join(c.center(col_w[c]) for c in CLI_COLS)
+    inner= sum(col_w.values()) + len(CLI_COLS) - 1
+    print()
+    print(f"  ╔{'═'*inner}╗")
+    tit  = f"  SMA50/SMA150/EMA20 Retest + EMA20 Cross   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    print(f"  ║{tit.center(inner)}║")
+    print(f"  ╚{'═'*inner}╝\n")
+    print(f"  ┌{top}┐")
+    print(f"  │{hdr}│")
+    print(f"  ├{sep}┤")
+    for i,(_, row_) in enumerate(df_out.iterrows()):
+        cells=[fmt_v(c,row_.get(c)).center(col_w[c]) for c in CLI_COLS]
+        print(f"  │{'│'.join(cells)}│")
+        if i<len(df_out)-1: print(f"  ├{sep}┤")
+    print(f"  └{bot}┘")
+    print(f"""
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Retest_Level       which level(s) were retested (SMA50/SMA150/EMA20)
+  Retest_Count       how many levels were touched (1-3, higher = stronger)
+  Retest_Depth_%     0% = exact touch, lower = better
+  Bars_Retest_Cross  bars between retest and EMA20 cross
+  Bars_Since_Cross   0 = cross happened today
+  Dist_EMA20_%       how far price is above EMA20 now
+  ──────────────────────────────────────────────────────""")
+
+# Save
+out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
+fpath   = os.path.join(out_dir, f"sma_retest_ema20_cross_{ts}.csv")
+df_out.to_csv(fpath, index=False)
+print(f"\n  💾 CSV → {fpath}")
+tv = os.path.join(out_dir, f"tv_sma_retest_{ts}.txt")
+with open(tv,"w") as f:
+    f.write(f"###SMA Retest EMA20 Cross {datetime.today().strftime('%Y-%m-%d')}\n")
+    for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
+print(f"  📋 TradingView → {tv}")
+
+# ── Email with CSV attached ───────────────────────────────
+def _send_email(rl, csv_path):
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text      import MIMEText
+    from email.mime.base      import MIMEBase
+    from email                import encoders
+
+    # Use module-level vars (already read at startup)
+    gu = _GMAIL_USER
+    gp = _GMAIL_PASS
+    et = _EMAIL_TO
+
+    if not gu:
+        print("[Email] ❌  GMAIL_USER secret is empty")
+        print("         → Repo → Settings → Secrets → Actions → GMAIL_USER")
+        return
+    if not gp:
+        print("[Email] ❌  GMAIL_PASS secret is empty")
+        print("         → Must be a Gmail App Password (16 chars, no spaces)")
+        print("         → Get one at: myaccount.google.com/apppasswords")
+        return
+    if not et:
+        print("[Email] ❌  EMAIL_TO secret is empty")
+        print("         → Repo → Settings → Secrets → Actions → EMAIL_TO")
+        return
+
+    eto = [e.strip() for e in et.split(",") if e.strip()]
+    cnt = len(rl)
+
+    try:
+        t1  = sum(1 for r in rl if r.get("Retest_Count",0) >= 3)   # triple confluence
+        t2  = sum(1 for r in rl if r.get("Retest_Count",0) == 2)   # double confluence
+        t3  = sum(1 for r in rl if r.get("Retest_Count",0) == 1)   # single level
+
+        print(f"[Email] Sending to {et}  ({cnt} results)...")
+
+        th_e = "".join(
+            f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
+            f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
+            f'white-space:nowrap">{c}</th>'
+            for c in ["Ticker","Price","Score","Retest_Level",
+                      "Retest_Depth_%","Bars_Since_Cross","Dist_EMA20_%","RSI"]
+        )
+        rows_e = ""
+        for i, r in enumerate(rl[:50]):
+            bg  = "#fff" if i % 2 == 0 else "#f0f9ff"
+            lvl = str(r.get("Retest_Level","—"))
+            lvl_color = ("#22c55e" if r.get("Retest_Count",0) >= 3 else
+                         "#a78bfa" if r.get("Retest_Count",0) == 2 else
+                         "#fbbf24" if "EMA20" in lvl else
+                         "#f472b6" if "SMA150" in lvl else "#3b82f6")
+            ticker = r.get("Ticker","—")
+            price  = r.get("Price",0) or 0
+            score  = r.get("Score",0) or 0
+            depth  = r.get("Retest_Depth_%",0) or 0
+            bsc    = r.get("Bars_Since_Cross",99)
+            cdist  = r.get("Dist_EMA20_%",0) or 0
+            rsi    = r.get("RSI",0) or 0
+            rows_e += (
+                f'<tr style="background:{bg}">'
+                f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
+                f'<td style="padding:6px 11px;font-size:12px">${float(price):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;font-weight:700;'
+                f'background:#166534;color:#fff;text-align:center">{float(score):.0f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:{lvl_color};font-weight:600">{lvl}</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(depth):.2f}%</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:'
+                f'{"#22c55e" if bsc==0 else "#94a3b8"};font-weight:700">'
+                f'{bsc}d</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(cdist):+.2f}%</td>'
+                f'<td style="padding:6px 11px;font-size:12px">{float(rsi):.1f}</td>'
+                f'</tr>'
+            )
+
+        no_results_msg = ""
+        if cnt == 0:
+            no_results_msg = (
+                '<tr><td colspan="8" style="padding:20px;text-align:center;'
+                'color:#64748b;font-size:13px">No matches found today — '
+                'market conditions did not trigger the pattern</td></tr>'
+            )
+
+        html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
+background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:20px 0">
+<tr><td>
+<table width="100%" cellpadding="0" cellspacing="0"
+   style="max-width:900px;margin:0 auto;background:#fff;
+          border-radius:12px;overflow:hidden;
+          box-shadow:0 4px 20px rgba(0,0,0,0.08)">
+  <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:22px 28px">
+<h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
+  📊 SMA50/SMA150/EMA20 Retest + EMA20 Cross Above
+</h1>
+<p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
+  {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
+  {cnt} total &nbsp;·&nbsp;
+  🏆 Triple:{t1} &nbsp; 🥈 Double:{t2} &nbsp; 🔹 Single:{t3}
+</p>
+  </td></tr>
+  <tr><td style="padding:16px">
+<div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
+  <table style="border-collapse:collapse;width:100%;min-width:600px">
+    <thead><tr>{th_e}</tr></thead>
+    <tbody>{rows_e or no_results_msg}</tbody>
+  </table>
+</div>
+<p style="font-size:11px;color:#64748b;margin:8px 0 0">
+  📎 Full results attached as CSV
+</p>
+  </td></tr>
+  <tr><td style="background:#f8fafc;padding:12px 28px;
+             border-top:1px solid #e2e8f0;text-align:center">
+<p style="margin:0;color:#94a3b8;font-size:10px">
+  ⚠️ Not financial advice &nbsp;·&nbsp; Auto-generated by GitHub Actions
+</p>
+  </td></tr>
+</table>
+</td></tr></table>
+</body></html>"""
+
+        plain_lines = [
+            f"SMA50/SMA150/EMA20 Retest + EMA20 Cross — {datetime.today().strftime('%Y-%m-%d')}",
+            f"{cnt} matches  (🏆Triple:{t1}  🥈Double:{t2}  🔹Single:{t3})",
+            "="*60,
+        ]
+        if rl:
+            for r in rl[:50]:
+                ticker = r.get("Ticker","—")
+                price  = r.get("Price",0) or 0
+                score  = r.get("Score",0) or 0
+                lvl    = r.get("Retest_Level","—")
+                depth  = r.get("Retest_Depth_%",0) or 0
+                bsc    = r.get("Bars_Since_Cross",0) or 0
+                plain_lines.append(
+                    f"{ticker:<7} ${float(price):.2f}  Score:{float(score):.0f}  "
+                    f"{lvl}  Depth:{float(depth):.1f}%  Cross:{bsc}d ago"
+                )
+        else:
+            plain_lines.append("No matches today")
+        plain_lines.append("\nFull results in CSV attachment.")
+        plain_e = "\n".join(plain_lines)
+
+        subj = (f"📊 SMA/EMA20 Retest+Cross — {cnt} signal{'s' if cnt!=1 else ''}"
+                f"  (🏆{t1} 🥈{t2} 🔹{t3}) — "
+                f"{datetime.today().strftime('%Y-%m-%d')}")
+
+        msg = MIMEMultipart("mixed")
+        msg["Subject"] = subj
+        msg["From"]    = gu
+        msg["To"]      = ", ".join(eto)
+
+        alt = MIMEMultipart("alternative")
+        alt.attach(MIMEText(plain_e, "plain"))
+        alt.attach(MIMEText(html_e,  "html"))
+        msg.attach(alt)
+
+    except Exception as e:
+        print(f"[Email] ❌  Failed to build email body: {type(e).__name__}: {e}")
+        return
+
+    # Attach CSV
+    if csv_path and os.path.exists(csv_path):
+        try:
+            with open(csv_path, "rb") as f:
+                part = MIMEBase("application", "octet-stream")
+                part.set_payload(f.read())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition",
+                f"attachment; filename={os.path.basename(csv_path)}")
+            msg.attach(part)
+            sz = os.path.getsize(csv_path)
+            print(f"[Email] 📎 Attached: {os.path.basename(csv_path)} ({sz:,} bytes)")
+        except Exception as e:
+            print(f"[Email] ⚠️  CSV attach failed: {e}")
+
+    # Send
+    try:
+        print(f"[Email] Connecting to smtp.gmail.com:465 ...")
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
+            srv.login(gu, gp.replace(" ", ""))
+            srv.sendmail(gu, eto, msg.as_string())
+        print(f"[Email] ✅  Sent successfully to: {', '.join(eto)}")
+        print(f"[Email]    Subject: {subj}")
+    except smtplib.SMTPAuthenticationError:
+        print("[Email] ❌  AUTHENTICATION FAILED")
+        print("         GMAIL_PASS must be a Gmail App Password, NOT your login password")
+        print("         Generate one: myaccount.google.com/apppasswords")
+        print("         → Google Account → Security → 2-Step Verification → App Passwords")
+    except smtplib.SMTPException as e:
+        print(f"[Email] ❌  SMTP error: {e}")
+    except Exception as e:
+        print(f"[Email] ❌  Unexpected error: {type(e).__name__}: {e}")
+
+try:
+    _send_email(results, fpath)
+except Exception as e:
+    print(f"[Email] ❌  Unexpected top-level error: {type(e).__name__}: {e}")
+    print("[Email]    Continuing — CSV and charts are still saved.")
+
+if _IN_NOTEBOOK:
+    try:
+        from google.colab import files
+        files.download(fpath); files.download(tv)
+    except Exception: pass
+else:
+    print("  (CI: files in workspace, email sent)")
+
+# ── Charts for top 5 ──────────────────────────────────────────
+if results:
+    top = results[:min(5, len(results))]
+    fig, axes = plt.subplots(len(top), 1, figsize=(15, 5*len(top)), facecolor="#0f172a")
+    if len(top)==1: axes=[axes]
+
+    for idx, r in enumerate(top):
+        ax    = axes[idx]
+        df_p  = r["_df"].tail(60).copy()
+        ema20 = r["_ema20"].reindex(df_p.index)
+        sma50 = r["_sma50"].reindex(df_p.index)
+        sma150= r["_sma150"].reindex(df_p.index)
+        n_p   = len(df_p)
+        fn    = len(r["_df"]); off = fn - n_p
+
+        ax.set_facecolor("#0f172a")
+
+        # Candlestick
+        for i, (_, row_) in enumerate(df_p.iterrows()):
+            o=float(row_["Open"]); h=float(row_["High"])
+            l=float(row_["Low"]);  c=float(row_["Close"])
+            clr="#34d399" if c>=o else "#ef4444"
+            ax.plot([i,i],[l,h],color=clr,lw=0.7,zorder=2)
+            blo=min(o,c); bhi=max(o,c); bh=max(bhi-blo,(h-l)*0.005)
+            rect=mpatches.FancyBboxPatch((i-0.3,blo),0.6,bh,
+                 boxstyle="square,pad=0",facecolor=clr,edgecolor=clr,lw=0.4,zorder=3)
+            ax.add_patch(rect)
+
+        # MAs (matching chart colours)
+        ax.plot(range(n_p), ema20.values,  color="#34d399", lw=1.6, label="EMA20 🟢", zorder=5)
+        ax.plot(range(n_p), sma50.values,  color="#3b82f6", lw=1.5, label="SMA50 🔵", zorder=4)
+        ax.plot(range(n_p), sma150.values, color="#f472b6", lw=1.5, ls="-.", label="SMA150 🩷", zorder=4)
+
+        # Retest zone shading
+        rt_pos = r["_retest_bar"] - off if r["_retest_bar"] is not None else None
+        if rt_pos is not None and 0 <= rt_pos < n_p:
+            ax.scatter([rt_pos],[float(df_p["Low"].iloc[rt_pos])],
+                       color="#fbbf24", s=120, zorder=7, marker="v",
+                       label=f"Retest {r['Retest_Level']}")
+            ax.axvline(rt_pos, color="#fbbf24", lw=1.0, ls=":", alpha=0.6)
+
+        # EMA20 cross bar
+        xp = r["_cross_bar"] - off
+        if 0 <= xp < n_p:
+            ax.axvline(xp, color="#34d399", lw=1.8, ls="--", alpha=0.9)
+            ax.scatter([xp],[float(df_p["Close"].iloc[xp])],
+                       color="#34d399", s=180, zorder=8, marker="^",
+                       label=f"EMA20 Cross {r['EMA20_Cross_Date']}")
+
+        # SMA/EMA zone shading — shade whichever level(s) were retested
+        if r.get("Retest_SMA50") == "✅":
+            ax.axhspan(float(r["SMA50"])*0.97, float(r["SMA50"])*1.03,
+                       alpha=0.05, color="#3b82f6", zorder=1)
+        if r.get("Retest_SMA150") == "✅":
+            ax.axhspan(float(r["SMA150"])*0.97, float(r["SMA150"])*1.03,
+                       alpha=0.05, color="#f472b6", zorder=1)
+        if r.get("Retest_EMA20") == "✅":
+            ax.axhspan(float(r["EMA20"])*0.97, float(r["EMA20"])*1.03,
+                       alpha=0.08, color="#fbbf24", zorder=1)
+
+        tick_step = max(1, n_p//8)
+        ax.set_xticks(range(0, n_p, tick_step))
+        ax.set_xticklabels(
+            [df_p.index[i].strftime("%m/%d") for i in range(0,n_p,tick_step)],
+            color="#94a3b8", fontsize=7)
+        ax.set_xlim(-0.5, n_p-0.5)
+        ax.set_title(
+            f"{r['Ticker']}  ${r['Price']:.2f}  |  Score {r['Score']}/100  |  "
+            f"Retest: {r['Retest_Level']} (depth {r['Retest_Depth_%']:.1f}%)  |  "
+            f"→  EMA20 cross {r['EMA20_Cross_Date']} "
+            f"({r['Bars_Since_Cross']}d ago)  ({r['Bars_Retest_to_Cross']}bars later)  |  "
+            f"RSI {r['RSI']:.0f}",
+            color="#e2e8f0", fontsize=8, fontweight="bold", pad=6)
+        ax.tick_params(colors="#94a3b8", labelsize=7)
+        for sp_ in ax.spines.values(): sp_.set_edgecolor("#1e3a5f")
+        ax.legend(loc="upper left", facecolor="#1e293b",
+                  labelcolor="#e2e8f0", fontsize=7, framealpha=0.9)
+        ax.grid(color="#1e3a5f", ls="--", lw=0.4, alpha=0.4, axis="y")
+
+    plt.suptitle(
+        f"SMA50/SMA150 Retest → EMA20 Cross Entry  ·  "
+        f"{datetime.today().strftime('%Y-%m-%d')}\n"
+        f"🟢 EMA20  🔵 SMA50  🩷 SMA150  ▼ = Retest Low  ★ = EMA20 Cross",
+        color="#60a5fa", fontsize=10, fontweight="bold", y=1.001)
+    plt.tight_layout()
+    cp = os.path.join(os.environ.get("GITHUB_WORKSPACE", os.getcwd()),
+                      f"sma_retest_ema20_chart_{ts}.png")
+    plt.savefig(cp, dpi=150, bbox_inches="tight", facecolor="#0f172a")
+    if _IN_NOTEBOOK: plt.show()
+    else: plt.close()
+    print(f"  📊 Chart → {cp}")
+    if _IN_NOTEBOOK:
+        try:
+            from google.colab import files; files.download(cp)
+        except Exception: pass
+
+print("""
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 PATTERN EXPLAINED
+
+  P1  BULL STRUCTURE  (prerequisite)
+      SMA50 > SMA150  (uptrend confirmed)
+      Price > SMA150  (above long-term support)
+      = Stock was in a healthy uptrend before the pullback
+
+  P2  RETEST  (the pullback)
+      Price pulled back and candle LOW touched one or more of:
+        EMA20 (🟡 yellow)  — shortest-term, shallowest pullback
+        SMA50 (🔵 blue)    — medium-term support
+        SMA150 (🩷 pink)   — long-term support
+      Support held — no significant close below SMA150
+      = Buyers defended the key level
+
+  P3  EMA20 CROSS  (the entry signal)
+      Bar[-2] close < EMA20   ← was below EMA20 yesterday
+      Bar[-1] close >= EMA20  ← crossed above EMA20 today
+      Cross happened AFTER the retest low
+      = Momentum returning — earliest confirmation
+
+  PRIORITY (highest to lowest):
+    🏆  Triple confluence (SMA50+SMA150+EMA20) = maximum support strength
+    🥈  Double confluence (any 2 levels)        = very strong
+    🟡  EMA20 only    = shallow pullback, fastest continuation
+    🔵  SMA50 only    = tighter pullback, often higher quality
+    🩷  SMA150 only   = deeper dip, bigger potential recovery
+
+  💡 BEST SETUPS
+  Retest_Count = 3       all levels defended = strongest possible setup
+  Retest_Depth_% < 1%   almost exact touch = clean retest
+  Bars_Since_Cross = 0  cross happened today = fresh entry
+  Bars_Retest_to_Cross ≤ 5  quick recovery = strong momentum
+  RSI 45–65             healthy, not overbought
+
+  ⚙️  TUNE IF 0 RESULTS
+  retest_touch_pct           3 → 5
+  retest_lookback           30 → 40
+  cross_lookback             5 → 10
+  max_close_below_sma150_pct 1.5 → 3
+  rsi_min                   35 → 25
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+""")
