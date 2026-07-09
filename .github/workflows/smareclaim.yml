@@ -29,7 +29,7 @@ jobs:
 
       - name: Run scanner
         env:
-          GMAIL_USER: ${{ secrets.EMAIL_USER }}
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
           GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_TO:   ${{ secrets.EMAIL_TO }}
         run: python smareclaim.py
