@@ -142,7 +142,7 @@ CFG = {
 
     # ── C3: Volume confirmation ────────────────────────────────
     "vol_avg_bars"                : 20,
-    "vol_mult"                    : 1.3,   # reclaim bar >= 1.3x avg volume
+    "vol_mult"                    : 1.06,   # reclaim bar >= 1.3x avg volume
 
     # ── RSI ────────────────────────────────────────────────────
     "rsi_min"                     : 35,
