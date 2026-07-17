@@ -33,15 +33,15 @@ jobs:
           EMAIL_TO:   ${{ secrets.EMAIL_TO }}
         run: python veryfund.py
 
-      - name: Upload results
+      -name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: fund-tech-v2-results-${{ github.run_id }}
+          name: strong-fund-sma-support-${{ github.run_id }}
           path: |
-            fund_tech_support_*.csv 
-            fund_tech_chart_*.png
-            tv_fund_tech_support_*.txt
+            strong_fund_sma_support_*.csv
+            strong_fund_sma_chart_*.png
+            tv_strong_fund_support_*.txt
           retention-days: 30
 
          
