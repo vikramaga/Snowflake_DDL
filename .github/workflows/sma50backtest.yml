@@ -26,7 +26,7 @@ jobs:
       - name: Run SMA50 support history scanner
         env:
           GMAIL_USER: ${{ secrets.EMAIL_FROM }}
-          GMAIL_APP_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
           GMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: python Sma50bt.py
 
