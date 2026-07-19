@@ -27,7 +27,7 @@ jobs:
         env:
           GMAIL_USER: ${{ secrets.EMAIL_FROM }}
           GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
-          GMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: python Sma50bt.py
 
       - name: Upload CSV as workflow artifact
