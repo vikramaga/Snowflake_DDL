@@ -1,0 +1,47 @@
+name: Trendline Break + Camarilla H4 Reclaim Scanner
+
+on:
+  schedule:
+    - cron: "10 22 * * 1-5"   # Monâ€“Fri 5:10 PM EST (22:10 UTC)
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-trendline-h4
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install --upgrade yfinance pandas numpy requests tqdm matplotlib
+
+      - name: Run scanner
+        env:
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
+        run: python trendline_h4.py
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trendline-break-h4-${{ github.run_id }}
+          path: |
+            trendline_break_h4_*.csv
+            trendline_break_h4_chart_*.png
+            tv_trendline_break_h4_*.txt
+          retention-days: 30
