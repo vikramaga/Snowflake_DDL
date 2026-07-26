@@ -43,7 +43,7 @@ jobs:
       - name: Verify script exists
         run: |
           ls -la
-          test -f nasdaq_early_stage2_v1.py || { echo "::error::nasdaq_early_stage2_v1.py not found at repo root"; exit 1; }
+          test -f stagev2.py || { echo "::error::nasdaq_early_stage2_v1.py not found at repo root"; exit 1; }
 
       - name: Run scanner
         env:
