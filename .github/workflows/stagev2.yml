@@ -1,0 +1,69 @@
+name: Early Stage-2 Scan
+
+on:
+  
+  workflow_dispatch:
+    inputs:
+      min_hard_filters:
+        description: 'Hard filters required (4-6)'
+        required: false
+        default: '5'
+      min_total_score:
+        description: 'Minimum composite score (0-100)'
+        required: false
+        default: '55'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: early-stage2
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yfinance pandas numpy requests tqdm matplotlib
+
+      - name: Verify script exists
+        run: |
+          ls -la
+          test -f nasdaq_early_stage2_v1.py || { echo "::error::nasdaq_early_stage2_v1.py not found at repo root"; exit 1; }
+
+      - name: Run scanner
+        env:
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
+          MIN_HARD_FILTERS: ${{ github.event.inputs.min_hard_filters }}
+          MIN_TOTAL_SCORE:  ${{ github.event.inputs.min_total_score }}
+          PYTHONUNBUFFERED: '1'
+        run: python stagev2.py
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: early-stage2-${{ github.run_number }}
+          path: |
+            early_stage2_*.csv
+            early_stage2_*.png
+            early_stage2_oneline_*.txt
+            tv_early_stage2_*.txt
+          retention-days: 30
+          if-no-files-found: warn
