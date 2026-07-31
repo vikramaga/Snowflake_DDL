@@ -34,6 +34,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: sma50-support-history-csv
-          path: sma50_support_history_*.csv
+          name: jma-sma8-h4-macd-${{ github.run_id }}
+          path: |
+            jma_sma8_h4_macd_*.csv
+            jma_sma8_h4_macd_chart_*.png
+            tv_jma_sma8_h4_macd_*.txt
           retention-days: 30
