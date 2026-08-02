@@ -1036,6 +1036,22 @@ def _send_email(rl, csv_path):
                 f'</tr>'
             )
 
+        # ── Ticker CSV line (one line, copy-paste ready) ──────────
+        ticker_csv = ",".join(r.get("Ticker","") for r in rl) if rl else "—"
+        ticker_csv_html = f"""
+<div style="margin:12px 0;padding:14px 16px;background:#0f172a;
+            border-radius:8px;border-left:4px solid #22c55e;">
+  <p style="margin:0 0 6px;color:#94a3b8;font-size:11px;font-weight:600;
+             letter-spacing:0.05em;text-transform:uppercase">
+    📋 Stock List — Copy &amp; paste into TradingView or Excel
+  </p>
+  <p style="margin:0;color:#22c55e;font-size:13px;font-weight:700;
+             font-family:'Courier New',monospace;word-break:break-all;
+             letter-spacing:0.03em">
+    {ticker_csv}
+  </p>
+</div>"""
+
         no_results_msg = ""
         if cnt == 0:
             no_results_msg = (
@@ -1062,6 +1078,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </p>
   </td></tr>
   <tr><td style="padding:16px">
+{ticker_csv_html}
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
   <table style="border-collapse:collapse;width:100%;min-width:700px">
     <thead><tr>{th_e}</tr></thead>
@@ -1085,6 +1102,9 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         plain_lines = [
             f"Full Bull Stack + Red Shakeout + Green Recovery — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches  (🏆SMA50:{t1}  🥈SMA150:{t2})",
+            "",
+            f"STOCKS: {ticker_csv}",
+            "",
             "="*65,
         ]
         if rl:
@@ -1094,8 +1114,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                     f"Score:{r.get('Score',0):.0f}  "
                     f"{r.get('Violated_SMA','—')}  "
                     f"Depth:{r.get('Below_Depth_%',0):.1f}%  "
-                    f"VolRatio:{r.get('Vol_Ratio_G_vs_R',0):.1f}×  "
-                    f"LowHeld:{r.get('Low_Held','—')}  "
+                    f"VolRatio:{r.get('Vol_Ratio_G_vs_R',0):.1f}x  "
                     f"Recovery:{r.get('Bars_Since_Recovery',0)}d ago"
                 )
         else:
