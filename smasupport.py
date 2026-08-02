@@ -315,36 +315,47 @@ def detect_pattern(sym, df):
     if any(np.isnan([cur_jma, cur_ema8, cur_s20, cur_s50, cur_s150])): return None
 
     # ─────────────────────────────────────────────────────────
-    # C1: PRACTICAL BULL STRUCTURE
-    # Core requirement: price > SMA50 > SMA150 (trend intact)
-    # SMA20 must be above SMA50 (medium-term bullish)
-    # JMA AND EMA8 must both be above SMA20 (fast MAs bullish)
-    # — NOT requiring JMA > EMA8 since they swap frequently
+    # C1: BULL STRUCTURE — what "JMA>EMA8>SMA20>SMA50>SMA150"
+    # actually means on a chart:
+    #
+    # On a chart all MAs appear as lines ranked by PRICE LEVEL.
+    # In a bull trend the FASTEST MA is highest (closest to price)
+    # and the SLOWEST is lowest — this is what the stack means:
+    #
+    #   Price > JMA > EMA8 > SMA20 > SMA50 > SMA150
+    #   (each faster MA tracks price more closely = higher value)
+    #
+    # The key checkable conditions:
+    #   price  > SMA50   (above medium-term trend)
+    #   price  > SMA150  (above long-term trend)
+    #   SMA50  > SMA150  (medium above long = uptrend)
+    #   price  > SMA20   (above 20d = actively bullish)
+    #   JMA    < price   (JMA trails price = fast MA below price)
+    #   EMA8   < price   (same for EMA8)
     # ─────────────────────────────────────────────────────────
     stack_ok = (
-        price   > cur_s50   and   # price above 50d
-        price   > cur_s150  and   # price above 150d
-        cur_s50 > cur_s150  and   # 50d above 150d
-        cur_s20 > cur_s50   and   # 20d above 50d
-        cur_jma > cur_s20   and   # JMA above 20d
-        cur_ema8> cur_s20         # EMA8 above 20d
+        price    > cur_s50   and   # price above 50d MA
+        price    > cur_s150  and   # price above 150d MA
+        cur_s50  > cur_s150  and   # 50d above 150d (uptrend)
+        price    > cur_s20   and   # price above 20d
+        cur_s20  > cur_s150  and   # 20d above 150d
+        cur_jma  < price     and   # JMA below price (tracking)
+        cur_ema8 < price           # EMA8 below price (tracking)
     )
     if not stack_ok:
         _DBG["fail_stack"] += 1
         return None
 
     # ─────────────────────────────────────────────────────────
-    # C1b: KEY MAs RISING  (SMA20 + SMA50 must be positive;
-    #      SMA150 just must not be steeply falling)
+    # C1b: TREND DIRECTION — SMA50 must be rising
+    #      SMA150 must not be steeply declining
     # ─────────────────────────────────────────────────────────
     sl = CFG["slope_lookback"]
     sp = CFG["min_slope_pct"]
 
-    if not is_rising(sma20_s, sl, sp):
-        _DBG["fail_rising"] += 1; return None
     if not is_rising(sma50_s, sl, sp):
         _DBG["fail_rising"] += 1; return None
-    # SMA150: allow anything down to -0.3%/lookback
+    # SMA150: very permissive — just not steeply declining
     if not is_rising(sma150_s, sl, sp - 0.3):
         _DBG["fail_rising"] += 1; return None
 
