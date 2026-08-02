@@ -124,32 +124,30 @@ CFG = {
 
     # ── C1: Bull stack + all rising ───────────────────────────
     # How many bars to look back to measure "rising" slope
-    "slope_lookback"             : 5,
-    # Minimum slope (as % of price) to qualify as "rising"
-    "min_slope_pct"              : 0.0,   # > 0 = any positive slope
+    "slope_lookback"             : 3,    # was 5 — shorter window
+    # Allow slightly flat MAs (not just strictly positive)
+    "min_slope_pct"              : -0.05, # was 0.0 — allow near-flat
 
     # ── C2: Red shakeout candle ────────────────────────────────
-    # Look for the red shakeout within this many recent bars
-    "red_lookback"               : 10,
-    # Red candle close must be below SMA50 or SMA150
-    # How far below is allowed (% of SMA level)
-    "max_below_sma_pct"          : 5.0,
+    # Look further back for the red shakeout
+    "red_lookback"               : 20,   # was 10 — look further back
+    # Allow deeper dips below SMA
+    "max_below_sma_pct"          : 8.0,  # was 5.0 — allow deeper dip
 
     # ── C3: Green recovery candle ─────────────────────────────
-    # Green bar volume must be >= this mult × red bar volume
-    "vol_mult_vs_red"            : 1.0,   # green vol >= 1x red vol
-    # Green bar low must be >= red bar low (no lower low)
-    "require_no_break_of_red_low": True,
-    # Green bar must close above the violated SMA
+    # Lower volume requirement — any volume accepted
+    "vol_mult_vs_red"            : 0.5,  # was 1.0 — any decent volume
+    # Keep no-break-of-low but can disable if needed
+    "require_no_break_of_red_low": False, # was True — relaxed
+    # Must still close above violated SMA
     "require_close_above_sma"    : True,
 
-    # ── Pattern must be recent ────────────────────────────────
-    # The green recovery bar must be within this many bars of today
-    "max_bars_since_recovery"    : 3,
+    # ── Pattern recency — wider window ────────────────────────
+    "max_bars_since_recovery"    : 10,   # was 3 — look further back
 
     # ── Filters ───────────────────────────────────────────────
-    "min_avg_volume"             : 100_000,
-    "min_price"                  : 2.0,
+    "min_avg_volume"             : 50_000,  # was 100_000 — wider
+    "min_price"                  : 1.0,     # was 2.0 — wider
     "vol_avg_bars"               : 20,
 
     "batch_size"                 : 50,
@@ -284,22 +282,27 @@ def detect_pattern(sym, df):
     if any(np.isnan([cur_jma, cur_ema8, cur_s20, cur_s50, cur_s150])): return None
 
     # ─────────────────────────────────────────────────────────
-    # C1: FULL BULL STACK — JMA > EMA8 > SMA20 > SMA50 > SMA150
-    #     AND all are rising
+    # C1: BULL STACK — JMA > EMA8 > SMA20 > SMA50 > SMA150
+    #     Core 4-MA order required; SMA150 just below SMA50
+    #     Rising check: fast MAs must rise; SMA150 is exempt
+    #     (SMA150 is slow — often lags even in strong uptrends)
     # ─────────────────────────────────────────────────────────
     sl = CFG["slope_lookback"]
     sp = CFG["min_slope_pct"]
 
-    # Stack order check
+    # Full stack order — all 5 must be in order
     if not (cur_jma > cur_ema8 > cur_s20 > cur_s50 > cur_s150):
         return None
 
-    # All must be rising
+    # Fast MAs must be rising (JMA, EMA8, SMA20, SMA50)
+    # SMA150 exempt — it's too slow to show positive slope quickly
     if not is_rising(jma_s,   sl, sp): return None
     if not is_rising(ema8_s,  sl, sp): return None
     if not is_rising(sma20_s, sl, sp): return None
     if not is_rising(sma50_s, sl, sp): return None
-    if not is_rising(sma150_s,sl, sp): return None
+    # SMA150: only require it's not steeply declining
+    s150_slope_check = CFG["min_slope_pct"] - 0.2   # very permissive
+    if not is_rising(sma150_s, sl, s150_slope_check): return None
 
     # ─────────────────────────────────────────────────────────
     # C2 + C3: FIND THE SHAKEOUT + RECOVERY PATTERN
@@ -584,22 +587,23 @@ for sym in DIAG:
 
 print(f"""
   Pattern:
-    C1  Bull Stack  : JMA > EMA8 > SMA20 > SMA50 > SMA150 (all rising)
+    C1  Bull Stack  : JMA > EMA8 > SMA20 > SMA50 > SMA150
+                      Fast MAs (JMA/EMA8/SMA20/SMA50) rising,
+                      SMA150 just needs to be below SMA50
     C2  Red Shakeout: 1 red candle closed below SMA50 or SMA150
-                      within last {CFG['red_lookback']} bars
+                      within last {CFG['red_lookback']} bars (up to {CFG['max_below_sma_pct']}% below)
     C3  Green Recovery (next bar):
         • Green candle (close > open)
         • Closed above violated SMA
         • Volume >= {CFG['vol_mult_vs_red']}x red bar volume
-        • Low >= red bar low (no break of shakeout low)
         • Recovery within last {CFG['max_bars_since_recovery']} bars of today
 
-  Tune if mostly ❌:
-    max_bars_since_recovery   3 → 5
-    red_lookback             10 → 15
-    vol_mult_vs_red           1.0 → 0.8
-    require_no_break_of_red_low True → False
-    min_slope_pct              0 → -0.01  (allow slightly flat MAs)
+  Tune if still ❌:
+    max_bars_since_recovery  10 → 20
+    red_lookback             20 → 30
+    vol_mult_vs_red         0.5 → 0.3
+    min_slope_pct          -0.05 → -0.2  (flat MAs allowed)
+    require_close_above_sma True → False
 """)
 print("━"*65+"\n")
 
@@ -1219,9 +1223,10 @@ print("""
   All MAs rising steeply      strong underlying trend
 
   ⚙️  TUNE IF 0 RESULTS
-  max_bars_since_recovery    3 → 5
-  red_lookback              10 → 15
-  vol_mult_vs_red          1.0 → 0.8
-  require_no_break_of_red_low True → False
+  max_bars_since_recovery   10 → 20
+  red_lookback              20 → 30
+  vol_mult_vs_red          0.5 → 0.3
+  min_slope_pct           -0.05 → -0.2
+  require_close_above_sma  True → False
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
