@@ -251,8 +251,39 @@ def download(symbols, days):
         time.sleep(0.04)
     return out
 
+# ── Debug counters (global, printed after scan) ────────────────
+_DBG = {
+    "total"       : 0,
+    "pass_filter" : 0,
+    "fail_stack"  : 0,
+    "fail_rising" : 0,
+    "fail_shakeout": 0,
+    "pass_all"    : 0,
+}
+
 # ── Core detection ────────────────────────────────────────────
 def detect_pattern(sym, df):
+    """
+    C1: Price above SMA50 AND SMA150 (bull structure)
+        SMA50 > SMA150 (fast MA above slow MA)
+        SMA20 > SMA50 (medium above long)
+        JMA and EMA8 are both above SMA20
+        — relaxed from strict JMA>EMA8>SMA20>SMA50>SMA150 order
+        since JMA and EMA8 frequently swap in pullbacks
+
+    C1b: Key MAs are rising (SMA20, SMA50 must be rising;
+         SMA150 just needs to not be steeply declining)
+
+    C2: Within red_lookback bars, find a red candle that
+        closed below SMA50 or SMA150
+
+    C3: The VERY NEXT candle after C2 is green and closed
+        back above the violated SMA, with volume >= vol_mult_vs_red
+        × red candle volume, within max_bars_since_recovery of today
+    """
+    global _DBG
+    _DBG["total"] += 1
+
     df      = df.copy(); df.index = pd.to_datetime(df.index)
     n       = len(df)
     price   = float(df["Close"].iloc[-1])
@@ -261,6 +292,8 @@ def detect_pattern(sym, df):
     if price   < CFG["min_price"]:      return None
     if avg_vol < CFG["min_avg_volume"]: return None
     if n < CFG["sma150_period"] + 20:   return None
+
+    _DBG["pass_filter"] += 1
 
     # ── Compute all MAs ────────────────────────────────────────
     jma_s   = calc_jma(df["Close"], CFG["jma_period"], CFG["jma_phase"])
@@ -282,48 +315,54 @@ def detect_pattern(sym, df):
     if any(np.isnan([cur_jma, cur_ema8, cur_s20, cur_s50, cur_s150])): return None
 
     # ─────────────────────────────────────────────────────────
-    # C1: BULL STACK — JMA > EMA8 > SMA20 > SMA50 > SMA150
-    #     Core 4-MA order required; SMA150 just below SMA50
-    #     Rising check: fast MAs must rise; SMA150 is exempt
-    #     (SMA150 is slow — often lags even in strong uptrends)
+    # C1: PRACTICAL BULL STRUCTURE
+    # Core requirement: price > SMA50 > SMA150 (trend intact)
+    # SMA20 must be above SMA50 (medium-term bullish)
+    # JMA AND EMA8 must both be above SMA20 (fast MAs bullish)
+    # — NOT requiring JMA > EMA8 since they swap frequently
+    # ─────────────────────────────────────────────────────────
+    stack_ok = (
+        price   > cur_s50   and   # price above 50d
+        price   > cur_s150  and   # price above 150d
+        cur_s50 > cur_s150  and   # 50d above 150d
+        cur_s20 > cur_s50   and   # 20d above 50d
+        cur_jma > cur_s20   and   # JMA above 20d
+        cur_ema8> cur_s20         # EMA8 above 20d
+    )
+    if not stack_ok:
+        _DBG["fail_stack"] += 1
+        return None
+
+    # ─────────────────────────────────────────────────────────
+    # C1b: KEY MAs RISING  (SMA20 + SMA50 must be positive;
+    #      SMA150 just must not be steeply falling)
     # ─────────────────────────────────────────────────────────
     sl = CFG["slope_lookback"]
     sp = CFG["min_slope_pct"]
 
-    # Full stack order — all 5 must be in order
-    if not (cur_jma > cur_ema8 > cur_s20 > cur_s50 > cur_s150):
-        return None
-
-    # Fast MAs must be rising (JMA, EMA8, SMA20, SMA50)
-    # SMA150 exempt — it's too slow to show positive slope quickly
-    if not is_rising(jma_s,   sl, sp): return None
-    if not is_rising(ema8_s,  sl, sp): return None
-    if not is_rising(sma20_s, sl, sp): return None
-    if not is_rising(sma50_s, sl, sp): return None
-    # SMA150: only require it's not steeply declining
-    s150_slope_check = CFG["min_slope_pct"] - 0.2   # very permissive
-    if not is_rising(sma150_s, sl, s150_slope_check): return None
+    if not is_rising(sma20_s, sl, sp):
+        _DBG["fail_rising"] += 1; return None
+    if not is_rising(sma50_s, sl, sp):
+        _DBG["fail_rising"] += 1; return None
+    # SMA150: allow anything down to -0.3%/lookback
+    if not is_rising(sma150_s, sl, sp - 0.3):
+        _DBG["fail_rising"] += 1; return None
 
     # ─────────────────────────────────────────────────────────
-    # C2 + C3: FIND THE SHAKEOUT + RECOVERY PATTERN
-    # Search last red_lookback bars for exactly:
-    #   Bar[i]   = RED, closed below SMA50 or SMA150
-    #   Bar[i+1] = GREEN, closed above violated SMA,
-    #               vol >= vol_mult_vs_red × red bar vol,
-    #               low >= red bar low  (no lower low)
-    # The green recovery bar (i+1) must be within
-    # max_bars_since_recovery bars of today
+    # C2 + C3: SHAKEOUT + RECOVERY
+    # Search last red_lookback bars for a red candle below
+    # SMA50 or SMA150 followed IMMEDIATELY by a green recovery
     # ─────────────────────────────────────────────────────────
     rl = CFG["red_lookback"]
-    search_start = max(1, n - rl - 1)   # leave room for i+1
+    search_start = max(1, n - rl - 1)
 
     shakeout_found  = False
-    shakeout_bar    = None   # index of red bar
-    recovery_bar    = None   # index of green bar
-    violated_sma    = None   # "SMA50" or "SMA150"
-    violated_level  = None   # actual SMA price at that bar
+    shakeout_bar    = None
+    recovery_bar    = None
+    violated_sma    = None
+    violated_level  = None
 
-    for i in range(search_start, n - 1):   # n-1 so i+1 always exists
+    for i in range(search_start, n - 1):
         o_i   = float(df["Open"].iloc[i])
         c_i   = float(df["Close"].iloc[i])
         l_i   = float(df["Low"].iloc[i])
@@ -336,22 +375,15 @@ def detect_pattern(sym, df):
         s150_i = float(sma150_s.iloc[i]) if not np.isnan(sma150_s.iloc[i]) else np.nan
         if np.isnan(s50_i) or np.isnan(s150_i): continue
 
-        # Red candle close must be below SMA50 or SMA150
-        below_s50  = (c_i < s50_i)  and ((s50_i - c_i) / s50_i * 100 <= CFG["max_below_sma_pct"])
-        below_s150 = (c_i < s150_i) and ((s150_i - c_i) / s150_i * 100 <= CFG["max_below_sma_pct"])
+        below_s50  = c_i < s50_i  and (s50_i - c_i)  / s50_i  * 100 <= CFG["max_below_sma_pct"]
+        below_s150 = c_i < s150_i and (s150_i - c_i) / s150_i * 100 <= CFG["max_below_sma_pct"]
 
         if not below_s50 and not below_s150: continue
 
-        # Determine which SMA was violated
-        # Prefer SMA50 (shallower dip) unless only SMA150 was violated
-        if below_s50:
-            vsma  = "SMA50"
-            vlvl  = s50_i
-        else:
-            vsma  = "SMA150"
-            vlvl  = s150_i
+        vsma = "SMA50"  if below_s50  else "SMA150"
+        vlvl = s50_i    if below_s50  else s150_i
 
-        # Now check Bar[i+1] — the recovery candle
+        # ── Check next bar ────────────────────────────────────
         j      = i + 1
         o_j    = float(df["Open"].iloc[j])
         c_j    = float(df["Close"].iloc[j])
@@ -362,25 +394,23 @@ def detect_pattern(sym, df):
 
         if np.isnan(s50_j) or np.isnan(s150_j): continue
 
-        # a) Must be GREEN
+        # a) Green candle
         if c_j <= o_j: continue
 
-        # b) Must close ABOVE the violated SMA
+        # b) Closed above violated SMA
         vlvl_j = s50_j if vsma == "SMA50" else s150_j
         if CFG["require_close_above_sma"] and c_j < vlvl_j: continue
 
-        # c) Volume on green bar >= vol_mult × red bar volume
+        # c) Volume check
         if vol_j < CFG["vol_mult_vs_red"] * vol_i: continue
 
-        # d) Green bar low >= red bar low (no break of shakeout low)
+        # d) No break of red low (optional)
         if CFG["require_no_break_of_red_low"] and l_j < l_i: continue
 
-        # ✅ Valid shakeout + recovery found
-        # Check recency: recovery bar must be within max_bars_since_recovery
+        # e) Recency check
         bars_since = n - 1 - j
         if bars_since > CFG["max_bars_since_recovery"]: continue
 
-        # If multiple candidates, keep the most recent one
         if recovery_bar is None or j > recovery_bar:
             shakeout_found = True
             shakeout_bar   = i
@@ -388,7 +418,11 @@ def detect_pattern(sym, df):
             violated_sma   = vsma
             violated_level = vlvl
 
-    if not shakeout_found: return None
+    if not shakeout_found:
+        _DBG["fail_shakeout"] += 1
+        return None
+
+    _DBG["pass_all"] += 1
 
     # ── Metrics ───────────────────────────────────────────────
     bars_since_recovery = n - 1 - recovery_bar
@@ -696,6 +730,17 @@ got = len(TICKERS) - no_data; pct = got/max(len(TICKERS),1)*100
 print(f"\n{'━'*65}")
 print(f"  SCAN COMPLETE | {len(TICKERS)} tickers | {got} ({pct:.0f}%) | ✅ {len(results)} matches")
 print(f"{'━'*65}")
+
+# ── Debug breakdown — shows exactly where stocks fail ──────────
+print(f"""
+  📊 DEBUG BREAKDOWN:
+  Total processed     : {_DBG['total']}
+  Passed vol/price    : {_DBG['pass_filter']}
+  Failed stack (C1)   : {_DBG['fail_stack']}
+  Failed rising (C1b) : {_DBG['fail_rising']}
+  Failed shakeout (C2): {_DBG['fail_shakeout']}
+  ✅ Passed all        : {_DBG['pass_all']}
+""")
 
 if not results:
     print("\n  No matches. Try relaxing:")
