@@ -281,10 +281,16 @@ _DBG = {
 # ── Core detection ────────────────────────────────────────────
 def detect_pattern(sym, df):
     """
-    C1: JMA, EMA8, SMA21, SMA50 all within compression_pct% of each other
-    C2: MA cluster average within s3_zone_pct% of monthly Cam S3
-    C3: Price crossed above ALL 4 MAs AND Cam S3 in last cross_lookback bars
-    C4: Breakout bar volume > previous bar volume  AND >= min_break_vol_mult × avg
+    Unified approach:
+    Scan every bar in the last scan_window bars looking for:
+      1. At that bar: JMA/EMA8/SMA21 all within compression_pct% of SMA50
+      2. At that bar or nearby: SMA50 within s3_zone_pct% of monthly Cam S3
+      3. Price on THAT bar crossed above all MAs and S3
+         (was below on prior bar, above on this bar)
+      4. Volume on that bar > previous bar volume
+
+    This ties all 4 conditions to the SAME bar — the breakout bar
+    itself must show compression AND be near S3 AND be the cross.
     """
     global _DBG
     _DBG["total"] += 1
@@ -309,194 +315,170 @@ def detect_pattern(sym, df):
     rsi_s  = calc_rsi(df["Close"])
     macdh_s= calc_macd_hist(df["Close"])
 
-    cur_jma  = float(jma_s.iloc[-1])  if not np.isnan(jma_s.iloc[-1])  else np.nan
-    cur_ema8 = float(ema8_s.iloc[-1]) if not np.isnan(ema8_s.iloc[-1]) else np.nan
-    cur_s21  = float(s21_s.iloc[-1])  if not np.isnan(s21_s.iloc[-1])  else np.nan
-    cur_s50  = float(s50_s.iloc[-1])  if not np.isnan(s50_s.iloc[-1])  else np.nan
-    cur_s3   = float(s3_s.iloc[-1])   if not np.isnan(s3_s.iloc[-1])   else np.nan
-    cur_rsi  = float(rsi_s.iloc[-1])  if not np.isnan(rsi_s.iloc[-1])  else 50
-    cur_mh   = float(macdh_s.iloc[-1])if not np.isnan(macdh_s.iloc[-1])else 0
+    cur_jma  = float(jma_s.iloc[-1])   if not np.isnan(jma_s.iloc[-1])   else np.nan
+    cur_ema8 = float(ema8_s.iloc[-1])  if not np.isnan(ema8_s.iloc[-1])  else np.nan
+    cur_s21  = float(s21_s.iloc[-1])   if not np.isnan(s21_s.iloc[-1])   else np.nan
+    cur_s50  = float(s50_s.iloc[-1])   if not np.isnan(s50_s.iloc[-1])   else np.nan
+    cur_s3   = float(s3_s.iloc[-1])    if not np.isnan(s3_s.iloc[-1])    else np.nan
+    cur_rsi  = float(rsi_s.iloc[-1])   if not np.isnan(rsi_s.iloc[-1])   else 50
+    cur_mh   = float(macdh_s.iloc[-1]) if not np.isnan(macdh_s.iloc[-1]) else 0
 
     if any(np.isnan([cur_jma, cur_ema8, cur_s21, cur_s50])): return None
     if np.isnan(cur_s3): return None
 
+    comp_pct  = CFG["compression_pct"]  / 100
+    s3_pct    = CFG["s3_zone_pct"]      / 100
+    scan_bars = CFG["compression_lookback"] + CFG["cross_lookback"]
 
-    # ─────────────────────────────────────────────────────────
-    # C1: MA COMPRESSION (REALISTIC VERSION)
-    # Fast MAs (JMA, EMA8, SMA21) converge toward SMA50.
-    # We measure: for each fast MA, its distance from SMA50
-    # as % of SMA50. ALL 3 fast MAs must be within
-    # compression_pct% of SMA50 in the same bar.
-    # This naturally finds bars where the cluster is tight.
-    # ─────────────────────────────────────────────────────────
-    cl_back  = CFG["compression_lookback"]
-    comp_pct = CFG["compression_pct"] / 100
-    best_spread   = float("inf")
-    best_comp_bar = None
+    found_bar   = None
+    found_date  = None
+    found_spread= None
+    found_s3dist= None
 
-    search_start = max(0, n - cl_back - CFG["cross_lookback"])
-    for i in range(search_start, n):
+    for i in range(max(1, n - scan_bars), n):
         j_i   = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
         e8_i  = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
         s21_i = float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
         s50_i = float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
-        if any(np.isnan([j_i, e8_i, s21_i, s50_i])): continue
-        if s50_i <= 0: continue
+        s3_i  = float(s3_s.iloc[i])   if not np.isnan(s3_s.iloc[i])   else np.nan
+        p_i   = float(df["Close"].iloc[i])
+        vol_i = float(df["Volume"].iloc[i])
 
-        # Distance of each fast MA from SMA50 as % of SMA50
+        if any(np.isnan([j_i, e8_i, s21_i, s50_i, s3_i])): continue
+        if s50_i <= 0 or s3_i <= 0: continue
+
+        # ── C1: MA compression at this bar ──────────────────
+        # Fast MAs within compression_pct% of SMA50
         d_jma  = abs(j_i  - s50_i) / s50_i
         d_ema8 = abs(e8_i - s50_i) / s50_i
-        d_s21  = abs(s21_i- s50_i) / s50_i
+        d_s21  = abs(s21_i - s50_i) / s50_i
         max_dist = max(d_jma, d_ema8, d_s21)
+        if max_dist > comp_pct:
+            continue   # no compression here
 
-        if max_dist <= comp_pct and max_dist < best_spread:
-            best_spread   = max_dist
-            best_comp_bar = i
+        # ── C2: SMA50 near Cam S3 at this bar ───────────────
+        dist_s3 = abs(s50_i - s3_i) / s3_i
+        if dist_s3 > s3_pct:
+            continue   # SMA50 not near S3
 
-    if best_comp_bar is None:
-        _DBG["fail_c1_comp"] += 1; return None
+        # ── C3: Price crossed above ALL MAs and S3 ───────────
+        # Current bar must be above ALL levels
+        above_all = (p_i > j_i and p_i > e8_i and
+                     p_i > s21_i and p_i > s50_i and p_i > s3_i)
+        if not above_all:
+            continue
 
-    comp_spread_pct = round(best_spread * 100, 2)
+        # Previous bar must have been below at least one
+        j_p   = float(jma_s.iloc[i-1])  if not np.isnan(jma_s.iloc[i-1])  else np.nan
+        e8_p  = float(ema8_s.iloc[i-1]) if not np.isnan(ema8_s.iloc[i-1]) else np.nan
+        s21_p = float(s21_s.iloc[i-1])  if not np.isnan(s21_s.iloc[i-1])  else np.nan
+        s50_p = float(s50_s.iloc[i-1])  if not np.isnan(s50_s.iloc[i-1])  else np.nan
+        s3_p  = float(s3_s.iloc[i-1])   if not np.isnan(s3_s.iloc[i-1])   else np.nan
+        p_p   = float(df["Close"].iloc[i-1])
+        if any(np.isnan([j_p, e8_p, s21_p, s50_p, s3_p])): continue
 
-    # ─────────────────────────────────────────────────────────
-    # C2: SMA50 NEAR MONTHLY CAMARILLA S3 AT COMPRESSION BAR
-    # SMA50 (the anchor) must be within s3_zone_pct% of S3
-    # ─────────────────────────────────────────────────────────
-    j_c   = float(jma_s.iloc[best_comp_bar])  if not np.isnan(jma_s.iloc[best_comp_bar])  else np.nan
-    e8_c  = float(ema8_s.iloc[best_comp_bar]) if not np.isnan(ema8_s.iloc[best_comp_bar]) else np.nan
-    s21_c = float(s21_s.iloc[best_comp_bar])  if not np.isnan(s21_s.iloc[best_comp_bar])  else np.nan
-    s50_c = float(s50_s.iloc[best_comp_bar])  if not np.isnan(s50_s.iloc[best_comp_bar])  else np.nan
-    s3_c  = float(s3_s.iloc[best_comp_bar])   if not np.isnan(s3_s.iloc[best_comp_bar])   else np.nan
+        was_below = (p_p < j_p or p_p < e8_p or
+                     p_p < s21_p or p_p < s50_p or p_p < s3_p)
+        if not was_below:
+            continue   # wasn't actually a cross (was already above)
 
-    if any(np.isnan([j_c, e8_c, s21_c, s50_c, s3_c])):
-        _DBG["fail_c2_s3"] += 1; return None
+        # ── C4: Volume > previous bar ───────────────────────
+        vol_p = float(df["Volume"].iloc[i-1])
+        if CFG["require_vol_gt_prev"] and vol_i <= vol_p:
+            continue
+        vol_mult = vol_i / avg_vol if avg_vol > 0 else 0
+        if vol_mult < CFG["min_break_vol_mult"]:
+            continue
 
-    # Use SMA50 as the cluster reference (most stable)
-    dist_s3 = abs(s50_c - s3_c) / s3_c if s3_c > 0 else np.inf
-    if dist_s3 > CFG["s3_zone_pct"] / 100:
-        _DBG["fail_c2_s3"] += 1; return None
+        # Valid pattern found — keep most recent
+        if found_bar is None or i > found_bar:
+            found_bar   = i
+            found_date  = df.index[i]
+            found_spread= round(max_dist * 100, 2)
+            found_s3dist= round(dist_s3 * 100, 2)
 
-    ma_avg_c = (j_c + e8_c + s21_c + s50_c) / 4
-    cluster_vs_s3_pct = round((s50_c - s3_c) / s3_c * 100, 2)
-
-    # ─────────────────────────────────────────────────────────
-    # C3: PRICE CROSSED ABOVE ALL 4 MAs AND CAM S3
-    # Scan last cross_lookback bars for the moment price went
-    # from BELOW all of them to ABOVE all of them
-    # ─────────────────────────────────────────────────────────
-    cl = CFG["cross_lookback"]
-    cross_bar  = None
-    cross_date = None
-
-    for i in range(max(1, n - cl), n):
-        # Current bar: price above ALL 5 levels
-        p_cur  = float(df["Close"].iloc[i])
-        j_cur  = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
-        e8_cur = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
-        s21_cur= float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
-        s50_cur= float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
-        s3_cur = float(s3_s.iloc[i])   if not np.isnan(s3_s.iloc[i])   else np.nan
-        if any(np.isnan([j_cur,e8_cur,s21_cur,s50_cur,s3_cur])): continue
-        above_all_cur = (p_cur > j_cur and p_cur > e8_cur and
-                         p_cur > s21_cur and p_cur > s50_cur and
-                         p_cur > s3_cur)
-
-        # Previous bar: price was below at least one level
-        p_prev  = float(df["Close"].iloc[i-1])
-        j_prev  = float(jma_s.iloc[i-1])  if not np.isnan(jma_s.iloc[i-1])  else np.nan
-        e8_prev = float(ema8_s.iloc[i-1]) if not np.isnan(ema8_s.iloc[i-1]) else np.nan
-        s21_prev= float(s21_s.iloc[i-1])  if not np.isnan(s21_s.iloc[i-1])  else np.nan
-        s50_prev= float(s50_s.iloc[i-1])  if not np.isnan(s50_s.iloc[i-1]) else np.nan
-        s3_prev = float(s3_s.iloc[i-1])   if not np.isnan(s3_s.iloc[i-1])   else np.nan
-        if any(np.isnan([j_prev,e8_prev,s21_prev,s50_prev,s3_prev])): continue
-        below_any_prev = (p_prev < j_prev or p_prev < e8_prev or
-                          p_prev < s21_prev or p_prev < s50_prev or
-                          p_prev < s3_prev)
-
-        if above_all_cur and below_any_prev:
-            cross_bar  = i
-            cross_date = df.index[i]
-
-    if cross_bar is None:
-        _DBG["fail_c3_cross"] += 1; return None
-
-    # ─────────────────────────────────────────────────────────
-    # C4: VOLUME ON CROSS BAR > PREVIOUS BAR VOLUME
-    # ─────────────────────────────────────────────────────────
-    vol_cross = float(df["Volume"].iloc[cross_bar])
-    vol_prev  = float(df["Volume"].iloc[cross_bar - 1])
-
-    if CFG["require_vol_gt_prev"] and vol_cross <= vol_prev:
-        _DBG["fail_c4_vol"] += 1; return None
-
-    vol_mult = vol_cross / avg_vol if avg_vol > 0 else 0
-    if vol_mult < CFG["min_break_vol_mult"]:
-        _DBG["fail_c4_vol"] += 1; return None
+    if found_bar is None:
+        # Attribute the failure to the first condition that blocked most
+        # We can't know exactly without per-bar tracking, so check current bar
+        if any(np.isnan([cur_jma, cur_ema8, cur_s21, cur_s50, cur_s3])):
+            pass
+        elif cur_s50 > 0:
+            d = max(abs(cur_jma-cur_s50)/cur_s50,
+                    abs(cur_ema8-cur_s50)/cur_s50,
+                    abs(cur_s21-cur_s50)/cur_s50) * 100
+            if d > CFG["compression_pct"]:
+                _DBG["fail_c1_comp"] += 1
+            elif abs(cur_s50-cur_s3)/cur_s3*100 > CFG["s3_zone_pct"]:
+                _DBG["fail_c2_s3"] += 1
+            elif not (price > cur_jma and price > cur_ema8 and
+                      price > cur_s21 and price > cur_s50 and price > cur_s3):
+                _DBG["fail_c3_cross"] += 1
+            else:
+                _DBG["fail_c4_vol"] += 1
+        return None
 
     _DBG["pass_all"] += 1
 
     # ── Metrics ───────────────────────────────────────────────
-    bars_since_cross = n - 1 - cross_bar
-    vol_vs_prev      = vol_cross / vol_prev if vol_prev > 0 else 0
+    bars_since_cross = n - 1 - found_bar
 
-    # Current distances from price to each level
+    vol_cross = float(df["Volume"].iloc[found_bar])
+    vol_prev  = float(df["Volume"].iloc[found_bar - 1])
+    vol_vs_prev = vol_cross / vol_prev if vol_prev > 0 else 0
+    vol_mult    = vol_cross / avg_vol  if avg_vol  > 0 else 0
+
+    # S3 at breakout bar
+    s50_at_break = float(s50_s.iloc[found_bar]) if not np.isnan(s50_s.iloc[found_bar]) else cur_s50
+    s3_at_break  = float(s3_s.iloc[found_bar])  if not np.isnan(s3_s.iloc[found_bar])  else cur_s3
+    j_at_break   = float(jma_s.iloc[found_bar]) if not np.isnan(jma_s.iloc[found_bar]) else cur_jma
+    e8_at_break  = float(ema8_s.iloc[found_bar])if not np.isnan(ema8_s.iloc[found_bar])else cur_ema8
+    s21_at_break = float(s21_s.iloc[found_bar]) if not np.isnan(s21_s.iloc[found_bar]) else cur_s21
+
     dist_jma_pct  = (price - cur_jma)  / cur_jma  * 100 if cur_jma  > 0 else 0
     dist_ema8_pct = (price - cur_ema8) / cur_ema8 * 100 if cur_ema8 > 0 else 0
     dist_s21_pct  = (price - cur_s21)  / cur_s21  * 100 if cur_s21  > 0 else 0
     dist_s50_pct  = (price - cur_s50)  / cur_s50  * 100 if cur_s50  > 0 else 0
     dist_s3_pct   = (price - cur_s3)   / cur_s3   * 100 if cur_s3   > 0 else 0
-
-    # MA spread at compression bar
-    ma_hi_c = max(j_c, e8_c, s21_c, s50_c)
-    ma_lo_c = min(j_c, e8_c, s21_c, s50_c)
+    cluster_vs_s3_pct = round((s50_at_break - s3_at_break) / s3_at_break * 100, 2) if s3_at_break > 0 else 0
 
     # ── Score (0-100) ─────────────────────────────────────────
     score = 0
-    # Compression tightness (0-30): tighter = better
-    score += max(0, 30 - int(comp_spread_pct * 8))
-    # Cross freshness (0-25): today = 25
-    score += max(0, 25 - bars_since_cross * 5)
-    # Volume vs previous day (0-20)
-    score += min(20, int(vol_vs_prev * 7))
-    # S3 proximity at compression (0-15): tighter = stronger
-    score += max(0, 15 - int(abs(cluster_vs_s3_pct) * 3))
-    # Volume vs 20d avg (0-10)
-    score += min(10, int(vol_mult * 4))
+    score += max(0, 30 - int(found_spread * 3))   # tighter compression
+    score += max(0, 25 - bars_since_cross * 5)     # freshness
+    score += min(20, int(vol_vs_prev * 7))         # volume vs prev day
+    score += max(0, 15 - int(found_s3dist * 2))    # proximity to S3
+    score += min(10, int(vol_mult * 4))            # volume vs avg
     score = min(100, max(0, score))
 
     return {
         "Ticker"              : sym,
         "Price"               : round(price, 2),
         "Score"               : score,
-        # C1: compression
-        "Comp_Spread_%"       : comp_spread_pct,
-        "MA_Hi_at_Comp"       : round(ma_hi_c, 2),
-        "MA_Lo_at_Comp"       : round(ma_lo_c, 2),
-        "MA_Avg_at_Comp"      : round(ma_avg_c, 2),
-        # C2: S3 proximity
-        "Cam_S3"              : round(cur_s3, 2),
-        "S3_at_Comp"          : round(s3_c, 2),
+        # Compression metrics
+        "Comp_Spread_%"       : found_spread,
+        "S3_at_Break"         : round(s3_at_break, 2),
+        "S50_at_Break"        : round(s50_at_break, 2),
         "Cluster_vs_S3_%"     : cluster_vs_s3_pct,
-        # C3: cross
-        "Cross_Date"          : cross_date.strftime("%Y-%m-%d"),
+        # Cross info
+        "Cross_Date"          : found_date.strftime("%Y-%m-%d"),
         "Bars_Since_Cross"    : bars_since_cross,
-        # C4: volume
+        # Volume
         "Cross_Vol"           : int(vol_cross),
         "Prev_Vol"            : int(vol_prev),
         "Vol_vs_Prev_x"       : round(vol_vs_prev, 2),
         "Vol_vs_Avg_x"        : round(vol_mult, 2),
-        # Current MA levels
+        # MA levels now
         "JMA"                 : round(cur_jma, 2),
         "EMA8"                : round(cur_ema8, 2),
         "SMA21"               : round(cur_s21, 2),
         "SMA50"               : round(cur_s50, 2),
-        # Current distances
+        "Cam_S3"              : round(cur_s3, 2),
+        # Distances now
         "Dist_JMA_%"          : round(dist_jma_pct, 2),
         "Dist_EMA8_%"         : round(dist_ema8_pct, 2),
         "Dist_SMA21_%"        : round(dist_s21_pct, 2),
         "Dist_SMA50_%"        : round(dist_s50_pct, 2),
         "Dist_S3_%"           : round(dist_s3_pct, 2),
-        # Other indicators
         "RSI"                 : round(cur_rsi, 1),
         "MACD_Hist"           : round(cur_mh, 4),
         "Avg_Vol_20d"         : int(avg_vol),
@@ -507,8 +489,8 @@ def detect_pattern(sym, df):
         "_sma21"     : s21_s,
         "_sma50"     : s50_s,
         "_s3"        : s3_s,
-        "_cross_bar" : cross_bar,
-        "_comp_bar"  : best_comp_bar,
+        "_cross_bar" : found_bar,
+        "_comp_bar"  : found_bar,
     }
 
 # ── Live print ────────────────────────────────────────────────
