@@ -123,35 +123,33 @@ CFG = {
     "sma50_period"             : 50,
 
     # ── C1: MA compression ────────────────────────────────────
-    # Max spread between highest and lowest of 4 MAs
-    # as % of current price
-    "compression_pct"          : 3.0,
-    # Look back this many bars for the compression to exist
-    "compression_lookback"     : 5,
+    # JMA/EMA8/SMA21 are fast MAs. In a real compression they
+    # converge TOWARD SMA50 (not past it). We measure:
+    #   max distance of any fast MA from SMA50 / SMA50
+    # Must be <= compression_pct% (all fast MAs near SMA50)
+    "compression_pct"          : 8.0,   # fast MAs within 8% of SMA50
+    "compression_lookback"     : 15,    # scan last 15 bars for compression
 
-    # ── C2: Cluster near Cam S3 ───────────────────────────────
-    # Max distance between the MA cluster average and Cam S3
-    # as % of price
-    "s3_zone_pct"              : 3.0,
+    # ── C2: SMA50 near Cam S3 ─────────────────────────────────
+    # SMA50 must be within s3_zone_pct% of monthly Cam S3
+    "s3_zone_pct"              : 8.0,   # SMA50 within 8% of S3
 
     # ── C3: Price crossed above ALL MAs and S3 ────────────────
-    # Scan this many recent bars for the cross
-    "cross_lookback"           : 8,
+    "cross_lookback"           : 10,
 
     # ── C4: Volume > previous day ────────────────────────────
-    # Break bar volume must be > prior bar volume
     "require_vol_gt_prev"      : True,
-    # Also require break vol >= N × 20d avg (quality gate)
-    "min_break_vol_mult"       : 0.8,
+    "min_break_vol_mult"       : 0.5,
     "vol_avg_bars"             : 20,
 
     # ── Filters ───────────────────────────────────────────────
-    "min_avg_volume"           : 80_000,
+    "min_avg_volume"           : 50_000,
     "min_price"                : 1.0,
 
     "batch_size"               : 50,
     "batch_sleep"              : 1.5,
 }
+
 
 # ── Indicators ───────────────────────────────────────────────
 def calc_jma(series, period=13, phase=40):
@@ -322,42 +320,47 @@ def detect_pattern(sym, df):
     if any(np.isnan([cur_jma, cur_ema8, cur_s21, cur_s50])): return None
     if np.isnan(cur_s3): return None
 
+
     # ─────────────────────────────────────────────────────────
-    # C1: MA COMPRESSION
-    # All 4 MAs must be within compression_pct% of each other
-    # Search compression_lookback bars back for the tightest
-    # compression window (the coil)
+    # C1: MA COMPRESSION (REALISTIC VERSION)
+    # Fast MAs (JMA, EMA8, SMA21) converge toward SMA50.
+    # We measure: for each fast MA, its distance from SMA50
+    # as % of SMA50. ALL 3 fast MAs must be within
+    # compression_pct% of SMA50 in the same bar.
+    # This naturally finds bars where the cluster is tight.
     # ─────────────────────────────────────────────────────────
-    cl_back    = CFG["compression_lookback"]
-    comp_pct   = CFG["compression_pct"] / 100
-    best_spread= float("inf")
+    cl_back  = CFG["compression_lookback"]
+    comp_pct = CFG["compression_pct"] / 100
+    best_spread   = float("inf")
     best_comp_bar = None
 
-    for i in range(max(0, n - cl_back - CFG["cross_lookback"]),
-                   max(1, n - 1)):
+    search_start = max(0, n - cl_back - CFG["cross_lookback"])
+    for i in range(search_start, n):
         j_i   = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
         e8_i  = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
         s21_i = float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
         s50_i = float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
-        p_i   = float(df["Close"].iloc[i])
         if any(np.isnan([j_i, e8_i, s21_i, s50_i])): continue
+        if s50_i <= 0: continue
 
-        ma_vals = [j_i, e8_i, s21_i, s50_i]
-        spread  = (max(ma_vals) - min(ma_vals)) / p_i if p_i > 0 else np.inf
+        # Distance of each fast MA from SMA50 as % of SMA50
+        d_jma  = abs(j_i  - s50_i) / s50_i
+        d_ema8 = abs(e8_i - s50_i) / s50_i
+        d_s21  = abs(s21_i- s50_i) / s50_i
+        max_dist = max(d_jma, d_ema8, d_s21)
 
-        if spread <= comp_pct and spread < best_spread:
-            best_spread   = spread
+        if max_dist <= comp_pct and max_dist < best_spread:
+            best_spread   = max_dist
             best_comp_bar = i
 
     if best_comp_bar is None:
         _DBG["fail_c1_comp"] += 1; return None
 
-    comp_spread_pct = round(best_spread * 100, 3)
+    comp_spread_pct = round(best_spread * 100, 2)
 
     # ─────────────────────────────────────────────────────────
-    # C2: MA CLUSTER NEAR MONTHLY CAMARILLA S3
-    # The average of the 4 MAs at the compression bar must
-    # be within s3_zone_pct% of the Cam S3 level
+    # C2: SMA50 NEAR MONTHLY CAMARILLA S3 AT COMPRESSION BAR
+    # SMA50 (the anchor) must be within s3_zone_pct% of S3
     # ─────────────────────────────────────────────────────────
     j_c   = float(jma_s.iloc[best_comp_bar])  if not np.isnan(jma_s.iloc[best_comp_bar])  else np.nan
     e8_c  = float(ema8_s.iloc[best_comp_bar]) if not np.isnan(ema8_s.iloc[best_comp_bar]) else np.nan
@@ -368,13 +371,13 @@ def detect_pattern(sym, df):
     if any(np.isnan([j_c, e8_c, s21_c, s50_c, s3_c])):
         _DBG["fail_c2_s3"] += 1; return None
 
-    ma_avg_c = (j_c + e8_c + s21_c + s50_c) / 4
-    dist_s3  = abs(ma_avg_c - s3_c) / s3_c if s3_c > 0 else np.inf
-
+    # Use SMA50 as the cluster reference (most stable)
+    dist_s3 = abs(s50_c - s3_c) / s3_c if s3_c > 0 else np.inf
     if dist_s3 > CFG["s3_zone_pct"] / 100:
         _DBG["fail_c2_s3"] += 1; return None
 
-    cluster_vs_s3_pct = round((ma_avg_c - s3_c) / s3_c * 100, 2)
+    ma_avg_c = (j_c + e8_c + s21_c + s50_c) / 4
+    cluster_vs_s3_pct = round((s50_c - s3_c) / s3_c * 100, 2)
 
     # ─────────────────────────────────────────────────────────
     # C3: PRICE CROSSED ABOVE ALL 4 MAs AND CAM S3
