@@ -271,37 +271,29 @@ def download(symbols, days):
 _DBG = {
     "total"        : 0,
     "pass_filter"  : 0,
-    "fail_no_s3"   : 0,
-    "fail_c1_comp" : 0,
-    "fail_c2_cross": 0,
-    "fail_c3_vol"  : 0,
+    "fail_c1_comp" : 0,   # tightest spread in window > compression_pct
+    "fail_c2_cross": 0,   # no bar where price crossed above all 4 MAs
+    "fail_c3_vol"  : 0,   # volume not > previous day
     "pass_all"     : 0,
+    # Per-stock detail for the last DIAG run (populated in diag mode)
+    "_last_spread" : 0.0,
+    "_last_cross"  : False,
+    "_last_vol"    : False,
 }
 
-# ── Core detection ────────────────────────────────────────────
 def detect_pattern(sym, df):
     """
-    PRACTICAL 3-CONDITION APPROACH:
+    3 conditions — no S3 gate (S3 shown as info only):
 
-    C1  MA COMPRESSION — in the last compression_lookback bars,
-        find the bar where JMA/EMA8/SMA21 were ALL closest
-        to SMA50 (tightest cluster). Record that compression
-        spread and the SMA50 / S3 levels at that bar.
-        C1 PASSES if best compression spread <= compression_pct%
-        NOTE: S3 proximity is REPORTED but NOT used as a gate
-        (it would eliminate too many valid setups). Instead we
-        show Cluster_vs_S3_% in output for the trader to judge.
+    C1  COMPRESSION: in last compression_lookback bars, the
+        tightest bar where JMA/EMA8/SMA21 are all within
+        compression_pct% of SMA50. This is the COIL.
 
-    C2  PRICE CROSSED ABOVE ALL 4 MAs in last cross_lookback bars:
-        JMA, EMA8, SMA21, SMA50 — price went from below at
-        least one to above ALL in one bar (exact 1-bar cross).
-        S3 is also checked as a BONUS but not required.
+    C2  CROSS: in last cross_lookback bars, price went from
+        below at least one MA to above ALL 4 MAs in one bar.
+        (JMA, EMA8, SMA21, SMA50 — no S3 required)
 
-    C3  VOLUME > PREVIOUS DAY on the cross bar.
-
-    This is what the pattern actually looks like: the MAs
-    compressed at SOME point (could be 5-15 bars ago), and
-    NOW price has broken above all of them.
+    C3  VOLUME: cross bar volume > previous bar volume.
     """
     global _DBG
     _DBG["total"] += 1
@@ -314,15 +306,14 @@ def detect_pattern(sym, df):
     if price   < CFG["min_price"]:      return None
     if avg_vol < CFG["min_avg_volume"]: return None
     if n < CFG["sma50_period"] + 20:    return None
-
     _DBG["pass_filter"] += 1
 
-    # ── Compute MAs and S3 ────────────────────────────────────
+    # ── Indicators ────────────────────────────────────────────
     jma_s  = calc_jma(df["Close"], CFG["jma_period"], CFG["jma_phase"])
     ema8_s = calc_ema(df["Close"], CFG["ema8_period"])
     s21_s  = df["Close"].rolling(CFG["sma21_period"]).mean()
     s50_s  = df["Close"].rolling(CFG["sma50_period"]).mean()
-    s3_s   = build_monthly_s3_series(df)
+    s3_s   = build_monthly_s3_series(df)   # info only
     rsi_s  = calc_rsi(df["Close"])
     macdh_s= calc_macd_hist(df["Close"])
 
@@ -335,155 +326,122 @@ def detect_pattern(sym, df):
     cur_mh   = float(macdh_s.iloc[-1]) if not np.isnan(macdh_s.iloc[-1]) else 0
 
     if any(np.isnan([cur_jma, cur_ema8, cur_s21, cur_s50])): return None
-    if np.isnan(cur_s3):
-        _DBG["fail_no_s3"] += 1; return None
 
     # ─────────────────────────────────────────────────────────
-    # C1: FIND TIGHTEST MA COMPRESSION IN LOOKBACK WINDOW
-    # Measure: max distance of JMA/EMA8/SMA21 from SMA50
-    # as % of SMA50. Find bar with smallest such distance.
+    # C1: TIGHTEST MA COMPRESSION IN LAST compression_lookback BARS
     # ─────────────────────────────────────────────────────────
-    cl  = CFG["compression_lookback"]
-    cpc = CFG["compression_pct"] / 100
-    best_spread   = float("inf")
-    best_comp_bar = None
-    best_s50_at   = None
-    best_s3_at    = None
+    cl_back   = CFG["compression_lookback"]
+    cpc       = CFG["compression_pct"] / 100
+    best      = float("inf")
+    comp_bar  = None
+    comp_s50  = None
 
-    for i in range(max(0, n - cl), n):
-        j_i  = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
-        e8_i = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
-        s21_i= float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
-        s50_i= float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
-        s3_i = float(s3_s.iloc[i])   if not np.isnan(s3_s.iloc[i])   else np.nan
-        if any(np.isnan([j_i, e8_i, s21_i, s50_i])): continue
-        if s50_i <= 0: continue
+    for i in range(max(0, n - cl_back), n):
+        j  = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
+        e  = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
+        s2 = float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
+        s5 = float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
+        if any(np.isnan([j, e, s2, s5])) or s5 <= 0: continue
+        spread = max(abs(j-s5)/s5, abs(e-s5)/s5, abs(s2-s5)/s5)
+        if spread < best:
+            best = spread; comp_bar = i; comp_s50 = s5
 
-        d_jma  = abs(j_i  - s50_i) / s50_i
-        d_ema8 = abs(e8_i - s50_i) / s50_i
-        d_s21  = abs(s21_i- s50_i) / s50_i
-        spread = max(d_jma, d_ema8, d_s21)
+    _DBG["_last_spread"] = round(best * 100, 2)
 
-        if spread < best_spread:
-            best_spread   = spread
-            best_comp_bar = i
-            best_s50_at   = s50_i
-            best_s3_at    = s3_i if not np.isnan(s3_i) else cur_s3
-
-    # C1 gate: compression must be tight enough
-    if best_comp_bar is None or best_spread > cpc:
+    if comp_bar is None or best > cpc:
         _DBG["fail_c1_comp"] += 1
         return None
 
-    comp_spread_pct   = round(best_spread * 100, 2)
-    cluster_vs_s3_pct = round((best_s50_at - best_s3_at) / best_s3_at * 100, 2) if best_s3_at and best_s3_at > 0 else 0
-
     # ─────────────────────────────────────────────────────────
-    # C2: PRICE CROSSED ABOVE ALL 4 MAs in cross_lookback bars
-    # Exact 1-bar cross: prev bar below at least one MA,
-    # current bar above ALL (JMA, EMA8, SMA21, SMA50).
-    # S3 above check is a bonus (stored, not gated).
+    # C2: PRICE CROSSED ABOVE ALL 4 MAs IN LAST cross_lookback BARS
     # ─────────────────────────────────────────────────────────
-    xc   = CFG["cross_lookback"]
-    cross_bar  = None
-    cross_date = None
-    also_above_s3 = False
+    xc        = CFG["cross_lookback"]
+    cross_bar = None
+    cross_date= None
 
     for i in range(max(1, n - xc), n):
-        p_c  = float(df["Close"].iloc[i])
-        j_c  = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
-        e8_c = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
-        s21_c= float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
-        s50_c= float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
-        s3_c = float(s3_s.iloc[i])   if not np.isnan(s3_s.iloc[i])   else cur_s3
-        if any(np.isnan([j_c, e8_c, s21_c, s50_c])): continue
+        # current bar: above all 4
+        j  = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
+        e  = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
+        s2 = float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
+        s5 = float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
+        pc = float(df["Close"].iloc[i])
+        if any(np.isnan([j, e, s2, s5])): continue
+        if not (pc > j and pc > e and pc > s2 and pc > s5): continue
 
-        # Must be above all 4 MAs now
-        if not (p_c > j_c and p_c > e8_c and p_c > s21_c and p_c > s50_c):
-            continue
+        # prev bar: below at least one
+        jp = float(jma_s.iloc[i-1])  if not np.isnan(jma_s.iloc[i-1])  else np.nan
+        ep = float(ema8_s.iloc[i-1]) if not np.isnan(ema8_s.iloc[i-1]) else np.nan
+        s2p= float(s21_s.iloc[i-1])  if not np.isnan(s21_s.iloc[i-1])  else np.nan
+        s5p= float(s50_s.iloc[i-1])  if not np.isnan(s50_s.iloc[i-1])  else np.nan
+        pp = float(df["Close"].iloc[i-1])
+        if any(np.isnan([jp, ep, s2p, s5p])): continue
+        if not (pp < jp or pp < ep or pp < s2p or pp < s5p): continue
 
-        # Previous bar must have been below at least one MA
-        p_p  = float(df["Close"].iloc[i-1])
-        j_p  = float(jma_s.iloc[i-1])  if not np.isnan(jma_s.iloc[i-1])  else np.nan
-        e8_p = float(ema8_s.iloc[i-1]) if not np.isnan(ema8_s.iloc[i-1]) else np.nan
-        s21_p= float(s21_s.iloc[i-1])  if not np.isnan(s21_s.iloc[i-1])  else np.nan
-        s50_p= float(s50_s.iloc[i-1])  if not np.isnan(s50_s.iloc[i-1])  else np.nan
-        if any(np.isnan([j_p, e8_p, s21_p, s50_p])): continue
-
-        was_below = (p_p < j_p or p_p < e8_p or p_p < s21_p or p_p < s50_p)
-        if not was_below: continue
-
-        # Valid cross — keep most recent
+        # valid cross — keep most recent
         if cross_bar is None or i > cross_bar:
-            cross_bar     = i
-            cross_date    = df.index[i]
-            also_above_s3 = (p_c > s3_c)
+            cross_bar = i; cross_date = df.index[i]
+
+    _DBG["_last_cross"] = cross_bar is not None
 
     if cross_bar is None:
         _DBG["fail_c2_cross"] += 1
         return None
 
     # ─────────────────────────────────────────────────────────
-    # C3: VOLUME > PREVIOUS DAY on the cross bar
+    # C3: VOLUME ON CROSS BAR > PREVIOUS BAR
     # ─────────────────────────────────────────────────────────
-    vol_cross = float(df["Volume"].iloc[cross_bar])
-    vol_prev  = float(df["Volume"].iloc[cross_bar - 1])
+    vc = float(df["Volume"].iloc[cross_bar])
+    vp = float(df["Volume"].iloc[cross_bar - 1])
+    _DBG["_last_vol"] = vc > vp
 
-    if CFG["require_vol_gt_prev"] and vol_cross <= vol_prev:
+    if CFG["require_vol_gt_prev"] and vc <= vp:
         _DBG["fail_c3_vol"] += 1; return None
-
-    vol_vs_avg = vol_cross / avg_vol if avg_vol > 0 else 0
-    if vol_vs_avg < CFG["min_break_vol_mult"]:
+    if (vc / avg_vol if avg_vol > 0 else 0) < CFG["min_break_vol_mult"]:
         _DBG["fail_c3_vol"] += 1; return None
 
     _DBG["pass_all"] += 1
 
-    # ── Metrics ───────────────────────────────────────────────
-    bars_since_cross = n - 1 - cross_bar
-    vol_vs_prev      = vol_cross / vol_prev if vol_prev > 0 else 0
+    # ── Build output ──────────────────────────────────────────
+    bars_since = n - 1 - cross_bar
+    vvp = vc / vp   if vp > 0   else 0
+    vva = vc / avg_vol if avg_vol > 0 else 0
 
-    dist_jma_pct  = (price - cur_jma)  / cur_jma  * 100 if cur_jma  > 0 else 0
-    dist_ema8_pct = (price - cur_ema8) / cur_ema8 * 100 if cur_ema8 > 0 else 0
-    dist_s21_pct  = (price - cur_s21)  / cur_s21  * 100 if cur_s21  > 0 else 0
-    dist_s50_pct  = (price - cur_s50)  / cur_s50  * 100 if cur_s50  > 0 else 0
-    dist_s3_pct   = (price - cur_s3)   / cur_s3   * 100 if cur_s3   > 0 else 0
+    # S3 info (not gated)
+    s3_at_comp = float(s3_s.iloc[comp_bar]) if not np.isnan(s3_s.iloc[comp_bar]) else cur_s3
+    above_s3   = price > cur_s3 if not np.isnan(cur_s3) else False
+    s50_vs_s3  = round((comp_s50 - s3_at_comp)/s3_at_comp*100, 2) if (s3_at_comp and s3_at_comp>0) else 0
 
-    # ── Score (0-100) ─────────────────────────────────────────
     score = 0
-    score += max(0, 30 - int(comp_spread_pct * 3))   # tighter = better
-    score += max(0, 25 - bars_since_cross * 5)        # freshness
-    score += min(20, int(vol_vs_prev * 7))            # vol vs prev day
-    score += min(10, int(vol_vs_avg * 4))             # vol vs avg
-    score += 10 if also_above_s3 else 0               # bonus: above S3 too
-    score += 5  if cur_rsi > 50 else 0
+    score += max(0, 35 - int(best*100 * 3))    # tighter compression
+    score += max(0, 25 - bars_since * 5)        # freshness
+    score += min(20, int(vvp * 7))              # vol vs prev
+    score += min(10, int(vva * 4))              # vol vs avg
+    score += 10 if above_s3 else 0              # bonus S3
     score = min(100, max(0, score))
 
     return {
-        "Ticker"            : sym,
-        "Price"             : round(price, 2),
-        "Score"             : score,
-        "Comp_Spread_%"     : comp_spread_pct,
-        "S3_Level"          : round(cur_s3, 2),
-        "S50_at_Comp"       : round(best_s50_at, 2),
-        "Cluster_vs_S3_%"   : cluster_vs_s3_pct,
-        "Also_Above_S3"     : "✅" if also_above_s3 else "—",
-        "Cross_Date"        : cross_date.strftime("%Y-%m-%d"),
-        "Bars_Since_Cross"  : bars_since_cross,
-        "Cross_Vol"         : int(vol_cross),
-        "Prev_Vol"          : int(vol_prev),
-        "Vol_vs_Prev_x"     : round(vol_vs_prev, 2),
-        "Vol_vs_Avg_x"      : round(vol_vs_avg, 2),
-        "JMA"               : round(cur_jma, 2),
-        "EMA8"              : round(cur_ema8, 2),
-        "SMA21"             : round(cur_s21, 2),
-        "SMA50"             : round(cur_s50, 2),
-        "Cam_S3"            : round(cur_s3, 2),
-        "Dist_JMA_%"        : round(dist_jma_pct, 2),
-        "Dist_S50_%"        : round(dist_s50_pct, 2),
-        "Dist_S3_%"         : round(dist_s3_pct, 2),
-        "RSI"               : round(cur_rsi, 1),
-        "MACD_Hist"         : round(cur_mh, 4),
-        "Avg_Vol_20d"       : int(avg_vol),
+        "Ticker"          : sym,
+        "Price"           : round(price, 2),
+        "Score"           : score,
+        "Comp_Spread_%"   : round(best * 100, 2),
+        "Comp_Bar_Ago"    : n - 1 - comp_bar,
+        "SMA50_at_Comp"   : round(comp_s50, 2),
+        "S3_Info"         : round(s3_at_comp, 2),
+        "SMA50_vs_S3_%"   : s50_vs_s3,
+        "Above_S3"        : "✅" if above_s3 else "—",
+        "Cross_Date"      : cross_date.strftime("%Y-%m-%d"),
+        "Bars_Since_Cross": bars_since,
+        "Vol_vs_Prev_x"   : round(vvp, 2),
+        "Vol_vs_Avg_x"    : round(vva, 2),
+        "JMA"             : round(cur_jma, 2),
+        "EMA8"            : round(cur_ema8, 2),
+        "SMA21"           : round(cur_s21, 2),
+        "SMA50"           : round(cur_s50, 2),
+        "Cam_S3"          : round(cur_s3, 2) if not np.isnan(cur_s3) else 0,
+        "RSI"             : round(cur_rsi, 1),
+        "MACD_Hist"       : round(cur_mh, 4),
+        "Avg_Vol_20d"     : int(avg_vol),
         "_df"       : df,
         "_jma"      : jma_s,
         "_ema8"     : ema8_s,
@@ -491,21 +449,24 @@ def detect_pattern(sym, df):
         "_sma50"    : s50_s,
         "_s3"       : s3_s,
         "_cross_bar": cross_bar,
-        "_comp_bar" : best_comp_bar,
+        "_comp_bar" : comp_bar,
     }
 
 
 # ── Live print ────────────────────────────────────────────────
 LIVE_COLS = ["Ticker","Price","Score",
-             "Comp_Spread_%","S3_at_Comp","Cluster_vs_S3_%",
+             "Comp_Spread_%","Comp_Bar_Ago",
+             "S3_Info","SMA50_vs_S3_%","Above_S3",
              "Cross_Date","Bars_Since_Cross",
              "Vol_vs_Prev_x","Vol_vs_Avg_x","RSI"]
 _CW = {"Ticker":8,"Price":10,"Score":7,
-       "Comp_Spread_%":14,"S3_at_Comp":12,"Cluster_vs_S3_%":17,
+       "Comp_Spread_%":14,"Comp_Bar_Ago":13,
+       "S3_Info":10,"SMA50_vs_S3_%":14,"Above_S3":9,
        "Cross_Date":13,"Bars_Since_Cross":17,
        "Vol_vs_Prev_x":14,"Vol_vs_Avg_x":13,"RSI":6}
 _CF = {"Price":"${:.2f}","Score":"{:.0f}",
-       "Comp_Spread_%":"{:.3f}%","S3_at_Comp":"${:.2f}","Cluster_vs_S3_%":"{:+.2f}%",
+       "Comp_Spread_%":"{:.2f}%","Comp_Bar_Ago":"{:.0f}d",
+       "S3_Info":"${:.2f}","SMA50_vs_S3_%":"{:+.2f}%",
        "Bars_Since_Cross":"{:.0f}d",
        "Vol_vs_Prev_x":"{:.2f}×","Vol_vs_Avg_x":"{:.2f}×","RSI":"{:.1f}"}
 _hdr_done = False
@@ -701,12 +662,11 @@ out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 
 COLS = [
     "Ticker","Price","Score",
-    "Comp_Spread_%","MA_Hi_at_Comp","MA_Lo_at_Comp","MA_Avg_at_Comp",
-    "Cam_S3","S3_at_Comp","Cluster_vs_S3_%",
+    "Comp_Spread_%","Comp_Bar_Ago","SMA50_at_Comp",
+    "S3_Info","SMA50_vs_S3_%","Above_S3",
     "Cross_Date","Bars_Since_Cross",
-    "Cross_Vol","Prev_Vol","Vol_vs_Prev_x","Vol_vs_Avg_x",
-    "JMA","EMA8","SMA21","SMA50",
-    "Dist_JMA_%","Dist_EMA8_%","Dist_SMA21_%","Dist_SMA50_%","Dist_S3_%",
+    "Vol_vs_Prev_x","Vol_vs_Avg_x",
+    "JMA","EMA8","SMA21","SMA50","Cam_S3",
     "RSI","MACD_Hist","Avg_Vol_20d",
 ]
 df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
