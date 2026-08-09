@@ -113,41 +113,40 @@ print()
 
 # ── CONFIG ────────────────────────────────────────────────────
 CFG = {
-    "history_days"             : 300,
+    "history_days"           : 300,
 
-    # ── MA periods ────────────────────────────────────────────
-    "jma_period"               : 13,
-    "jma_phase"                : 40,
-    "ema8_period"              : 8,
-    "sma21_period"             : 21,
-    "sma50_period"             : 50,
+    # ── MA periods ──────────────────────────────────────────
+    "jma_period"             : 13,
+    "jma_phase"              : 40,
+    "ema8_period"            : 8,
+    "sma21_period"           : 21,
+    "sma50_period"           : 50,
 
-    # ── C1: MA compression ────────────────────────────────────
-    # JMA/EMA8/SMA21 are fast MAs. In a real compression they
-    # converge TOWARD SMA50 (not past it). We measure:
-    #   max distance of any fast MA from SMA50 / SMA50
-    # Must be <= compression_pct% (all fast MAs near SMA50)
-    "compression_pct"          : 8.0,   # fast MAs within 8% of SMA50
-    "compression_lookback"     : 15,    # scan last 15 bars for compression
+    # ── C1: MA compression ──────────────────────────────────
+    # Max distance of fast MAs (JMA/EMA8/SMA21) from SMA50
+    # as % of SMA50 — measured at the tightest bar in window
+    "compression_pct"        : 8.0,    # <= 8% of SMA50
+    # How far back to search for the compression phase
+    "compression_lookback"   : 20,     # last 20 bars
 
-    # ── C2: SMA50 near Cam S3 ─────────────────────────────────
-    # SMA50 must be within s3_zone_pct% of monthly Cam S3
-    "s3_zone_pct"              : 8.0,   # SMA50 within 8% of S3
+    # ── C2: Volume explosion breakout ────────────────────────
+    # Green candle closing above all 4 MAs, with volume
+    # >= vol_explosion_mult × 20-day average
+    "vol_explosion_mult"     : 2.0,    # at least 2× avg volume
+    # How many bars back to search for the breakout candle
+    "cross_lookback"         : 10,
+    # How many bars before breakout to check price was below SMA50
+    "lookback_below_bars"    : 15,
 
-    # ── C3: Price crossed above ALL MAs and S3 ────────────────
-    "cross_lookback"           : 10,
+    # ── Volume ──────────────────────────────────────────────
+    "vol_avg_bars"           : 20,
 
-    # ── C4: Volume > previous day ────────────────────────────
-    "require_vol_gt_prev"      : True,
-    "min_break_vol_mult"       : 0.5,
-    "vol_avg_bars"             : 20,
+    # ── Filters ─────────────────────────────────────────────
+    "min_avg_volume"         : 50_000,
+    "min_price"              : 0.5,    # catch MYO-style low-price stocks
 
-    # ── Filters ───────────────────────────────────────────────
-    "min_avg_volume"           : 50_000,
-    "min_price"                : 1.0,
-
-    "batch_size"               : 50,
-    "batch_sleep"              : 1.5,
+    "batch_size"             : 50,
+    "batch_sleep"            : 1.5,
 }
 
 
@@ -271,29 +270,39 @@ def download(symbols, days):
 _DBG = {
     "total"        : 0,
     "pass_filter"  : 0,
-    "fail_c1_comp" : 0,   # tightest spread in window > compression_pct
-    "fail_c2_cross": 0,   # no bar where price crossed above all 4 MAs
-    "fail_c3_vol"  : 0,   # volume not > previous day
+    "fail_c1_comp" : 0,   # no compression found in window
+    "fail_c2_break": 0,   # no volume explosion breakout found
     "pass_all"     : 0,
-    # Per-stock detail for the last DIAG run (populated in diag mode)
-    "_last_spread" : 0.0,
-    "_last_cross"  : False,
-    "_last_vol"    : False,
 }
 
 def detect_pattern(sym, df):
     """
-    3 conditions — no S3 gate (S3 shown as info only):
+    MYO-style MA compression + volume explosion breakout.
 
-    C1  COMPRESSION: in last compression_lookback bars, the
-        tightest bar where JMA/EMA8/SMA21 are all within
-        compression_pct% of SMA50. This is the COIL.
+    WHAT THE CHART SHOWS:
+      1. Price chops sideways/down for weeks — ALL MAs bunch
+         into a tight cluster (JMA, EMA8, SMA21 all near SMA50)
+      2. Price was AT or BELOW the MA cluster during compression
+      3. Then ONE candle explodes above ALL MAs simultaneously
+         on VERY HIGH volume (3x+ the 20-day average)
+      4. That single breakout candle closes well above all MAs
 
-    C2  CROSS: in last cross_lookback bars, price went from
-        below at least one MA to above ALL 4 MAs in one bar.
-        (JMA, EMA8, SMA21, SMA50 — no S3 required)
+    C1  COMPRESSION PHASE  (last compression_lookback bars):
+        In at least 1 bar in the window, all 3 fast MAs
+        (JMA, EMA8, SMA21) are within compression_pct% of SMA50
+        AND price was AT or BELOW SMA50 (price <= SMA50 * 1.02)
+        = MAs compressed while price was suppressed/sideways
 
-    C3  VOLUME: cross bar volume > previous bar volume.
+    C2  VOLUME EXPLOSION BREAKOUT  (last cross_lookback bars):
+        A single bar where:
+          a) Price CLOSES above ALL 4 MAs (JMA/EMA8/SMA21/SMA50)
+          b) Price was BELOW SMA50 within the last few bars
+             before this breakout (confirming it came from below)
+          c) Volume >= vol_explosion_mult × 20-day avg volume
+             (the signature "explosion" volume — 2x min, 3x+ ideal)
+          d) Candle is GREEN (close > open)
+
+    No S3 gate — S3 shown as info only.
     """
     global _DBG
     _DBG["total"] += 1
@@ -309,13 +318,13 @@ def detect_pattern(sym, df):
     _DBG["pass_filter"] += 1
 
     # ── Indicators ────────────────────────────────────────────
-    jma_s  = calc_jma(df["Close"], CFG["jma_period"], CFG["jma_phase"])
-    ema8_s = calc_ema(df["Close"], CFG["ema8_period"])
-    s21_s  = df["Close"].rolling(CFG["sma21_period"]).mean()
-    s50_s  = df["Close"].rolling(CFG["sma50_period"]).mean()
-    s3_s   = build_monthly_s3_series(df)   # info only
-    rsi_s  = calc_rsi(df["Close"])
-    macdh_s= calc_macd_hist(df["Close"])
+    jma_s   = calc_jma(df["Close"], CFG["jma_period"], CFG["jma_phase"])
+    ema8_s  = calc_ema(df["Close"], CFG["ema8_period"])
+    s21_s   = df["Close"].rolling(CFG["sma21_period"]).mean()
+    s50_s   = df["Close"].rolling(CFG["sma50_period"]).mean()
+    s3_s    = build_monthly_s3_series(df)
+    rsi_s   = calc_rsi(df["Close"])
+    macdh_s = calc_macd_hist(df["Close"])
 
     cur_jma  = float(jma_s.iloc[-1])   if not np.isnan(jma_s.iloc[-1])   else np.nan
     cur_ema8 = float(ema8_s.iloc[-1])  if not np.isnan(ema8_s.iloc[-1])  else np.nan
@@ -327,118 +336,150 @@ def detect_pattern(sym, df):
 
     if any(np.isnan([cur_jma, cur_ema8, cur_s21, cur_s50])): return None
 
-    # ─────────────────────────────────────────────────────────
-    # C1: TIGHTEST MA COMPRESSION IN LAST compression_lookback BARS
-    # ─────────────────────────────────────────────────────────
-    cl_back   = CFG["compression_lookback"]
-    cpc       = CFG["compression_pct"] / 100
-    best      = float("inf")
-    comp_bar  = None
-    comp_s50  = None
-
-    for i in range(max(0, n - cl_back), n):
-        j  = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
-        e  = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
-        s2 = float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
-        s5 = float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
-        if any(np.isnan([j, e, s2, s5])) or s5 <= 0: continue
-        spread = max(abs(j-s5)/s5, abs(e-s5)/s5, abs(s2-s5)/s5)
-        if spread < best:
-            best = spread; comp_bar = i; comp_s50 = s5
-
-    _DBG["_last_spread"] = round(best * 100, 2)
-
-    if comp_bar is None or best > cpc:
-        _DBG["fail_c1_comp"] += 1
-        return None
+    cl_back = CFG["compression_lookback"]
+    xc      = CFG["cross_lookback"]
+    cpc     = CFG["compression_pct"] / 100
+    vol_exp = CFG["vol_explosion_mult"]
 
     # ─────────────────────────────────────────────────────────
-    # C2: PRICE CROSSED ABOVE ALL 4 MAs IN LAST cross_lookback BARS
+    # C1: COMPRESSION PHASE — MAs bunched while price was
+    # at/below SMA50 at some point in the last cl_back bars
     # ─────────────────────────────────────────────────────────
-    xc        = CFG["cross_lookback"]
-    cross_bar = None
-    cross_date= None
+    best_spread   = float("inf")
+    best_comp_bar = None
+    best_comp_s50 = None
 
-    for i in range(max(1, n - xc), n):
-        # current bar: above all 4
+    # Search further back: cl_back + xc (compression happened
+    # BEFORE the breakout, which is in last xc bars)
+    search_start = max(0, n - cl_back - xc)
+    for i in range(search_start, n):
         j  = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
         e  = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
         s2 = float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
         s5 = float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
         pc = float(df["Close"].iloc[i])
-        if any(np.isnan([j, e, s2, s5])): continue
-        if not (pc > j and pc > e and pc > s2 and pc > s5): continue
+        if any(np.isnan([j, e, s2, s5])) or s5 <= 0: continue
 
-        # prev bar: below at least one
-        jp = float(jma_s.iloc[i-1])  if not np.isnan(jma_s.iloc[i-1])  else np.nan
-        ep = float(ema8_s.iloc[i-1]) if not np.isnan(ema8_s.iloc[i-1]) else np.nan
-        s2p= float(s21_s.iloc[i-1])  if not np.isnan(s21_s.iloc[i-1])  else np.nan
-        s5p= float(s50_s.iloc[i-1])  if not np.isnan(s50_s.iloc[i-1])  else np.nan
-        pp = float(df["Close"].iloc[i-1])
-        if any(np.isnan([jp, ep, s2p, s5p])): continue
-        if not (pp < jp or pp < ep or pp < s2p or pp < s5p): continue
+        spread = max(abs(j-s5)/s5, abs(e-s5)/s5, abs(s2-s5)/s5)
 
-        # valid cross — keep most recent
-        if cross_bar is None or i > cross_bar:
-            cross_bar = i; cross_date = df.index[i]
+        # Price must be AT or BELOW SMA50 (compressed below MAs)
+        # Allow up to 2% above SMA50 (could be consolidating just at it)
+        price_suppressed = pc <= s5 * 1.02
 
-    _DBG["_last_cross"] = cross_bar is not None
+        if spread <= cpc and price_suppressed and spread < best_spread:
+            best_spread   = spread
+            best_comp_bar = i
+            best_comp_s50 = s5
 
-    if cross_bar is None:
-        _DBG["fail_c2_cross"] += 1
+    if best_comp_bar is None:
+        _DBG["fail_c1_comp"] += 1
         return None
 
-    # ─────────────────────────────────────────────────────────
-    # C3: VOLUME ON CROSS BAR > PREVIOUS BAR
-    # ─────────────────────────────────────────────────────────
-    vc = float(df["Volume"].iloc[cross_bar])
-    vp = float(df["Volume"].iloc[cross_bar - 1])
-    _DBG["_last_vol"] = vc > vp
+    comp_spread_pct = round(best_spread * 100, 2)
 
-    if CFG["require_vol_gt_prev"] and vc <= vp:
-        _DBG["fail_c3_vol"] += 1; return None
-    if (vc / avg_vol if avg_vol > 0 else 0) < CFG["min_break_vol_mult"]:
-        _DBG["fail_c3_vol"] += 1; return None
+    # ─────────────────────────────────────────────────────────
+    # C2: VOLUME EXPLOSION BREAKOUT — single candle in last
+    # xc bars that closes above ALL 4 MAs on explosive volume
+    # AND came from below (price was under SMA50 recently)
+    # ─────────────────────────────────────────────────────────
+    break_bar  = None
+    break_date = None
+    break_vol  = None
+    break_vmul = None
+
+    for i in range(max(1, n - xc), n):
+        pc  = float(df["Close"].iloc[i])
+        po  = float(df["Open"].iloc[i])
+        vol = float(df["Volume"].iloc[i])
+        j   = float(jma_s.iloc[i])  if not np.isnan(jma_s.iloc[i])  else np.nan
+        e   = float(ema8_s.iloc[i]) if not np.isnan(ema8_s.iloc[i]) else np.nan
+        s2  = float(s21_s.iloc[i])  if not np.isnan(s21_s.iloc[i])  else np.nan
+        s5  = float(s50_s.iloc[i])  if not np.isnan(s50_s.iloc[i])  else np.nan
+        if any(np.isnan([j, e, s2, s5])): continue
+
+        # a) Green candle
+        if pc <= po: continue
+
+        # b) Closes above ALL 4 MAs
+        if not (pc > j and pc > e and pc > s2 and pc > s5): continue
+
+        # c) Volume explosion: must be vol_explosion_mult × avg
+        vmul = vol / avg_vol if avg_vol > 0 else 0
+        if vmul < vol_exp: continue
+
+        # d) Price was below SMA50 at some point in the
+        #    last lookback_below bars before this candle
+        lb = CFG["lookback_below_bars"]
+        was_below = False
+        for k in range(max(0, i - lb), i):
+            pk  = float(df["Close"].iloc[k])
+            s5k = float(s50_s.iloc[k]) if not np.isnan(s50_s.iloc[k]) else np.nan
+            if np.isnan(s5k): continue
+            if pk < s5k:
+                was_below = True; break
+
+        if not was_below: continue
+
+        # Valid breakout — keep most recent
+        if break_bar is None or i > break_bar:
+            break_bar  = i
+            break_date = df.index[i]
+            break_vol  = vol
+            break_vmul = vmul
+
+    if break_bar is None:
+        _DBG["fail_c2_break"] += 1
+        return None
 
     _DBG["pass_all"] += 1
 
-    # ── Build output ──────────────────────────────────────────
-    bars_since = n - 1 - cross_bar
-    vvp = vc / vp   if vp > 0   else 0
-    vva = vc / avg_vol if avg_vol > 0 else 0
+    # ── Metrics ───────────────────────────────────────────────
+    bars_since_break = n - 1 - break_bar
+    prev_vol         = float(df["Volume"].iloc[break_bar - 1])
+    vol_vs_prev      = break_vol / prev_vol if prev_vol > 0 else 0
 
-    # S3 info (not gated)
-    s3_at_comp = float(s3_s.iloc[comp_bar]) if not np.isnan(s3_s.iloc[comp_bar]) else cur_s3
-    above_s3   = price > cur_s3 if not np.isnan(cur_s3) else False
-    s50_vs_s3  = round((comp_s50 - s3_at_comp)/s3_at_comp*100, 2) if (s3_at_comp and s3_at_comp>0) else 0
+    # S3 info (never gated)
+    above_s3  = price > cur_s3 if not np.isnan(cur_s3) else False
+    s3_at_comp= float(s3_s.iloc[best_comp_bar]) if not np.isnan(s3_s.iloc[best_comp_bar]) else cur_s3
+    s50_vs_s3 = round((best_comp_s50 - s3_at_comp)/s3_at_comp*100, 2) if (s3_at_comp and s3_at_comp>0) else 0
+
+    dist_s50_pct = (price - cur_s50) / cur_s50 * 100 if cur_s50 > 0 else 0
+    dist_jma_pct = (price - cur_jma) / cur_jma * 100 if cur_jma > 0 else 0
 
     score = 0
-    score += max(0, 35 - int(best*100 * 3))    # tighter compression
-    score += max(0, 25 - bars_since * 5)        # freshness
-    score += min(20, int(vvp * 7))              # vol vs prev
-    score += min(10, int(vva * 4))              # vol vs avg
-    score += 10 if above_s3 else 0              # bonus S3
+    score += max(0, 30 - int(comp_spread_pct * 3))    # tighter compression
+    score += max(0, 25 - bars_since_break * 5)         # freshness
+    score += min(25, int(break_vmul * 5))              # vol explosion magnitude
+    score += 10 if above_s3 else 0
+    score += 5  if cur_rsi > 50 else 0
+    score += 5  if cur_mh > 0 else 0
     score = min(100, max(0, score))
 
     return {
         "Ticker"          : sym,
         "Price"           : round(price, 2),
         "Score"           : score,
-        "Comp_Spread_%"   : round(best * 100, 2),
-        "Comp_Bar_Ago"    : n - 1 - comp_bar,
-        "SMA50_at_Comp"   : round(comp_s50, 2),
-        "S3_Info"         : round(s3_at_comp, 2),
+        # Compression
+        "Comp_Spread_%"   : comp_spread_pct,
+        "Comp_Bar_Ago"    : n - 1 - best_comp_bar,
+        "SMA50_at_Comp"   : round(best_comp_s50, 2),
+        # S3 info
+        "Cam_S3"          : round(cur_s3, 2) if not np.isnan(cur_s3) else 0,
         "SMA50_vs_S3_%"   : s50_vs_s3,
         "Above_S3"        : "✅" if above_s3 else "—",
-        "Cross_Date"      : cross_date.strftime("%Y-%m-%d"),
-        "Bars_Since_Cross": bars_since,
-        "Vol_vs_Prev_x"   : round(vvp, 2),
-        "Vol_vs_Avg_x"    : round(vva, 2),
+        # Breakout
+        "Break_Date"      : break_date.strftime("%Y-%m-%d"),
+        "Bars_Since_Break": bars_since_break,
+        "Break_Vol"       : int(break_vol),
+        "Vol_vs_Avg_x"    : round(break_vmul, 2),
+        "Vol_vs_Prev_x"   : round(vol_vs_prev, 2),
+        # MAs now
         "JMA"             : round(cur_jma, 2),
         "EMA8"            : round(cur_ema8, 2),
         "SMA21"           : round(cur_s21, 2),
         "SMA50"           : round(cur_s50, 2),
-        "Cam_S3"          : round(cur_s3, 2) if not np.isnan(cur_s3) else 0,
+        "Dist_SMA50_%"    : round(dist_s50_pct, 2),
+        "Dist_JMA_%"      : round(dist_jma_pct, 2),
         "RSI"             : round(cur_rsi, 1),
         "MACD_Hist"       : round(cur_mh, 4),
         "Avg_Vol_20d"     : int(avg_vol),
@@ -448,27 +489,27 @@ def detect_pattern(sym, df):
         "_sma21"    : s21_s,
         "_sma50"    : s50_s,
         "_s3"       : s3_s,
-        "_cross_bar": cross_bar,
-        "_comp_bar" : comp_bar,
+        "_comp_bar" : best_comp_bar,
+        "_break_bar": break_bar,
     }
 
 
 # ── Live print ────────────────────────────────────────────────
 LIVE_COLS = ["Ticker","Price","Score",
              "Comp_Spread_%","Comp_Bar_Ago",
-             "S3_Info","SMA50_vs_S3_%","Above_S3",
-             "Cross_Date","Bars_Since_Cross",
-             "Vol_vs_Prev_x","Vol_vs_Avg_x","RSI"]
+             "Cam_S3","SMA50_vs_S3_%","Above_S3",
+             "Break_Date","Bars_Since_Break",
+             "Vol_vs_Avg_x","Vol_vs_Prev_x","RSI"]
 _CW = {"Ticker":8,"Price":10,"Score":7,
        "Comp_Spread_%":14,"Comp_Bar_Ago":13,
-       "S3_Info":10,"SMA50_vs_S3_%":14,"Above_S3":9,
-       "Cross_Date":13,"Bars_Since_Cross":17,
-       "Vol_vs_Prev_x":14,"Vol_vs_Avg_x":13,"RSI":6}
+       "Cam_S3":9,"SMA50_vs_S3_%":14,"Above_S3":9,
+       "Break_Date":13,"Bars_Since_Break":18,
+       "Vol_vs_Avg_x":13,"Vol_vs_Prev_x":13,"RSI":6}
 _CF = {"Price":"${:.2f}","Score":"{:.0f}",
        "Comp_Spread_%":"{:.2f}%","Comp_Bar_Ago":"{:.0f}d",
-       "S3_Info":"${:.2f}","SMA50_vs_S3_%":"{:+.2f}%",
-       "Bars_Since_Cross":"{:.0f}d",
-       "Vol_vs_Prev_x":"{:.2f}×","Vol_vs_Avg_x":"{:.2f}×","RSI":"{:.1f}"}
+       "Cam_S3":"${:.2f}","SMA50_vs_S3_%":"{:+.2f}%",
+       "Bars_Since_Break":"{:.0f}d",
+       "Vol_vs_Avg_x":"{:.2f}×","Vol_vs_Prev_x":"{:.2f}×","RSI":"{:.1f}"}
 _hdr_done = False
 
 def _live_header():
@@ -641,10 +682,8 @@ print(f"""
   📊 DEBUG BREAKDOWN:
   Total processed          : {_DBG['total']}
   Passed vol/price filter  : {_DBG['pass_filter']}
-  ❌ Failed C1 (compression): {_DBG['fail_c1_comp']}
-  ❌ Failed C2 (near S3)    : {_DBG['fail_c2_s3']}
-  ❌ Failed C3 (cross)      : {_DBG['fail_c3_cross']}
-  ❌ Failed C4 (volume)     : {_DBG['fail_c4_vol']}
+  ❌ Failed C1 (compression) : {_DBG['fail_c1_comp']}
+  ❌ Failed C2 (vol breakout): {_DBG['fail_c2_break']}
   ✅ Passed all             : {_DBG['pass_all']}
 """)
 if not results:
