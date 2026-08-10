@@ -132,7 +132,7 @@ CFG = {
     # ── C2: Volume explosion breakout ────────────────────────
     # Green candle closing above all 4 MAs, with volume
     # >= vol_explosion_mult × 20-day average
-    "vol_explosion_mult"     : 2.0,    # at least 2× avg volume
+    "vol_explosion_mult"     : 0.3,    # at least 2× avg volume
     # How many bars back to search for the breakout candle
     "cross_lookback"         : 10,
     # How many bars before breakout to check price was below SMA50
