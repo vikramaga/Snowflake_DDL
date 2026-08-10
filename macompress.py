@@ -189,34 +189,45 @@ def calc_macd_hist(close, fast=12, slow=26, signal=9):
     sig = calc_ema(ml, signal)
     return ml - sig
 
-# ── Camarilla S3 ─────────────────────────────────────────────
+# ── Camarilla S3 (fully safe — never raises) ─────────────────
 def cam_s3(high, low, close):
-    """Camarilla S3 = Close - (High - Low) × 1.1 / 4"""
-    return close - (high - low) * 1.1 / 4.0
+    """Camarilla S3 = Close - (High-Low) × 1.1 / 4"""
+    try:
+        return float(close) - (float(high) - float(low)) * 1.1 / 4.0
+    except Exception:
+        return np.nan
 
 def build_monthly_s3_series(df):
     """
-    Per-bar Camarilla S3 series: each bar's S3 is derived
-    from the PRIOR completed month's H/L/C.
+    Per-bar Camarilla S3 series.
+    Returns a Series of NaN if data is insufficient — never raises.
+    S3 is INFORMATIONAL ONLY in this script — not a gate.
     """
-    df      = df.copy()
-    df.index= pd.to_datetime(df.index)
-    periods = df.index.to_period("M")
-    unique_months = sorted(periods.unique())
-
-    month_s3 = {}
-    for i, mp in enumerate(unique_months):
-        if i == 0: continue
-        prev_mp = unique_months[i-1]
-        sub = df[periods == prev_mp]
-        if len(sub) < 5: continue
-        hi = float(sub["High"].max())
-        lo = float(sub["Low"].min())
-        cl = float(sub["Close"].iloc[-1])
-        month_s3[mp] = round(cam_s3(hi, lo, cl), 4)
-
-    s3_vals = [month_s3.get(mp, np.nan) for mp in periods]
-    return pd.Series(s3_vals, index=df.index)
+    try:
+        df      = df.copy()
+        df.index= pd.to_datetime(df.index)
+        periods = df.index.to_period("M")
+        unique_months = sorted(periods.unique())
+        month_s3 = {}
+        for i, mp in enumerate(unique_months):
+            if i == 0: continue
+            try:
+                prev_mp = unique_months[i-1]
+                sub = df[periods == prev_mp]
+                if len(sub) < 5: continue
+                hi = float(sub["High"].max())
+                lo = float(sub["Low"].min())
+                cl = float(sub["Close"].iloc[-1])
+                v  = cam_s3(hi, lo, cl)
+                if not np.isnan(v):
+                    month_s3[mp] = round(v, 4)
+            except Exception:
+                continue
+        s3_vals = [month_s3.get(mp, np.nan) for mp in periods]
+        return pd.Series(s3_vals, index=df.index)
+    except Exception:
+        # Fallback: return all-NaN series same length as df
+        return pd.Series(np.full(len(df), np.nan), index=df.index)
 
 # ── Download ──────────────────────────────────────────────────
 def _clean(df, min_bars=60):
@@ -322,7 +333,10 @@ def detect_pattern(sym, df):
     ema8_s  = calc_ema(df["Close"], CFG["ema8_period"])
     s21_s   = df["Close"].rolling(CFG["sma21_period"]).mean()
     s50_s   = df["Close"].rolling(CFG["sma50_period"]).mean()
-    s3_s    = build_monthly_s3_series(df)
+    try:
+        s3_s = build_monthly_s3_series(df)
+    except Exception:
+        s3_s = pd.Series(np.full(len(df), np.nan), index=df.index)
     rsi_s   = calc_rsi(df["Close"])
     macdh_s = calc_macd_hist(df["Close"])
 
@@ -330,7 +344,10 @@ def detect_pattern(sym, df):
     cur_ema8 = float(ema8_s.iloc[-1])  if not np.isnan(ema8_s.iloc[-1])  else np.nan
     cur_s21  = float(s21_s.iloc[-1])   if not np.isnan(s21_s.iloc[-1])   else np.nan
     cur_s50  = float(s50_s.iloc[-1])   if not np.isnan(s50_s.iloc[-1])   else np.nan
-    cur_s3   = float(s3_s.iloc[-1])    if not np.isnan(s3_s.iloc[-1])    else np.nan
+    try:
+        cur_s3 = float(s3_s.iloc[-1]) if not np.isnan(s3_s.iloc[-1]) else np.nan
+    except Exception:
+        cur_s3 = np.nan
     cur_rsi  = float(rsi_s.iloc[-1])   if not np.isnan(rsi_s.iloc[-1])   else 50
     cur_mh   = float(macdh_s.iloc[-1]) if not np.isnan(macdh_s.iloc[-1]) else 0
 
@@ -440,7 +457,10 @@ def detect_pattern(sym, df):
 
     # S3 info (never gated)
     above_s3  = price > cur_s3 if not np.isnan(cur_s3) else False
-    s3_at_comp= float(s3_s.iloc[best_comp_bar]) if not np.isnan(s3_s.iloc[best_comp_bar]) else cur_s3
+    try:
+        s3_at_comp = float(s3_s.iloc[best_comp_bar]) if not np.isnan(s3_s.iloc[best_comp_bar]) else cur_s3
+    except Exception:
+        s3_at_comp = cur_s3 if not np.isnan(cur_s3) else 0.0
     s50_vs_s3 = round((best_comp_s50 - s3_at_comp)/s3_at_comp*100, 2) if (s3_at_comp and s3_at_comp>0) else 0
 
     dist_s50_pct = (price - cur_s50) / cur_s50 * 100 if cur_s50 > 0 else 0
