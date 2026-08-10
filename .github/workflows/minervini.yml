@@ -1,0 +1,36 @@
+name: Minervini Stage 2 VCP Scanner
+
+on:
+  
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-stage2-vcp
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: pip install --upgrade yfinance pandas numpy requests tqdm matplotlib
+      - name: Run scanner
+        env:
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
+        run: python minervini.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stage2-vcp-${{ github.run_id }}
+          path: |
+            minervini_stage2_vcp_*.csv
+            stage2_vcp_chart_*.png
+            tv_stage2_vcp_*.txt
+          retention-days: 30
