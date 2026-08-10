@@ -10,7 +10,7 @@
 #      = All fast MAs bunched together = energy coiling
 #
 #  C2 — CLUSTER IS NEAR MONTHLY CAMARILLA S3
-#      The average of all 4 MAs must be within s3_zone_pct%
+#      The MA cluster sits near the monthly Camarilla S3 level
 #      of the current month's Camarilla S3 level
 #      S3 = Close - (High - Low) × 1.1 / 4  (from prior month)
 #      = The MA cluster sits AT the monthly support pivot
@@ -132,7 +132,7 @@ CFG = {
     # ── C2: Volume explosion breakout ────────────────────────
     # Green candle closing above all 4 MAs, with volume
     # >= vol_explosion_mult × 20-day average
-    "vol_explosion_mult"     :0.3,    # at least 2× avg volume
+    "vol_explosion_mult"     : 2.0,    # at least 2× avg volume
     # How many bars back to search for the breakout candle
     "cross_lookback"         : 10,
     # How many bars before breakout to check price was below SMA50
@@ -584,27 +584,74 @@ for sym in DIAG:
         p    = float(df_d["Close"].iloc[-1])
         r    = detect_pattern(sym, df_d)
         if r:
-            print(f"  {sym:<7} ${p:>7.2f}  {r['Comp_Spread_%']:>6.3f}%  "
-                  f"${r['S3_at_Comp']:>7.2f}  ✅ Score={r['Score']} {r['Cross_Date']}")
+            print(f"  {sym:<7} ${p:>7.2f}  "
+                  f"Spread:{r['Comp_Spread_%']:.2f}%  "
+                  f"VolX:{r['Vol_vs_Avg_x']:.1f}  "
+                  f"Score:{r['Score']}  "
+                  f"✅ {r['Break_Date']} ({r['Bars_Since_Break']}d ago)")
         else:
-            print(f"  {sym:<7} ${p:>7.2f}  {'—':>7}  {'—':>8}  ❌")
+            # Show exactly why it failed
+            j   = calc_jma(df_d["Close"], CFG["jma_period"], CFG["jma_phase"])
+            e8  = calc_ema(df_d["Close"], CFG["ema8_period"])
+            s21 = df_d["Close"].rolling(CFG["sma21_period"]).mean()
+            s50 = df_d["Close"].rolling(CFG["sma50_period"]).mean()
+            cj  = float(j.iloc[-1])   if not np.isnan(j.iloc[-1])   else 0
+            ce  = float(e8.iloc[-1])  if not np.isnan(e8.iloc[-1])  else 0
+            cs2 = float(s21.iloc[-1]) if not np.isnan(s21.iloc[-1]) else 0
+            cs5 = float(s50.iloc[-1]) if not np.isnan(s50.iloc[-1]) else 0
+            # Find tightest spread in last compression_lookback bars
+            best = float("inf"); n_d = len(df_d)
+            for ii in range(max(0, n_d - CFG["compression_lookback"] - CFG["cross_lookback"]), n_d):
+                jj  = float(j.iloc[ii])   if not np.isnan(j.iloc[ii])   else np.nan
+                ee  = float(e8.iloc[ii])  if not np.isnan(e8.iloc[ii])  else np.nan
+                ss2 = float(s21.iloc[ii]) if not np.isnan(s21.iloc[ii]) else np.nan
+                ss5 = float(s50.iloc[ii]) if not np.isnan(s50.iloc[ii]) else np.nan
+                pii = float(df_d["Close"].iloc[ii])
+                if any(np.isnan([jj,ee,ss2,ss5])) or ss5<=0: continue
+                sp = max(abs(jj-ss5)/ss5, abs(ee-ss5)/ss5, abs(ss2-ss5)/ss5)
+                if sp < best: best = sp
+            # Check if any recent bar was above all 4 MAs
+            above_found = False
+            avg_v = float(df_d["Volume"].tail(20).mean())
+            for ii in range(max(1, n_d-CFG["cross_lookback"]), n_d):
+                pc=float(df_d["Close"].iloc[ii]); po=float(df_d["Open"].iloc[ii])
+                jj =float(j.iloc[ii])  if not np.isnan(j.iloc[ii])  else np.nan
+                ee =float(e8.iloc[ii]) if not np.isnan(e8.iloc[ii]) else np.nan
+                ss2=float(s21.iloc[ii]) if not np.isnan(s21.iloc[ii]) else np.nan
+                ss5=float(s50.iloc[ii]) if not np.isnan(s50.iloc[ii]) else np.nan
+                if any(np.isnan([jj,ee,ss2,ss5])): continue
+                if pc>jj and pc>ee and pc>ss2 and pc>ss5 and pc>po:
+                    vmul=float(df_d["Volume"].iloc[ii])/avg_v if avg_v>0 else 0
+                    above_found = True
+                    print(f"  {sym:<7} ${p:>7.2f}  "
+                          f"Spread:{best*100:.2f}%(need<{CFG['compression_pct']}%)  "
+                          f"AboveMAs:✅  Vol:{vmul:.1f}x(need>{CFG['vol_explosion_mult']}x)  "
+                          f"❌ vol_too_low" if vmul < CFG["vol_explosion_mult"] else
+                          f"  {sym:<7} ${p:>7.2f}  Spread:{best*100:.2f}%  VolOK  ❌ no_compression")
+                    break
+            if not above_found:
+                print(f"  {sym:<7} ${p:>7.2f}  "
+                      f"Spread:{best*100:.2f}%(need<{CFG['compression_pct']}%)  "
+                      f"AboveMAs:❌  ❌ no_cross_above_all_mas")
     except Exception as e:
         print(f"  {sym:<7} error: {e}")
 
 print(f"""
-  Pattern:
-    C1  MA Compression : JMA+EMA8+SMA21+SMA50 within {CFG['compression_pct']}% of each other
-    C2  Near Cam S3    : MA cluster average within {CFG['s3_zone_pct']}% of monthly S3
-                         S3 = Close - (High-Low) × 1.1/4  (from prior month)
-    C3  Breakout       : price crossed above ALL 4 MAs AND S3
-                         in last {CFG['cross_lookback']} bars
-    C4  Volume         : cross bar volume > previous bar volume
+  Pattern (MYO-style MA compression + volume explosion):
+    C1  Compression : JMA/EMA8/SMA21 all within {CFG['compression_pct']}% of SMA50
+                      while price was AT or BELOW SMA50 (suppressed)
+                      Searched in last {CFG['compression_lookback']} bars
+    C2  Breakout    : Single GREEN candle closes above all 4 MAs
+                      Volume >= {CFG['vol_explosion_mult']}x 20-day avg volume
+                      Price was below SMA50 within last {CFG['lookback_below_bars']} bars
+    Cam S3 = info only (not a gate)
 
   Tune if mostly ❌:
-    compression_pct         3 → 5
-    s3_zone_pct             3 → 5
-    cross_lookback          8 → 12
-    compression_lookback    5 → 8
+    compression_pct       8 → 12   (widen MA spread tolerance)
+    vol_explosion_mult    2 → 1.5  (lower volume bar)
+    compression_lookback 20 → 30   (look further back)
+    cross_lookback       10 → 15
+    lookback_below_bars  15 → 25
 """)
 print("━"*65+"\n")
 
@@ -709,7 +756,6 @@ print(f"""
 if not results:
     print("  Relax the condition with most failures above:")
     print("   C1: compression_pct       3 → 5")
-    print("   C2: s3_zone_pct           3 → 5")
     print("   C3: cross_lookback        8 → 12")
     print("   C4: min_break_vol_mult  0.8 → 0.5")
 
@@ -742,8 +788,8 @@ FMT = {
     "MA_Lo_at_Comp"   : lambda v: f"${v:.2f}",
     "MA_Avg_at_Comp"  : lambda v: f"${v:.2f}",
     "Cam_S3"          : lambda v: f"${v:.2f}",
-    "S3_at_Comp"      : lambda v: f"${v:.2f}",
-    "Cluster_vs_S3_%": lambda v: f"{v:+.2f}%",
+    "S3_Info"         : lambda v: f"${v:.2f}",
+    "SMA50_vs_S3_%"  : lambda v: f"{v:+.2f}%",
     "Bars_Since_Cross": lambda v: f"{int(v)}d",
     "Cross_Vol"       : lambda v: f"{v:,.0f}",
     "Prev_Vol"        : lambda v: f"{v:,.0f}",
@@ -773,7 +819,7 @@ def fmt_v(col, val):
 # ── Notebook display ──────────────────────────────────────────
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Price","Score",
-            "Comp_Spread_%","S3_at_Comp","Cluster_vs_S3_%",
+            "Comp_Spread_%","Comp_Bar_Ago","S3_Info","SMA50_vs_S3_%","Above_S3",
             "Cross_Date","Bars_Since_Cross",
             "Vol_vs_Prev_x","Vol_vs_Avg_x","RSI","MACD_Hist"]
     DISP = [c for c in DISP if c in df_out.columns]
@@ -799,7 +845,7 @@ if _IN_NOTEBOOK and results:
                     v = float(str(raw).replace("%",""))
                     sty = "color:#22c55e;font-weight:700" if v<=1 else "color:#86efac" if v<=2 else ""
                 except Exception: pass
-            elif col == "Cluster_vs_S3_%":
+            elif col == "SMA50_vs_S3_%":
                 try:
                     v = float(str(raw).replace("%","").replace("+",""))
                     sty = "color:#22c55e;font-weight:700" if abs(v)<=1 else ""
@@ -849,12 +895,12 @@ if _IN_NOTEBOOK and results:
             padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
   Comp_Spread_% = gap between highest and lowest of 4 MAs as % of price (lower = tighter coil) &nbsp;·&nbsp;
-  Cluster_vs_S3_% = how close MA cluster average was to Cam S3 (near 0 = sitting right on S3) &nbsp;·&nbsp;
+  SMA50_vs_S3_% = how far SMA50 was from Cam S3 at compression bar &nbsp;·&nbsp;
   Vol_vs_Prev_x = cross bar volume ÷ previous bar volume
 </div>""")
 
 elif results:
-    CLI = ["Ticker","Price","Score","Comp_Spread_%","S3_at_Comp",
+    CLI = ["Ticker","Price","Score","Comp_Spread_%","Comp_Bar_Ago",
            "Bars_Since_Cross","Vol_vs_Prev_x","RSI"]
     CLI = [c for c in CLI if c in df_out.columns]
     col_w = {c: max(len(c), max(len(fmt_v(c,r.get(c))) for r in results))+2 for c in CLI}
@@ -916,8 +962,8 @@ def _send_email(rl, csv_path):
             f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
-            for c in ["Ticker","Price","Score","Comp_Spread_%","S3_at_Comp",
-                      "Cluster_vs_S3_%","Bars_Since_Cross","Vol_vs_Prev_x","RSI"]
+            for c in ["Ticker","Price","Score","Comp_Spread_%","Comp_Bar_Ago",
+                      "SMA50_vs_S3_%","Bars_Since_Break","Vol_vs_Prev_x","RSI"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -935,9 +981,9 @@ def _send_email(rl, csv_path):
                 f'<td style="padding:6px 11px;font-size:12px;color:#22c55e">'
                 f'{float(r.get("Comp_Spread_%",0)):.3f}%</td>'
                 f'<td style="padding:6px 11px;font-size:12px">'
-                f'${float(r.get("S3_at_Comp",0)):.2f}</td>'
+                f'${float(r.get("S3_Info",0)):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">'
-                f'{float(r.get("Cluster_vs_S3_%",0)):+.2f}%</td>'
+                f'{float(r.get("SMA50_vs_S3_%",0)):+.2f}%</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
                 f'color:{"#22c55e" if bsc==0 else "#94a3b8"};font-weight:700">'
                 f'{bsc}d</td>'
@@ -979,7 +1025,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
     <p style="font-size:11px;color:#64748b;margin:10px 0 0">
       📎 CSV and TradingView file attached &nbsp;·&nbsp;
       <b>Comp_Spread_%</b> = gap between 4 MAs as % of price &nbsp;·&nbsp;
-      <b>Cluster_vs_S3_%</b> = how close cluster was to Cam S3 &nbsp;·&nbsp;
+      <b>SMA50_vs_S3_%</b> = how far SMA50 was from Cam S3 &nbsp;·&nbsp;
       <b>Vol_vs_Prev_x</b> = cross vol ÷ prev day vol
     </p>
   </td></tr>
@@ -1001,7 +1047,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             f"{r.get('Ticker','—'):<7} ${float(r.get('Price',0)):.2f}  "
             f"Score:{float(r.get('Score',0)):.0f}  "
             f"Spread:{float(r.get('Comp_Spread_%',0)):.3f}%  "
-            f"S3_Dist:{float(r.get('Cluster_vs_S3_%',0)):+.2f}%  "
+            f"S3_Dist:{float(r.get('SMA50_vs_S3_%',0)):+.2f}%  "
             f"Vol:{float(r.get('Vol_vs_Prev_x',0)):.1f}×prev  "
             f"Cross:{r.get('Bars_Since_Cross',0)}d ago"
             for r in rl[:50]
@@ -1121,7 +1167,7 @@ if results:
         ax.set_xlim(-0.5, n_p-0.5)
         ax.set_title(
             f"{r['Ticker']}  ${r['Price']:.2f}  |  Score {r['Score']}/100  |  "
-            f"MA Spread {r['Comp_Spread_%']:.3f}%  Cluster vs S3 {r['Cluster_vs_S3_%']:+.2f}%  |  "
+            f"MA Spread {r['Comp_Spread_%']:.2f}%  S50vsS3 {r['SMA50_vs_S3_%']:+.2f}%  |  "
             f"Breakout {r['Cross_Date']} ({r['Bars_Since_Cross']}d ago)  "
             f"Vol {r['Vol_vs_Prev_x']:.1f}×prev {r['Vol_vs_Avg_x']:.1f}×avg  |  "
             f"RSI {r['RSI']:.0f}",
@@ -1179,14 +1225,13 @@ print("""
 
   💡 BEST SETUPS
   Comp_Spread_% < 1%      extremely tight coil
-  Cluster_vs_S3_% near 0  cluster sitting right on S3
+  SMA50_vs_S3_% near 0   SMA50 was right at Cam S3 level
   Bars_Since_Cross = 0    breakout today = freshest entry
   Vol_vs_Prev_x >= 2×     twice yesterday's volume = strong
 
   ⚙️  TUNE IF 0 RESULTS
   compression_pct      3 → 5
-  s3_zone_pct          3 → 5
-  cross_lookback       8 → 12
+    cross_lookback       8 → 12
   compression_lookback 5 → 8
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
