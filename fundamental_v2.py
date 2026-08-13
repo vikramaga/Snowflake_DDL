@@ -122,6 +122,12 @@ CFG = {
     "pct_below_52w_high"         : 25.0,
     "pct_above_52w_low"          : 30.0,
 
+    # ── JMA / SMA21 crossover ───────────────────────────────────
+    "jma_period"                 : 13,    # as shown on chart: JMA 13 40 2
+    "jma_phase"                  : 40,
+    "jma_cross_lookback"         : 5,     # bars to look back for a fresh cross
+    "require_jma_cross_sma21"    : True,  # only keep stocks with a recent cross
+
     # ── Support detection ──────────────────────────────────────
     "support_zone_pct"           : 3.0,
     "support_below_pct"          : 1.0,
@@ -159,6 +165,75 @@ def calc_macd(close, fast=12, slow=26, signal=9):
     macd  = ema_f - ema_s
     sig   = macd.ewm(span=signal,  adjust=False).mean()
     return macd - sig   # histogram only
+
+def calc_jma(series, period=13, phase=40, power=2):
+    """
+    JMA (Jurik Moving Average) approximation — same method used in
+    sma8withh4.py. The true JMA is proprietary; this is the widely-used
+    pure-numpy approximation: adaptive EMA with phase-based
+    smoothing factor and power exponent.
+
+    phase : -100..+100 (positive = more responsive)
+    power : typically 2
+    """
+    n      = len(series)
+    vals   = series.values.astype(float)
+    result = np.full(n, np.nan)
+
+    phase_ratio = phase / 100.0 + 1.5   # → 1.9 for phase=40
+    alpha = 2.0 / (period + 1.0)
+    beta  = alpha * phase_ratio
+
+    first_valid = 0
+    for i in range(n):
+        if not np.isnan(vals[i]):
+            first_valid = i
+            break
+
+    e0 = e1 = e2 = vals[first_valid]
+    result[first_valid] = e0
+
+    for i in range(first_valid + 1, n):
+        v   = vals[i]
+        e0  = (1 - alpha) * e0 + alpha * v
+        e1  = (v - e0) * (1 - beta) + beta * e1
+        # NOTE: fixed vs. the sma8withh4.py version — that formula's
+        # e2 update has a steady-state gain of 0.5 (JMA settles at
+        # ~half of price on long series). This is the corrected
+        # single-pole update: e2_new = (1-alpha)*e2_old + alpha*(e0+e1),
+        # which has steady-state gain 1.0 and actually tracks price.
+        e2  = (1 - alpha) * e2 + alpha * (e0 + e1)
+        result[i] = e2
+
+    return pd.Series(result, index=series.index)
+
+def find_jma_cross_sma21(close, jma_period=13, jma_phase=40, lookback=5):
+    """
+    Detects a JMA-crosses-above-SMA21-from-below event within the last
+    `lookback` bars. Returns (crossed: bool, bars_since: int|None,
+    cur_jma: float, cur_sma21: float, jma_series, sma21_series).
+    """
+    jma_s   = calc_jma(close, jma_period, jma_phase)
+    sma21_s = close.rolling(21).mean()
+
+    cur_jma   = float(jma_s.iloc[-1])   if not np.isnan(jma_s.iloc[-1])   else np.nan
+    cur_sma21 = float(sma21_s.iloc[-1]) if not np.isnan(sma21_s.iloc[-1]) else np.nan
+
+    crossed    = False
+    bars_since = None
+    n = len(close)
+    for back in range(0, lookback + 1):
+        i = n - 1 - back
+        if i < 1: break
+        j_i, j_p   = jma_s.iloc[i],   jma_s.iloc[i-1]
+        s_i, s_p   = sma21_s.iloc[i], sma21_s.iloc[i-1]
+        if any(np.isnan(v) for v in [j_i, j_p, s_i, s_p]): continue
+        if j_p <= s_p and j_i > s_i:
+            crossed    = True
+            bars_since = back
+            break
+
+    return crossed, bars_since, cur_jma, cur_sma21, jma_s, sma21_s
 
 def cam_s3(high, low, close):
     return close - (high - low) * 1.1 / 4.0
@@ -306,6 +381,15 @@ def analyze_tech_support(sym, df):
     sma50_prev   = float(sma50.iloc[-6]) if not np.isnan(sma50.iloc[-6]) else cs50
     sma50_rising = cs50 > sma50_prev
 
+    # ── JMA crosses above SMA21 from below ─────────────────────
+    jma_crossed, jma_bars_since, cur_jma, cur_sma21, jma_s, sma21_s = \
+        find_jma_cross_sma21(df["Close"], CFG["jma_period"], CFG["jma_phase"],
+                              CFG["jma_cross_lookback"])
+    if CFG["require_jma_cross_sma21"] and not jma_crossed:
+        return None
+    dist_jma_sma21_pct = ((cur_jma - cur_sma21) / cur_sma21 * 100
+                           if cur_sma21 and not np.isnan(cur_sma21) else 0)
+
     # ── Technical score (0-30) ────────────────────────────────
     ts = 0
     tr = []
@@ -325,6 +409,8 @@ def analyze_tech_support(sym, df):
         ts += 3; tr.append("Strong52Lo")
     if cur_mh > 0:
         ts += 3; tr.append("MACD+")
+    if jma_crossed:
+        tr.append(f"JMA↑SMA21({jma_bars_since}d)")
     ts = min(30, ts)
 
     # ── Support levels ────────────────────────────────────────
@@ -388,11 +474,17 @@ def analyze_tech_support(sym, df):
         "SMA200"        : round(cs200, 2),
         "Pct_from_Hi52" : round(pct_hi, 1),
         "Pct_from_Lo52" : round(pct_lo, 1),
+        "JMA"                 : round(cur_jma, 2) if not np.isnan(cur_jma) else None,
+        "SMA21"               : round(cur_sma21, 2) if not np.isnan(cur_sma21) else None,
+        "Dist_JMA_SMA21_%"    : round(dist_jma_sma21_pct, 2),
+        "Bars_Since_JMA_Cross": jma_bars_since,
         "_df"           : df,
         "_s50"          : sma50,
         "_s150"         : sma150,
         "_s200"         : sma200,
         "_active_sup"   : active,
+        "_jma"          : jma_s,
+        "_sma21"        : sma21_s,
     }
 
 # ── Download ──────────────────────────────────────────────────
@@ -444,9 +536,10 @@ def download(symbols, days):
 
 # ── Live print ────────────────────────────────────────────────
 LIVE_COLS = ["Ticker","Price","Total","Fund","Tech","Supp",
-             "Cluster","Dist_%","Best_Support_Name","Sector"]
+             "Bars_Since_JMA_Cross","Cluster","Dist_%","Best_Support_Name","Sector"]
 _CW = {"Ticker":8,"Price":10,"Total":7,"Fund":6,"Tech":6,"Supp":6,
-       "Cluster":8,"Dist_%":8,"Best_Support_Name":22,"Sector":20}
+       "Bars_Since_JMA_Cross":10,"Cluster":8,"Dist_%":8,
+       "Best_Support_Name":22,"Sector":20}
 _CF = {"Price":"${:.2f}","Total":"{:.0f}","Fund":"{:.0f}",
        "Tech":"{:.0f}","Supp":"{:.0f}","Dist_%":"{:+.2f}%"}
 _hdr_done = False
@@ -630,6 +723,10 @@ for item in tqdm(tech_passes, desc="Pass 2 Fund", unit="stk"):
             "SMA50"             : ts["SMA50"],
             "SMA150"            : ts["SMA150"],
             "SMA200"            : ts["SMA200"],
+            "JMA"               : ts["JMA"],
+            "SMA21"             : ts["SMA21"],
+            "Dist_JMA_SMA21_%"  : ts["Dist_JMA_SMA21_%"],
+            "Bars_Since_JMA_Cross" : ts["Bars_Since_JMA_Cross"],
             "RSI"               : ts["RSI"],
             "MACD_Hist"         : ts["MACD_Hist"],
             "Pct_from_52Hi"     : ts["Pct_from_Hi52"],
@@ -685,6 +782,7 @@ COLS = [
     "Total","Fund","Tech","Supp",
     "Rev_Growth_%","Profit_Margin_%","ROE_%","PE_Ratio","EPS",
     "RSI","MACD_Hist","Pct_from_52Hi",
+    "JMA","SMA21","Dist_JMA_SMA21_%","Bars_Since_JMA_Cross",
     "Best_Support_$","Best_Support_Name","Cluster","Dist_%",
     "Active_Supports","Tech_Flags","Fund_Flags",
 ]
@@ -711,6 +809,10 @@ FMT = {
     "Best_Support_$" : lambda v: f"${v:.2f}",
     "Dist_%"         : lambda v: f"{v:+.2f}%",
     "Market_Cap_B"   : lambda v: f"${v:.2f}B",
+    "JMA"            : lambda v: f"${v:.2f}",
+    "SMA21"          : lambda v: f"${v:.2f}",
+    "Dist_JMA_SMA21_%": lambda v: f"{v:+.2f}%",
+    "Bars_Since_JMA_Cross": lambda v: f"{int(v)}d ago",
 }
 
 def fmt_v(col, val):
@@ -896,7 +998,7 @@ def _send_email(rl, csv_path):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Total","Fund","Tech","Supp",
-                      "Cluster","Dist_%"]
+                      "Bars_Since_JMA_Cross","Cluster","Dist_%"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -909,6 +1011,8 @@ def _send_email(rl, csv_path):
             supp   = r.get("Supp",0) or 0
             clust  = r.get("Cluster",0) or 0
             dist   = r.get("Dist_%",0) or 0
+            jcross = r.get("Bars_Since_JMA_Cross")
+            jcross_disp = f"{int(jcross)}d ago" if jcross is not None else "—"
             rows_e += (
                 f'<tr style="background:{bg}">'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
@@ -918,6 +1022,8 @@ def _send_email(rl, csv_path):
                 f'<td style="padding:6px 11px;font-size:12px">{float(fund):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">{float(tech):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">{float(supp):.0f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
+                f'color:#a78bfa;font-weight:600">{jcross_disp}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center">{int(clust)}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:'
                 f'{"#22c55e" if float(dist)>=0 else "#ef4444"}">{float(dist):+.2f}%</td>'
@@ -942,7 +1048,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
           box-shadow:0 4px 20px rgba(0,0,0,0.08)">
   <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:22px 28px">
 <h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-  📊 Fundamentally + Technically Strong at Support
+  📊 Fundamentally + Technically Strong at Support (JMA↑SMA21 Cross)
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
@@ -971,7 +1077,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </body></html>"""
 
         plain_lines = [
-            f"Fundamentally + Technically Strong at Support — {datetime.today().strftime('%Y-%m-%d')}",
+            f"Fundamentally + Technically Strong at Support (JMA↑SMA21 cross) — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches",
             "="*60,
         ]
@@ -981,16 +1087,18 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 price  = r.get("Price",0) or 0
                 total  = r.get("Total",0) or 0
                 supp_name = r.get("Best_Support_Name","—")
+                jcross = r.get("Bars_Since_JMA_Cross")
+                jcross_disp = f"{int(jcross)}d ago" if jcross is not None else "—"
                 plain_lines.append(
                     f"{ticker:<7} ${float(price):.2f}  Total:{float(total):.0f}  "
-                    f"Support:{supp_name}"
+                    f"JMA_Cross:{jcross_disp}  Support:{supp_name}"
                 )
         else:
             plain_lines.append("No matches today")
         plain_lines.append("\nFull results in CSV attachment.")
         plain_e = "\n".join(plain_lines)
 
-        subj = (f"📊 Fund+Tech Support — {cnt} signal{'s' if cnt!=1 else ''}"
+        subj = (f"📊 Fund+Tech Support + JMA↑SMA21 — {cnt} signal{'s' if cnt!=1 else ''}"
                 f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
@@ -1062,12 +1170,16 @@ if results:
         s50   = r["_s50"].reindex(df_p.index)
         s150  = r["_s150"].reindex(df_p.index)
         s200  = r["_s200"].reindex(df_p.index)
+        jma_p = r["_jma"].reindex(df_p.index)
+        s21_p = r["_sma21"].reindex(df_p.index)
         asupp = r["_asupp"]
         ax.set_facecolor("#0f172a")
         ax.plot(df_p.index, df_p["Close"], color="#60a5fa", lw=1.8, label="Price", zorder=4)
         ax.plot(df_p.index, s50,  color="#fbbf24", lw=1.3, ls="--", label="SMA50",  zorder=3)
         ax.plot(df_p.index, s150, color="#f87171", lw=1.1, ls="-.", label="SMA150", zorder=3)
         ax.plot(df_p.index, s200, color="#a78bfa", lw=1.0, ls=":",  label="SMA200", zorder=3)
+        ax.plot(df_p.index, s21_p, color="#34d399", lw=1.2, ls="--", label="SMA21", zorder=3)
+        ax.plot(df_p.index, jma_p, color="#f472b6", lw=1.4, label="JMA(13,40)", zorder=5)
         clrs = ["#34d399","#fde68a","#fb923c","#38bdf8","#e879f9","#a3e635"]
         for ci, (sn, sd) in enumerate(asupp.items()):
             ax.axhline(sd["level"], color=clrs[ci%len(clrs)], lw=1.3,
@@ -1117,16 +1229,25 @@ print("""
   📋 Cluster = how many support levels coincide at same zone
   1 = single support  |  2 = dual  |  3+ = triple confluence
 
+  📋 JMA/SMA21 FILTER (new)
+  Every row already passed: JMA crossed above SMA21 from below
+  within the last {jl} bars.
+  Bars_Since_JMA_Cross = 0d ago means it crossed on the latest bar.
+  Dist_JMA_SMA21_% = how far JMA now sits above/below SMA21.
+
   💡 BEST SETUPS
   Total > 70     elite fundamental + technical + support
   Cluster >= 3   strongest multi-level support
   Dist_% near 0  price sitting right on support now
   Fund > 35      genuinely strong business quality
+  Bars_Since_JMA_Cross = 0-1  freshest JMA/SMA21 crosses
 
   ⚙️  TUNE IF 0 RESULTS
-  min_tech_score      12 → 10
-  min_support_score    5 → 3
-  min_total_score     45 → 35
-  support_zone_pct     3 → 5
+  min_tech_score           12 → 10
+  min_support_score         5 → 3
+  min_total_score          45 → 35
+  support_zone_pct          3 → 5
+  jma_cross_lookback        5 → 10   (widen the cross window)
+  require_jma_cross_sma21   True → False  (disable the JMA filter)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-""")
+""".format(jl=CFG["jma_cross_lookback"]))
