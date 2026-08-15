@@ -138,6 +138,11 @@ CFG = {
     "require_sma50_rising"         : True,
     "require_volume_confirmation"  : True, # candle B volume > candle A volume
 
+    # ── Backtest (last 3 months, full universe) ─────────────────
+    "backtest_lookback_days"       : 63,   # ~3 trading months
+    "backtest_holding_days"        : 15,   # max bars to hold before "timeout"
+    "backtest_reward_r"            : 2.0,  # win = hits 2:1 reward before stop-loss
+
 
     # ── Score gates ─────────────────────────────────────────────
     "min_tech_score"              : 10,   # out of 30
@@ -156,11 +161,16 @@ CFG = {
 def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
                                      sma_rising_lookback, sma50_for_rising,
                                      require_prior_uptrend, require_sma50_rising,
-                                     require_volume_confirmation):
+                                     require_volume_confirmation, end_idx=None):
     """
     Checks the exact 2-candle retest + reclaim pattern against ONE
-    moving average series (SMA50 or SMA150), evaluated on the LATEST
-    two bars: candle A = yesterday (retest), candle B = today (reclaim).
+    moving average series (SMA50 or SMA150).
+
+    candle B (the reclaim bar) = row at position `end_idx` (default:
+    the LAST row of df, i.e. "today"). candle A (the retest bar) =
+    the row immediately before it. Passing an explicit end_idx lets
+    the exact same logic be reused to backtest any historical day,
+    not just the live/latest one.
 
     Every condition is computed explicitly and returned in the trace
     dict, so failures can be inspected step by step.
@@ -168,20 +178,27 @@ def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
     Returns (passed: bool, trace: dict).
     """
     n = len(df)
+    if end_idx is None:
+        end_idx = n - 1
     trace = {}
-    if n < max(prior_uptrend_lookback, sma_rising_lookback) + 3:
+    if end_idx < 1 or end_idx >= n:
+        trace["fail_reason"] = "bad_end_idx"
+        return False, trace
+    if end_idx < max(prior_uptrend_lookback, sma_rising_lookback) + 2:
         trace["fail_reason"] = "not_enough_history"
         return False, trace
 
-    open_A,  close_A  = float(df["Open"].iloc[-2]),  float(df["Close"].iloc[-2])
-    low_A                                              = float(df["Low"].iloc[-2])
-    open_B,  close_B  = float(df["Open"].iloc[-1]),  float(df["Close"].iloc[-1])
-    vol_A = float(df["Volume"].iloc[-2])
-    vol_B = float(df["Volume"].iloc[-1])
+    i_B, i_A = end_idx, end_idx - 1
 
-    ma_A = float(ma_series.iloc[-2])
-    ma_B = float(ma_series.iloc[-1])
-    ema8_B = float(ema8.iloc[-1])
+    open_A,  close_A  = float(df["Open"].iloc[i_A]),  float(df["Close"].iloc[i_A])
+    low_A                                              = float(df["Low"].iloc[i_A])
+    open_B,  close_B  = float(df["Open"].iloc[i_B]),  float(df["Close"].iloc[i_B])
+    vol_A = float(df["Volume"].iloc[i_A])
+    vol_B = float(df["Volume"].iloc[i_B])
+
+    ma_A = float(ma_series.iloc[i_A])
+    ma_B = float(ma_series.iloc[i_B])
+    ema8_B = float(ema8.iloc[i_B])
 
     if any(np.isnan(v) for v in [ma_A, ma_B, ema8_B]):
         trace["fail_reason"] = "nan_indicator"
@@ -189,7 +206,7 @@ def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
 
     # ── Step 0: prior uptrend — price was above the MA a few bars
     #    before the retest candle ────────────────────────────────
-    prior_i = n - 2 - prior_uptrend_lookback   # bar index before candle A
+    prior_i = i_A - prior_uptrend_lookback   # bar index before candle A
     prior_ok = False
     if prior_i >= 0:
         prior_close = float(df["Close"].iloc[prior_i])
@@ -200,9 +217,9 @@ def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
 
     # ── Step 1: MA (SMA50) has started rising ──────────────────────
     sma_rising_ok = False
-    if n > sma_rising_lookback:
-        s_now  = float(sma50_for_rising.iloc[-1])
-        s_prev = float(sma50_for_rising.iloc[-1-sma_rising_lookback])
+    if i_B - sma_rising_lookback >= 0:
+        s_now  = float(sma50_for_rising.iloc[i_B])
+        s_prev = float(sma50_for_rising.iloc[i_B-sma_rising_lookback])
         if not (np.isnan(s_now) or np.isnan(s_prev)):
             sma_rising_ok = s_now > s_prev
     trace["sma50_rising_ok"] = sma_rising_ok
@@ -227,6 +244,7 @@ def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
     trace["vol_chg_pct"] = ((vol_B - vol_A) / vol_A * 100) if vol_A > 0 else 0.0
 
     trace.update({
+        "end_idx": end_idx,
         "open_A": open_A, "close_A": close_A, "low_A": low_A,
         "open_B": open_B, "close_B": close_B,
         "ma_A": ma_A, "ma_B": ma_B, "ema8_B": ema8_B,
@@ -244,6 +262,100 @@ def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
     passed = all(checks)
     trace["passed"] = passed
     return passed, trace
+
+def simulate_trade_outcome(df, entry_idx, entry_price, stop_loss,
+                            reward_r, holding_days):
+    """
+    Forward-simulates a single backtested trade from entry_idx+1
+    onward, up to `holding_days` bars.
+
+    Win  = High >= target (entry + reward_r * risk) before the stop
+           is hit.
+    Loss = Low <= stop_loss before the target is hit. If both the
+           stop and target are touched on the SAME bar, conservatively
+           counted as a loss (can't know intraday sequencing from
+           daily OHLC).
+    Timeout = neither hit within holding_days bars — excluded from
+              the win-rate calculation, reported separately.
+
+    Returns (outcome: "win"|"loss"|"timeout"|"invalid", bars_to_resolve: int|None).
+    """
+    risk = entry_price - stop_loss
+    if risk <= 0:
+        return "invalid", None
+    target = entry_price + reward_r * risk
+
+    n = len(df)
+    end = min(entry_idx + 1 + holding_days, n)
+    for j in range(entry_idx + 1, end):
+        lo = float(df["Low"].iloc[j])
+        hi = float(df["High"].iloc[j])
+        hit_stop   = lo <= stop_loss
+        hit_target = hi >= target
+        if hit_stop and hit_target:
+            return "loss", j - entry_idx     # conservative: stop assumed first
+        if hit_stop:
+            return "loss", j - entry_idx
+        if hit_target:
+            return "win", j - entry_idx
+    return "timeout", None
+
+def backtest_ticker(sym, df, sma50, sma150, ema8, cfg):
+    """
+    Re-runs the exact same 2-candle retest+reclaim check on every day
+    over the last `backtest_lookback_days` trading days (checked
+    against SMA50 and SMA150 independently), simulating the forward
+    outcome of each signal found.
+
+    Returns a list of trade dicts:
+      {ticker, date, ma, entry, stop, risk_pct, outcome, bars_to_resolve}
+    """
+    n = len(df)
+    lb = cfg["backtest_lookback_days"]
+    hold = cfg["backtest_holding_days"]
+    # need enough forward bars to resolve a trade, and enough backward
+    # history for SMA150/rising checks to be valid
+    start_idx = max(160, n - lb)
+    end_idx_max = n - 1   # can still include recent signals; they may resolve as "timeout"
+                          # if not enough forward data exists yet — that's expected and fine
+
+    trades = []
+    for i in range(start_idx, end_idx_max + 1):
+        for ma_name, ma_series in (("SMA50", sma50), ("SMA150", sma150)):
+            passed, trace = check_two_candle_retest_reclaim(
+                df, ma_series, ema8,
+                cfg["prior_uptrend_lookback"], cfg["sma_rising_lookback"], sma50,
+                cfg["require_prior_uptrend"], cfg["require_sma50_rising"],
+                cfg["require_volume_confirmation"], end_idx=i,
+            )
+            if not passed:
+                continue
+            entry = trace["close_B"]
+            stop  = trace["low_A"]
+            outcome, bars = simulate_trade_outcome(
+                df, i, entry, stop, cfg["backtest_reward_r"], hold)
+            if outcome == "invalid":
+                continue
+            risk_pct = (entry - stop) / entry * 100 if entry > 0 else 0
+            trades.append({
+                "ticker": sym, "date": df.index[i], "ma": ma_name,
+                "entry": round(entry, 2), "stop": round(stop, 2),
+                "risk_pct": round(risk_pct, 1),
+                "outcome": outcome, "bars_to_resolve": bars,
+            })
+    return trades
+
+def summarize_trades(trades):
+    """Aggregates a list of trade dicts into win/loss/timeout counts + win rate %."""
+    wins    = sum(1 for t in trades if t["outcome"] == "win")
+    losses  = sum(1 for t in trades if t["outcome"] == "loss")
+    timeouts= sum(1 for t in trades if t["outcome"] == "timeout")
+    resolved = wins + losses
+    win_rate = (wins / resolved * 100) if resolved > 0 else None
+    return {
+        "signals": len(trades), "wins": wins, "losses": losses,
+        "timeouts": timeouts, "resolved": resolved, "win_rate_pct": win_rate,
+    }
 
 # ── Fundamental data fetch (robust) ────────────────────────────
 def get_fundamentals(sym):
@@ -329,11 +441,22 @@ def get_fundamentals(sym):
         return empty
 
 # ── Technical signal: SMA50/SMA150 retest + 2-candle reclaim ────
+ALL_BACKTEST_TRADES = []   # accumulates trades across the FULL universe scan
+
 def analyze_retest_reclaim(sym, df):
     """
     Returns dict with tech_score and details, or None if no
     required condition is met against either SMA50 or SMA150.
+
+    Regardless of whether today's live signal matches, this ALSO
+    runs the last-3-months backtest for the ticker (if it passes the
+    same basic price/volume filters) and appends the trades found to
+    the global ALL_BACKTEST_TRADES accumulator, so the full-universe
+    backtest summary reflects every liquid ticker scanned — not just
+    today's matches.
     """
+    global ALL_BACKTEST_TRADES
+
     n       = len(df)
     price   = float(df["Close"].iloc[-1])
     avg_vol = float(df["Volume"].tail(20).mean())
@@ -345,6 +468,11 @@ def analyze_retest_reclaim(sym, df):
     sma50  = df["Close"].rolling(CFG["sma50_period"]).mean()
     sma150 = df["Close"].rolling(CFG["sma150_period"]).mean()
     ema8   = df["Close"].ewm(span=CFG["ema8_period"], adjust=False).mean()
+
+    # ── Backtest: last 3 months, this ticker, regardless of live match ──
+    bt_trades = backtest_ticker(sym, df, sma50, sma150, ema8, CFG)
+    ALL_BACKTEST_TRADES.extend(bt_trades)
+    bt_summary = summarize_trades(bt_trades)
 
     matches = []
     for ma_name, ma_series in [("SMA50", sma50), ("SMA150", sma150)]:
@@ -397,6 +525,10 @@ def analyze_retest_reclaim(sym, df):
     vol_pts = 8 if vol_chg_pct >= 50 else (5 if vol_chg_pct >= 20 else 3)
     ts += vol_pts; tr.append(f"Vol{vol_chg_pct:+.0f}%")
 
+    if bt_summary["win_rate_pct"] is not None:
+        if bt_summary["win_rate_pct"] >= 60: ts += 4; tr.append("StrongBacktest")
+        elif bt_summary["win_rate_pct"] >= 45: ts += 2
+
     ts = min(30, ts)
 
     return {
@@ -413,6 +545,12 @@ def analyze_retest_reclaim(sym, df):
         "SMA150"         : round(float(sma150.iloc[-1]), 2),
         "EMA8"           : round(ema8_B, 2),
         "Vol_Chg_%"      : round(vol_chg_pct, 1),
+        "Backtest_Signals_3M": bt_summary["signals"],
+        "Backtest_Wins"      : bt_summary["wins"],
+        "Backtest_Losses"    : bt_summary["losses"],
+        "Backtest_Timeouts"  : bt_summary["timeouts"],
+        "Backtest_WinRate_%" : (round(bt_summary["win_rate_pct"], 1)
+                                 if bt_summary["win_rate_pct"] is not None else None),
         "_df"            : df,
         "_sma50"         : sma50,
         "_sma150"        : sma150,
@@ -656,6 +794,11 @@ for item in tqdm(tech_passes, desc="Pass 2 Fund", unit="stk"):
             "SMA150"            : ts["SMA150"],
             "EMA8"              : ts["EMA8"],
             "Vol_Chg_%"         : ts["Vol_Chg_%"],
+            "Backtest_Signals_3M": ts["Backtest_Signals_3M"],
+            "Backtest_Wins"      : ts["Backtest_Wins"],
+            "Backtest_Losses"    : ts["Backtest_Losses"],
+            "Backtest_Timeouts"  : ts["Backtest_Timeouts"],
+            "Backtest_WinRate_%" : ts["Backtest_WinRate_%"],
             "Tech_Flags"        : ts["tech_reasons"],
             "Rev_Growth_%"      : fund["Rev_Growth_%"],
             "Profit_Margin_%"   : fund["Profit_Margin_%"],
@@ -683,6 +826,24 @@ print(f"  Tech passes: {len(tech_passes)}")
 print(f"  ✅ Matches  : {len(results)}")
 print(f"{'━'*65}")
 
+# ── Full-universe 3-month backtest summary ─────────────────────
+BT_SUMMARY = summarize_trades(ALL_BACKTEST_TRADES)
+print(f"\n{'━'*65}")
+print(f"  📈 BACKTEST — LAST {CFG['backtest_lookback_days']} TRADING DAYS (~3 MONTHS)")
+print(f"  Full NASDAQ universe, {CFG['backtest_reward_r']:.0f}:1 reward vs stop-loss, "
+      f"{CFG['backtest_holding_days']}-day max hold")
+print(f"{'━'*65}")
+print(f"  Total signals found : {BT_SUMMARY['signals']}")
+print(f"  Wins                : {BT_SUMMARY['wins']}")
+print(f"  Losses              : {BT_SUMMARY['losses']}")
+print(f"  Timeouts (excluded) : {BT_SUMMARY['timeouts']}")
+if BT_SUMMARY["win_rate_pct"] is not None:
+    print(f"  ✅ SUCCESS RATE      : {BT_SUMMARY['win_rate_pct']:.1f}%  "
+          f"({BT_SUMMARY['wins']}/{BT_SUMMARY['resolved']} resolved trades)")
+else:
+    print(f"  ✅ SUCCESS RATE      : n/a (no resolved trades yet)")
+print(f"{'━'*65}")
+
 if not results:
     print("\n  No matches. Try relaxing:")
     print("   min_tech_score                 10 → 6")
@@ -707,6 +868,8 @@ COLS = [
     "Rev_Growth_%","Profit_Margin_%","ROE_%","PE_Ratio","EPS",
     "Retested_MA","Candle_A_Close","Candle_A_Low","Candle_B_Close",
     "SMA50","SMA150","EMA8","Vol_Chg_%",
+    "Backtest_Signals_3M","Backtest_Wins","Backtest_Losses",
+    "Backtest_Timeouts","Backtest_WinRate_%",
     "Tech_Flags","Fund_Flags",
 ]
 df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
@@ -731,6 +894,7 @@ FMT = {
     "Candle_A_Close" : lambda v: f"${v:.2f}",
     "Candle_A_Low"   : lambda v: f"${v:.2f}",
     "Candle_B_Close" : lambda v: f"${v:.2f}",
+    "Backtest_WinRate_%": lambda v: f"{v:.1f}%",
     "SMA50"          : lambda v: f"${v:.2f}",
     "SMA150"         : lambda v: f"${v:.2f}",
     "EMA8"           : lambda v: f"${v:.2f}",
@@ -747,7 +911,7 @@ def fmt_v(col, val):
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Company","Sector","Price","Stop_Loss",
             "Total","Fund","Tech",
-            "Retested_MA","Risk_%","Vol_Chg_%"]
+            "Retested_MA","Risk_%","Backtest_WinRate_%"]
     DISP = [c for c in DISP if c in df_out.columns]
 
     gc = "#22c55e"
@@ -839,7 +1003,7 @@ if _IN_NOTEBOOK and results:
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
     CLI_COLS = ["Ticker","Price","Stop_Loss","Total","Fund","Tech",
-                "Retested_MA","Risk_%","Sector"]
+                "Retested_MA","Risk_%","Backtest_WinRate_%","Sector"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -870,6 +1034,8 @@ elif results:
   Stop_Loss       candle A (yesterday) low
   Retested_MA     which MA (SMA50 or SMA150) this pattern formed against
   Risk_%          (Price - Stop_Loss) / Price
+  Backtest_WinRate_%  this ticker's own win rate over the last 3 months
+                      (n/a if it had no resolved historical signals)
   ──────────────────────────────────────────────────────""")
 
 # Save
@@ -882,8 +1048,15 @@ with open(tv,"w") as f:
     for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
 print(f"  📋 TradingView → {tv}")
 
+# Save backtest trade log (every signal found in the last 3 months, full universe)
+bt_fpath = os.path.join(out_dir, f"sma150_base_reclaim_backtest_{ts}.csv")
+bt_df = pd.DataFrame(ALL_BACKTEST_TRADES) if ALL_BACKTEST_TRADES else pd.DataFrame(
+    columns=["ticker","date","ma","entry","stop","risk_pct","outcome","bars_to_resolve"])
+bt_df.to_csv(bt_fpath, index=False)
+print(f"  💾 Backtest trade log → {bt_fpath}  ({len(ALL_BACKTEST_TRADES)} trades)")
+
 # ── Email with CSV attached ───────────────────────────────
-def _send_email(rl, csv_path):
+def _send_email(rl, csv_path, bt_csv_path=None):
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text      import MIMEText
@@ -917,7 +1090,7 @@ def _send_email(rl, csv_path):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Stop_Loss","Total","Fund","Tech",
-                      "Retested_MA","Risk_%"]
+                      "Retested_MA","Risk_%","Backtest_WinRate_%"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -930,6 +1103,8 @@ def _send_email(rl, csv_path):
             tech   = r.get("Tech",0) or 0
             ma     = r.get("Retested_MA","—")
             risk   = r.get("Risk_%",0) or 0
+            bwr    = r.get("Backtest_WinRate_%")
+            bwr_disp = f"{bwr:.1f}%" if bwr is not None else "n/a"
             rows_e += (
                 f'<tr style="background:{bg}">'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
@@ -944,9 +1119,11 @@ def _send_email(rl, csv_path):
                 f'color:#a78bfa;font-weight:600">{ma}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:'
                 f'{"#22c55e" if float(risk)>=0 else "#ef4444"}">{float(risk):+.1f}%</td>'
+                f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
+                f'color:#facc15;font-weight:600">{bwr_disp}</td>'
                 f'</tr>'
             )
-        no_results_msg = ('<tr><td colspan="8" style="padding:20px;text-align:center;'
+        no_results_msg = ('<tr><td colspan="9" style="padding:20px;text-align:center;'
                            'color:#94a3b8;font-size:13px">No matches today</td></tr>')
 
         html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
@@ -963,6 +1140,23 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   {cnt} match{'es' if cnt!=1 else ''} found
 </p>
   </td></tr>
+  <tr><td style="padding:14px 28px 4px;background:#0b1220">
+<div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px 16px">
+  <p style="margin:0 0 6px;color:#93c5fd;font-size:12px;font-weight:700">
+    📈 BACKTEST — LAST {CFG['backtest_lookback_days']} TRADING DAYS (~3 MONTHS), FULL UNIVERSE
+  </p>
+  <p style="margin:0;color:#cbd5e1;font-size:12px">
+    {BT_SUMMARY['signals']} signals &nbsp;·&nbsp;
+    <span style="color:#22c55e">{BT_SUMMARY['wins']} wins</span> &nbsp;·&nbsp;
+    <span style="color:#ef4444">{BT_SUMMARY['losses']} losses</span> &nbsp;·&nbsp;
+    {BT_SUMMARY['timeouts']} timeouts (excluded) &nbsp;·&nbsp;
+    <b style="color:#facc15">Success rate: {(f"{BT_SUMMARY['win_rate_pct']:.1f}%" if BT_SUMMARY['win_rate_pct'] is not None else 'n/a')}</b>
+  </p>
+  <p style="margin:6px 0 0;color:#64748b;font-size:10px">
+    Win = hit {CFG['backtest_reward_r']:.0f}:1 reward before stop-loss, within {CFG['backtest_holding_days']} trading days
+  </p>
+</div>
+  </td></tr>
   <tr><td style="padding:16px">
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
   <table style="border-collapse:collapse;width:100%;min-width:600px">
@@ -971,7 +1165,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   </table>
 </div>
 <p style="font-size:11px;color:#64748b;margin:8px 0 0">
-  📎 Full results attached as CSV
+  📎 Full results + full backtest trade log attached as CSV
 </p>
   </td></tr>
   <tr><td style="background:#f8fafc;padding:12px 28px;
@@ -988,6 +1182,12 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             f"SMA50/SMA150 Retest + 2-Candle Reclaim — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches",
             "="*60,
+            f"BACKTEST (last {CFG['backtest_lookback_days']} trading days, full universe):",
+            f"  Signals: {BT_SUMMARY['signals']}  Wins: {BT_SUMMARY['wins']}  "
+            f"Losses: {BT_SUMMARY['losses']}  Timeouts: {BT_SUMMARY['timeouts']}",
+            f"  Success rate: " + (f"{BT_SUMMARY['win_rate_pct']:.1f}%"
+                                    if BT_SUMMARY['win_rate_pct'] is not None else "n/a"),
+            "="*60,
         ]
         if rl:
             for r in rl[:50]:
@@ -997,16 +1197,22 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 total  = r.get("Total",0) or 0
                 ma     = r.get("Retested_MA","—")
                 risk   = r.get("Risk_%",0) or 0
+                bwr    = r.get("Backtest_WinRate_%")
+                bwr_disp = f"{bwr:.1f}%" if bwr is not None else "n/a"
                 plain_lines.append(
                     f"{ticker:<7} Entry:${float(price):.2f}  SL:${float(sl):.2f}  "
-                    f"Total:{float(total):.0f}  MA:{ma}  Risk:{float(risk):+.1f}%"
+                    f"Total:{float(total):.0f}  MA:{ma}  Risk:{float(risk):+.1f}%  "
+                    f"OwnBacktestWinRate:{bwr_disp}"
                 )
         else:
             plain_lines.append("No matches today")
-        plain_lines.append("\nFull results in CSV attachment.")
+        plain_lines.append("\nFull results + full backtest trade log in CSV attachments.")
         plain_e = "\n".join(plain_lines)
 
-        subj = (f"📊 SMA Retest+Reclaim — {cnt} signal{'s' if cnt!=1 else ''}"
+        wr_disp = (f"{BT_SUMMARY['win_rate_pct']:.0f}%"
+                   if BT_SUMMARY['win_rate_pct'] is not None else "n/a")
+        subj = (f"📊 SMA Retest+Reclaim — {cnt} signal{'s' if cnt!=1 else ''} "
+                f"(3M backtest: {wr_disp})"
                 f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
@@ -1023,19 +1229,20 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] ❌  Failed to build email body: {type(e).__name__}: {e}")
         return
 
-    if csv_path and os.path.exists(csv_path):
-        try:
-            with open(csv_path, "rb") as f:
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(f.read())
-            encoders.encode_base64(part)
-            part.add_header("Content-Disposition",
-                f"attachment; filename={os.path.basename(csv_path)}")
-            msg.attach(part)
-            sz = os.path.getsize(csv_path)
-            print(f"[Email] 📎 Attached: {os.path.basename(csv_path)} ({sz:,} bytes)")
-        except Exception as e:
-            print(f"[Email] ⚠️  CSV attach failed: {e}")
+    for attach_path in [csv_path, bt_csv_path]:
+        if attach_path and os.path.exists(attach_path):
+            try:
+                with open(attach_path, "rb") as f:
+                    part = MIMEBase("application", "octet-stream")
+                    part.set_payload(f.read())
+                encoders.encode_base64(part)
+                part.add_header("Content-Disposition",
+                    f"attachment; filename={os.path.basename(attach_path)}")
+                msg.attach(part)
+                sz = os.path.getsize(attach_path)
+                print(f"[Email] 📎 Attached: {os.path.basename(attach_path)} ({sz:,} bytes)")
+            except Exception as e:
+                print(f"[Email] ⚠️  Attach failed for {attach_path}: {e}")
 
     try:
         print(f"[Email] Connecting to smtp.gmail.com:465 ...")
@@ -1055,7 +1262,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] ❌  Unexpected error: {type(e).__name__}: {e}")
 
 try:
-    _send_email(results, fpath)
+    _send_email(results, fpath, bt_fpath)
 except Exception as e:
     print(f"[Email] ❌  Unexpected top-level error: {type(e).__name__}: {e}")
     print("[Email]    Continuing — CSV and charts are still saved.")
@@ -1137,11 +1344,31 @@ print("""
   Risk_%     = (Price - Stop_Loss) / Price
   Retested_MA = which MA (SMA50 or SMA150) this fired against
 
+  📋 BACKTEST (new)
+  Every ticker scanned (full NASDAQ universe, not just today's
+  matches) is re-checked day-by-day over the last
+  backtest_lookback_days (~3 months) for this same signal. Each
+  historical signal found is simulated forward up to
+  backtest_holding_days bars:
+    WIN     = price hits backtest_reward_r : 1 reward (vs. the
+              signal's own risk) before hitting its stop-loss
+    LOSS    = stop-loss hit first
+    TIMEOUT = neither hit within the holding window — excluded
+              from the win-rate calc, reported separately
+  Success rate % = wins / (wins + losses), i.e. resolved trades only.
+  The scan-wide aggregate is printed at the end and in the email
+  header. Each matching ticker also shows its OWN historical
+  Backtest_WinRate_% (n/a if it had no resolved signals recently).
+  Full trade-by-trade log is saved to
+  sma150_base_reclaim_backtest_<timestamp>.csv and attached to the
+  email alongside the main results CSV.
+
   💡 BEST SETUPS
   Total > 50           elite fundamental + technical combo
   Risk_% < 5            tight stop relative to entry
   Vol_Chg_% > 50         strong volume confirmation on the reclaim
   Fund > 35              genuinely strong business quality
+  Backtest_WinRate_% > 50  this ticker's own pattern has worked recently
 
   ⚙️  TUNE IF 0 RESULTS
   min_tech_score                   10 → 6
@@ -1153,5 +1380,10 @@ print("""
   require_volume_confirmation     True → False
   min_price                         2 → 1
   min_avg_volume                80000 → 50000
+
+  ⚙️  BACKTEST TUNING
+  backtest_lookback_days   63 → 126   (6 months instead of 3)
+  backtest_holding_days    15 → 20
+  backtest_reward_r        2.0 → 1.5  (easier win condition)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
