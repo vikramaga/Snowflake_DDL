@@ -1,22 +1,28 @@
 # ============================================================
-# NASDAQ — SMA150 Base-Reclaim + JMA Uptrend Scanner (v1)
+# NASDAQ — SMA50/SMA150 Retest + 2-Candle Reclaim Scanner (v2)
 # ============================================================
 #
-# SIGNAL (all required):
-#   1. BASE: before the reclaim, price spent a meaningful stretch
-#      (base_lookback_days) mostly BELOW SMA150 with real amplitude
-#      (a genuine multi-month base/cup, not just noise around the
-#      line).
-#   2. RECLAIM: price closed above SMA150 within sma150_cross_lookback
-#      bars, having been below SMA150 immediately before that —
-#      a fresh cross from below, coming right out of the base above.
-#   3. CONTINUATION: price is still above SMA150 now, and has moved
-#      HIGHER since the reclaim bar (not just poked above and stalled).
-#   4. JMA: price also crossed above JMA within jma_cross_lookback
-#      bars (from below), price is still above JMA now, AND JMA
-#      itself is sloping upward (rising) — confirms the move is
-#      being led by an accelerating short-term trend, not just SMA150
-#      alone.
+# SIGNAL (all required) — checked against SMA50 AND SMA150
+# independently; a stock matches if either MA satisfies it:
+#
+#   0. PRIOR UPTREND: price was above the MA a few bars before the
+#      retest (confirms this is a pullback within an uptrend, not
+#      a breakdown).
+#   1. MA RISING: SMA50 has started increasing (SMA50 today >
+#      SMA50 sma_rising_lookback bars ago) — confirms the trend
+#      driving this MA has turned back up.
+#   2. CANDLE A (yesterday, the retest candle): RED (close < open)
+#      AND closed BELOW the MA (SMA50 or SMA150) — the pullback
+#      actually touches/breaches the MA.
+#   3. CANDLE B (today, the reclaim candle): GREEN (close > open)
+#      AND closed ABOVE the SAME MA AND above EMA8 simultaneously
+#      — a clean one-day reclaim of support.
+#   4. VOLUME: today's volume (candle B) > yesterday's volume
+#      (candle A) — confirms real buying interest on the reclaim.
+#
+# OUTPUT:
+#   Price      = close of candle B (today, the signal/entry price)
+#   Stop_Loss  = low of candle A (yesterday's candle low)
 #
 # 2-PASS ARCHITECTURE (same as fundamental_v2.py / jma_stack_cross_v1.py):
 #   PASS 1 — technical signal above (fast, no .info calls)
@@ -119,26 +125,18 @@ CFG = {
     "max_pe_ratio"                : 50.0,
     "high_growth_threshold_pct"  : 15.0,
 
-    # ── SMA150 base-reclaim + JMA uptrend signal ────────────────
-    "jma_period"                   : 13,   # JMA 13 100 2 (as on the chart)
-    "jma_phase"                    : 100,
+    # ── SMA50/SMA150 retest + 2-candle reclaim signal ───────────
+    "ema8_period"                  : 8,
+    "sma50_period"                 : 50,
     "sma150_period"                : 150,
 
-    "base_lookback_days"           : 90,   # window to look for a prior base
-    "min_below_sma150_pct"         : 50.0, # % of base window closed below SMA150
-    "min_base_depth_pct"           : 15.0, # swing amplitude within the base window
-    "sma150_cross_lookback"        : 25,   # bars to look back for a fresh SMA150 reclaim
-    "jma_cross_lookback"           : 60,   # bars to look back for the JMA cross. JMA reacts
-                                            # to the bottom fast, so its cross typically happens
-                                            # chronologically EARLIER than the SMA150 reclaim
-                                            # (i.e. MORE bars ago from today) — needs a wider
-                                            # window to still be considered "part of this move"
-    "jma_slope_lookback"           : 10,   # bars back to confirm JMA is rising
-    "require_base_before_cross"    : True,
-    "require_price_above_sma150_now": True,
-    "require_price_above_jma_now"  : True,
-    "require_price_continuation"   : True, # price higher now than at the SMA150 reclaim bar
-    "require_jma_rising"           : True,
+    "prior_uptrend_lookback"       : 3,    # bars before candle A that must show
+                                            # price above the MA (confirms pullback
+                                            # in an uptrend, not a breakdown)
+    "sma_rising_lookback"          : 5,    # bars back to confirm SMA50 has turned up
+    "require_prior_uptrend"        : True,
+    "require_sma50_rising"         : True,
+    "require_volume_confirmation"  : True, # candle B volume > candle A volume
 
 
     # ── Score gates ─────────────────────────────────────────────
@@ -154,88 +152,98 @@ CFG = {
     "fund_sleep"                    : 0.3,
 }
 
-# ── Indicators ───────────────────────────────────────────────
-def calc_jma(series, period=13, phase=40, power=2):
+# ── Indicators / signal detection ─────────────────────────────
+def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
+                                     sma_rising_lookback, sma50_for_rising,
+                                     require_prior_uptrend, require_sma50_rising,
+                                     require_volume_confirmation):
     """
-    JMA (Jurik Moving Average) approximation — adaptive EMA with
-    phase-based smoothing factor. The true JMA is proprietary;
-    this is the widely-used pure-numpy approximation, using the
-    corrected e2 update (steady-state gain 1.0, tracks price
-    correctly — see fundamental_v2.py for details on the bug in
-    the original snippet this is derived from).
+    Checks the exact 2-candle retest + reclaim pattern against ONE
+    moving average series (SMA50 or SMA150), evaluated on the LATEST
+    two bars: candle A = yesterday (retest), candle B = today (reclaim).
 
-    phase : -100..+100 (positive = more responsive)
-    power : typically 2
+    Every condition is computed explicitly and returned in the trace
+    dict, so failures can be inspected step by step.
+
+    Returns (passed: bool, trace: dict).
     """
-    n      = len(series)
-    vals   = series.values.astype(float)
-    result = np.full(n, np.nan)
+    n = len(df)
+    trace = {}
+    if n < max(prior_uptrend_lookback, sma_rising_lookback) + 3:
+        trace["fail_reason"] = "not_enough_history"
+        return False, trace
 
-    phase_ratio = phase / 100.0 + 1.5
-    alpha = 2.0 / (period + 1.0)
-    beta  = alpha * phase_ratio
+    open_A,  close_A  = float(df["Open"].iloc[-2]),  float(df["Close"].iloc[-2])
+    low_A                                              = float(df["Low"].iloc[-2])
+    open_B,  close_B  = float(df["Open"].iloc[-1]),  float(df["Close"].iloc[-1])
+    vol_A = float(df["Volume"].iloc[-2])
+    vol_B = float(df["Volume"].iloc[-1])
 
-    first_valid = 0
-    for i in range(n):
-        if not np.isnan(vals[i]):
-            first_valid = i
-            break
+    ma_A = float(ma_series.iloc[-2])
+    ma_B = float(ma_series.iloc[-1])
+    ema8_B = float(ema8.iloc[-1])
 
-    e0 = e1 = e2 = vals[first_valid]
-    result[first_valid] = e0
+    if any(np.isnan(v) for v in [ma_A, ma_B, ema8_B]):
+        trace["fail_reason"] = "nan_indicator"
+        return False, trace
 
-    for i in range(first_valid + 1, n):
-        v   = vals[i]
-        e0  = (1 - alpha) * e0 + alpha * v
-        e1  = (v - e0) * (1 - beta) + beta * e1
-        e2  = (1 - alpha) * e2 + alpha * (e0 + e1)
-        result[i] = e2
+    # ── Step 0: prior uptrend — price was above the MA a few bars
+    #    before the retest candle ────────────────────────────────
+    prior_i = n - 2 - prior_uptrend_lookback   # bar index before candle A
+    prior_ok = False
+    if prior_i >= 0:
+        prior_close = float(df["Close"].iloc[prior_i])
+        prior_ma    = float(ma_series.iloc[prior_i])
+        if not (np.isnan(prior_close) or np.isnan(prior_ma)):
+            prior_ok = prior_close > prior_ma
+    trace["prior_uptrend_ok"] = prior_ok
 
-    return pd.Series(result, index=series.index)
+    # ── Step 1: MA (SMA50) has started rising ──────────────────────
+    sma_rising_ok = False
+    if n > sma_rising_lookback:
+        s_now  = float(sma50_for_rising.iloc[-1])
+        s_prev = float(sma50_for_rising.iloc[-1-sma_rising_lookback])
+        if not (np.isnan(s_now) or np.isnan(s_prev)):
+            sma_rising_ok = s_now > s_prev
+    trace["sma50_rising_ok"] = sma_rising_ok
 
-def find_ma_cross(close, ma_series, lookback):
-    """
-    Detects a bar where close crosses from at/below ma_series to
-    above it (confirmed by close), within the last `lookback` bars.
-    Returns (crossed: bool, bars_since: int|None, cross_i: int|None
-    the absolute index position of the cross bar).
-    """
-    n = len(close)
-    for back in range(0, lookback + 1):
-        i = n - 1 - back
-        if i < 1: break
-        c_i, c_p   = close.iloc[i],      close.iloc[i-1]
-        m_i, m_p   = ma_series.iloc[i],  ma_series.iloc[i-1]
-        if any(np.isnan(v) for v in [c_i, c_p, m_i, m_p]): continue
-        if c_p <= m_p and c_i > m_i:
-            return True, back, i
-    return False, None, None
+    # ── Step 2: candle A — red, closed below the MA ────────────────
+    candle_A_red      = close_A < open_A
+    candle_A_below_ma = close_A < ma_A
+    trace["candle_A_red"]      = candle_A_red
+    trace["candle_A_below_ma"] = candle_A_below_ma
 
-def check_prior_base(close, sma150, cross_i, base_lookback_days,
-                      min_below_pct, min_depth_pct):
-    """
-    Looks at the window of `base_lookback_days` bars immediately
-    BEFORE the SMA150 cross bar (cross_i) and checks it looks like a
-    genuine base: mostly below SMA150, with real price amplitude
-    (not just noise hugging the line).
-    Returns (is_base: bool, below_pct: float, depth_pct: float).
-    """
-    start = max(0, cross_i - base_lookback_days)
-    win_close = close.iloc[start:cross_i]
-    win_sma   = sma150.iloc[start:cross_i]
-    valid = (~win_close.isna()) & (~win_sma.isna())
-    win_close, win_sma = win_close[valid], win_sma[valid]
-    if len(win_close) < base_lookback_days * 0.5:   # not enough history
-        return False, 0.0, 0.0
+    # ── Step 3: candle B — green, closed above the MA AND above EMA8 ──
+    candle_B_green      = close_B > open_B
+    candle_B_above_ma   = close_B > ma_B
+    candle_B_above_ema8 = close_B > ema8_B
+    trace["candle_B_green"]      = candle_B_green
+    trace["candle_B_above_ma"]   = candle_B_above_ma
+    trace["candle_B_above_ema8"] = candle_B_above_ema8
 
-    below_pct = float((win_close < win_sma).sum()) / len(win_close) * 100
-    hi, lo = float(win_close.max()), float(win_close.min())
-    depth_pct = (hi - lo) / hi * 100 if hi > 0 else 0.0
+    # ── Step 4: volume confirmation ────────────────────────────────
+    vol_ok = vol_B > vol_A
+    trace["vol_confirmed"] = vol_ok
+    trace["vol_chg_pct"] = ((vol_B - vol_A) / vol_A * 100) if vol_A > 0 else 0.0
 
-    is_base = below_pct >= min_below_pct and depth_pct >= min_depth_pct
-    return is_base, below_pct, depth_pct
+    trace.update({
+        "open_A": open_A, "close_A": close_A, "low_A": low_A,
+        "open_B": open_B, "close_B": close_B,
+        "ma_A": ma_A, "ma_B": ma_B, "ema8_B": ema8_B,
+        "vol_A": vol_A, "vol_B": vol_B,
+    })
 
+    checks = [
+        candle_A_red, candle_A_below_ma,
+        candle_B_green, candle_B_above_ma, candle_B_above_ema8,
+    ]
+    if require_prior_uptrend:       checks.append(prior_ok)
+    if require_sma50_rising:        checks.append(sma_rising_ok)
+    if require_volume_confirmation: checks.append(vol_ok)
 
+    passed = all(checks)
+    trace["passed"] = passed
+    return passed, trace
 
 # ── Fundamental data fetch (robust) ────────────────────────────
 def get_fundamentals(sym):
@@ -320,11 +328,11 @@ def get_fundamentals(sym):
     except Exception:
         return empty
 
-# ── Technical signal: JMA price-cross + MA stack ────────────────
-def analyze_sma150_base_reclaim(sym, df):
+# ── Technical signal: SMA50/SMA150 retest + 2-candle reclaim ────
+def analyze_retest_reclaim(sym, df):
     """
-    Returns dict with tech_score and details, or None if any
-    required condition fails.
+    Returns dict with tech_score and details, or None if no
+    required condition is met against either SMA50 or SMA150.
     """
     n       = len(df)
     price   = float(df["Close"].iloc[-1])
@@ -332,98 +340,83 @@ def analyze_sma150_base_reclaim(sym, df):
 
     if price   < CFG["min_price"]:      return None
     if avg_vol < CFG["min_avg_volume"]: return None
+    if n < 160: return None   # need enough history for SMA150 + rising checks
 
+    sma50  = df["Close"].rolling(CFG["sma50_period"]).mean()
     sma150 = df["Close"].rolling(CFG["sma150_period"]).mean()
-    jma_s  = calc_jma(df["Close"], CFG["jma_period"], CFG["jma_phase"])
+    ema8   = df["Close"].ewm(span=CFG["ema8_period"], adjust=False).mean()
 
-    cur_price  = price
-    cur_sma150 = float(sma150.iloc[-1])
-    cur_jma    = float(jma_s.iloc[-1])
-    if any(np.isnan(v) for v in [cur_sma150, cur_jma]):
+    matches = []
+    for ma_name, ma_series in [("SMA50", sma50), ("SMA150", sma150)]:
+        passed, trace = check_two_candle_retest_reclaim(
+            df, ma_series, ema8,
+            CFG["prior_uptrend_lookback"], CFG["sma_rising_lookback"], sma50,
+            CFG["require_prior_uptrend"], CFG["require_sma50_rising"],
+            CFG["require_volume_confirmation"],
+        )
+        if passed:
+            matches.append((ma_name, trace))
+
+    if not matches:
         return None
 
-    # ── Condition 1: fresh SMA150 reclaim (close crosses above from below) ──
-    s150_crossed, s150_bars_since, s150_cross_i = find_ma_cross(
-        df["Close"], sma150, CFG["sma150_cross_lookback"])
-    if not s150_crossed:
-        return None
+    # If both SMA50 and SMA150 fire, prefer SMA50 (tighter/more responsive
+    # support) as the reported MA, but note both in the flags.
+    ma_name, trace = matches[0]
+    matched_both = len(matches) == 2
 
-    # ── Condition 2: a genuine base existed before that cross ─────────
-    is_base, below_pct, depth_pct = check_prior_base(
-        df["Close"], sma150, s150_cross_i, CFG["base_lookback_days"],
-        CFG["min_below_sma150_pct"], CFG["min_base_depth_pct"])
-    if CFG["require_base_before_cross"] and not is_base:
-        return None
+    close_A, low_A   = trace["close_A"], trace["low_A"]
+    close_B          = trace["close_B"]
+    ma_A, ma_B       = trace["ma_A"], trace["ma_B"]
+    ema8_B           = trace["ema8_B"]
+    vol_chg_pct      = trace["vol_chg_pct"]
 
-    # ── Condition 3: price still above SMA150 now, and has continued
-    #    moving up since the reclaim bar (not stalled/failed back) ────
-    price_above_sma150_now = cur_price > cur_sma150
-    if CFG["require_price_above_sma150_now"] and not price_above_sma150_now:
-        return None
+    signal_price = close_B          # today's (candle B) close — the entry price
+    stop_loss    = low_A            # yesterday's (candle A) low
 
-    price_at_cross = float(df["Close"].iloc[s150_cross_i])
-    continued_up   = cur_price > price_at_cross
-    if CFG["require_price_continuation"] and not continued_up:
-        return None
-    continuation_pct = ((cur_price - price_at_cross) / price_at_cross * 100
-                         if price_at_cross > 0 else 0)
-
-    # ── Condition 4: fresh JMA cross, price still above JMA, JMA rising ──
-    jma_crossed, jma_bars_since, jma_cross_i = find_ma_cross(
-        df["Close"], jma_s, CFG["jma_cross_lookback"])
-    if not jma_crossed:
-        return None
-
-    price_above_jma_now = cur_price > cur_jma
-    if CFG["require_price_above_jma_now"] and not price_above_jma_now:
-        return None
-
-    slb = CFG["jma_slope_lookback"]
-    jma_prior = float(jma_s.iloc[-1-slb]) if n > slb else np.nan
-    jma_rising = (not np.isnan(jma_prior)) and (cur_jma > jma_prior)
-    if CFG["require_jma_rising"] and not jma_rising:
-        return None
-    jma_slope_pct = ((cur_jma - jma_prior) / jma_prior * 100
-                      if (not np.isnan(jma_prior) and jma_prior > 0) else 0)
+    risk_pct = ((signal_price - stop_loss) / signal_price * 100
+                if signal_price > 0 else 0)
 
     # ── Technical score (0-30) ────────────────────────────────
     ts = 0
-    tr = []
+    tr = [f"Retest+Reclaim({ma_name})"]
+    if matched_both:
+        ts += 4; tr.append("BothSMA50&150")
 
-    s150_pts = 8 if s150_bars_since <= 3 else (6 if s150_bars_since <= 7 else 4)
-    ts += s150_pts; tr.append(f"SMA150_Reclaim({s150_bars_since}d)")
+    dist_below_ma_A = (ma_A - close_A) / ma_A * 100 if ma_A > 0 else 0
+    ts += 6; tr.append(f"CandleA_Below{ma_name}{dist_below_ma_A:+.1f}%")
 
-    if is_base:
-        base_pts = 6 if depth_pct >= 25 else 4
-        ts += base_pts; tr.append(f"Base(depth{depth_pct:.0f}%,below{below_pct:.0f}%)")
+    dist_above_ma_B = (close_B - ma_B) / ma_B * 100 if ma_B > 0 else 0
+    ma_pts = 6 if dist_above_ma_B >= 2 else 4
+    ts += ma_pts; tr.append(f"CandleB_Above{ma_name}{dist_above_ma_B:+.1f}%")
 
-    if continued_up:
-        cont_pts = 6 if continuation_pct >= 15 else (4 if continuation_pct >= 5 else 2)
-        ts += cont_pts; tr.append(f"Continuation{continuation_pct:+.0f}%")
+    dist_above_ema8 = (close_B - ema8_B) / ema8_B * 100 if ema8_B > 0 else 0
+    ema_pts = 6 if dist_above_ema8 >= 2 else 4
+    ts += ema_pts; tr.append(f"CandleB_AboveEMA8{dist_above_ema8:+.1f}%")
 
-    jma_pts = 6 if jma_bars_since <= 3 else (4 if jma_bars_since <= 7 else 2)
-    ts += jma_pts; tr.append(f"JMA_Cross({jma_bars_since}d)")
-
-    if jma_rising:
-        slope_pts = 4 if jma_slope_pct >= 5 else 2
-        ts += slope_pts; tr.append(f"JMA_Rising{jma_slope_pct:+.1f}%")
+    vol_pts = 8 if vol_chg_pct >= 50 else (5 if vol_chg_pct >= 20 else 3)
+    ts += vol_pts; tr.append(f"Vol{vol_chg_pct:+.0f}%")
 
     ts = min(30, ts)
 
     return {
-        "tech_score"        : ts,
-        "tech_reasons"      : " | ".join(tr),
-        "JMA"               : round(cur_jma, 2),
-        "SMA150"            : round(cur_sma150, 2),
-        "SMA150_Cross_Bars_Ago" : s150_bars_since,
-        "Base_Depth_%"      : round(depth_pct, 1),
-        "Base_Below_SMA150_%" : round(below_pct, 1),
-        "Continuation_%"    : round(continuation_pct, 1),
-        "JMA_Cross_Bars_Ago": jma_bars_since,
-        "JMA_Slope_%"       : round(jma_slope_pct, 1),
-        "_df"               : df,
-        "_jma"              : jma_s,
-        "_sma150"           : sma150,
+        "tech_score"     : ts,
+        "tech_reasons"   : " | ".join(tr),
+        "Retested_MA"    : ma_name,
+        "Price"          : round(signal_price, 2),
+        "Stop_Loss"      : round(stop_loss, 2),
+        "Risk_%"         : round(risk_pct, 1),
+        "Candle_A_Close" : round(close_A, 2),
+        "Candle_A_Low"   : round(low_A, 2),
+        "Candle_B_Close" : round(close_B, 2),
+        "SMA50"          : round(float(sma50.iloc[-1]), 2),
+        "SMA150"         : round(float(sma150.iloc[-1]), 2),
+        "EMA8"           : round(ema8_B, 2),
+        "Vol_Chg_%"      : round(vol_chg_pct, 1),
+        "_df"            : df,
+        "_sma50"         : sma50,
+        "_sma150"        : sma150,
+        "_ema8"          : ema8,
     }
 
 # ── Download ──────────────────────────────────────────────────
@@ -474,12 +467,12 @@ def download(symbols, days):
     return out
 
 # ── Live print ────────────────────────────────────────────────
-LIVE_COLS = ["Ticker","Price","Total","Fund","Tech",
-             "SMA150_Cross_Bars_Ago","JMA_Cross_Bars_Ago","Continuation_%","Sector"]
-_CW = {"Ticker":8,"Price":10,"Total":7,"Fund":6,"Tech":6,
-       "SMA150_Cross_Bars_Ago":12,"JMA_Cross_Bars_Ago":12,"Continuation_%":12,"Sector":20}
-_CF = {"Price":"${:.2f}","Total":"{:.0f}","Fund":"{:.0f}",
-       "Tech":"{:.0f}","Continuation_%":"{:+.1f}%"}
+LIVE_COLS = ["Ticker","Price","Stop_Loss","Total","Fund","Tech",
+             "Retested_MA","Risk_%","Sector"]
+_CW = {"Ticker":8,"Price":10,"Stop_Loss":11,"Total":7,"Fund":6,"Tech":6,
+       "Retested_MA":12,"Risk_%":9,"Sector":20}
+_CF = {"Price":"${:.2f}","Stop_Loss":"${:.2f}","Total":"{:.0f}","Fund":"{:.0f}",
+       "Tech":"{:.0f}","Risk_%":"{:+.1f}%"}
 _hdr_done = False
 
 def _live_header():
@@ -592,7 +585,7 @@ print()
 print("━"*65)
 print(f"  STEP 3  SCANNING {len(TICKERS)} TICKERS")
 print("━"*65)
-print("  Pass 1: JMA price-cross + MA stack + volume screening (fast)")
+print("  Pass 1: SMA50/SMA150 retest + 2-candle reclaim screening (fast)")
 print("  Pass 2: Fundamental fetch for pass-1 stocks only\n")
 
 _hdr_done   = False
@@ -613,7 +606,7 @@ with tqdm(total=len(TICKERS), desc="Pass 1 Tech", unit="stk",
             pbar.update(1)
             if sym not in data_map: continue
             try:
-                ts = analyze_sma150_base_reclaim(sym, data_map[sym])
+                ts = analyze_retest_reclaim(sym, data_map[sym])
                 if ts is None: continue
                 if ts["tech_score"] < CFG["min_tech_score"]: continue
                 tech_passes.append({
@@ -646,21 +639,23 @@ for item in tqdm(tech_passes, desc="Pass 2 Fund", unit="stk"):
 
         result = {
             "Ticker"            : sym,
-            "Price"             : round(price, 2),
+            "Price"             : ts["Price"],
+            "Stop_Loss"         : ts["Stop_Loss"],
+            "Risk_%"            : ts["Risk_%"],
             "Total"             : total,
             "Fund"              : fs,
             "Tech"              : tscr,
             "Sector"            : fund["Sector"],
             "Company"           : fund["Company"],
             "Industry"          : fund["Industry"],
-            "JMA"               : ts["JMA"],
+            "Retested_MA"       : ts["Retested_MA"],
+            "Candle_A_Close"    : ts["Candle_A_Close"],
+            "Candle_A_Low"      : ts["Candle_A_Low"],
+            "Candle_B_Close"    : ts["Candle_B_Close"],
+            "SMA50"             : ts["SMA50"],
             "SMA150"            : ts["SMA150"],
-            "SMA150_Cross_Bars_Ago" : ts["SMA150_Cross_Bars_Ago"],
-            "Base_Depth_%"      : ts["Base_Depth_%"],
-            "Base_Below_SMA150_%": ts["Base_Below_SMA150_%"],
-            "Continuation_%"    : ts["Continuation_%"],
-            "JMA_Cross_Bars_Ago": ts["JMA_Cross_Bars_Ago"],
-            "JMA_Slope_%"       : ts["JMA_Slope_%"],
+            "EMA8"              : ts["EMA8"],
+            "Vol_Chg_%"         : ts["Vol_Chg_%"],
             "Tech_Flags"        : ts["tech_reasons"],
             "Rev_Growth_%"      : fund["Rev_Growth_%"],
             "Profit_Margin_%"   : fund["Profit_Margin_%"],
@@ -672,8 +667,9 @@ for item in tqdm(tech_passes, desc="Pass 2 Fund", unit="stk"):
             "Fund_Flags"        : fund["Fund_Flags"],
             # internals
             "_df"    : ts["_df"],
-            "_jma"   : ts["_jma"],
+            "_sma50" : ts["_sma50"],
             "_sma150": ts["_sma150"],
+            "_ema8"  : ts["_ema8"],
         }
         results.append(result)
         live_print(result)
@@ -691,11 +687,10 @@ if not results:
     print("\n  No matches. Try relaxing:")
     print("   min_tech_score                 10 → 6")
     print("   min_total_score                15 → 5")
-    print("   sma150_cross_lookback          25 → 40")
-    print("   jma_cross_lookback             60 → 90")
-    print("   min_below_sma150_pct           50 → 35")
-    print("   min_base_depth_pct             15 → 10")
-    print("   require_jma_rising           True → False")
+    print("   require_prior_uptrend        True → False")
+    print("   require_sma50_rising         True → False")
+    print("   require_volume_confirmation  True → False")
+    print("   prior_uptrend_lookback          3 → 5")
     print("   min_price                        2 → 1")
     print("   min_avg_volume               80000 → 50000")
 
@@ -707,12 +702,11 @@ ts      = datetime.today().strftime("%Y%m%d_%H%M")
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 
 COLS = [
-    "Ticker","Company","Sector","Price",
+    "Ticker","Company","Sector","Price","Stop_Loss","Risk_%",
     "Total","Fund","Tech",
     "Rev_Growth_%","Profit_Margin_%","ROE_%","PE_Ratio","EPS",
-    "JMA","SMA150",
-    "SMA150_Cross_Bars_Ago","Base_Depth_%","Base_Below_SMA150_%",
-    "Continuation_%","JMA_Cross_Bars_Ago","JMA_Slope_%",
+    "Retested_MA","Candle_A_Close","Candle_A_Low","Candle_B_Close",
+    "SMA50","SMA150","EMA8","Vol_Chg_%",
     "Tech_Flags","Fund_Flags",
 ]
 df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
@@ -723,6 +717,8 @@ if not df_out.empty:
 
 FMT = {
     "Price"          : lambda v: f"${v:.2f}",
+    "Stop_Loss"      : lambda v: f"${v:.2f}",
+    "Risk_%"         : lambda v: f"{v:+.1f}%",
     "Total"          : lambda v: f"{v:.0f}",
     "Fund"           : lambda v: f"{v:.0f}",
     "Tech"           : lambda v: f"{v:.0f}",
@@ -732,14 +728,13 @@ FMT = {
     "PE_Ratio"       : lambda v: f"{v:.1f}",
     "EPS"            : lambda v: f"${v:.2f}",
     "Market_Cap_B"   : lambda v: f"${v:.2f}B",
-    "JMA"            : lambda v: f"${v:.2f}",
+    "Candle_A_Close" : lambda v: f"${v:.2f}",
+    "Candle_A_Low"   : lambda v: f"${v:.2f}",
+    "Candle_B_Close" : lambda v: f"${v:.2f}",
+    "SMA50"          : lambda v: f"${v:.2f}",
     "SMA150"         : lambda v: f"${v:.2f}",
-    "SMA150_Cross_Bars_Ago": lambda v: f"{int(v)}d ago",
-    "Base_Depth_%"   : lambda v: f"{v:.1f}%",
-    "Base_Below_SMA150_%": lambda v: f"{v:.1f}%",
-    "Continuation_%" : lambda v: f"{v:+.1f}%",
-    "JMA_Cross_Bars_Ago": lambda v: f"{int(v)}d ago",
-    "JMA_Slope_%"    : lambda v: f"{v:+.1f}%",
+    "EMA8"           : lambda v: f"${v:.2f}",
+    "Vol_Chg_%"      : lambda v: f"{v:+.1f}%",
 }
 
 def fmt_v(col, val):
@@ -750,10 +745,9 @@ def fmt_v(col, val):
     return str(val) if str(val) not in ("nan","None","") else "—"
 
 if _IN_NOTEBOOK and results:
-    DISP = ["Ticker","Company","Sector","Price",
+    DISP = ["Ticker","Company","Sector","Price","Stop_Loss",
             "Total","Fund","Tech",
-            "SMA150_Cross_Bars_Ago","JMA_Cross_Bars_Ago",
-            "Continuation_%","Base_Depth_%"]
+            "Retested_MA","Risk_%","Vol_Chg_%"]
     DISP = [c for c in DISP if c in df_out.columns]
 
     gc = "#22c55e"
@@ -784,12 +778,14 @@ if _IN_NOTEBOOK and results:
                     g = int(min(200, 60 + v*2.5))
                     sty = f"background:rgb(20,{g},80);color:#fff;font-weight:600;text-align:center"
                 except Exception: pass
-            elif col in ("Continuation_%","JMA_Slope_%"):
+            elif col in ("Risk_%","Vol_Chg_%"):
                 try:
                     v = float(str(raw).replace("%","").replace("+",""))
                     clr = "#22c55e" if v >= 0 else "#ef4444"
                     sty = f"color:{clr};font-weight:600"
                 except Exception: pass
+            elif col == "Stop_Loss":
+                sty = "color:#ef4444;font-weight:600"
             tds += (f'<td style="padding:7px 12px;font-size:12px;'
                     f'border-bottom:1px solid #e2e8f0;white-space:nowrap;{sty}">'
                     f'{disp}</td>')
@@ -801,7 +797,7 @@ if _IN_NOTEBOOK and results:
           border-left:4px solid {gc};border-radius:6px 6px 0 0;
           padding:10px 18px;display:flex;align-items:center;gap:10px">
     <span style="font-size:18px">🎯</span>
-    <span style="color:#f1f5f9;font-size:15px;font-weight:700">SMA150 Base-Reclaim + JMA Uptrend</span>
+    <span style="color:#f1f5f9;font-size:15px;font-weight:700">SMA50/SMA150 Retest + 2-Candle Reclaim</span>
     <span style="color:{gc};font-size:12px;margin-left:8px">{len(results)} stock{'s' if len(results)!=1 else ''}</span>
   </div>
   <div style="overflow-x:auto;border:1px solid #e2e8f0;border-top:none;
@@ -818,7 +814,7 @@ if _IN_NOTEBOOK and results:
         border-radius:10px;padding:18px 24px;margin-bottom:8px;
         font-family:'Segoe UI',Arial,sans-serif">
   <h2 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-    📈 SMA150 Base-Reclaim + JMA Uptrend
+    📈 SMA50/SMA150 Retest + 2-Candle Reclaim
   </h2>
   <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
     {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
@@ -832,18 +828,18 @@ if _IN_NOTEBOOK and results:
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
   Total = Fund(0-50) + Tech(0-30) &nbsp;·&nbsp;
-  Signal = a genuine multi-month base under SMA150, a fresh SMA150 reclaim
-  with price still higher since, plus a fresh JMA cross with JMA now rising &nbsp;·&nbsp;
-  Continuation_% = how much price has moved since the SMA150 reclaim bar
+  Signal = candle A (yesterday) red &amp; closed below SMA50/SMA150, candle B
+  (today) green &amp; closed above the same MA and EMA8, volume up vs
+  yesterday, SMA50 rising, in a prior uptrend &nbsp;·&nbsp;
+  Price = candle B close &nbsp;·&nbsp; Stop_Loss = candle A low
 </div>"""
 
     display_html(header_html + table_html + legend_html)
 
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
-    CLI_COLS = ["Ticker","Price","Total","Fund","Tech",
-                "SMA150_Cross_Bars_Ago","JMA_Cross_Bars_Ago",
-                "Continuation_%","Sector"]
+    CLI_COLS = ["Ticker","Price","Stop_Loss","Total","Fund","Tech",
+                "Retested_MA","Risk_%","Sector"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -855,7 +851,7 @@ elif results:
     inner= sum(col_w.values()) + len(CLI_COLS) - 1
     print()
     print(f"  ╔{'═'*inner}╗")
-    tit = f"  SMA150 Base-Reclaim + JMA Uptrend   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    tit = f"  SMA50/SMA150 Retest + 2-Candle Reclaim   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
     print(f"  ║{tit.center(inner)}║")
     print(f"  ╚{'═'*inner}╝\n")
     print(f"  ┌{top}┐")
@@ -869,10 +865,11 @@ elif results:
     print(f"""
   COLUMN KEY
   ──────────────────────────────────────────────────────
-  Total                     Fund(0-50) + Tech(0-30)
-  SMA150_Cross_Bars_Ago     bars since price reclaimed SMA150 from below
-  JMA_Cross_Bars_Ago        bars since price crossed above JMA from below
-  Continuation_%            price move since the SMA150 reclaim bar
+  Total          Fund(0-50) + Tech(0-30)
+  Price           candle B (today) close — the entry price
+  Stop_Loss       candle A (yesterday) low
+  Retested_MA     which MA (SMA50 or SMA150) this pattern formed against
+  Risk_%          (Price - Stop_Loss) / Price
   ──────────────────────────────────────────────────────""")
 
 # Save
@@ -881,7 +878,7 @@ df_out.to_csv(fpath, index=False)
 print(f"\n  💾 CSV → {fpath}")
 tv = os.path.join(out_dir, f"tv_sma150_base_reclaim_{ts}.txt")
 with open(tv,"w") as f:
-    f.write(f"###SMA150 Base Reclaim {datetime.today().strftime('%Y-%m-%d')}\n")
+    f.write(f"###SMA50/SMA150 Retest Reclaim {datetime.today().strftime('%Y-%m-%d')}\n")
     for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
 print(f"  📋 TradingView → {tv}")
 
@@ -919,36 +916,34 @@ def _send_email(rl, csv_path):
             f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
-            for c in ["Ticker","Price","Total","Fund","Tech",
-                      "SMA150_Cross_Bars_Ago","JMA_Cross_Bars_Ago","Continuation_%"]
+            for c in ["Ticker","Price","Stop_Loss","Total","Fund","Tech",
+                      "Retested_MA","Risk_%"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
             bg  = "#fff" if i % 2 == 0 else "#f0f9ff"
             ticker = r.get("Ticker","—")
             price  = r.get("Price",0) or 0
+            sl     = r.get("Stop_Loss",0) or 0
             total  = r.get("Total",0) or 0
             fund   = r.get("Fund",0) or 0
             tech   = r.get("Tech",0) or 0
-            s150c  = r.get("SMA150_Cross_Bars_Ago")
-            s150c_disp = f"{int(s150c)}d ago" if s150c is not None else "—"
-            jmac   = r.get("JMA_Cross_Bars_Ago")
-            jmac_disp = f"{int(jmac)}d ago" if jmac is not None else "—"
-            cont   = r.get("Continuation_%",0) or 0
+            ma     = r.get("Retested_MA","—")
+            risk   = r.get("Risk_%",0) or 0
             rows_e += (
                 f'<tr style="background:{bg}">'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">${float(price):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:#ef4444;font-weight:600">'
+                f'${float(sl):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700;'
                 f'background:#166534;color:#fff;text-align:center">{float(total):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">{float(fund):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">{float(tech):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
-                f'color:#a78bfa;font-weight:600">{s150c_disp}</td>'
-                f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
-                f'color:#f472b6;font-weight:600">{jmac_disp}</td>'
+                f'color:#a78bfa;font-weight:600">{ma}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:'
-                f'{"#22c55e" if float(cont)>=0 else "#ef4444"}">{float(cont):+.1f}%</td>'
+                f'{"#22c55e" if float(risk)>=0 else "#ef4444"}">{float(risk):+.1f}%</td>'
                 f'</tr>'
             )
         no_results_msg = ('<tr><td colspan="8" style="padding:20px;text-align:center;'
@@ -961,7 +956,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
        overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08)">
   <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:22px 28px">
 <h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-  📊 SMA150 Base-Reclaim + JMA Uptrend
+  📊 SMA50/SMA150 Retest + 2-Candle Reclaim
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
@@ -990,7 +985,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </body></html>"""
 
         plain_lines = [
-            f"SMA150 Base-Reclaim + JMA Uptrend — {datetime.today().strftime('%Y-%m-%d')}",
+            f"SMA50/SMA150 Retest + 2-Candle Reclaim — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches",
             "="*60,
         ]
@@ -998,22 +993,20 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             for r in rl[:50]:
                 ticker = r.get("Ticker","—")
                 price  = r.get("Price",0) or 0
+                sl     = r.get("Stop_Loss",0) or 0
                 total  = r.get("Total",0) or 0
-                s150c  = r.get("SMA150_Cross_Bars_Ago")
-                s150c_disp = f"{int(s150c)}d ago" if s150c is not None else "—"
-                jmac   = r.get("JMA_Cross_Bars_Ago")
-                jmac_disp = f"{int(jmac)}d ago" if jmac is not None else "—"
-                cont   = r.get("Continuation_%",0) or 0
+                ma     = r.get("Retested_MA","—")
+                risk   = r.get("Risk_%",0) or 0
                 plain_lines.append(
-                    f"{ticker:<7} ${float(price):.2f}  Total:{float(total):.0f}  "
-                    f"SMA150Cross:{s150c_disp}  JMACross:{jmac_disp}  Cont:{float(cont):+.1f}%"
+                    f"{ticker:<7} Entry:${float(price):.2f}  SL:${float(sl):.2f}  "
+                    f"Total:{float(total):.0f}  MA:{ma}  Risk:{float(risk):+.1f}%"
                 )
         else:
             plain_lines.append("No matches today")
         plain_lines.append("\nFull results in CSV attachment.")
         plain_e = "\n".join(plain_lines)
 
-        subj = (f"📊 SMA150 Base-Reclaim — {cnt} signal{'s' if cnt!=1 else ''}"
+        subj = (f"📊 SMA Retest+Reclaim — {cnt} signal{'s' if cnt!=1 else ''}"
                 f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
@@ -1081,29 +1074,34 @@ if results:
     fig, axes = plt.subplots(len(top),1,figsize=(15,5*len(top)),facecolor="#0f172a")
     if len(top)==1: axes=[axes]
     for ax, r in zip(axes, top):
-        df_p   = r["_df"].tail(300).copy()  # wide window to show the base + reclaim
-        jma_p  = r["_jma"].reindex(df_p.index)
-        s150_p = r["_sma150"].reindex(df_p.index)
+        df_p    = r["_df"].tail(90).copy()  # shorter window — this is a short setup
+        sma50_p  = r["_sma50"].reindex(df_p.index)
+        sma150_p = r["_sma150"].reindex(df_p.index)
+        ema8_p   = r["_ema8"].reindex(df_p.index)
         ax.set_facecolor("#0f172a")
         ax.plot(df_p.index, df_p["Close"], color="#60a5fa", lw=1.6, label="Price", zorder=5)
-        ax.plot(df_p.index, jma_p,  color="#f472b6", lw=1.5, label="JMA(13,100)", zorder=4)
-        ax.plot(df_p.index, s150_p, color="#f87171", lw=1.3, ls="--", label="SMA150", zorder=3)
+        ax.plot(df_p.index, ema8_p,   color="#38bdf8", lw=1.1, ls="--", label="EMA8",   zorder=3)
+        ax.plot(df_p.index, sma50_p,  color="#fbbf24", lw=1.3, ls="-.", label="SMA50",  zorder=3)
+        ax.plot(df_p.index, sma150_p, color="#f87171", lw=1.3, ls=":",  label="SMA150", zorder=3)
+        # mark candle B (today, signal bar) and the stop-loss level
+        ax.scatter([df_p.index[-1]], [r["Price"]], color="#22c55e", s=60, zorder=6,
+                   marker="^", label="Entry (Candle B close)")
+        ax.axhline(r["Stop_Loss"], color="#ef4444", lw=1.0, ls="--", alpha=0.8,
+                  label=f"Stop Loss ${r['Stop_Loss']:.2f}")
         ax.set_title(
-            f"{r['Ticker']}  {r['Company']}  |  ${r['Price']:.2f}  |  "
+            f"{r['Ticker']}  {r['Company']}  |  Entry ${r['Price']:.2f}  |  "
+            f"SL ${r['Stop_Loss']:.2f} ({r['Risk_%']:+.1f}%)  |  "
             f"Score {r['Total']} (F{r['Fund']}+T{r['Tech']})  |  "
-            f"SMA150 Reclaim: {r['SMA150_Cross_Bars_Ago']}d ago  "
-            f"JMA Cross: {r['JMA_Cross_Bars_Ago']}d ago  "
-            f"Cont: {r['Continuation_%']:+.1f}%",
+            f"Retested: {r['Retested_MA']}",
             color="#e2e8f0", fontsize=9, fontweight="bold", pad=7)
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %y"))
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
         ax.tick_params(colors="#94a3b8", labelsize=9)
         for sp in ax.spines.values(): sp.set_edgecolor("#1e3a5f")
         ax.legend(loc="upper left", facecolor="#1e293b", labelcolor="#e2e8f0",
                   fontsize=7, framealpha=0.9, ncol=2)
         ax.grid(color="#1e3a5f", ls="--", lw=0.5, alpha=0.6)
     plt.suptitle(
-        f"SMA150 Base-Reclaim + JMA Uptrend  ·  "
+        f"SMA50/SMA150 Retest + 2-Candle Reclaim  ·  "
         f"{datetime.today().strftime('%Y-%m-%d')}",
         color="#60a5fa", fontsize=12, fontweight="bold", y=1.001)
     plt.tight_layout()
@@ -1121,38 +1119,38 @@ print("""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   📋 SCORE BREAKDOWN  (80 total)
   Fund  0–50   8 fundamental metrics
-  Tech  0–30   reclaim freshness + base quality + continuation + JMA cross/slope
+  Tech  0–30   candle A/B distance from MA + EMA8 + volume surge
 
-  📋 SIGNAL (all required)
-  1) BASE: a genuine multi-month base existed before the reclaim —
-     mostly below SMA150, with real price amplitude
-  2) RECLAIM: price closed above SMA150 from below within
-     sma150_cross_lookback bars, coming out of that base
-  3) CONTINUATION: price is still above SMA150 now, and has moved
-     higher since the reclaim bar (not stalled/failed back)
-  4) JMA: price also crossed above JMA (within jma_cross_lookback
-     bars), price is still above JMA now, and JMA itself is rising
+  📋 SIGNAL (checked against SMA50 AND SMA150 independently —
+  matches if either satisfies it; all steps required)
+  0) PRIOR UPTREND: price was above the MA a few bars before the
+     retest (confirms pullback within an uptrend, not a breakdown)
+  1) SMA50 RISING: SMA50 today > SMA50 sma_rising_lookback bars ago
+  2) CANDLE A (yesterday): RED, closed BELOW the MA
+  3) CANDLE B (today): GREEN, closed ABOVE the SAME MA AND above
+     EMA8, simultaneously
+  4) VOLUME: candle B volume > candle A volume
 
-  📋 SMA150_Cross_Bars_Ago / JMA_Cross_Bars_Ago = 0d ago means that
-  cross happened on the latest bar. Continuation_% = price move
-  since the SMA150 reclaim bar. JMA_Slope_% = JMA's own rate of
-  climb over jma_slope_lookback bars.
+  📋 OUTPUT
+  Price      = candle B (today) close — the entry price
+  Stop_Loss  = candle A (yesterday) low
+  Risk_%     = (Price - Stop_Loss) / Price
+  Retested_MA = which MA (SMA50 or SMA150) this fired against
 
   💡 BEST SETUPS
-  Total > 50                    elite fundamental + technical combo
-  SMA150_Cross_Bars_Ago = 0-3     freshest SMA150 reclaims
-  Continuation_% > 15             strong follow-through since reclaim
-  Base_Depth_% > 25               deep, well-defined prior base
-  Fund > 35                       genuinely strong business quality
+  Total > 50           elite fundamental + technical combo
+  Risk_% < 5            tight stop relative to entry
+  Vol_Chg_% > 50         strong volume confirmation on the reclaim
+  Fund > 35              genuinely strong business quality
 
   ⚙️  TUNE IF 0 RESULTS
   min_tech_score                   10 → 6
   min_total_score                  15 → 5
-  sma150_cross_lookback            25 → 40   (widen the reclaim window)
-  jma_cross_lookback               60 → 90   (widen the JMA window)
-  min_below_sma150_pct             50 → 35
-  min_base_depth_pct               15 → 10
-  require_jma_rising            True → False
+  prior_uptrend_lookback             3 → 5
+  sma_rising_lookback                5 → 10
+  require_prior_uptrend           True → False
+  require_sma50_rising            True → False
+  require_volume_confirmation     True → False
   min_price                         2 → 1
   min_avg_volume                80000 → 50000
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
