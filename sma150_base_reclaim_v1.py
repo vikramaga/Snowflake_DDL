@@ -1,28 +1,36 @@
 # ============================================================
-# NASDAQ — SMA50/SMA150 Retest + 2-Candle Reclaim Scanner (v2)
+# NASDAQ — EMA8/SMA21/SMA50/SMA150 Retest + 2-Candle Reclaim Scanner (v3)
 # ============================================================
 #
-# SIGNAL (all required) — checked against SMA50 AND SMA150
-# independently; a stock matches if either MA satisfies it:
+# SIGNAL (all required) — checked against EMA8, SMA21, SMA50, AND
+# SMA150 independently; a stock matches if ANY of these MAs satisfies
+# the full pattern (a stock can also match on more than one MA at
+# once — that confluence is scored as a bonus):
 #
 #   0. PRIOR UPTREND: price was above the MA a few bars before the
 #      retest (confirms this is a pullback within an uptrend, not
 #      a breakdown).
 #   1. MA RISING: SMA50 has started increasing (SMA50 today >
 #      SMA50 sma_rising_lookback bars ago) — confirms the trend
-#      driving this MA has turned back up.
+#      driving this MA has turned back up. Checked once, regardless
+#      of which MA is being retested (SMA50 acts as the broader
+#      trend-context filter for all four).
 #   2. CANDLE A (yesterday, the retest candle): RED (close < open)
-#      AND closed BELOW the MA (SMA50 or SMA150) — the pullback
-#      actually touches/breaches the MA.
+#      AND closed BELOW the MA under test (EMA8/SMA21/SMA50/SMA150)
+#      — the pullback actually touches/breaches that MA.
 #   3. CANDLE B (today, the reclaim candle): GREEN (close > open)
 #      AND closed ABOVE the SAME MA AND above EMA8 simultaneously
-#      — a clean one-day reclaim of support.
+#      — a clean one-day reclaim of support. (When the MA under test
+#      IS EMA8 itself, this is simply "closed above EMA8".)
 #   4. VOLUME: today's volume (candle B) > yesterday's volume
 #      (candle A) — confirms real buying interest on the reclaim.
 #
 # OUTPUT:
 #   Price      = close of candle B (today, the signal/entry price)
 #   Stop_Loss  = low of candle A (yesterday's candle low)
+#   Retested_MA = the shortest-period MA that fired (EMA8 preferred
+#                 over SMA21 over SMA50 over SMA150 if more than one
+#                 matches — tightest support reported first)
 #
 # 2-PASS ARCHITECTURE (same as fundamental_v2.py / jma_stack_cross_v1.py):
 #   PASS 1 — technical signal above (fast, no .info calls)
@@ -125,8 +133,9 @@ CFG = {
     "max_pe_ratio"                : 50.0,
     "high_growth_threshold_pct"  : 15.0,
 
-    # ── SMA50/SMA150 retest + 2-candle reclaim signal ───────────
+    # ── EMA8/SMA21/SMA50/SMA150 retest + 2-candle reclaim signal ──
     "ema8_period"                  : 8,
+    "sma21_period"                 : 21,
     "sma50_period"                 : 50,
     "sma150_period"                : 150,
 
@@ -164,7 +173,7 @@ def check_two_candle_retest_reclaim(df, ma_series, ema8, prior_uptrend_lookback,
                                      require_volume_confirmation, end_idx=None):
     """
     Checks the exact 2-candle retest + reclaim pattern against ONE
-    moving average series (SMA50 or SMA150).
+    moving average series (EMA8, SMA21, SMA50, or SMA150).
 
     candle B (the reclaim bar) = row at position `end_idx` (default:
     the LAST row of df, i.e. "today"). candle A (the retest bar) =
@@ -300,12 +309,12 @@ def simulate_trade_outcome(df, entry_idx, entry_price, stop_loss,
             return "win", j - entry_idx
     return "timeout", None
 
-def backtest_ticker(sym, df, sma50, sma150, ema8, cfg):
+def backtest_ticker(sym, df, sma21, sma50, sma150, ema8, cfg):
     """
     Re-runs the exact same 2-candle retest+reclaim check on every day
     over the last `backtest_lookback_days` trading days (checked
-    against SMA50 and SMA150 independently), simulating the forward
-    outcome of each signal found.
+    against EMA8, SMA21, SMA50, AND SMA150 independently), simulating
+    the forward outcome of each signal found.
 
     Returns a list of trade dicts:
       {ticker, date, ma, entry, stop, risk_pct, outcome, bars_to_resolve}
@@ -319,9 +328,16 @@ def backtest_ticker(sym, df, sma50, sma150, ema8, cfg):
     end_idx_max = n - 1   # can still include recent signals; they may resolve as "timeout"
                           # if not enough forward data exists yet — that's expected and fine
 
+    ma_candidates = [
+        ("EMA8",   ema8),
+        ("SMA21",  sma21),
+        ("SMA50",  sma50),
+        ("SMA150", sma150),
+    ]
+
     trades = []
     for i in range(start_idx, end_idx_max + 1):
-        for ma_name, ma_series in (("SMA50", sma50), ("SMA150", sma150)):
+        for ma_name, ma_series in ma_candidates:
             passed, trace = check_two_candle_retest_reclaim(
                 df, ma_series, ema8,
                 cfg["prior_uptrend_lookback"], cfg["sma_rising_lookback"], sma50,
@@ -440,13 +456,13 @@ def get_fundamentals(sym):
     except Exception:
         return empty
 
-# ── Technical signal: SMA50/SMA150 retest + 2-candle reclaim ────
+# ── Technical signal: EMA8/SMA21/SMA50/SMA150 retest + 2-candle reclaim ──
 ALL_BACKTEST_TRADES = []   # accumulates trades across the FULL universe scan
 
 def analyze_retest_reclaim(sym, df):
     """
     Returns dict with tech_score and details, or None if no
-    required condition is met against either SMA50 or SMA150.
+    required condition is met against any of EMA8/SMA21/SMA50/SMA150.
 
     Regardless of whether today's live signal matches, this ALSO
     runs the last-3-months backtest for the ticker (if it passes the
@@ -465,17 +481,27 @@ def analyze_retest_reclaim(sym, df):
     if avg_vol < CFG["min_avg_volume"]: return None
     if n < 160: return None   # need enough history for SMA150 + rising checks
 
+    sma21  = df["Close"].rolling(CFG["sma21_period"]).mean()
     sma50  = df["Close"].rolling(CFG["sma50_period"]).mean()
     sma150 = df["Close"].rolling(CFG["sma150_period"]).mean()
     ema8   = df["Close"].ewm(span=CFG["ema8_period"], adjust=False).mean()
 
     # ── Backtest: last 3 months, this ticker, regardless of live match ──
-    bt_trades = backtest_ticker(sym, df, sma50, sma150, ema8, CFG)
+    bt_trades = backtest_ticker(sym, df, sma21, sma50, sma150, ema8, CFG)
     ALL_BACKTEST_TRADES.extend(bt_trades)
     bt_summary = summarize_trades(bt_trades)
 
+    # Order = shortest period first, so the tightest/most immediate
+    # support is reported as the primary Retested_MA when more than
+    # one fires at once.
+    ma_candidates = [
+        ("EMA8",   ema8),
+        ("SMA21",  sma21),
+        ("SMA50",  sma50),
+        ("SMA150", sma150),
+    ]
     matches = []
-    for ma_name, ma_series in [("SMA50", sma50), ("SMA150", sma150)]:
+    for ma_name, ma_series in ma_candidates:
         passed, trace = check_two_candle_retest_reclaim(
             df, ma_series, ema8,
             CFG["prior_uptrend_lookback"], CFG["sma_rising_lookback"], sma50,
@@ -488,10 +514,9 @@ def analyze_retest_reclaim(sym, df):
     if not matches:
         return None
 
-    # If both SMA50 and SMA150 fire, prefer SMA50 (tighter/more responsive
-    # support) as the reported MA, but note both in the flags.
     ma_name, trace = matches[0]
-    matched_both = len(matches) == 2
+    matched_names = [m[0] for m in matches]
+    matched_count = len(matches)
 
     close_A, low_A   = trace["close_A"], trace["low_A"]
     close_B          = trace["close_B"]
@@ -508,8 +533,9 @@ def analyze_retest_reclaim(sym, df):
     # ── Technical score (0-30) ────────────────────────────────
     ts = 0
     tr = [f"Retest+Reclaim({ma_name})"]
-    if matched_both:
-        ts += 4; tr.append("BothSMA50&150")
+    if matched_count > 1:
+        conf_pts = min(6, 2 * (matched_count - 1))
+        ts += conf_pts; tr.append(f"Confluence({'+'.join(matched_names)})")
 
     dist_below_ma_A = (ma_A - close_A) / ma_A * 100 if ma_A > 0 else 0
     ts += 6; tr.append(f"CandleA_Below{ma_name}{dist_below_ma_A:+.1f}%")
@@ -535,15 +561,17 @@ def analyze_retest_reclaim(sym, df):
         "tech_score"     : ts,
         "tech_reasons"   : " | ".join(tr),
         "Retested_MA"    : ma_name,
+        "Matched_MAs"    : "+".join(matched_names),
         "Price"          : round(signal_price, 2),
         "Stop_Loss"      : round(stop_loss, 2),
         "Risk_%"         : round(risk_pct, 1),
         "Candle_A_Close" : round(close_A, 2),
         "Candle_A_Low"   : round(low_A, 2),
         "Candle_B_Close" : round(close_B, 2),
+        "EMA8"           : round(ema8_B, 2),
+        "SMA21"          : round(float(sma21.iloc[-1]), 2),
         "SMA50"          : round(float(sma50.iloc[-1]), 2),
         "SMA150"         : round(float(sma150.iloc[-1]), 2),
-        "EMA8"           : round(ema8_B, 2),
         "Vol_Chg_%"      : round(vol_chg_pct, 1),
         "Backtest_Signals_3M": bt_summary["signals"],
         "Backtest_Wins"      : bt_summary["wins"],
@@ -552,6 +580,7 @@ def analyze_retest_reclaim(sym, df):
         "Backtest_WinRate_%" : (round(bt_summary["win_rate_pct"], 1)
                                  if bt_summary["win_rate_pct"] is not None else None),
         "_df"            : df,
+        "_sma21"         : sma21,
         "_sma50"         : sma50,
         "_sma150"        : sma150,
         "_ema8"          : ema8,
@@ -723,7 +752,7 @@ print()
 print("━"*65)
 print(f"  STEP 3  SCANNING {len(TICKERS)} TICKERS")
 print("━"*65)
-print("  Pass 1: SMA50/SMA150 retest + 2-candle reclaim screening (fast)")
+print("  Pass 1: EMA8/SMA21/SMA50/SMA150 retest + 2-candle reclaim screening (fast)")
 print("  Pass 2: Fundamental fetch for pass-1 stocks only\n")
 
 _hdr_done   = False
@@ -787,12 +816,14 @@ for item in tqdm(tech_passes, desc="Pass 2 Fund", unit="stk"):
             "Company"           : fund["Company"],
             "Industry"          : fund["Industry"],
             "Retested_MA"       : ts["Retested_MA"],
+            "Matched_MAs"       : ts["Matched_MAs"],
             "Candle_A_Close"    : ts["Candle_A_Close"],
             "Candle_A_Low"      : ts["Candle_A_Low"],
             "Candle_B_Close"    : ts["Candle_B_Close"],
+            "EMA8"              : ts["EMA8"],
+            "SMA21"             : ts["SMA21"],
             "SMA50"             : ts["SMA50"],
             "SMA150"            : ts["SMA150"],
-            "EMA8"              : ts["EMA8"],
             "Vol_Chg_%"         : ts["Vol_Chg_%"],
             "Backtest_Signals_3M": ts["Backtest_Signals_3M"],
             "Backtest_Wins"      : ts["Backtest_Wins"],
@@ -810,6 +841,7 @@ for item in tqdm(tech_passes, desc="Pass 2 Fund", unit="stk"):
             "Fund_Flags"        : fund["Fund_Flags"],
             # internals
             "_df"    : ts["_df"],
+            "_sma21" : ts["_sma21"],
             "_sma50" : ts["_sma50"],
             "_sma150": ts["_sma150"],
             "_ema8"  : ts["_ema8"],
@@ -866,8 +898,8 @@ COLS = [
     "Ticker","Company","Sector","Price","Stop_Loss","Risk_%",
     "Total","Fund","Tech",
     "Rev_Growth_%","Profit_Margin_%","ROE_%","PE_Ratio","EPS",
-    "Retested_MA","Candle_A_Close","Candle_A_Low","Candle_B_Close",
-    "SMA50","SMA150","EMA8","Vol_Chg_%",
+    "Retested_MA","Matched_MAs","Candle_A_Close","Candle_A_Low","Candle_B_Close",
+    "EMA8","SMA21","SMA50","SMA150","Vol_Chg_%",
     "Backtest_Signals_3M","Backtest_Wins","Backtest_Losses",
     "Backtest_Timeouts","Backtest_WinRate_%",
     "Tech_Flags","Fund_Flags",
@@ -895,9 +927,10 @@ FMT = {
     "Candle_A_Low"   : lambda v: f"${v:.2f}",
     "Candle_B_Close" : lambda v: f"${v:.2f}",
     "Backtest_WinRate_%": lambda v: f"{v:.1f}%",
+    "EMA8"           : lambda v: f"${v:.2f}",
+    "SMA21"          : lambda v: f"${v:.2f}",
     "SMA50"          : lambda v: f"${v:.2f}",
     "SMA150"         : lambda v: f"${v:.2f}",
-    "EMA8"           : lambda v: f"${v:.2f}",
     "Vol_Chg_%"      : lambda v: f"{v:+.1f}%",
 }
 
@@ -961,7 +994,7 @@ if _IN_NOTEBOOK and results:
           border-left:4px solid {gc};border-radius:6px 6px 0 0;
           padding:10px 18px;display:flex;align-items:center;gap:10px">
     <span style="font-size:18px">🎯</span>
-    <span style="color:#f1f5f9;font-size:15px;font-weight:700">SMA50/SMA150 Retest + 2-Candle Reclaim</span>
+    <span style="color:#f1f5f9;font-size:15px;font-weight:700">EMA8/SMA21/SMA50/SMA150 Retest + 2-Candle Reclaim</span>
     <span style="color:{gc};font-size:12px;margin-left:8px">{len(results)} stock{'s' if len(results)!=1 else ''}</span>
   </div>
   <div style="overflow-x:auto;border:1px solid #e2e8f0;border-top:none;
@@ -978,7 +1011,7 @@ if _IN_NOTEBOOK and results:
         border-radius:10px;padding:18px 24px;margin-bottom:8px;
         font-family:'Segoe UI',Arial,sans-serif">
   <h2 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-    📈 SMA50/SMA150 Retest + 2-Candle Reclaim
+    📈 EMA8/SMA21/SMA50/SMA150 Retest + 2-Candle Reclaim
   </h2>
   <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
     {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
@@ -992,7 +1025,7 @@ if _IN_NOTEBOOK and results:
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
   Total = Fund(0-50) + Tech(0-30) &nbsp;·&nbsp;
-  Signal = candle A (yesterday) red &amp; closed below SMA50/SMA150, candle B
+  Signal = candle A (yesterday) red &amp; closed below EMA8/SMA21/SMA50/SMA150, candle B
   (today) green &amp; closed above the same MA and EMA8, volume up vs
   yesterday, SMA50 rising, in a prior uptrend &nbsp;·&nbsp;
   Price = candle B close &nbsp;·&nbsp; Stop_Loss = candle A low
@@ -1015,7 +1048,7 @@ elif results:
     inner= sum(col_w.values()) + len(CLI_COLS) - 1
     print()
     print(f"  ╔{'═'*inner}╗")
-    tit = f"  SMA50/SMA150 Retest + 2-Candle Reclaim   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    tit = f"  EMA8/SMA21/SMA50/SMA150 Retest + 2-Candle Reclaim   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
     print(f"  ║{tit.center(inner)}║")
     print(f"  ╚{'═'*inner}╝\n")
     print(f"  ┌{top}┐")
@@ -1032,7 +1065,8 @@ elif results:
   Total          Fund(0-50) + Tech(0-30)
   Price           candle B (today) close — the entry price
   Stop_Loss       candle A (yesterday) low
-  Retested_MA     which MA (SMA50 or SMA150) this pattern formed against
+  Retested_MA     which MA (EMA8/SMA21/SMA50/SMA150) this pattern formed against
+  Matched_MAs     all MAs that matched at once (confluence), if more than one
   Risk_%          (Price - Stop_Loss) / Price
   Backtest_WinRate_%  this ticker's own win rate over the last 3 months
                       (n/a if it had no resolved historical signals)
@@ -1044,7 +1078,7 @@ df_out.to_csv(fpath, index=False)
 print(f"\n  💾 CSV → {fpath}")
 tv = os.path.join(out_dir, f"tv_sma150_base_reclaim_{ts}.txt")
 with open(tv,"w") as f:
-    f.write(f"###SMA50/SMA150 Retest Reclaim {datetime.today().strftime('%Y-%m-%d')}\n")
+    f.write(f"###EMA8/SMA21/SMA50/SMA150 Retest Reclaim {datetime.today().strftime('%Y-%m-%d')}\n")
     for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
 print(f"  📋 TradingView → {tv}")
 
@@ -1133,7 +1167,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
        overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08)">
   <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:22px 28px">
 <h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-  📊 SMA50/SMA150 Retest + 2-Candle Reclaim
+  📊 EMA8/SMA21/SMA50/SMA150 Retest + 2-Candle Reclaim
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
@@ -1179,7 +1213,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </body></html>"""
 
         plain_lines = [
-            f"SMA50/SMA150 Retest + 2-Candle Reclaim — {datetime.today().strftime('%Y-%m-%d')}",
+            f"EMA8/SMA21/SMA50/SMA150 Retest + 2-Candle Reclaim — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches",
             "="*60,
             f"BACKTEST (last {CFG['backtest_lookback_days']} trading days, full universe):",
@@ -1282,12 +1316,14 @@ if results:
     if len(top)==1: axes=[axes]
     for ax, r in zip(axes, top):
         df_p    = r["_df"].tail(90).copy()  # shorter window — this is a short setup
+        sma21_p  = r["_sma21"].reindex(df_p.index)
         sma50_p  = r["_sma50"].reindex(df_p.index)
         sma150_p = r["_sma150"].reindex(df_p.index)
         ema8_p   = r["_ema8"].reindex(df_p.index)
         ax.set_facecolor("#0f172a")
         ax.plot(df_p.index, df_p["Close"], color="#60a5fa", lw=1.6, label="Price", zorder=5)
         ax.plot(df_p.index, ema8_p,   color="#38bdf8", lw=1.1, ls="--", label="EMA8",   zorder=3)
+        ax.plot(df_p.index, sma21_p,  color="#34d399", lw=1.1, ls="--", label="SMA21",  zorder=3)
         ax.plot(df_p.index, sma50_p,  color="#fbbf24", lw=1.3, ls="-.", label="SMA50",  zorder=3)
         ax.plot(df_p.index, sma150_p, color="#f87171", lw=1.3, ls=":",  label="SMA150", zorder=3)
         # mark candle B (today, signal bar) and the stop-loss level
@@ -1308,7 +1344,7 @@ if results:
                   fontsize=7, framealpha=0.9, ncol=2)
         ax.grid(color="#1e3a5f", ls="--", lw=0.5, alpha=0.6)
     plt.suptitle(
-        f"SMA50/SMA150 Retest + 2-Candle Reclaim  ·  "
+        f"EMA8/SMA21/SMA50/SMA150 Retest + 2-Candle Reclaim  ·  "
         f"{datetime.today().strftime('%Y-%m-%d')}",
         color="#60a5fa", fontsize=12, fontweight="bold", y=1.001)
     plt.tight_layout()
@@ -1328,7 +1364,7 @@ print("""
   Fund  0–50   8 fundamental metrics
   Tech  0–30   candle A/B distance from MA + EMA8 + volume surge
 
-  📋 SIGNAL (checked against SMA50 AND SMA150 independently —
+  📋 SIGNAL (checked against EMA8, SMA21, SMA50, AND SMA150 independently —
   matches if either satisfies it; all steps required)
   0) PRIOR UPTREND: price was above the MA a few bars before the
      retest (confirms pullback within an uptrend, not a breakdown)
@@ -1342,7 +1378,8 @@ print("""
   Price      = candle B (today) close — the entry price
   Stop_Loss  = candle A (yesterday) low
   Risk_%     = (Price - Stop_Loss) / Price
-  Retested_MA = which MA (SMA50 or SMA150) this fired against
+  Retested_MA = which MA (EMA8/SMA21/SMA50/SMA150) this fired against
+  Matched_MAs = all MAs that matched at once, if more than one (confluence)
 
   📋 BACKTEST (new)
   Every ticker scanned (full NASDAQ universe, not just today's
