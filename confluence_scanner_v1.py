@@ -154,6 +154,9 @@ CFG = {
     "require_sma50_rising"         : True,
     "require_volume_confirmation"  : True, # candle B volume > candle A volume
 
+    "recent_signal_lookback_days"  : 15,   # ~3 trading weeks — how far back to
+                                            # look for a Layer 3 trigger, not just today
+
     # ── Backtest (last 3 months, full universe) ─────────────────
     "backtest_lookback_days"       : 63,   # ~3 trading months
     "backtest_holding_days"        : 15,   # max bars to hold before "timeout"
@@ -599,28 +602,51 @@ def analyze_confluence_technical(sym, df, spy_perf):
     bt_summary = summarize_trades(bt_trades)
 
     # ── LAYER 3: ENTRY TRIGGER (2-candle retest+reclaim) ───────────
-    # Order = shortest period first, so the tightest/most immediate
-    # support is reported as the primary Retested_MA when more than
-    # one fires at once.
+    # Scans the last `recent_signal_lookback_days` trading days (not
+    # just today) — a ticker qualifies if the trigger fired on ANY
+    # of those days, against ANY of EMA8/SMA21/SMA50/SMA150. This
+    # surfaces stocks whose setup formed within the last 2-3 weeks
+    # even if the exact trigger day wasn't today. Order = shortest
+    # MA period first, so the tightest/most immediate support is
+    # reported as the primary Retested_MA when more than one fires.
     ma_candidates = [
         ("EMA8",   ema8),
         ("SMA21",  sma21),
         ("SMA50",  sma50),
         ("SMA150", sma150),
     ]
-    matches = []
-    for ma_name, ma_series in ma_candidates:
-        passed, trace = check_two_candle_retest_reclaim(
-            df, ma_series, ema8,
-            CFG["prior_uptrend_lookback"], CFG["sma_rising_lookback"], sma50,
-            CFG["require_prior_uptrend"], CFG["require_sma50_rising"],
-            CFG["require_volume_confirmation"],
-        )
-        if passed:
-            matches.append((ma_name, trace))
+    lb = CFG["recent_signal_lookback_days"]
+    all_hits = []   # every (end_idx, ma_name, trace) found in the window
+    for back in range(0, lb):
+        end_idx = n - 1 - back
+        if end_idx < 1: break
+        for ma_name, ma_series in ma_candidates:
+            passed, trace = check_two_candle_retest_reclaim(
+                df, ma_series, ema8,
+                CFG["prior_uptrend_lookback"], CFG["sma_rising_lookback"], sma50,
+                CFG["require_prior_uptrend"], CFG["require_sma50_rising"],
+                CFG["require_volume_confirmation"], end_idx=end_idx,
+            )
+            if passed:
+                all_hits.append((end_idx, ma_name, trace))
 
-    if not matches:
+    if not all_hits:
         return None
+
+    most_recent_idx = max(h[0] for h in all_hits)
+    # "matches" = every MA that fired on that SAME most-recent day
+    # (same-day confluence, as before)
+    matches = [(ma_name, trace) for (idx, ma_name, trace) in all_hits
+               if idx == most_recent_idx]
+    # Full recent-signal list, most recent first, for the "identified
+    # in the last 2-3 weeks" output
+    recent_signals = sorted(
+        [{"date": df.index[idx], "ma": ma_name,
+          "entry": round(trace["close_B"], 2), "stop": round(trace["low_A"], 2),
+          "bars_ago": n - 1 - idx}
+         for (idx, ma_name, trace) in all_hits],
+        key=lambda x: x["date"], reverse=True,
+    )
 
     ma_name, trace = matches[0]
     matched_names = [m[0] for m in matches]
@@ -698,6 +724,11 @@ def analyze_confluence_technical(sym, df, spy_perf):
         "Below_52wHigh_%": struct_details["below_52w_high_pct"],
         "RS_vs_SPY_%"    : struct_details["rs_diff_vs_spy"],
         "Vol_Chg_%"      : round(vol_chg_pct, 1),
+        "Days_Since_Signal"  : n - 1 - most_recent_idx,
+        "Recent_Signal_Count": len(recent_signals),
+        "Recent_Signals_Detail": recent_signals,
+        "Recent_Signals" : " | ".join(
+            f"{s['date'].strftime('%Y-%m-%d')}:{s['ma']}" for s in recent_signals),
         "Backtest_Signals_3M": bt_summary["signals"],
         "Backtest_Wins"      : bt_summary["wins"],
         "Backtest_Losses"    : bt_summary["losses"],
@@ -761,9 +792,9 @@ def download(symbols, days):
 
 # ── Live print ────────────────────────────────────────────────
 LIVE_COLS = ["Ticker","Price","Stop_Loss","Total","Fund","Struct","Tech",
-             "Retested_MA","Risk_%","Sector"]
+             "Retested_MA","Days_Since_Signal","Risk_%","Sector"]
 _CW = {"Ticker":8,"Price":10,"Stop_Loss":11,"Total":7,"Fund":6,"Struct":7,"Tech":6,
-       "Retested_MA":12,"Risk_%":9,"Sector":20}
+       "Retested_MA":12,"Days_Since_Signal":11,"Risk_%":9,"Sector":20}
 _CF = {"Price":"${:.2f}","Stop_Loss":"${:.2f}","Total":"{:.0f}","Fund":"{:.0f}",
        "Struct":"{:.0f}","Tech":"{:.0f}","Risk_%":"{:+.1f}%"}
 _hdr_done = False
@@ -966,6 +997,9 @@ for item in tqdm(tech_passes, desc="Pass 2 Fund", unit="stk"):
             "Below_52wHigh_%"   : ts["Below_52wHigh_%"],
             "RS_vs_SPY_%"       : ts["RS_vs_SPY_%"],
             "Vol_Chg_%"         : ts["Vol_Chg_%"],
+            "Days_Since_Signal"   : ts["Days_Since_Signal"],
+            "Recent_Signal_Count" : ts["Recent_Signal_Count"],
+            "Recent_Signals"      : ts["Recent_Signals"],
             "Backtest_Signals_3M": ts["Backtest_Signals_3M"],
             "Backtest_Wins"      : ts["Backtest_Wins"],
             "Backtest_Losses"    : ts["Backtest_Losses"],
@@ -1049,7 +1083,8 @@ COLS = [
     "Total","Fund","Struct","Tech",
     "Rev_Growth_%","Profit_Margin_%","ROE_%","PE_Ratio","EPS",
     "Above_52wLow_%","Below_52wHigh_%","RS_vs_SPY_%",
-    "Retested_MA","Matched_MAs","Candle_A_Close","Candle_A_Low","Candle_B_Close",
+    "Retested_MA","Matched_MAs","Days_Since_Signal","Recent_Signal_Count",
+    "Recent_Signals","Candle_A_Close","Candle_A_Low","Candle_B_Close",
     "EMA8","SMA21","SMA50","SMA150","SMA200","Vol_Chg_%",
     "Backtest_Signals_3M","Backtest_Wins","Backtest_Losses",
     "Backtest_Timeouts","Backtest_WinRate_%",
@@ -1088,6 +1123,7 @@ FMT = {
     "Below_52wHigh_%": lambda v: f"{v:.1f}%",
     "RS_vs_SPY_%"    : lambda v: f"{v:+.1f}%",
     "Vol_Chg_%"      : lambda v: f"{v:+.1f}%",
+    "Days_Since_Signal": lambda v: f"{int(v)}d ago",
 }
 
 def fmt_v(col, val):
@@ -1100,7 +1136,7 @@ def fmt_v(col, val):
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Company","Sector","Price","Stop_Loss",
             "Total","Fund","Struct","Tech",
-            "Retested_MA","Risk_%","Backtest_WinRate_%"]
+            "Retested_MA","Days_Since_Signal","Risk_%","Backtest_WinRate_%"]
     DISP = [c for c in DISP if c in df_out.columns]
 
     gc = "#22c55e"
@@ -1172,10 +1208,11 @@ if _IN_NOTEBOOK and results:
   <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
     {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
     <b style="color:#22c55e">{len(results)} matches</b> from {len(TICKERS)} tickers
+    &nbsp;·&nbsp; trigger signals from the last {CFG['recent_signal_lookback_days']} trading days
   </p>
 </div>"""
 
-    legend_html = """
+    legend_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;
         padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
         font-family:'Segoe UI',Arial,sans-serif">
@@ -1183,11 +1220,14 @@ if _IN_NOTEBOOK and results:
   Total = Fund(0-50) + Struct(0-20) + Tech(0-30) = 100 &nbsp;·&nbsp;
   Layer 1 (Fund) = fundamentals score &nbsp;·&nbsp;
   Layer 2 (Struct) = Minervini Stage-2 uptrend confirmed &nbsp;·&nbsp;
-  Layer 3 (Tech) = candle A (yesterday) red &amp; closed below
-  EMA8/SMA21/SMA50/SMA150, candle B (today) green &amp; closed above the
+  Layer 3 (Tech) = candle A (retest day) red &amp; closed below
+  EMA8/SMA21/SMA50/SMA150, candle B (next day) green &amp; closed above the
   same MA and EMA8, volume up vs yesterday, SMA50 rising &nbsp;·&nbsp;
   Price = candle B close &nbsp;·&nbsp; Stop_Loss = candle A low &nbsp;·&nbsp;
-  A ticker only appears here if ALL THREE layers passed
+  A ticker only appears here if ALL THREE layers passed &nbsp;·&nbsp;
+  Layer 3 checks the last {CFG['recent_signal_lookback_days']} trading days
+  (~2-3 weeks), not just today — Days_Since_Signal shows how long ago the
+  most recent trigger fired
 </div>"""
 
     display_html(header_html + table_html + legend_html)
@@ -1195,7 +1235,7 @@ if _IN_NOTEBOOK and results:
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
     CLI_COLS = ["Ticker","Price","Stop_Loss","Total","Fund","Struct","Tech",
-                "Retested_MA","Risk_%","Backtest_WinRate_%","Sector"]
+                "Retested_MA","Days_Since_Signal","Risk_%","Backtest_WinRate_%","Sector"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -1207,7 +1247,7 @@ elif results:
     inner= sum(col_w.values()) + len(CLI_COLS) - 1
     print()
     print(f"  ╔{'═'*inner}╗")
-    tit = f"  3-Layer Confluence Scanner   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    tit = f"  3-Layer Confluence (last {CFG['recent_signal_lookback_days']}d signals)   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
     print(f"  ║{tit.center(inner)}║")
     print(f"  ╚{'═'*inner}╝\n")
     print(f"  ┌{top}┐")
@@ -1225,10 +1265,14 @@ elif results:
   Fund            Layer 1: fundamentals score
   Struct          Layer 2: Minervini Stage-2 structure score
   Tech            Layer 3: retest+reclaim trigger score
-  Price           candle B (today) close — the entry price
-  Stop_Loss       candle A (yesterday) low
+  Price           candle B close on the most recent signal day found
+  Stop_Loss       candle A low on that same signal day
   Retested_MA     which MA (EMA8/SMA21/SMA50/SMA150) this pattern formed against
   Matched_MAs     all MAs that matched at once (confluence), if more than one
+  Days_Since_Signal  how many trading days ago the most recent trigger fired
+                     (Layer 3 is checked over the last {CFG['recent_signal_lookback_days']}
+                     trading days, not just today)
+  Recent_Signals     every date+MA this trigger fired within that window
   Risk_%          (Price - Stop_Loss) / Price
   Backtest_WinRate_%  this ticker's own win rate over the last 3 months
                       for the Layer 3 trigger specifically
@@ -1287,7 +1331,7 @@ def _send_email(rl, csv_path, bt_csv_path=None):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Stop_Loss","Total","Fund","Struct","Tech",
-                      "Retested_MA","Risk_%","Backtest_WinRate_%"]
+                      "Retested_MA","Days_Ago","Risk_%","Backtest_WinRate_%"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -1300,6 +1344,8 @@ def _send_email(rl, csv_path, bt_csv_path=None):
             struct = r.get("Struct",0) or 0
             tech   = r.get("Tech",0) or 0
             ma     = r.get("Retested_MA","—")
+            dsig   = r.get("Days_Since_Signal")
+            dsig_disp = f"{int(dsig)}d ago" if dsig is not None else "—"
             risk   = r.get("Risk_%",0) or 0
             bwr    = r.get("Backtest_WinRate_%")
             bwr_disp = f"{bwr:.1f}%" if bwr is not None else "n/a"
@@ -1316,13 +1362,15 @@ def _send_email(rl, csv_path, bt_csv_path=None):
                 f'<td style="padding:6px 11px;font-size:12px">{float(tech):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
                 f'color:#a78bfa;font-weight:600">{ma}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
+                f'color:#38bdf8;font-weight:600">{dsig_disp}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:'
                 f'{"#22c55e" if float(risk)>=0 else "#ef4444"}">{float(risk):+.1f}%</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
                 f'color:#facc15;font-weight:600">{bwr_disp}</td>'
                 f'</tr>'
             )
-        no_results_msg = ('<tr><td colspan="10" style="padding:20px;text-align:center;'
+        no_results_msg = ('<tr><td colspan="11" style="padding:20px;text-align:center;'
                            'color:#94a3b8;font-size:13px">No matches today</td></tr>')
 
         html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
@@ -1378,7 +1426,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </body></html>"""
 
         plain_lines = [
-            f"3-Layer Confluence Scanner — {datetime.today().strftime('%Y-%m-%d')}",
+            f"3-Layer Confluence Scanner (signals from last {CFG['recent_signal_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches",
             "="*60,
             f"BACKTEST (last {CFG['backtest_lookback_days']} trading days, full universe):",
@@ -1398,14 +1446,19 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 struct = r.get("Struct",0) or 0
                 tech   = r.get("Tech",0) or 0
                 ma     = r.get("Retested_MA","—")
+                dsig   = r.get("Days_Since_Signal")
+                dsig_disp = f"{int(dsig)}d ago" if dsig is not None else "—"
                 risk   = r.get("Risk_%",0) or 0
                 bwr    = r.get("Backtest_WinRate_%")
                 bwr_disp = f"{bwr:.1f}%" if bwr is not None else "n/a"
+                recent = r.get("Recent_Signals","")
                 plain_lines.append(
                     f"{ticker:<7} Entry:${float(price):.2f}  SL:${float(sl):.2f}  "
                     f"Total:{float(total):.0f}(F{float(fund):.0f}+S{float(struct):.0f}+T{float(tech):.0f})  "
-                    f"MA:{ma}  Risk:{float(risk):+.1f}%  OwnBacktestWinRate:{bwr_disp}"
+                    f"MA:{ma}  Signal:{dsig_disp}  Risk:{float(risk):+.1f}%  OwnBacktestWinRate:{bwr_disp}"
                 )
+                if recent:
+                    plain_lines.append(f"        All signals in last 2-3 weeks: {recent}")
         else:
             plain_lines.append("No matches today")
         plain_lines.append("\nFull results + full backtest trade log in CSV attachments.")
@@ -1529,7 +1582,7 @@ if results:
             from google.colab import files; files.download(cp)
         except Exception: pass
 
-print("""
+print(f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   📋 SCORE BREAKDOWN  (100 total)
   Fund    0–50   Layer 1: 8 fundamental metrics (fundamental_v2.py)
@@ -1550,21 +1603,35 @@ print("""
     6) RS: stock's performance over rs_period >= SPY's - 5%
 
   LAYER 3 — ENTRY TRIGGER (checked against EMA8/SMA21/SMA50/
-            SMA150 independently; matches if any satisfies it)
+            SMA150 independently; matches if any satisfies it.
+            Scans the last recent_signal_lookback_days trading days
+            ({CFG['recent_signal_lookback_days']}d, ~2-3 weeks) — not
+            just today — so a stock whose setup fired any day in that
+            window still shows up now, using its CURRENT price/
+            fundamentals/structure)
     0) PRIOR UPTREND: price was above the MA a few bars before
        the retest (confirms pullback, not breakdown)
     1) SMA50 RISING: SMA50 today > SMA50 sma_rising_lookback bars ago
-    2) CANDLE A (yesterday): RED, closed BELOW the MA
-    3) CANDLE B (today): GREEN, closed ABOVE the SAME MA AND
+    2) CANDLE A (that day): RED, closed BELOW the MA
+    3) CANDLE B (next day): GREEN, closed ABOVE the SAME MA AND
        above EMA8, simultaneously
     4) VOLUME: candle B volume > candle A volume
 
   📋 OUTPUT
-  Price       = candle B (today) close — the entry price
-  Stop_Loss   = candle A (yesterday) low
+  Price       = candle B close on the MOST RECENT signal day found
+                (the entry price as of that day — may differ from
+                today's live price if the signal is a few days old)
+  Stop_Loss   = candle A low on that same signal day
   Risk_%      = (Price - Stop_Loss) / Price
-  Retested_MA = which MA (EMA8/SMA21/SMA50/SMA150) Layer 3 fired against
-  Matched_MAs = all MAs that matched at once, if more than one (confluence)
+  Retested_MA = which MA (EMA8/SMA21/SMA50/SMA150) the most recent
+                signal fired against
+  Matched_MAs = all MAs that matched on that SAME day, if more than
+                one (same-day confluence)
+  Days_Since_Signal = how many trading days ago the most recent
+                trigger fired (0 = today)
+  Recent_Signals = every date+MA this trigger fired within the last
+                {CFG['recent_signal_lookback_days']} trading days —
+                the full "identified in the last 2-3 weeks" list
   Above_52wLow_% / Below_52wHigh_% / RS_vs_SPY_% = Layer 2 structural detail
 
   📋 BACKTEST
@@ -1593,6 +1660,9 @@ print("""
   Total > 65               elite across all 3 layers
   Struct = 20                perfect Stage-2 structure
   Risk_% < 5                 tight stop relative to entry
+  Days_Since_Signal <= 3      freshest trigger in the 2-3 week window
+  Recent_Signal_Count > 1     trigger fired more than once recently
+                              (repeated support at the same level)
   Backtest_WinRate_% > 50    this ticker's own trigger has worked recently
   Fund > 35                  genuinely strong business quality
 
@@ -1604,6 +1674,7 @@ print("""
   min_above_52w_low_pct             30 → 15    (Layer 2)
   min_tech_score                    10 → 6     (Layer 3)
   min_total_score                   40 → 25
+  recent_signal_lookback_days       15 → 25    (widen the 2-3 week window)
   prior_uptrend_lookback              3 → 5
   sma_rising_lookback                 5 → 10
   require_prior_uptrend            True → False
