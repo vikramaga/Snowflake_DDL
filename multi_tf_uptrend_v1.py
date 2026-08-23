@@ -674,6 +674,9 @@ with open(tv,"w") as f:
     f.write(f"###Multi-Timeframe Uptrend Alignment {datetime.today().strftime('%Y-%m-%d')}\n")
     for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
 print(f"  📋 TradingView → {tv}")
+if results:
+    print(f"\n  📋 Tickers (comma-separated):")
+    print(f"  {', '.join(r['Ticker'] for r in results)}")
 
 # ── Email with CSV attached ───────────────────────────────
 def _send_email(rl, csv_path):
@@ -759,6 +762,14 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 <p style="font-size:11px;color:#64748b;margin:8px 0 0">
   📎 Full results attached as CSV
 </p>
+{f'''<div style="margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;
+        border-radius:6px;padding:10px 14px">
+  <p style="margin:0 0 4px;font-size:10px;color:#94a3b8;font-weight:700">
+    TICKERS (comma-separated, copy/paste)
+  </p>
+  <p style="margin:0;font-size:12px;color:#1e293b;font-family:monospace;
+      word-break:break-all">{", ".join(r.get("Ticker","") for r in rl)}</p>
+</div>''' if rl else ''}
   </td></tr>
   <tr><td style="background:#f8fafc;padding:12px 28px;
              border-top:1px solid #e2e8f0;text-align:center">
@@ -785,6 +796,9 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                     f"1H:{r.get('1H_Dist_%',0):+.1f}%  4H:{r.get('4H_Dist_%',0):+.1f}%  "
                     f"D:{r.get('Daily_Dist_%',0):+.1f}%  W:{r.get('Weekly_Dist_%',0):+.1f}%"
                 )
+            plain_lines.append("")
+            plain_lines.append("Tickers (comma-separated):")
+            plain_lines.append(", ".join(r.get("Ticker","") for r in rl))
         else:
             plain_lines.append("No matches today")
         plain_lines.append("\nFull results in CSV attachment.")
