@@ -1403,6 +1403,23 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
     Win = hit {CFG['backtest_reward_r']:.0f}:1 reward before stop-loss, within {CFG['backtest_holding_days']} trading days
   </p>
 </div>
+<div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px 16px;margin-top:8px">
+  <p style="margin:0 0 6px;color:#93c5fd;font-size:12px;font-weight:700">
+    🔍 FUNNEL — where stocks were filtered out
+  </p>
+  <p style="margin:0;color:#cbd5e1;font-size:12px">
+    {len(TICKERS)} tickers scanned &nbsp;→&nbsp;
+    {len(tech_passes)} passed Layer 2 (Structure) + Layer 3 (Trigger, last {CFG['recent_signal_lookback_days']}d) &nbsp;→&nbsp;
+    <b style="color:#facc15">{cnt} passed Layer 1 (Fundamentals) too</b>
+  </p>
+  <p style="margin:6px 0 0;color:#64748b;font-size:10px">
+    If Layer2+3 passes is 0: no stock currently has both a confirmed Stage-2
+    uptrend AND a fresh retest+reclaim trigger — often means the market is
+    extended with no pullbacks to retest right now, not a bug. If Layer2+3
+    passes is &gt;0 but final matches is 0: Layer 1 (min_fund_score) is the
+    bottleneck — try lowering it.
+  </p>
+</div>
   </td></tr>
   <tr><td style="padding:16px">
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
@@ -1434,6 +1451,9 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             f"Losses: {BT_SUMMARY['losses']}  Timeouts: {BT_SUMMARY['timeouts']}",
             f"  Success rate: " + (f"{BT_SUMMARY['win_rate_pct']:.1f}%"
                                     if BT_SUMMARY['win_rate_pct'] is not None else "n/a"),
+            "="*60,
+            f"FUNNEL: {len(TICKERS)} scanned -> {len(tech_passes)} passed Layer2+3 (Structure+Trigger) "
+            f"-> {cnt} passed Layer1 (Fundamentals) too",
             "="*60,
         ]
         if rl:
