@@ -122,6 +122,8 @@ CFG = {
     "monthly_rsi_cross_level": 60,   # fresh cross above this, on the monthly bar
     "weekly_rsi_level"       : 60,   # just needs to be above this currently
     "daily_rsi_cross_level"  : 40,   # fresh cross above this, on today's bar
+    "daily_cross_lookback_days": 21, # ~1 trading month — how far back to look
+                                      # for the daily RSI cross, not just today
 
     # ── Swing-high target ────────────────────────────────────────
     "swing_arm"              : 5,    # bars of lower highs required on each side
@@ -229,26 +231,44 @@ def analyze_rsi_multi_tf_reversal(sym, df_daily):
     if not weekly_above:
         return None
 
-    # ── Condition 3: Daily RSI just crossed above 40, green candle ──
+    # ── Condition 3: Daily RSI just crossed above 40, green candle —
+    #    scans the last daily_cross_lookback_days trading days (not
+    #    just today), so a setup that formed within the last ~month
+    #    still surfaces even if today itself has no fresh cross ──────
     d_level = CFG["daily_rsi_cross_level"]
-    daily_cross = (prev_rsi_d < d_level) and (cur_rsi_d >= d_level)
-    if not daily_cross:
+    lb = CFG["daily_cross_lookback_days"]
+    hits = []
+    for back in range(0, lb):
+        i = (n - 1) - back
+        if i < 1: break
+        c_i, c_p = rsi_daily.iloc[i], rsi_daily.iloc[i-1]
+        if np.isnan(c_i) or np.isnan(c_p): continue
+        if not (c_p < d_level and c_i >= d_level): continue
+        o_i = float(df_daily["Open"].iloc[i])
+        cl_i = float(df_daily["Close"].iloc[i])
+        if cl_i > o_i:   # green candle that same day
+            hits.append({"idx": i, "rsi_prev": float(c_p), "rsi_cur": float(c_i)})
+    if not hits:
         return None
 
-    open_today  = float(df_daily["Open"].iloc[-1])
-    close_today = float(df_daily["Close"].iloc[-1])
-    candle_green = close_today > open_today
-    if not candle_green:
-        return None
+    sig = hits[0]   # most recent hit (scanned newest-first)
+    sig_idx = sig["idx"]
+    cur_rsi_d, prev_rsi_d = sig["rsi_cur"], sig["rsi_prev"]
+    days_since_signal = (n - 1) - sig_idx
+    recent_signals = [
+        {"date": df_daily.index[h["idx"]], "bars_ago": (n-1)-h["idx"]}
+        for h in hits
+    ]
 
-    # ── Entry / Stop / Target ───────────────────────────────────────
-    entry_price = float(df_daily["High"].iloc[-1])   # breakout above the green candle
-    stop_loss   = float(df_daily["Low"].iloc[-1])
+    # ── Entry / Stop / Target (as of the signal day, which may not
+    #    be today if the freshest cross was earlier in the window) ──
+    entry_price = float(df_daily["High"].iloc[sig_idx])   # breakout above the green candle
+    stop_loss   = float(df_daily["Low"].iloc[sig_idx])
     if entry_price <= stop_loss:
         return None
 
     sw_idx, swing_high = find_last_swing_high(
-        df_daily, before_idx=n-1, arm=CFG["swing_arm"],
+        df_daily, before_idx=sig_idx, arm=CFG["swing_arm"],
         window=CFG["swing_search_window"], min_value=entry_price)
     if swing_high is None:
         return None   # no valid upside target above the entry within the window
@@ -284,6 +304,10 @@ def analyze_rsi_multi_tf_reversal(sym, df_daily):
         "Daily_RSI"      : round(cur_rsi_d, 1),
         "Daily_RSI_Prev" : round(prev_rsi_d, 1),
         "Swing_High_Bars_Ago": (n - 1) - sw_idx,
+        "Days_Since_Signal"  : days_since_signal,
+        "Recent_Signal_Count": len(recent_signals),
+        "Recent_Signals" : " | ".join(
+            f"{s['date'].strftime('%Y-%m-%d')}({s['bars_ago']}d ago)" for s in recent_signals),
         "Flags"          : " | ".join(reasons),
         "_df_daily"      : df_daily,
         "_rsi_daily"     : rsi_daily,
@@ -337,9 +361,10 @@ def download_daily(symbols, days):
     return out
 
 # ── Live print ────────────────────────────────────────────────
-LIVE_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target","Risk_Reward"]
+LIVE_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target",
+             "Risk_Reward","Days_Since_Signal"]
 _CW = {"Ticker":8,"Price":10,"Score":7,"Entry_Price":12,"Stop_Loss":11,
-       "Target":10,"Risk_Reward":12}
+       "Target":10,"Risk_Reward":12,"Days_Since_Signal":16}
 _CF = {"Price":"${:.2f}","Score":"{:.0f}","Entry_Price":"${:.2f}",
        "Stop_Loss":"${:.2f}","Target":"${:.2f}","Risk_Reward":"{:.2f}"}
 _hdr_done = False
@@ -511,6 +536,7 @@ COLS = [
     "Ticker","Price","Score",
     "Entry_Price","Stop_Loss","Target","Risk_%","Risk_Reward",
     "Monthly_RSI","Weekly_RSI","Daily_RSI","Daily_RSI_Prev",
+    "Days_Since_Signal","Recent_Signal_Count","Recent_Signals",
     "Swing_High_Bars_Ago","Flags",
 ]
 df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
@@ -531,6 +557,7 @@ FMT = {
     "Weekly_RSI"  : lambda v: f"{v:.1f}",
     "Daily_RSI"   : lambda v: f"{v:.1f}",
     "Daily_RSI_Prev": lambda v: f"{v:.1f}",
+    "Days_Since_Signal": lambda v: f"{int(v)}d ago",
     "Swing_High_Bars_Ago": lambda v: f"{int(v)}d ago",
 }
 
@@ -543,7 +570,7 @@ def fmt_v(col, val):
 
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target",
-            "Risk_Reward","Monthly_RSI","Weekly_RSI","Daily_RSI"]
+            "Risk_Reward","Days_Since_Signal","Monthly_RSI","Weekly_RSI","Daily_RSI"]
     DISP = [c for c in DISP if c in df_out.columns]
 
     gc = "#22c55e"
@@ -607,19 +634,21 @@ if _IN_NOTEBOOK and results:
   <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
     {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
     <b style="color:#22c55e">{len(results)} matches</b> from {len(TICKERS)} tickers
+    &nbsp;·&nbsp; daily cross checked over the last {CFG['daily_cross_lookback_days']} trading days
   </p>
 </div>"""
 
-    legend_html = """
+    legend_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;
         padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
-  Monthly RSI just crossed above 60 &nbsp;·&nbsp;
-  Weekly RSI currently above 60 &nbsp;·&nbsp;
-  Daily RSI just crossed above 40 with a GREEN candle that day &nbsp;·&nbsp;
-  Entry_Price = high of that green candle &nbsp;·&nbsp;
-  Stop_Loss = low of that green candle &nbsp;·&nbsp;
+  Monthly RSI just crossed above 60 (current month) &nbsp;·&nbsp;
+  Weekly RSI currently above 60 (current week) &nbsp;·&nbsp;
+  Daily RSI crossed above 40 with a GREEN candle that day, any day in
+  the last {CFG['daily_cross_lookback_days']} trading days &nbsp;·&nbsp;
+  Entry_Price/Stop_Loss = that green candle's high/low (may be a few
+  days old — see Days_Since_Signal) &nbsp;·&nbsp;
   Target = last confirmed swing high above entry
 </div>"""
 
@@ -628,7 +657,7 @@ if _IN_NOTEBOOK and results:
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
     CLI_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target",
-                "Risk_Reward","Monthly_RSI","Weekly_RSI","Daily_RSI"]
+                "Risk_Reward","Days_Since_Signal","Monthly_RSI","Weekly_RSI","Daily_RSI"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -659,6 +688,9 @@ elif results:
   Stop_Loss       low of that same green candle
   Target          last confirmed swing high above the entry
   Risk_Reward     (Target - Entry) / (Entry - Stop_Loss)
+  Days_Since_Signal  how many trading days ago the daily RSI cross fired
+                     (0 = today; checked over the last daily_cross_
+                     lookback_days trading days, not just today)
   ──────────────────────────────────────────────────────""")
 
 # Save
@@ -706,7 +738,7 @@ def _send_email(rl, csv_path):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-                      "Target","Risk_Reward"]
+                      "Target","Risk_Reward","Days_Since_Signal"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -718,6 +750,8 @@ def _send_email(rl, csv_path):
             stop   = r.get("Stop_Loss",0) or 0
             target = r.get("Target",0) or 0
             rr     = r.get("Risk_Reward",0) or 0
+            dsig   = r.get("Days_Since_Signal")
+            dsig_disp = f"{int(dsig)}d ago" if dsig is not None else "—"
             rows_e += (
                 f'<tr style="background:{bg}">'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
@@ -728,9 +762,11 @@ def _send_email(rl, csv_path):
                 f'<td style="padding:6px 11px;font-size:12px;color:#ef4444">${float(stop):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#3b82f6">${float(target):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:600">{float(rr):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
+                f'color:#a78bfa;font-weight:600">{dsig_disp}</td>'
                 f'</tr>'
             )
-        no_results_msg = ('<tr><td colspan="7" style="padding:20px;text-align:center;'
+        no_results_msg = ('<tr><td colspan="8" style="padding:20px;text-align:center;'
                            'color:#94a3b8;font-size:13px">No matches today</td></tr>')
 
         html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
@@ -778,7 +814,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </body></html>"""
 
         plain_lines = [
-            f"RSI Multi-Timeframe Reversal — {datetime.today().strftime('%Y-%m-%d')}",
+            f"RSI Multi-Timeframe Reversal (daily cross checked over last {CFG['daily_cross_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches (Monthly RSI cross + Weekly RSI strength + Daily RSI reversal)",
             "="*60,
         ]
@@ -791,10 +827,12 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 stop   = r.get("Stop_Loss",0) or 0
                 target = r.get("Target",0) or 0
                 rr     = r.get("Risk_Reward",0) or 0
+                dsig   = r.get("Days_Since_Signal")
+                dsig_disp = f"{int(dsig)}d ago" if dsig is not None else "—"
                 plain_lines.append(
                     f"{ticker:<7} ${float(price):.2f}  Score:{float(score):.0f}  "
                     f"Entry:${float(entry):.2f}  SL:${float(stop):.2f}  "
-                    f"Target:${float(target):.2f}  R:R:{float(rr):.2f}"
+                    f"Target:${float(target):.2f}  R:R:{float(rr):.2f}  Signal:{dsig_disp}"
                 )
             plain_lines.append("")
             plain_lines.append("Tickers (comma-separated):")
@@ -918,15 +956,19 @@ if results:
             from google.colab import files; files.download(cp)
         except Exception: pass
 
-print("""
+print(f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   📋 SIGNAL (all required)
   1) MONTHLY: RSI(14) just crossed ABOVE 60 (below 60 last month,
      at/above 60 this month) — a fresh long-term momentum shift.
+     Evaluated at the CURRENT month only (not a rolling window).
   2) WEEKLY: RSI(14) currently ABOVE 60 (just the level, no
-     freshness requirement — confirms medium-term participation).
-  3) DAILY: RSI(14) just crossed ABOVE 40 from below 40 (a fresh
-     short-term reversal), AND that day's candle is GREEN.
+     freshness requirement). Evaluated at the CURRENT week only.
+  3) DAILY: RSI(14) crossed ABOVE 40 from below, with that day's
+     candle GREEN — checked over the last
+     daily_cross_lookback_days trading days ({CFG['daily_cross_lookback_days']}d,
+     ~1 month), not just today. If it fired more than once in that
+     window, the MOST RECENT occurrence is used for Entry/Stop/Target.
 
   📋 DATA SOURCING
   Only 1 download per ticker: daily bars (~6 years). Weekly and
@@ -935,12 +977,17 @@ print("""
 
   📋 OUTPUT
   Entry_Price = HIGH of the signal day's green candle (the
-                breakout trigger — enter once price clears it)
+                breakout trigger — enter once price clears it).
+                NOTE: if Days_Since_Signal > 0, this is the price
+                as of that earlier day, not today's live price.
   Stop_Loss   = LOW of that same green candle
   Target      = the last CONFIRMED swing high before the signal
                 (a fractal high with swing_arm bars of lower highs
                 on both sides) — only valid if it sits above entry
   Risk_Reward = (Target - Entry) / (Entry - Stop_Loss)
+  Days_Since_Signal = how many trading days ago the daily cross fired
+  Recent_Signals    = every date the daily cross fired within the
+                      lookback window (there may be more than one)
 
   📋 SCORE (0-100)
   Monthly RSI strength (0-25) + Weekly RSI strength (0-25) +
@@ -949,16 +996,18 @@ print("""
   💡 BEST SETUPS
   Score > 70            strong RSI alignment + good risk:reward
   Risk_Reward > 2         target well above entry relative to stop
+  Days_Since_Signal = 0-3   freshest daily reversal
   Swing_High_Bars_Ago high  target is a well-established prior
                             high, not just recent noise
 
   ⚙️  TUNE IF 0 RESULTS
-  monthly_rsi_cross_level   60 → 55   (looser monthly trigger)
-  weekly_rsi_level          60 → 55
-  daily_rsi_cross_level     40 → 45
-  swing_arm                  5 → 3    (less strict swing confirmation)
-  swing_search_window      252 → 400  (search further back for a target)
-  min_price                   2 → 1
-  min_avg_volume          80000 → 50000
+  monthly_rsi_cross_level    60 → 55   (looser monthly trigger)
+  weekly_rsi_level           60 → 55
+  daily_rsi_cross_level      40 → 45
+  daily_cross_lookback_days  21 → 42   (search further back, ~2 months)
+  swing_arm                   5 → 3    (less strict swing confirmation)
+  swing_search_window       252 → 400  (search further back for a target)
+  min_price                    2 → 1
+  min_avg_volume           80000 → 50000
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
