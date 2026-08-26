@@ -1,0 +1,37 @@
+name: H4 Pullback Recovery Scanner
+
+on:
+  schedule:
+    - cron: "50 22 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-h4-pullback
+          restore-keys: ${{ runner.os }}-pip-
+      - name: Install
+        run: pip install --upgrade yfinance pandas numpy requests tqdm matplotlib
+      - name: Run
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
+        run: python nasdaq_h4_pullback_recovery.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: h4-pullback-${{ github.run_id }}
+          path: |
+            h4_pullback_recovery_*.csv
+            h4_pullback_chart_*.png
+            tv_h4_pullback_*.txt
+          retention-days: 30
