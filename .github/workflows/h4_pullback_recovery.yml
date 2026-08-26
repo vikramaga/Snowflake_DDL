@@ -22,8 +22,8 @@ jobs:
         run: pip install --upgrade yfinance pandas numpy requests tqdm matplotlib
       - name: Run
         env:
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_TO:   ${{ secrets.EMAIL_TO }}
         run: python nasdaq_h4_pullback_recovery.py
       - uses: actions/upload-artifact@v4
