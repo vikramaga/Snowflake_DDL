@@ -3,10 +3,9 @@
 # ============================================================
 #
 # SIGNAL (all required):
-#   1. MONTHLY: RSI(14) just crossed ABOVE 60 (was below 60 last
-#      month, is at/above 60 this month) — a fresh long-term
-#      momentum shift, not a level it's been sitting above for a
-#      while.
+#   1. MONTHLY: RSI(14) is currently AT/ABOVE 60 — confirms the
+#      long-term trend is strong (level only, no freshness
+#      requirement — same shape as the weekly check below).
 #   2. WEEKLY: RSI(14) is currently ABOVE 60 — confirms the
 #      medium-term trend is already participating (no freshness
 #      requirement here, just the level).
@@ -119,7 +118,7 @@ CFG = {
 
     # ── RSI levels (same 14-period RSI on every timeframe) ──────
     "rsi_period"             : 14,
-    "monthly_rsi_cross_level": 60,   # fresh cross above this, on the monthly bar
+    "monthly_rsi_level": 60,   # currently at/above this, on the monthly bar
     "weekly_rsi_level"       : 60,   # just needs to be above this currently
     "daily_rsi_cross_level"  : 40,   # fresh cross above this, on today's bar
     "daily_cross_lookback_days": 21, # ~1 trading month — how far back to look
@@ -213,16 +212,16 @@ def analyze_rsi_multi_tf_reversal(sym, df_daily):
     if len(rsi_monthly) < 2 or len(rsi_weekly) < 1 or len(rsi_daily) < 2:
         return None
 
-    cur_rsi_m, prev_rsi_m = rsi_monthly.iloc[-1], rsi_monthly.iloc[-2]
-    cur_rsi_w             = rsi_weekly.iloc[-1]
+    cur_rsi_m = rsi_monthly.iloc[-1]
+    cur_rsi_w = rsi_weekly.iloc[-1]
     cur_rsi_d, prev_rsi_d = rsi_daily.iloc[-1], rsi_daily.iloc[-2]
-    if any(np.isnan(v) for v in [cur_rsi_m, prev_rsi_m, cur_rsi_w, cur_rsi_d, prev_rsi_d]):
+    if any(np.isnan(v) for v in [cur_rsi_m, cur_rsi_w, cur_rsi_d, prev_rsi_d]):
         return None
 
-    # ── Condition 1: Monthly RSI just crossed above 60 ─────────────
-    m_level = CFG["monthly_rsi_cross_level"]
-    monthly_cross = (prev_rsi_m < m_level) and (cur_rsi_m >= m_level)
-    if not monthly_cross:
+    # ── Condition 1: Monthly RSI currently at/above 60 ──────────────
+    m_level = CFG["monthly_rsi_level"]
+    monthly_above = cur_rsi_m >= m_level
+    if not monthly_above:
         return None
 
     # ── Condition 2: Weekly RSI currently above 60 ──────────────────
@@ -518,7 +517,7 @@ print(f"{'━'*65}")
 
 if not results:
     print("\n  No matches. Try relaxing:")
-    print("   monthly_rsi_cross_level   60 → 55")
+    print("   monthly_rsi_level   60 → 55")
     print("   weekly_rsi_level          60 → 55")
     print("   daily_rsi_cross_level     40 → 45")
     print("   swing_arm                  5 → 3")
@@ -643,7 +642,7 @@ if _IN_NOTEBOOK and results:
         padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
-  Monthly RSI just crossed above 60 (current month) &nbsp;·&nbsp;
+  Monthly RSI currently at/above 60 (current month) &nbsp;·&nbsp;
   Weekly RSI currently above 60 (current week) &nbsp;·&nbsp;
   Daily RSI crossed above 40 with a GREEN candle that day, any day in
   the last {CFG['daily_cross_lookback_days']} trading days &nbsp;·&nbsp;
@@ -959,8 +958,8 @@ if results:
 print(f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   📋 SIGNAL (all required)
-  1) MONTHLY: RSI(14) just crossed ABOVE 60 (below 60 last month,
-     at/above 60 this month) — a fresh long-term momentum shift.
+  1) MONTHLY: RSI(14) currently AT/ABOVE 60 (level only, no
+     freshness requirement — same shape as the weekly check).
      Evaluated at the CURRENT month only (not a rolling window).
   2) WEEKLY: RSI(14) currently ABOVE 60 (just the level, no
      freshness requirement). Evaluated at the CURRENT week only.
@@ -1001,7 +1000,7 @@ print(f"""
                             high, not just recent noise
 
   ⚙️  TUNE IF 0 RESULTS
-  monthly_rsi_cross_level    60 → 55   (looser monthly trigger)
+  monthly_rsi_level    60 → 55   (looser monthly trigger)
   weekly_rsi_level           60 → 55
   daily_rsi_cross_level      40 → 45
   daily_cross_lookback_days  21 → 42   (search further back, ~2 months)
