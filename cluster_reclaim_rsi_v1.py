@@ -1,30 +1,39 @@
 # ============================================================
-# NASDAQ — RSI Multi-Timeframe Reversal Scanner (v1)
+# NASDAQ — MA/VWAP Cluster Reclaim + RSI Confirmation Scanner (v1)
 # ============================================================
 #
 # SIGNAL (all required):
-#   1. MONTHLY: RSI(14) is currently AT/ABOVE 60 — confirms the
-#      long-term trend is strong (level only, no freshness
-#      requirement — same shape as the weekly check below).
-#   2. WEEKLY: RSI(14) is currently ABOVE 60 — confirms the
-#      medium-term trend is already participating (no freshness
-#      requirement here, just the level).
-#   3. DAILY: RSI(14) just crossed ABOVE 40 from below 40 (a fresh
-#      short-term reversal out of a pullback), AND that exact day's
-#      candle is GREEN (close > open).
 #
-# DATA — only 1 download per ticker: daily bars. Weekly and Monthly
-# RSI are both computed from the SAME daily data via resampling
-# (Weekly = 'W', Monthly = 'ME') — no separate network calls needed.
+#   1. STRUCTURE (evaluated on the signal day):
+#      SMA50 > SMA150 (bullish structure), AND EMA8, JMA, SMA21,
+#      and VWAP are ALL above SMA50 AND compressed tightly together
+#      (max-min spread among them within cluster_compression_pct%
+#      of price) — a "coiled" short-term cluster riding above the
+#      longer-term trend. SMA50 sloping upward is scored as a bonus,
+#      not a hard requirement ("preferably increasing slope").
+#
+#   2. TWO-CANDLE RECLAIM (scanned over the last
+#      signal_lookback_days trading days, not just today):
+#        Candle A (red)  — closed BELOW all four of JMA, EMA8,
+#                           SMA21, AND VWAP
+#        Candle B (green)— closed ABOVE all four of the same lines,
+#                           with volume >= volume_multiplier (1.3x)
+#                           times candle A's volume
+#
+#   3. RSI CONFIRMATION: RSI(14) just crossed above its own moving
+#      average (a signal-line cross) AND RSI is above 50, both on
+#      candle B.
+#
+# DATA — only 1 download per ticker: daily bars.
 #
 # OUTPUT:
-#   Entry_Price = HIGH of the signal day's green candle (the
-#                 breakout trigger — enter once price clears it)
-#   Stop_Loss   = LOW of that same green candle
-#   Target      = the last CONFIRMED swing high before the signal
-#                 (a fractal high with `swing_arm` bars of lower
-#                 highs on both sides) — the trade is only valid if
-#                 this target sits above the entry price
+#   Entry_Price = SMA21 value on the signal day (candle B)
+#   Stop_Loss   = LOW of candle A (the red day)
+#   Target      = Entry + risk_reward_ratio * (Entry - Stop_Loss)
+#                 — a fixed 1:3 risk:reward by construction, not a
+#                 swing-high search
+#   Signal_Date = the exact calendar date the pattern fired (not a
+#                 relative "Nd ago" — shown alongside Days_Since_Signal)
 #
 # SINGLE PASS — purely technical, no fundamentals fetch.
 #
@@ -112,23 +121,35 @@ print()
 
 # ── CONFIG ────────────────────────────────────────────────────
 CFG = {
-    "history_days"          : 1500,  # ~6 years — gives ~70 monthly bars, ~215 weekly
-                                      # bars, plenty for stable RSI(14) on all 3
-                                      # timeframes plus a full swing-high search window
+    "history_days"          : 450,   # daily bars — plenty for SMA150 + JMA warmup
 
-    # ── RSI levels (same 14-period RSI on every timeframe) ──────
+    # ── Indicator periods ────────────────────────────────────────
+    "ema8_period"            : 8,
+    "sma21_period"           : 21,
+    "sma50_period"           : 50,
+    "sma150_period"          : 150,
+    "vwap_period"            : 20,   # rolling volume-weighted moving average
+    "jma_period"             : 13,
+    "jma_phase"              : 40,
+
+    # ── Step 1: cluster structure ───────────────────────────────
+    "cluster_compression_pct": 3.0,  # max-min spread among {EMA8,JMA,SMA21,VWAP}
+                                      # as % of price — must be within this
+    "slope_lookback"         : 5,    # bars back to check SMA50 rising (scored
+                                      # as a bonus, not a hard requirement)
+
+    # ── Step 2: two-candle reclaim ───────────────────────────────
+    "volume_multiplier"      : 1.3,  # candle B volume >= this x candle A volume
+    "signal_lookback_days"   : 15,   # ~3 trading weeks — how far back to look
+                                      # for the reclaim pattern, not just today
+
+    # ── Step 3: RSI confirmation ─────────────────────────────────
     "rsi_period"             : 14,
-    "monthly_rsi_level": 60,   # currently at/above this, on the monthly bar
-    "weekly_rsi_level"       : 60,   # just needs to be above this currently
-    "daily_rsi_cross_level"  : 40,   # fresh cross above this, on today's bar
-    "daily_cross_lookback_days": 21, # ~1 trading month — how far back to look
-                                      # for the daily RSI cross, not just today
+    "rsi_avg_period"         : 9,    # period of RSI's own moving average
+    "rsi_min_level"          : 50,
 
-    # ── Swing-high target ────────────────────────────────────────
-    "swing_arm"              : 5,    # bars of lower highs required on each side
-                                      # to confirm a fractal swing high
-    "swing_search_window"    : 252,  # how far back (trading days) to search for
-                                      # the last confirmed swing high
+    # ── Step 4: risk:reward ──────────────────────────────────────
+    "risk_reward_ratio"      : 3.0,  # Target = Entry + ratio * (Entry - Stop)
 
     # ── Filters ─────────────────────────────────────────────────
     "min_avg_volume"         : 80_000,
@@ -137,6 +158,39 @@ CFG = {
     "batch_size"             : 50,
     "batch_sleep"            : 1.5,
 }
+
+# ── Indicators ───────────────────────────────────────────────
+def calc_jma(series, period=13, phase=40, power=2):
+    """
+    JMA (Jurik Moving Average) approximation — adaptive EMA with
+    phase-based smoothing, using the corrected e2 update (steady-
+    state gain 1.0, tracks price correctly).
+    """
+    n      = len(series)
+    vals   = series.values.astype(float)
+    result = np.full(n, np.nan)
+    phase_ratio = phase / 100.0 + 1.5
+    alpha = 2.0 / (period + 1.0)
+    beta  = alpha * phase_ratio
+    first_valid = 0
+    for i in range(n):
+        if not np.isnan(vals[i]):
+            first_valid = i
+            break
+    e0 = e1 = e2 = vals[first_valid]
+    result[first_valid] = e0
+    for i in range(first_valid + 1, n):
+        v   = vals[i]
+        e0  = (1 - alpha) * e0 + alpha * v
+        e1  = (v - e0) * (1 - beta) + beta * e1
+        e2  = (1 - alpha) * e2 + alpha * (e0 + e1)
+        result[i] = e2
+    return pd.Series(result, index=series.index)
+
+def calc_vwap_rolling(close, volume, period=20):
+    """Rolling volume-weighted moving average (VWAP proxy on daily bars)."""
+    pv = close * volume
+    return pv.rolling(period).sum() / volume.rolling(period).sum()
 
 # ── Uptrend test (reused across all 4 timeframes) ──────────────
 def calc_rsi(close, period=14):
@@ -149,45 +203,113 @@ def calc_rsi(close, period=14):
     rs = avg_gain / avg_loss
     return 100 - (100 / (1 + rs))
 
-def resample_ohlcv(df, rule):
-    """Resample an OHLCV dataframe to a coarser bar size."""
-    agg = {"Open": "first", "High": "max", "Low": "min",
-           "Close": "last", "Volume": "sum"}
-    out = df.resample(rule).agg(agg)
-    out.dropna(subset=["Close"], inplace=True)
-    return out
-
-def find_last_swing_high(df, before_idx, arm=5, window=252, min_value=None):
+def check_cluster_structure(df, ema8, jma, sma21, vwap, sma50, sma150, idx, cfg):
     """
-    Searches backward from just before `before_idx` for the most
-    recent CONFIRMED fractal swing high — High[i] greater than the
-    High of `arm` bars on both sides — within `window` bars.
+    STEP 1: at bar `idx` — SMA50 > SMA150, AND EMA8/JMA/SMA21/VWAP
+    all above SMA50 and compressed tightly together (max-min spread
+    within cluster_compression_pct% of price). SMA50 rising is
+    scored as a bonus, not required.
 
-    If `min_value` is given, swing highs at or below it are skipped
-    (they aren't valid upside targets — price has already exceeded
-    them) and the search continues further back for one that is.
-
-    Returns (idx, high_value) or (None, None) if none found.
+    Returns (passed: bool, details: dict).
     """
-    start_search = before_idx - arm - 1
-    earliest = max(arm, before_idx - window)
-    for i in range(start_search, earliest - 1, -1):
-        if i - arm < 0: continue
-        left  = df["High"].iloc[i-arm:i]
-        right = df["High"].iloc[i+1:i+1+arm]
-        if len(right) < arm: continue
-        h = df["High"].iloc[i]
-        if h > left.max() and h >= right.max():
-            if min_value is not None and h <= min_value:
-                continue   # not a valid target — keep looking further back
-            return i, float(h)
-    return None, None
+    price = float(df["Close"].iloc[idx])
+    s50, s150 = float(sma50.iloc[idx]), float(sma150.iloc[idx])
+    vals = [float(ema8.iloc[idx]), float(jma.iloc[idx]),
+            float(sma21.iloc[idx]), float(vwap.iloc[idx])]
+    if any(np.isnan(v) for v in vals + [s50, s150, price]):
+        return False, {}
 
-# ── Technical signal: RSI multi-timeframe reversal ───────────────
-def analyze_rsi_multi_tf_reversal(sym, df_daily):
+    structure_ok = s50 > s150
+    cluster_above_sma50 = all(v > s50 for v in vals)
+    compression_pct = (max(vals) - min(vals)) / price * 100 if price > 0 else 999
+
+    passed = structure_ok and cluster_above_sma50 and \
+             (compression_pct <= cfg["cluster_compression_pct"])
+
+    sb = cfg["slope_lookback"]
+    slope_ok = False
+    if idx - sb >= 0 and not np.isnan(sma50.iloc[idx-sb]):
+        slope_ok = s50 > float(sma50.iloc[idx-sb])
+
+    return passed, {
+        "compression_pct": round(compression_pct, 2),
+        "slope_ok": slope_ok,
+        "sma50": round(s50, 2), "sma150": round(s150, 2),
+    }
+
+def find_cluster_reclaim_rsi_signals(df, ema8, jma, sma21, vwap, sma50, sma150,
+                                       rsi, rsi_avg, cfg):
     """
-    Returns dict with score and setup details, or None if any
-    required condition fails.
+    Scans the last `signal_lookback_days` trading days for the full
+    3-step pattern (structure + 2-candle reclaim + RSI confirmation),
+    all evaluated at each candidate day. Returns a list of hit dicts,
+    most recent first.
+    """
+    n = len(df)
+    lb = cfg["signal_lookback_days"]
+    vol_mult = cfg["volume_multiplier"]
+    rsi_min = cfg["rsi_min_level"]
+    hits = []
+
+    for back in range(0, lb):
+        i = (n - 1) - back   # candle B (the green reclaim day)
+        j = i - 1             # candle A (the red day)
+        if j < 1: break
+
+        # ── Step 1: structure on candle B ──────────────────────────
+        struct_ok, struct_details = check_cluster_structure(
+            df, ema8, jma, sma21, vwap, sma50, sma150, i, cfg)
+        if not struct_ok:
+            continue
+
+        # ── Step 2: two-candle reclaim across all 4 lines ──────────
+        open_A, close_A = float(df["Open"].iloc[j]), float(df["Close"].iloc[j])
+        open_B, close_B = float(df["Open"].iloc[i]), float(df["Close"].iloc[i])
+        vol_A, vol_B = float(df["Volume"].iloc[j]), float(df["Volume"].iloc[i])
+
+        line_vals_A = [float(jma.iloc[j]), float(ema8.iloc[j]),
+                       float(sma21.iloc[j]), float(vwap.iloc[j])]
+        line_vals_B = [float(jma.iloc[i]), float(ema8.iloc[i]),
+                       float(sma21.iloc[i]), float(vwap.iloc[i])]
+        if any(np.isnan(v) for v in line_vals_A + line_vals_B):
+            continue
+
+        candle_A_red   = close_A < open_A
+        candle_A_below = all(close_A < v for v in line_vals_A)
+        candle_B_green = close_B > open_B
+        candle_B_above = all(close_B > v for v in line_vals_B)
+        vol_confirmed  = vol_B >= vol_mult * vol_A
+
+        if not (candle_A_red and candle_A_below and candle_B_green
+                and candle_B_above and vol_confirmed):
+            continue
+
+        # ── Step 3: RSI crosses above its own average, RSI > 50 ────
+        r_cur, r_prev = rsi.iloc[i], rsi.iloc[i-1]
+        ra_cur, ra_prev = rsi_avg.iloc[i], rsi_avg.iloc[i-1]
+        if any(np.isnan(v) for v in [r_cur, r_prev, ra_cur, ra_prev]):
+            continue
+        rsi_cross = (r_prev <= ra_prev) and (r_cur > ra_cur)
+        rsi_above_50 = r_cur > rsi_min
+        if not (rsi_cross and rsi_above_50):
+            continue
+
+        hits.append({
+            "idx": i, "j": j,
+            "struct": struct_details,
+            "vol_ratio": vol_B / vol_A if vol_A > 0 else 0,
+            "rsi_cur": float(r_cur), "rsi_avg_cur": float(ra_cur),
+            "close_A": close_A, "low_A": float(df["Low"].iloc[j]),
+            "sma21_B": float(sma21.iloc[i]),
+        })
+
+    return hits
+
+# ── Technical signal: cluster reclaim + RSI confirmation ─────────
+def analyze_cluster_reclaim(sym, df_daily):
+    """
+    Returns dict with score and setup details, or None if no
+    required condition is met anywhere in the lookback window.
     """
     if df_daily is None:
         return None
@@ -198,96 +320,59 @@ def analyze_rsi_multi_tf_reversal(sym, df_daily):
     if avg_vol < CFG["min_avg_volume"]: return None
 
     n = len(df_daily)
-    period = CFG["rsi_period"]
-    if n < CFG["swing_search_window"] + CFG["swing_arm"] + period + 5:
-        return None   # not enough history for a stable monthly RSI + swing search
-
-    df_weekly  = resample_ohlcv(df_daily, "W")
-    df_monthly = resample_ohlcv(df_daily, "ME")
-
-    rsi_daily   = calc_rsi(df_daily["Close"], period)
-    rsi_weekly  = calc_rsi(df_weekly["Close"], period)
-    rsi_monthly = calc_rsi(df_monthly["Close"], period)
-
-    if len(rsi_monthly) < 2 or len(rsi_weekly) < 1 or len(rsi_daily) < 2:
+    if n < CFG["sma150_period"] + CFG["signal_lookback_days"] + 20:
         return None
 
-    cur_rsi_m = rsi_monthly.iloc[-1]
-    cur_rsi_w = rsi_weekly.iloc[-1]
-    cur_rsi_d, prev_rsi_d = rsi_daily.iloc[-1], rsi_daily.iloc[-2]
-    if any(np.isnan(v) for v in [cur_rsi_m, cur_rsi_w, cur_rsi_d, prev_rsi_d]):
-        return None
+    ema8   = df_daily["Close"].ewm(span=CFG["ema8_period"], adjust=False).mean()
+    sma21  = df_daily["Close"].rolling(CFG["sma21_period"]).mean()
+    sma50  = df_daily["Close"].rolling(CFG["sma50_period"]).mean()
+    sma150 = df_daily["Close"].rolling(CFG["sma150_period"]).mean()
+    vwap   = calc_vwap_rolling(df_daily["Close"], df_daily["Volume"], CFG["vwap_period"])
+    jma    = calc_jma(df_daily["Close"], CFG["jma_period"], CFG["jma_phase"])
+    rsi    = calc_rsi(df_daily["Close"], CFG["rsi_period"])
+    rsi_avg = rsi.rolling(CFG["rsi_avg_period"]).mean()
 
-    # ── Condition 1: Monthly RSI currently at/above 60 ──────────────
-    m_level = CFG["monthly_rsi_level"]
-    monthly_above = cur_rsi_m >= m_level
-    if not monthly_above:
-        return None
-
-    # ── Condition 2: Weekly RSI currently above 60 ──────────────────
-    w_level = CFG["weekly_rsi_level"]
-    weekly_above = cur_rsi_w > w_level
-    if not weekly_above:
-        return None
-
-    # ── Condition 3: Daily RSI just crossed above 40, green candle —
-    #    scans the last daily_cross_lookback_days trading days (not
-    #    just today), so a setup that formed within the last ~month
-    #    still surfaces even if today itself has no fresh cross ──────
-    d_level = CFG["daily_rsi_cross_level"]
-    lb = CFG["daily_cross_lookback_days"]
-    hits = []
-    for back in range(0, lb):
-        i = (n - 1) - back
-        if i < 1: break
-        c_i, c_p = rsi_daily.iloc[i], rsi_daily.iloc[i-1]
-        if np.isnan(c_i) or np.isnan(c_p): continue
-        if not (c_p < d_level and c_i >= d_level): continue
-        o_i = float(df_daily["Open"].iloc[i])
-        cl_i = float(df_daily["Close"].iloc[i])
-        if cl_i > o_i:   # green candle that same day
-            hits.append({"idx": i, "rsi_prev": float(c_p), "rsi_cur": float(c_i)})
+    hits = find_cluster_reclaim_rsi_signals(
+        df_daily, ema8, jma, sma21, vwap, sma50, sma150, rsi, rsi_avg, CFG)
     if not hits:
         return None
 
-    sig = hits[0]   # most recent hit (scanned newest-first)
+    sig = hits[0]   # most recent
     sig_idx = sig["idx"]
-    cur_rsi_d, prev_rsi_d = sig["rsi_cur"], sig["rsi_prev"]
     days_since_signal = (n - 1) - sig_idx
     recent_signals = [
         {"date": df_daily.index[h["idx"]], "bars_ago": (n-1)-h["idx"]}
         for h in hits
     ]
 
-    # ── Entry / Stop / Target (as of the signal day, which may not
-    #    be today if the freshest cross was earlier in the window) ──
-    entry_price = float(df_daily["High"].iloc[sig_idx])   # breakout above the green candle
-    stop_loss   = float(df_daily["Low"].iloc[sig_idx])
+    # ── Entry / Stop / Target ──────────────────────────────────────
+    entry_price = sig["sma21_B"]           # SMA21 value on the signal day
+    stop_loss   = sig["low_A"]             # low of the red candle
     if entry_price <= stop_loss:
         return None
-
-    sw_idx, swing_high = find_last_swing_high(
-        df_daily, before_idx=sig_idx, arm=CFG["swing_arm"],
-        window=CFG["swing_search_window"], min_value=entry_price)
-    if swing_high is None:
-        return None   # no valid upside target above the entry within the window
-
     risk   = entry_price - stop_loss
-    reward = swing_high - entry_price
-    risk_reward = reward / risk if risk > 0 else 0
+    rr     = CFG["risk_reward_ratio"]
+    target = entry_price + rr * risk       # fixed 1:3 by construction
     risk_pct = risk / entry_price * 100 if entry_price > 0 else 0
 
     # ── Score (0-100) ────────────────────────────────────────────
     score = 0
     reasons = []
-    score += min(25, 10 + (cur_rsi_m - m_level))
-    reasons.append(f"MonthlyRSI{cur_rsi_m:.0f}")
-    score += min(25, 10 + (cur_rsi_w - w_level) * 0.5)
-    reasons.append(f"WeeklyRSI{cur_rsi_w:.0f}")
-    score += min(20, 10 + (cur_rsi_d - d_level))
-    reasons.append(f"DailyRSI{cur_rsi_d:.0f}Cross")
-    score += min(30, risk_reward * 10)
-    reasons.append(f"RR{risk_reward:.1f}")
+    comp = sig["struct"]["compression_pct"]
+    score += max(0, min(20, 20 - comp * 4))
+    reasons.append(f"Compression{comp:.1f}%")
+    if sig["struct"]["slope_ok"]:
+        score += 10; reasons.append("SMA50Rising")
+    vr = sig["vol_ratio"]
+    score += min(20, (vr - 1.0) * 20)
+    reasons.append(f"Vol{vr:.1f}x")
+    rsi_margin = sig["rsi_cur"] - CFG["rsi_min_level"]
+    score += min(20, rsi_margin)
+    reasons.append(f"RSI{sig['rsi_cur']:.0f}")
+    freshness_pts = max(0, 15 - days_since_signal)
+    score += freshness_pts
+    reasons.append(f"{days_since_signal}dAgo")
+    score += 15   # base for clearing every gate
     score = round(min(100, max(0, score)))
 
     return {
@@ -295,21 +380,24 @@ def analyze_rsi_multi_tf_reversal(sym, df_daily):
         "Price"          : round(price, 2),
         "Entry_Price"    : round(entry_price, 2),
         "Stop_Loss"      : round(stop_loss, 2),
-        "Target"         : round(swing_high, 2),
+        "Target"         : round(target, 2),
         "Risk_%"         : round(risk_pct, 1),
-        "Risk_Reward"    : round(risk_reward, 2),
-        "Monthly_RSI"    : round(cur_rsi_m, 1),
-        "Weekly_RSI"     : round(cur_rsi_w, 1),
-        "Daily_RSI"      : round(cur_rsi_d, 1),
-        "Daily_RSI_Prev" : round(prev_rsi_d, 1),
-        "Swing_High_Bars_Ago": (n - 1) - sw_idx,
+        "Risk_Reward"    : rr,
+        "Compression_%"  : comp,
+        "Vol_Ratio"      : round(sig["vol_ratio"], 2),
+        "RSI"            : round(sig["rsi_cur"], 1),
+        "RSI_Avg"        : round(sig["rsi_avg_cur"], 1),
+        "SMA50_Rising"   : sig["struct"]["slope_ok"],
+        "Signal_Date"    : df_daily.index[sig_idx].strftime("%Y-%m-%d"),
         "Days_Since_Signal"  : days_since_signal,
         "Recent_Signal_Count": len(recent_signals),
         "Recent_Signals" : " | ".join(
-            f"{s['date'].strftime('%Y-%m-%d')}({s['bars_ago']}d ago)" for s in recent_signals),
+            f"{s['date'].strftime('%Y-%m-%d')}" for s in recent_signals),
         "Flags"          : " | ".join(reasons),
         "_df_daily"      : df_daily,
-        "_rsi_daily"     : rsi_daily,
+        "_ema8"          : ema8, "_sma21": sma21, "_sma50": sma50,
+        "_sma150"        : sma150, "_vwap": vwap, "_jma": jma,
+        "_rsi"           : rsi, "_rsi_avg": rsi_avg,
     }
 
 # ── Download: daily (→ also Weekly + Monthly via resample) ──────
@@ -361,9 +449,9 @@ def download_daily(symbols, days):
 
 # ── Live print ────────────────────────────────────────────────
 LIVE_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target",
-             "Risk_Reward","Days_Since_Signal"]
+             "Risk_Reward","Signal_Date"]
 _CW = {"Ticker":8,"Price":10,"Score":7,"Entry_Price":12,"Stop_Loss":11,
-       "Target":10,"Risk_Reward":12,"Days_Since_Signal":16}
+       "Target":10,"Risk_Reward":12,"Signal_Date":13}
 _CF = {"Price":"${:.2f}","Score":"{:.0f}","Entry_Price":"${:.2f}",
        "Stop_Loss":"${:.2f}","Target":"${:.2f}","Risk_Reward":"{:.2f}"}
 _hdr_done = False
@@ -474,8 +562,9 @@ print()
 print("━"*65)
 print(f"  STEP 3  SCANNING {len(TICKERS)} TICKERS")
 print("━"*65)
-print("  Fetching daily bars (→ also gives Weekly and Monthly via resample)")
-print("  A stock only matches if Monthly + Weekly + Daily RSI conditions all fire\n")
+print("  Fetching daily bars (single download per ticker)")
+print("  A stock only matches if the cluster structure, 2-candle reclaim,")
+print("  and RSI confirmation all fire within the lookback window\n")
 
 _hdr_done = False
 results = []
@@ -501,7 +590,7 @@ print()
 
 for sym in tqdm(list(daily_map.keys()), desc="Checking RSI reversal", unit="stk"):
     try:
-        r = analyze_rsi_multi_tf_reversal(sym, daily_map[sym])
+        r = analyze_cluster_reclaim(sym, daily_map[sym])
         if r is None: continue
         r["Ticker"] = sym
         results.append(r)
@@ -517,13 +606,13 @@ print(f"{'━'*65}")
 
 if not results:
     print("\n  No matches. Try relaxing:")
-    print("   monthly_rsi_level   60 → 55")
-    print("   weekly_rsi_level          60 → 55")
-    print("   daily_rsi_cross_level     40 → 45")
-    print("   swing_arm                  5 → 3")
-    print("   swing_search_window      252 → 400")
-    print("   min_price                  2 → 1")
-    print("   min_avg_volume         80000 → 50000")
+    print("   cluster_compression_pct    3.0 → 5.0   (allow a looser cluster)")
+    print("   volume_multiplier          1.3 → 1.15  (lower the volume bar)")
+    print("   signal_lookback_days        15 → 25    (search further back)")
+    print("   rsi_min_level                50 → 45")
+    print("   rsi_avg_period                9 → 14")
+    print("   min_price                     2 → 1")
+    print("   min_avg_volume            80000 → 50000")
 
 results.sort(key=lambda x: x["Score"], reverse=True)
 
@@ -534,9 +623,9 @@ out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 COLS = [
     "Ticker","Price","Score",
     "Entry_Price","Stop_Loss","Target","Risk_%","Risk_Reward",
-    "Monthly_RSI","Weekly_RSI","Daily_RSI","Daily_RSI_Prev",
-    "Days_Since_Signal","Recent_Signal_Count","Recent_Signals",
-    "Swing_High_Bars_Ago","Flags",
+    "Compression_%","Vol_Ratio","RSI","RSI_Avg","SMA50_Rising",
+    "Signal_Date","Days_Since_Signal","Recent_Signal_Count","Recent_Signals",
+    "Flags",
 ]
 df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
                         for r in results]) if results else pd.DataFrame(columns=COLS)
@@ -551,13 +640,12 @@ FMT = {
     "Stop_Loss"   : lambda v: f"${v:.2f}",
     "Target"      : lambda v: f"${v:.2f}",
     "Risk_%"      : lambda v: f"{v:.1f}%",
-    "Risk_Reward" : lambda v: f"{v:.2f}",
-    "Monthly_RSI" : lambda v: f"{v:.1f}",
-    "Weekly_RSI"  : lambda v: f"{v:.1f}",
-    "Daily_RSI"   : lambda v: f"{v:.1f}",
-    "Daily_RSI_Prev": lambda v: f"{v:.1f}",
+    "Risk_Reward" : lambda v: f"1:{v:.1f}",
+    "Compression_%": lambda v: f"{v:.2f}%",
+    "Vol_Ratio"   : lambda v: f"{v:.2f}x",
+    "RSI"         : lambda v: f"{v:.1f}",
+    "RSI_Avg"     : lambda v: f"{v:.1f}",
     "Days_Since_Signal": lambda v: f"{int(v)}d ago",
-    "Swing_High_Bars_Ago": lambda v: f"{int(v)}d ago",
 }
 
 def fmt_v(col, val):
@@ -569,7 +657,7 @@ def fmt_v(col, val):
 
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target",
-            "Risk_Reward","Days_Since_Signal","Monthly_RSI","Weekly_RSI","Daily_RSI"]
+            "Risk_Reward","Signal_Date","Compression_%","Vol_Ratio","RSI"]
     DISP = [c for c in DISP if c in df_out.columns]
 
     gc = "#22c55e"
@@ -611,7 +699,7 @@ if _IN_NOTEBOOK and results:
           border-left:4px solid {gc};border-radius:6px 6px 0 0;
           padding:10px 18px;display:flex;align-items:center;gap:10px">
     <span style="font-size:18px">🎯</span>
-    <span style="color:#f1f5f9;font-size:15px;font-weight:700">RSI Multi-Timeframe Reversal</span>
+    <span style="color:#f1f5f9;font-size:15px;font-weight:700">MA/VWAP Cluster Reclaim + RSI</span>
     <span style="color:{gc};font-size:12px;margin-left:8px">{len(results)} stock{'s' if len(results)!=1 else ''}</span>
   </div>
   <div style="overflow-x:auto;border:1px solid #e2e8f0;border-top:none;
@@ -628,12 +716,12 @@ if _IN_NOTEBOOK and results:
         border-radius:10px;padding:18px 24px;margin-bottom:8px;
         font-family:'Segoe UI',Arial,sans-serif">
   <h2 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-    📈 RSI Multi-Timeframe Reversal (Monthly + Weekly + Daily)
+    📈 MA/VWAP Cluster Reclaim + RSI Confirmation
   </h2>
   <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
     {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
     <b style="color:#22c55e">{len(results)} matches</b> from {len(TICKERS)} tickers
-    &nbsp;·&nbsp; daily cross checked over the last {CFG['daily_cross_lookback_days']} trading days
+    &nbsp;·&nbsp; pattern checked over the last {CFG['signal_lookback_days']} trading days
   </p>
 </div>"""
 
@@ -642,13 +730,16 @@ if _IN_NOTEBOOK and results:
         padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
-  Monthly RSI currently at/above 60 (current month) &nbsp;·&nbsp;
-  Weekly RSI currently above 60 (current week) &nbsp;·&nbsp;
-  Daily RSI crossed above 40 with a GREEN candle that day, any day in
-  the last {CFG['daily_cross_lookback_days']} trading days &nbsp;·&nbsp;
-  Entry_Price/Stop_Loss = that green candle's high/low (may be a few
-  days old — see Days_Since_Signal) &nbsp;·&nbsp;
-  Target = last confirmed swing high above entry
+  SMA50&gt;SMA150, EMA8/JMA/SMA21/VWAP all above SMA50 and tightly
+  compressed &nbsp;·&nbsp;
+  A red candle closed below all 4 lines, next green candle closed
+  above all 4 on 1.3x+ volume &nbsp;·&nbsp;
+  RSI crossed above its own average and is above 50 &nbsp;·&nbsp;
+  Entry_Price = SMA21 on the signal day &nbsp;·&nbsp;
+  Stop_Loss = the red candle's low &nbsp;·&nbsp;
+  Target = fixed 1:{CFG['risk_reward_ratio']:.0f} risk:reward &nbsp;·&nbsp;
+  Signal_Date is the exact date the pattern fired (checked over the
+  last {CFG['signal_lookback_days']} trading days, not just today)
 </div>"""
 
     display_html(header_html + table_html + legend_html)
@@ -656,7 +747,7 @@ if _IN_NOTEBOOK and results:
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
     CLI_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target",
-                "Risk_Reward","Days_Since_Signal","Monthly_RSI","Weekly_RSI","Daily_RSI"]
+                "Risk_Reward","Signal_Date","Compression_%","Vol_Ratio","RSI"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -668,7 +759,7 @@ elif results:
     inner= sum(col_w.values()) + len(CLI_COLS) - 1
     print()
     print(f"  ╔{'═'*inner}╗")
-    tit = f"  RSI Multi-TF Reversal (Monthly+Weekly+Daily)   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    tit = f"  MA/VWAP Cluster Reclaim + RSI   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
     print(f"  ║{tit.center(inner)}║")
     print(f"  ╚{'═'*inner}╝\n")
     print(f"  ┌{top}┐")
@@ -682,23 +773,22 @@ elif results:
     print(f"""
   COLUMN KEY
   ──────────────────────────────────────────────────────
-  Score           0-100 (RSI strength on all 3 timeframes + risk:reward)
-  Entry_Price     high of the signal day's green candle (breakout trigger)
-  Stop_Loss       low of that same green candle
-  Target          last confirmed swing high above the entry
-  Risk_Reward     (Target - Entry) / (Entry - Stop_Loss)
-  Days_Since_Signal  how many trading days ago the daily RSI cross fired
-                     (0 = today; checked over the last daily_cross_
-                     lookback_days trading days, not just today)
+  Score           0-100 (compression + slope + volume + RSI + freshness)
+  Entry_Price     SMA21 value on the signal day
+  Stop_Loss       low of the red (candle A) day
+  Target          Entry + {CFG['risk_reward_ratio']:.0f} x (Entry - Stop_Loss) — fixed 1:{CFG['risk_reward_ratio']:.0f}
+  Signal_Date     exact calendar date the pattern fired
+  Days_Since_Signal  how many trading days ago (0 = today; checked
+                     over the last signal_lookback_days trading days)
   ──────────────────────────────────────────────────────""")
 
 # Save
-fpath = os.path.join(out_dir, f"rsi_multi_tf_reversal_{ts}.csv")
+fpath = os.path.join(out_dir, f"cluster_reclaim_rsi_{ts}.csv")
 df_out.to_csv(fpath, index=False)
 print(f"\n  💾 CSV → {fpath}")
-tv = os.path.join(out_dir, f"tv_rsi_multi_tf_reversal_{ts}.txt")
+tv = os.path.join(out_dir, f"tv_cluster_reclaim_rsi_{ts}.txt")
 with open(tv,"w") as f:
-    f.write(f"###RSI Multi-Timeframe Reversal {datetime.today().strftime('%Y-%m-%d')}\n")
+    f.write(f"###MA-VWAP Cluster Reclaim + RSI {datetime.today().strftime('%Y-%m-%d')}\n")
     for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
 print(f"  📋 TradingView → {tv}")
 if results:
@@ -737,7 +827,7 @@ def _send_email(rl, csv_path):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-                      "Target","Risk_Reward","Days_Since_Signal"]
+                      "Target","Risk_Reward","Signal_Date"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -749,8 +839,7 @@ def _send_email(rl, csv_path):
             stop   = r.get("Stop_Loss",0) or 0
             target = r.get("Target",0) or 0
             rr     = r.get("Risk_Reward",0) or 0
-            dsig   = r.get("Days_Since_Signal")
-            dsig_disp = f"{int(dsig)}d ago" if dsig is not None else "—"
+            sdate  = r.get("Signal_Date","—")
             rows_e += (
                 f'<tr style="background:{bg}">'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
@@ -760,9 +849,9 @@ def _send_email(rl, csv_path):
                 f'<td style="padding:6px 11px;font-size:12px;color:#22c55e">${float(entry):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#ef4444">${float(stop):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#3b82f6">${float(target):.2f}</td>'
-                f'<td style="padding:6px 11px;font-size:12px;font-weight:600">{float(rr):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;font-weight:600">1:{float(rr):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
-                f'color:#a78bfa;font-weight:600">{dsig_disp}</td>'
+                f'color:#a78bfa;font-weight:600">{sdate}</td>'
                 f'</tr>'
             )
         no_results_msg = ('<tr><td colspan="8" style="padding:20px;text-align:center;'
@@ -775,7 +864,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
        overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08)">
   <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:22px 28px">
 <h1 style="margin:0;color:#60a5fa;font-size:20px;font-weight:700">
-  📊 RSI Multi-Timeframe Reversal
+  📊 MA/VWAP Cluster Reclaim + RSI
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
@@ -813,8 +902,8 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </body></html>"""
 
         plain_lines = [
-            f"RSI Multi-Timeframe Reversal (daily cross checked over last {CFG['daily_cross_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches (Monthly RSI cross + Weekly RSI strength + Daily RSI reversal)",
+            f"MA/VWAP Cluster Reclaim + RSI (checked over last {CFG['signal_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
+            f"{cnt} matches (cluster structure + 2-candle reclaim + RSI confirmation)",
             "="*60,
         ]
         if rl:
@@ -826,12 +915,11 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 stop   = r.get("Stop_Loss",0) or 0
                 target = r.get("Target",0) or 0
                 rr     = r.get("Risk_Reward",0) or 0
-                dsig   = r.get("Days_Since_Signal")
-                dsig_disp = f"{int(dsig)}d ago" if dsig is not None else "—"
+                sdate  = r.get("Signal_Date","—")
                 plain_lines.append(
                     f"{ticker:<7} ${float(price):.2f}  Score:{float(score):.0f}  "
                     f"Entry:${float(entry):.2f}  SL:${float(stop):.2f}  "
-                    f"Target:${float(target):.2f}  R:R:{float(rr):.2f}  Signal:{dsig_disp}"
+                    f"Target:${float(target):.2f}  R:R:1:{float(rr):.0f}  Signal:{sdate}"
                 )
             plain_lines.append("")
             plain_lines.append("Tickers (comma-separated):")
@@ -841,7 +929,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         plain_lines.append("\nFull results in CSV attachment.")
         plain_e = "\n".join(plain_lines)
 
-        subj = (f"📊 RSI Multi-TF Reversal (M+W+D) — {cnt} signal{'s' if cnt!=1 else ''}"
+        subj = (f"📊 Cluster Reclaim + RSI — {cnt} signal{'s' if cnt!=1 else ''}"
                 f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
@@ -909,43 +997,53 @@ if results:
     if len(top)==1: axes = axes.reshape(1,2)
     for row, r in zip(axes, top):
         ax, ax_rsi = row[0], row[1]
-        df_p = r["_df_daily"].tail(150).copy()
+        df_p = r["_df_daily"].tail(90).copy()
+        ema8_p  = r["_ema8"].reindex(df_p.index)
+        sma21_p = r["_sma21"].reindex(df_p.index)
+        sma50_p = r["_sma50"].reindex(df_p.index)
+        vwap_p  = r["_vwap"].reindex(df_p.index)
+        jma_p   = r["_jma"].reindex(df_p.index)
         ax.set_facecolor("#0f172a")
-        ax.plot(df_p.index, df_p["Close"], color="#60a5fa", lw=1.6, label="Daily Close", zorder=5)
-        ax.scatter([df_p.index[-1]], [r["Entry_Price"]], color="#22c55e", s=60, zorder=6,
-                   marker="^", label="Entry")
+        ax.plot(df_p.index, df_p["Close"], color="#60a5fa", lw=1.6, label="Close", zorder=5)
+        ax.plot(df_p.index, jma_p,   color="#f472b6", lw=1.1, label="JMA",   zorder=4)
+        ax.plot(df_p.index, ema8_p,  color="#38bdf8", lw=1.0, ls="--", label="EMA8",  zorder=3)
+        ax.plot(df_p.index, sma21_p, color="#34d399", lw=1.0, ls="--", label="SMA21", zorder=3)
+        ax.plot(df_p.index, vwap_p,  color="#fbbf24", lw=1.0, ls=":",  label="VWAP",  zorder=3)
+        ax.plot(df_p.index, sma50_p, color="#f87171", lw=1.2, ls="-.", label="SMA50", zorder=3)
         ax.axhline(r["Stop_Loss"], color="#ef4444", lw=1.0, ls="--", alpha=0.85,
                   label=f"Stop ${r['Stop_Loss']:.2f}")
         ax.axhline(r["Target"], color="#3b82f6", lw=1.0, ls="--", alpha=0.85,
                   label=f"Target ${r['Target']:.2f}")
         ax.set_title(
             f"{r['Ticker']}  |  ${r['Price']:.2f}  |  Score {r['Score']}  |  "
-            f"Entry ${r['Entry_Price']:.2f}  R:R {r['Risk_Reward']:.2f}",
+            f"Entry ${r['Entry_Price']:.2f}  1:{r['Risk_Reward']:.0f}  |  {r['Signal_Date']}",
             color="#e2e8f0", fontsize=9, fontweight="bold", pad=7)
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %y"))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
         ax.tick_params(colors="#94a3b8", labelsize=8)
         for sp in ax.spines.values(): sp.set_edgecolor("#1e3a5f")
         ax.legend(loc="upper left", facecolor="#1e293b", labelcolor="#e2e8f0",
-                  fontsize=7, framealpha=0.9)
+                  fontsize=6, framealpha=0.9, ncol=2)
         ax.grid(color="#1e3a5f", ls="--", lw=0.5, alpha=0.6)
 
-        rsi_p = r["_rsi_daily"].reindex(df_p.index)
+        rsi_p = r["_rsi"].reindex(df_p.index)
+        rsi_avg_p = r["_rsi_avg"].reindex(df_p.index)
         ax_rsi.set_facecolor("#0f172a")
-        ax_rsi.plot(df_p.index, rsi_p, color="#f472b6", lw=1.3)
-        ax_rsi.axhline(40, color="#94a3b8", lw=0.8, ls=":")
-        ax_rsi.axhline(60, color="#94a3b8", lw=0.8, ls=":")
+        ax_rsi.plot(df_p.index, rsi_p, color="#f472b6", lw=1.3, label="RSI")
+        ax_rsi.plot(df_p.index, rsi_avg_p, color="#94a3b8", lw=1.0, ls="--", label="RSI Avg")
+        ax_rsi.axhline(50, color="#64748b", lw=0.8, ls=":")
         ax_rsi.set_ylim(0,100)
-        ax_rsi.set_title(f"Daily RSI  M:{r['Monthly_RSI']:.0f} W:{r['Weekly_RSI']:.0f}",
+        ax_rsi.set_title(f"RSI {r['RSI']:.0f} vs Avg {r['RSI_Avg']:.0f}",
                           color="#e2e8f0", fontsize=8, pad=5)
         ax_rsi.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
         ax_rsi.tick_params(colors="#94a3b8", labelsize=7)
         for sp in ax_rsi.spines.values(): sp.set_edgecolor("#1e3a5f")
+        ax_rsi.legend(loc="upper left", facecolor="#1e293b", labelcolor="#e2e8f0", fontsize=6)
         ax_rsi.grid(color="#1e3a5f", ls="--", lw=0.5, alpha=0.6)
     plt.suptitle(
-        f"RSI Multi-Timeframe Reversal  ·  {datetime.today().strftime('%Y-%m-%d')}",
+        f"MA/VWAP Cluster Reclaim + RSI  ·  {datetime.today().strftime('%Y-%m-%d')}",
         color="#60a5fa", fontsize=12, fontweight="bold", y=1.001)
     plt.tight_layout()
-    cp = os.path.join(out_dir, f"rsi_multi_tf_reversal_chart_{ts}.png")
+    cp = os.path.join(out_dir, f"cluster_reclaim_rsi_chart_{ts}.png")
     plt.savefig(cp, dpi=150, bbox_inches="tight", facecolor="#0f172a")
     if _IN_NOTEBOOK: plt.show()
     else: plt.close()
@@ -957,56 +1055,56 @@ if results:
 
 print(f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  📋 SIGNAL (all required)
-  1) MONTHLY: RSI(14) currently AT/ABOVE 60 (level only, no
-     freshness requirement — same shape as the weekly check).
-     Evaluated at the CURRENT month only (not a rolling window).
-  2) WEEKLY: RSI(14) currently ABOVE 60 (just the level, no
-     freshness requirement). Evaluated at the CURRENT week only.
-  3) DAILY: RSI(14) crossed ABOVE 40 from below, with that day's
-     candle GREEN — checked over the last
-     daily_cross_lookback_days trading days ({CFG['daily_cross_lookback_days']}d,
-     ~1 month), not just today. If it fired more than once in that
-     window, the MOST RECENT occurrence is used for Entry/Stop/Target.
+  📋 SIGNAL (all required — scanned over the last
+  signal_lookback_days trading days, {CFG['signal_lookback_days']}d ≈ 3 weeks,
+  not just today)
+
+  1) STRUCTURE: SMA50 > SMA150, AND EMA8/JMA/SMA21/VWAP all above
+     SMA50 AND compressed tightly together (max-min spread within
+     cluster_compression_pct% of price). SMA50 rising is a scored
+     bonus, not a hard requirement.
+  2) TWO-CANDLE RECLAIM: candle A (red) closed BELOW all 4 of
+     JMA/EMA8/SMA21/VWAP; candle B (green) closed ABOVE all 4 of
+     the same lines, with volume >= volume_multiplier (1.3x)
+     candle A's volume.
+  3) RSI CONFIRMATION: RSI(14) crossed above its own moving
+     average (rsi_avg_period-bar SMA of RSI) AND RSI > 50, both
+     on candle B.
+
+  If the pattern fired more than once in the window, the MOST
+  RECENT occurrence is used for Entry/Stop/Target/scoring.
 
   📋 DATA SOURCING
-  Only 1 download per ticker: daily bars (~6 years). Weekly and
-  Monthly RSI are both computed from the SAME daily data via
-  resampling ('W' and 'ME') — no separate network calls needed.
+  Only 1 download per ticker: daily bars (~450 days).
 
   📋 OUTPUT
-  Entry_Price = HIGH of the signal day's green candle (the
-                breakout trigger — enter once price clears it).
-                NOTE: if Days_Since_Signal > 0, this is the price
-                as of that earlier day, not today's live price.
-  Stop_Loss   = LOW of that same green candle
-  Target      = the last CONFIRMED swing high before the signal
-                (a fractal high with swing_arm bars of lower highs
-                on both sides) — only valid if it sits above entry
-  Risk_Reward = (Target - Entry) / (Entry - Stop_Loss)
-  Days_Since_Signal = how many trading days ago the daily cross fired
-  Recent_Signals    = every date the daily cross fired within the
-                      lookback window (there may be more than one)
+  Entry_Price = SMA21 value on the signal day (candle B)
+  Stop_Loss   = LOW of candle A (the red day)
+  Target      = Entry + risk_reward_ratio x (Entry - Stop_Loss)
+                — a FIXED 1:{CFG['risk_reward_ratio']:.0f} risk:reward by
+                construction, not a swing-high search
+  Signal_Date = the exact calendar date the pattern fired
+  Days_Since_Signal = how many trading days ago (0 = today)
+  Recent_Signals    = every date the pattern fired within the window
 
   📋 SCORE (0-100)
-  Monthly RSI strength (0-25) + Weekly RSI strength (0-25) +
-  Daily RSI cross strength (0-20) + Risk:Reward bonus (0-30)
+  Compression tightness (0-20) + SMA50-rising bonus (0-10) +
+  Volume ratio strength (0-20) + RSI margin above 50 (0-20) +
+  Freshness (0-15) + base points for clearing every gate (15)
 
   💡 BEST SETUPS
-  Score > 70            strong RSI alignment + good risk:reward
-  Risk_Reward > 2         target well above entry relative to stop
-  Days_Since_Signal = 0-3   freshest daily reversal
-  Swing_High_Bars_Ago high  target is a well-established prior
-                            high, not just recent noise
+  Score > 70          tight cluster, strong volume, healthy RSI
+  Vol_Ratio > 1.5       well above the 1.3x minimum
+  Compression_% < 1.5   a genuinely tight coil, not a loose cluster
+  Days_Since_Signal = 0-3   freshest reclaim
 
   ⚙️  TUNE IF 0 RESULTS
-  monthly_rsi_level    60 → 55   (looser monthly trigger)
-  weekly_rsi_level           60 → 55
-  daily_rsi_cross_level      40 → 45
-  daily_cross_lookback_days  21 → 42   (search further back, ~2 months)
-  swing_arm                   5 → 3    (less strict swing confirmation)
-  swing_search_window       252 → 400  (search further back for a target)
-  min_price                    2 → 1
-  min_avg_volume           80000 → 50000
+  cluster_compression_pct    3.0 → 5.0   (allow a looser cluster)
+  volume_multiplier          1.3 → 1.15  (lower the volume bar)
+  signal_lookback_days        15 → 25    (search further back)
+  rsi_min_level                50 → 45
+  rsi_avg_period                9 → 14
+  min_price                     2 → 1
+  min_avg_volume            80000 → 50000
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
