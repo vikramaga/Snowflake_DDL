@@ -119,7 +119,9 @@ print()
 
 # ── CONFIG ────────────────────────────────────────────────────
 CFG = {
-    "history_days"          : 400,   # daily bars — plenty for SMA150 + buffer
+    "history_days"          : 750,   # ~3 years — gives the backtest a much
+                                      # larger sample of historical occurrences
+                                      # (was 400, just enough for SMA150+buffer)
 
     # ── Indicator periods ────────────────────────────────────────
     "sma50_period"           : 50,
@@ -137,6 +139,13 @@ CFG = {
 
     "signal_lookback_days"   : 15,   # ~3 trading weeks — how far back to look
                                       # for the pattern, not just today
+
+    # ── Historical backtest (max favorable price move after the pattern) ──
+    "mfe_holding_days"       : 15,   # trading days forward to measure the
+                                      # highest price reached after each
+                                      # historical occurrence
+    "mfe_hit_threshold_pct"  : 5.0,  # "hit rate" = % of historical occurrences
+                                      # that reached at least this much upside
 
     # ── Filters ─────────────────────────────────────────────────
     "min_avg_volume"         : 80_000,
@@ -174,6 +183,68 @@ def is_healthy_green(o, h, l, c, cfg):
     if rng <= 0 or c <= o: return False
     return body >= cfg["healthy_body_pct"] * rng
 
+def check_three_candle_at(df, sma50, sma150, i3, cfg):
+    """
+    Checks the full 3-candle pattern with candle 3 anchored at bar
+    `i3`. This is the SINGLE SOURCE OF TRUTH for the pattern logic —
+    both the live scanner (last signal_lookback_days) and the
+    historical backtest (full available history) call this exact
+    function, so they can never drift apart.
+
+    Returns (passed: bool, details: dict).
+    """
+    i2, i1 = i3 - 1, i3 - 2
+    if i1 < 1 or i3 >= len(df):
+        return False, {}
+
+    s50, s150 = sma50.iloc[i1], sma150.iloc[i1]
+    if np.isnan(s50) or np.isnan(s150):
+        return False, {}
+
+    o1, h1, l1, c1 = (float(df["Open"].iloc[i1]), float(df["High"].iloc[i1]),
+                      float(df["Low"].iloc[i1]),  float(df["Close"].iloc[i1]))
+    o2, h2, l2, c2 = (float(df["Open"].iloc[i2]), float(df["High"].iloc[i2]),
+                      float(df["Low"].iloc[i2]),  float(df["Close"].iloc[i2]))
+    o3, h3, l3, c3 = (float(df["Open"].iloc[i3]), float(df["High"].iloc[i3]),
+                      float(df["Low"].iloc[i3]),  float(df["Close"].iloc[i3]))
+    vol2, vol3 = float(df["Volume"].iloc[i2]), float(df["Volume"].iloc[i3])
+
+    # ── Step 0: structure + proximity to SMA50 (checked at candle 1) ──
+    structure_ok = s50 > s150
+    near_pct = abs(l1 - s50) / s50 * 100 if s50 > 0 else 999
+    near_ok  = near_pct <= cfg["near_sma50_pct"]
+    if not (structure_ok and near_ok):
+        return False, {}
+
+    # ── Step 1: candle 1 red (hammer preferred, scored not gated) ──
+    candle1_red = c1 < o1
+    if not candle1_red:
+        return False, {}
+    is_hammer, hammer_quality = hammer_score(o1, h1, l1, c1, cfg)
+
+    # ── Step 2: candle 2 green doji, higher low than candle 1 ───────
+    candle2_green = c2 > o2
+    candle2_doji  = is_doji(o2, h2, l2, c2, cfg)
+    candle2_higher_low = l2 > l1
+    if not (candle2_green and candle2_doji and candle2_higher_low):
+        return False, {}
+
+    # ── Step 3: candle 3 healthy green, higher volume, higher low ───
+    candle3_healthy = is_healthy_green(o3, h3, l3, c3, cfg)
+    candle3_higher_vol = vol3 > vol2
+    candle3_higher_low = l3 > l2
+    if not (candle3_healthy and candle3_higher_vol and candle3_higher_low):
+        return False, {}
+
+    return True, {
+        "idx": i3, "i2": i2, "i1": i1,
+        "sma50": float(s50), "near_pct": near_pct,
+        "is_hammer": is_hammer, "hammer_quality": hammer_quality,
+        "low1": l1, "low2": l2, "low3": l3,
+        "high3": h3, "close3": c3,
+        "vol2": vol2, "vol3": vol3,
+    }
+
 def find_three_candle_signals(df, sma50, sma150, cfg):
     """
     Scans the last `signal_lookback_days` trading days for the full
@@ -184,69 +255,84 @@ def find_three_candle_signals(df, sma50, sma150, cfg):
     n = len(df)
     lb = cfg["signal_lookback_days"]
     hits = []
-
     for back in range(0, lb):
-        i3 = (n - 1) - back   # candle 3 (healthy green)
-        i2 = i3 - 1             # candle 2 (green doji)
-        i1 = i3 - 2             # candle 1 (red, preferably hammer)
-        if i1 < 1: break
-
-        s50, s150 = sma50.iloc[i1], sma150.iloc[i1]
-        if np.isnan(s50) or np.isnan(s150):
-            continue
-
-        o1, h1, l1, c1 = (float(df["Open"].iloc[i1]), float(df["High"].iloc[i1]),
-                          float(df["Low"].iloc[i1]),  float(df["Close"].iloc[i1]))
-        o2, h2, l2, c2 = (float(df["Open"].iloc[i2]), float(df["High"].iloc[i2]),
-                          float(df["Low"].iloc[i2]),  float(df["Close"].iloc[i2]))
-        o3, h3, l3, c3 = (float(df["Open"].iloc[i3]), float(df["High"].iloc[i3]),
-                          float(df["Low"].iloc[i3]),  float(df["Close"].iloc[i3]))
-        vol2, vol3 = float(df["Volume"].iloc[i2]), float(df["Volume"].iloc[i3])
-
-        # ── Step 0: structure + proximity to SMA50 (checked at candle 1) ──
-        structure_ok = s50 > s150
-        near_pct = abs(l1 - s50) / s50 * 100 if s50 > 0 else 999
-        near_ok  = near_pct <= cfg["near_sma50_pct"]
-        if not (structure_ok and near_ok):
-            continue
-
-        # ── Step 1: candle 1 red (hammer preferred, scored not gated) ──
-        candle1_red = c1 < o1
-        if not candle1_red:
-            continue
-        is_hammer, hammer_quality = hammer_score(o1, h1, l1, c1, cfg)
-
-        # ── Step 2: candle 2 green doji, higher low than candle 1 ───────
-        candle2_green = c2 > o2
-        candle2_doji  = is_doji(o2, h2, l2, c2, cfg)
-        candle2_higher_low = l2 > l1
-        if not (candle2_green and candle2_doji and candle2_higher_low):
-            continue
-
-        # ── Step 3: candle 3 healthy green, higher volume, higher low ───
-        candle3_healthy = is_healthy_green(o3, h3, l3, c3, cfg)
-        candle3_higher_vol = vol3 > vol2
-        candle3_higher_low = l3 > l2
-        if not (candle3_healthy and candle3_higher_vol and candle3_higher_low):
-            continue
-
-        hits.append({
-            "idx": i3, "i2": i2, "i1": i1,
-            "sma50": float(s50), "near_pct": near_pct,
-            "is_hammer": is_hammer, "hammer_quality": hammer_quality,
-            "low1": l1, "low2": l2, "low3": l3,
-            "high3": h3, "close3": c3,
-            "vol2": vol2, "vol3": vol3,
-        })
-
+        i3 = (n - 1) - back
+        passed, details = check_three_candle_at(df, sma50, sma150, i3, cfg)
+        if passed:
+            hits.append(details)
     return hits
 
+def compute_forward_mfe(df, entry_idx, entry_price, holding_days):
+    """
+    Maximum Favorable Excursion: the highest High reached over the
+    next `holding_days` bars after `entry_idx`, expressed as a %
+    above `entry_price`. Returns None if there isn't enough forward
+    data to evaluate the full window.
+    """
+    n = len(df)
+    end = entry_idx + 1 + holding_days
+    if end > n or entry_idx + 1 >= n:
+        return None
+    max_high = float(df["High"].iloc[entry_idx+1:end].max())
+    return (max_high - entry_price) / entry_price * 100 if entry_price > 0 else None
+
+def backtest_three_candle_pattern(df, sma50, sma150, cfg):
+    """
+    Re-runs check_three_candle_at() over the ENTIRE available
+    history (not just the live lookback window) to find every past
+    occurrence of the pattern, then measures the maximum favorable
+    price move (MFE %) over the following mfe_holding_days for each
+    one. Returns a list of trade dicts.
+    """
+    n = len(df)
+    hold = cfg["mfe_holding_days"]
+    trades = []
+    for i3 in range(3, n - hold):   # need i1=i3-2>=1 and `hold` days after i3
+        passed, details = check_three_candle_at(df, sma50, sma150, i3, cfg)
+        if not passed:
+            continue
+        entry_price = details["high3"]
+        mfe_pct = compute_forward_mfe(df, i3, entry_price, hold)
+        if mfe_pct is None:
+            continue
+        trades.append({
+            "date": df.index[i3], "entry": round(entry_price, 2),
+            "mfe_pct": round(mfe_pct, 2), "is_hammer": details["is_hammer"],
+        })
+    return trades
+
+def summarize_mfe(trades, hit_threshold_pct):
+    """Aggregates a list of MFE trade dicts into summary statistics."""
+    if not trades:
+        return {"count": 0, "avg": None, "median": None,
+                "best": None, "worst": None, "hit_rate_pct": None}
+    vals = sorted(t["mfe_pct"] for t in trades)
+    n = len(vals)
+    median = vals[n//2] if n % 2 == 1 else (vals[n//2-1] + vals[n//2]) / 2
+    hits = sum(1 for v in vals if v >= hit_threshold_pct)
+    return {
+        "count": n, "avg": sum(vals)/n, "median": median,
+        "best": vals[-1], "worst": vals[0],
+        "hit_rate_pct": hits / n * 100,
+    }
+
 # ── Technical signal: 3-candle reversal near SMA50 ────────────────
+ALL_BACKTEST_TRADES = []   # accumulates trades across the FULL universe scan
+
 def analyze_three_candle_pattern(sym, df_daily):
     """
     Returns dict with score and setup details, or None if no
     required condition is met anywhere in the lookback window.
+
+    Regardless of whether a live signal matches, this ALSO runs the
+    full-history backtest for the ticker (if it passes the same
+    basic price/volume filters) and appends the trades found to the
+    global ALL_BACKTEST_TRADES accumulator, so the full-universe
+    backtest summary reflects every liquid ticker scanned — not just
+    today's matches.
     """
+    global ALL_BACKTEST_TRADES
+
     if df_daily is None:
         return None
 
@@ -261,6 +347,14 @@ def analyze_three_candle_pattern(sym, df_daily):
 
     sma50  = df_daily["Close"].rolling(CFG["sma50_period"]).mean()
     sma150 = df_daily["Close"].rolling(CFG["sma150_period"]).mean()
+
+    # ── Backtest: full available history, this ticker, regardless of
+    #    whether a live signal matches ──────────────────────────────
+    bt_trades = backtest_three_candle_pattern(df_daily, sma50, sma150, CFG)
+    for t in bt_trades:
+        t["ticker"] = sym
+    ALL_BACKTEST_TRADES.extend(bt_trades)
+    bt_summary = summarize_mfe(bt_trades, CFG["mfe_hit_threshold_pct"])
 
     hits = find_three_candle_signals(df_daily, sma50, sma150, CFG)
     if not hits:
@@ -292,14 +386,17 @@ def analyze_three_candle_pattern(sym, df_daily):
         reasons.append("NoHammer")
     score += max(0, min(15, 15 - sig["near_pct"] * 4))
     reasons.append(f"NearSMA50({sig['near_pct']:.1f}%)")
-    score += min(25, (vol_ratio - 1.0) * 25)
+    score += min(20, (vol_ratio - 1.0) * 20)
     reasons.append(f"Vol{vol_ratio:.1f}x")
     low_progression_pct = (sig["low3"] - sig["low1"]) / sig["low1"] * 100 if sig["low1"] > 0 else 0
-    score += min(15, low_progression_pct * 3)
+    score += min(10, low_progression_pct * 3)
     reasons.append(f"LowsUp{low_progression_pct:+.1f}%")
-    freshness_pts = max(0, 15 - days_since_signal)
+    freshness_pts = max(0, 10 - days_since_signal)
     score += freshness_pts
     reasons.append(f"{days_since_signal}dAgo")
+    if bt_summary["median"] is not None:
+        if bt_summary["median"] >= 10: score += 10; reasons.append("StrongHistoricalMFE")
+        elif bt_summary["median"] >= 5: score += 5
     score += 10   # base for clearing every gate
     score = round(min(100, max(0, score)))
 
@@ -320,6 +417,17 @@ def analyze_three_candle_pattern(sym, df_daily):
         "Signal_Date"    : df_daily.index[sig_idx].strftime("%Y-%m-%d"),
         "Days_Since_Signal"  : days_since_signal,
         "Recent_Signal_Count": len(recent_signals),
+        "Backtest_Occurrences": bt_summary["count"],
+        "Backtest_Avg_Max_Gain_%"   : (round(bt_summary["avg"], 1)
+                                        if bt_summary["avg"] is not None else None),
+        "Backtest_Median_Max_Gain_%": (round(bt_summary["median"], 1)
+                                        if bt_summary["median"] is not None else None),
+        "Backtest_Best_Max_Gain_%"  : (round(bt_summary["best"], 1)
+                                        if bt_summary["best"] is not None else None),
+        "Backtest_Worst_Max_Gain_%" : (round(bt_summary["worst"], 1)
+                                        if bt_summary["worst"] is not None else None),
+        "Backtest_HitRate_%"        : (round(bt_summary["hit_rate_pct"], 1)
+                                        if bt_summary["hit_rate_pct"] is not None else None),
         "Recent_Signals" : " | ".join(
             f"{s['date'].strftime('%Y-%m-%d')}" for s in recent_signals),
         "Flags"          : " | ".join(reasons),
@@ -531,6 +639,23 @@ print(f"  Daily data      : {got_daily}")
 print(f"  ✅ Matches       : {len(results)}")
 print(f"{'━'*65}")
 
+# ── Full-universe historical backtest summary ──────────────────
+BT_SUMMARY = summarize_mfe(ALL_BACKTEST_TRADES, CFG["mfe_hit_threshold_pct"])
+print(f"\n{'━'*65}")
+print(f"  📈 HISTORICAL BACKTEST — MAX FAVORABLE MOVE AFTER THE PATTERN")
+print(f"  Full NASDAQ universe, {CFG['mfe_holding_days']}-day forward window")
+print(f"{'━'*65}")
+print(f"  Historical occurrences found : {BT_SUMMARY['count']}")
+if BT_SUMMARY["count"] > 0:
+    print(f"  Average max gain             : {BT_SUMMARY['avg']:+.1f}%")
+    print(f"  Median max gain (most probable): {BT_SUMMARY['median']:+.1f}%")
+    print(f"  Best historical outcome       : {BT_SUMMARY['best']:+.1f}%")
+    print(f"  Worst historical outcome      : {BT_SUMMARY['worst']:+.1f}%")
+    print(f"  Hit rate (>= {CFG['mfe_hit_threshold_pct']:.0f}% gain)       : {BT_SUMMARY['hit_rate_pct']:.1f}%")
+else:
+    print(f"  (no historical occurrences with enough forward data found)")
+print(f"{'━'*65}")
+
 if not results:
     print("\n  No matches. Try relaxing:")
     print("   near_sma50_pct              3.0 → 5.0   (allow a looser test of support)")
@@ -551,6 +676,8 @@ COLS = [
     "Entry_Price","Stop_Loss","Risk_%",
     "Is_Hammer","Hammer_Quality","Near_SMA50_%","SMA50","Vol_Ratio",
     "Low1","Low2","Low3",
+    "Backtest_Occurrences","Backtest_Avg_Max_Gain_%","Backtest_Median_Max_Gain_%",
+    "Backtest_Best_Max_Gain_%","Backtest_Worst_Max_Gain_%","Backtest_HitRate_%",
     "Signal_Date","Days_Since_Signal","Recent_Signal_Count","Recent_Signals",
     "Flags",
 ]
@@ -573,6 +700,11 @@ FMT = {
     "Low1"        : lambda v: f"${v:.2f}",
     "Low2"        : lambda v: f"${v:.2f}",
     "Low3"        : lambda v: f"${v:.2f}",
+    "Backtest_Avg_Max_Gain_%"   : lambda v: f"{v:+.1f}%",
+    "Backtest_Median_Max_Gain_%": lambda v: f"{v:+.1f}%",
+    "Backtest_Best_Max_Gain_%"  : lambda v: f"{v:+.1f}%",
+    "Backtest_Worst_Max_Gain_%" : lambda v: f"{v:+.1f}%",
+    "Backtest_HitRate_%"        : lambda v: f"{v:.1f}%",
     "Days_Since_Signal": lambda v: f"{int(v)}d ago",
 }
 
@@ -585,7 +717,8 @@ def fmt_v(col, val):
 
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-            "Is_Hammer","Near_SMA50_%","Vol_Ratio","Signal_Date"]
+            "Is_Hammer","Vol_Ratio","Backtest_Median_Max_Gain_%",
+            "Backtest_HitRate_%","Signal_Date"]
     DISP = [c for c in DISP if c in df_out.columns]
 
     gc = "#22c55e"
@@ -672,7 +805,8 @@ if _IN_NOTEBOOK and results:
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
     CLI_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-                "Is_Hammer","Near_SMA50_%","Vol_Ratio","Signal_Date"]
+                "Is_Hammer","Vol_Ratio","Backtest_Median_Max_Gain_%",
+                "Backtest_HitRate_%","Signal_Date"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -699,7 +833,8 @@ elif results:
   COLUMN KEY
   ──────────────────────────────────────────────────────
   Score           0-100 (hammer quality + proximity to SMA50 +
-                  volume increase + rising lows + freshness)
+                  volume increase + rising lows + freshness +
+                  historical backtest strength)
   Entry_Price     candle 3's high (breakout trigger — a reasonable
                   default, not explicitly requested)
   Stop_Loss       candle 2's low (most recent confirmed higher low)
@@ -707,6 +842,13 @@ elif results:
                   (preferred but not required to match)
   Near_SMA50_%    how far candle 1's low sits from SMA50
   Vol_Ratio       candle 3 volume / candle 2 volume
+  Backtest_Occurrences    how many times this pattern fired historically
+                          for THIS ticker (full available history)
+  Backtest_Median_Max_Gain_%  the most probable max price increase —
+                              median of the historical max gains
+  Backtest_Best_Max_Gain_%    the single best historical outcome
+  Backtest_HitRate_%          % of historical occurrences that reached
+                              at least mfe_hit_threshold_pct upside
   Signal_Date     exact calendar date the pattern fired
   Days_Since_Signal  how many trading days ago (0 = today; checked
                      over the last signal_lookback_days trading days)
@@ -725,8 +867,15 @@ if results:
     print(f"\n  📋 Tickers (comma-separated):")
     print(f"  {', '.join(r['Ticker'] for r in results)}")
 
+# Save backtest trade log (every historical occurrence found, full universe)
+bt_fpath = os.path.join(out_dir, f"three_candle_hammer_doji_backtest_{ts}.csv")
+bt_df = pd.DataFrame(ALL_BACKTEST_TRADES) if ALL_BACKTEST_TRADES else pd.DataFrame(
+    columns=["ticker","date","entry","mfe_pct","is_hammer"])
+bt_df.to_csv(bt_fpath, index=False)
+print(f"  💾 Backtest trade log → {bt_fpath}  ({len(ALL_BACKTEST_TRADES)} historical occurrences)")
+
 # ── Email with CSV attached ───────────────────────────────
-def _send_email(rl, csv_path):
+def _send_email(rl, csv_path, bt_csv_path=None):
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text      import MIMEText
@@ -757,7 +906,7 @@ def _send_email(rl, csv_path):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-                      "Is_Hammer","Vol_Ratio","Signal_Date"]
+                      "Is_Hammer","Vol_Ratio","Median_MaxGain","HitRate","Signal_Date"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -770,6 +919,10 @@ def _send_email(rl, csv_path):
             hammer = "Yes" if r.get("Is_Hammer") else "No"
             vr     = r.get("Vol_Ratio",0) or 0
             sdate  = r.get("Signal_Date","—")
+            med_g  = r.get("Backtest_Median_Max_Gain_%")
+            med_g_disp = f"{med_g:+.1f}%" if med_g is not None else "n/a"
+            hr     = r.get("Backtest_HitRate_%")
+            hr_disp = f"{hr:.0f}%" if hr is not None else "n/a"
             rows_e += (
                 f'<tr style="background:{bg}">'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:700">{ticker}</td>'
@@ -781,10 +934,13 @@ def _send_email(rl, csv_path):
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center">{hammer}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:600">{float(vr):.2f}x</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
+                f'color:#facc15;font-weight:600">{med_g_disp}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;text-align:center">{hr_disp}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
                 f'color:#a78bfa;font-weight:600">{sdate}</td>'
                 f'</tr>'
             )
-        no_results_msg = ('<tr><td colspan="8" style="padding:20px;text-align:center;'
+        no_results_msg = ('<tr><td colspan="10" style="padding:20px;text-align:center;'
                            'color:#94a3b8;font-size:13px">No matches today</td></tr>')
 
         html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
@@ -802,6 +958,21 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   with a higher low, healthy green with higher volume and a higher low
 </p>
   </td></tr>
+  <tr><td style="padding:14px 28px 4px;background:#0b1220">
+<div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px 16px">
+  <p style="margin:0 0 6px;color:#93c5fd;font-size:12px;font-weight:700">
+    📈 HISTORICAL BACKTEST — MAX FAVORABLE MOVE AFTER THE PATTERN (full universe, {CFG['mfe_holding_days']}-day window)
+  </p>
+  <p style="margin:0;color:#cbd5e1;font-size:12px">
+    {BT_SUMMARY['count']} historical occurrences
+    {f'''&nbsp;·&nbsp;
+    Avg: <span style="color:#22c55e">{BT_SUMMARY['avg']:+.1f}%</span> &nbsp;·&nbsp;
+    <b style="color:#facc15">Median (most probable): {BT_SUMMARY['median']:+.1f}%</b> &nbsp;·&nbsp;
+    Best: <span style="color:#22c55e">{BT_SUMMARY['best']:+.1f}%</span> &nbsp;·&nbsp;
+    Hit rate (&ge;{CFG['mfe_hit_threshold_pct']:.0f}%): {BT_SUMMARY['hit_rate_pct']:.1f}%''' if BT_SUMMARY['count'] > 0 else '(no historical occurrences with enough forward data)'}
+  </p>
+</div>
+  </td></tr>
   <tr><td style="padding:16px">
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
   <table style="border-collapse:collapse;width:100%;min-width:600px">
@@ -810,7 +981,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   </table>
 </div>
 <p style="font-size:11px;color:#64748b;margin:8px 0 0">
-  📎 Full results attached as CSV
+  📎 Full results + full backtest trade log attached as CSV
 </p>
 {f'''<div style="margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;
         border-radius:6px;padding:10px 14px">
@@ -835,7 +1006,17 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             f"3-Candle Reversal Near SMA50 (checked over last {CFG['signal_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches (red/hammer + green doji higher-low + healthy green higher-volume higher-low)",
             "="*60,
+            f"HISTORICAL BACKTEST (full universe, {CFG['mfe_holding_days']}-day forward window):",
+            f"  Occurrences: {BT_SUMMARY['count']}",
         ]
+        if BT_SUMMARY["count"] > 0:
+            plain_lines.append(
+                f"  Avg max gain: {BT_SUMMARY['avg']:+.1f}%  "
+                f"Median (most probable): {BT_SUMMARY['median']:+.1f}%  "
+                f"Best: {BT_SUMMARY['best']:+.1f}%  "
+                f"Hit rate (>={CFG['mfe_hit_threshold_pct']:.0f}%): {BT_SUMMARY['hit_rate_pct']:.1f}%"
+            )
+        plain_lines.append("="*60)
         if rl:
             for r in rl[:50]:
                 ticker = r.get("Ticker","—")
@@ -846,20 +1027,25 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 hammer = "Hammer" if r.get("Is_Hammer") else "NoHammer"
                 vr     = r.get("Vol_Ratio",0) or 0
                 sdate  = r.get("Signal_Date","—")
+                med_g  = r.get("Backtest_Median_Max_Gain_%")
+                med_g_disp = f"{med_g:+.1f}%" if med_g is not None else "n/a"
                 plain_lines.append(
                     f"{ticker:<7} ${float(price):.2f}  Score:{float(score):.0f}  "
                     f"Entry:${float(entry):.2f}  SL:${float(stop):.2f}  "
-                    f"{hammer}  Vol:{float(vr):.2f}x  Signal:{sdate}"
+                    f"{hammer}  Vol:{float(vr):.2f}x  OwnMedianMaxGain:{med_g_disp}  Signal:{sdate}"
                 )
             plain_lines.append("")
             plain_lines.append("Tickers (comma-separated):")
             plain_lines.append(", ".join(r.get("Ticker","") for r in rl))
         else:
             plain_lines.append("No matches today")
-        plain_lines.append("\nFull results in CSV attachment.")
+        plain_lines.append("\nFull results + full backtest trade log in CSV attachments.")
         plain_e = "\n".join(plain_lines)
 
-        subj = (f"📊 3-Candle Reversal Near SMA50 — {cnt} signal{'s' if cnt!=1 else ''}"
+        med_disp = (f"{BT_SUMMARY['median']:+.0f}%"
+                    if BT_SUMMARY['median'] is not None else "n/a")
+        subj = (f"📊 3-Candle Reversal Near SMA50 — {cnt} signal{'s' if cnt!=1 else ''} "
+                f"(median max gain: {med_disp})"
                 f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
@@ -876,19 +1062,20 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] ❌  Failed to build email body: {type(e).__name__}: {e}")
         return
 
-    if csv_path and os.path.exists(csv_path):
-        try:
-            with open(csv_path, "rb") as f:
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(f.read())
-            encoders.encode_base64(part)
-            part.add_header("Content-Disposition",
-                f"attachment; filename={os.path.basename(csv_path)}")
-            msg.attach(part)
-            sz = os.path.getsize(csv_path)
-            print(f"[Email] 📎 Attached: {os.path.basename(csv_path)} ({sz:,} bytes)")
-        except Exception as e:
-            print(f"[Email] ⚠️  CSV attach failed: {e}")
+    for attach_path in [csv_path, bt_csv_path]:
+        if attach_path and os.path.exists(attach_path):
+            try:
+                with open(attach_path, "rb") as f:
+                    part = MIMEBase("application", "octet-stream")
+                    part.set_payload(f.read())
+                encoders.encode_base64(part)
+                part.add_header("Content-Disposition",
+                    f"attachment; filename={os.path.basename(attach_path)}")
+                msg.attach(part)
+                sz = os.path.getsize(attach_path)
+                print(f"[Email] 📎 Attached: {os.path.basename(attach_path)} ({sz:,} bytes)")
+            except Exception as e:
+                print(f"[Email] ⚠️  Attach failed for {attach_path}: {e}")
 
     try:
         print(f"[Email] Connecting to smtp.gmail.com:465 ...")
@@ -906,7 +1093,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] ❌  Unexpected error: {type(e).__name__}: {e}")
 
 try:
-    _send_email(results, fpath)
+    _send_email(results, fpath, bt_fpath)
 except Exception as e:
     print(f"[Email] ❌  Unexpected top-level error: {type(e).__name__}: {e}")
     print("[Email]    Continuing — CSV is still saved.")
@@ -946,9 +1133,12 @@ if results:
                   label=f"Stop ${r['Stop_Loss']:.2f}")
         ax.axhline(r["Entry_Price"], color="#22c55e", lw=1.0, ls="--", alpha=0.85,
                   label=f"Entry ${r['Entry_Price']:.2f}")
+        med_g = r.get("Backtest_Median_Max_Gain_%")
+        med_g_disp = f"MedGain:{med_g:+.1f}%" if med_g is not None else "MedGain:n/a"
         ax.set_title(
             f"{r['Ticker']}  |  ${r['Price']:.2f}  |  Score {r['Score']}  |  "
-            f"{'Hammer' if r['Is_Hammer'] else 'NoHammer'}  |  Vol {r['Vol_Ratio']:.2f}x  |  {r['Signal_Date']}",
+            f"{'Hammer' if r['Is_Hammer'] else 'NoHammer'}  |  Vol {r['Vol_Ratio']:.2f}x  |  "
+            f"{med_g_disp} ({r['Backtest_Occurrences']}x)  |  {r['Signal_Date']}",
             color="#e2e8f0", fontsize=9, fontweight="bold", pad=7)
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
         ax.tick_params(colors="#94a3b8", labelsize=8)
@@ -993,7 +1183,9 @@ print(f"""
   RECENT occurrence is used for Entry/Stop/scoring.
 
   📋 DATA SOURCING
-  Only 1 download per ticker: daily bars (~400 days).
+  Only 1 download per ticker: daily bars (~750 days, ~3 years) —
+  the longer window also gives the historical backtest below a
+  meaningful sample size.
 
   📋 OUTPUT (reasonable defaults — not explicitly requested)
   Entry_Price = candle 3's HIGH (a breakout trigger)
@@ -1002,17 +1194,46 @@ print(f"""
   Days_Since_Signal = how many trading days ago (0 = today)
   Recent_Signals    = every date the pattern fired within the window
 
+  📋 HISTORICAL BACKTEST (new) — max probable price increase
+  Re-runs the exact same pattern check (check_three_candle_at) over
+  the ENTIRE available history for every ticker scanned — not just
+  the live lookback window — using the identical logic as the live
+  scanner so the two can never drift apart. For each historical
+  occurrence found, measures the Maximum Favorable Excursion: the
+  highest price reached over the following mfe_holding_days trading
+  days, as a % above that occurrence's entry price (candle 3's high).
+    Backtest_Occurrences         = how many times found, this ticker
+    Backtest_Avg_Max_Gain_%      = mean of all historical max gains
+    Backtest_Median_Max_Gain_%   = MEDIAN — the most probable/typical
+                                    max price increase (robust to
+                                    outliers, unlike the average)
+    Backtest_Best_Max_Gain_%     = the single best historical outcome
+    Backtest_Worst_Max_Gain_%    = the single worst historical outcome
+    Backtest_HitRate_%           = % of historical occurrences that
+                                    reached at least mfe_hit_threshold_pct
+  A scan-wide aggregate across the FULL universe (not just today's
+  matches) is printed above and shown in the email header. The full
+  trade-by-trade log is saved to
+  three_candle_hammer_doji_backtest_<timestamp>.csv and attached to
+  the email alongside the main results CSV.
+
   📋 SCORE (0-100)
   Hammer quality (0-20, 0 if candle 1 wasn't a hammer) + proximity
-  to SMA50 (0-15) + volume increase strength (0-25) + rising-lows
-  magnitude (0-15) + freshness (0-15) + base points for clearing
-  every gate (10)
+  to SMA50 (0-15) + volume increase strength (0-20) + rising-lows
+  magnitude (0-10) + freshness (0-10) + historical backtest strength
+  (0-10, based on this ticker's own median max gain) + base points
+  for clearing every gate (10)
 
   💡 BEST SETUPS
-  Score > 70              hammer present, tight to SMA50, strong volume
-  Is_Hammer = True          candle 1 had genuine hammer geometry
-  Vol_Ratio > 1.5             well above candle 2's volume
-  Days_Since_Signal = 0-3      freshest pattern
+  Score > 70                    hammer present, tight to SMA50, strong
+                                 volume, strong own history
+  Is_Hammer = True                 candle 1 had genuine hammer geometry
+  Vol_Ratio > 1.5                    well above candle 2's volume
+  Backtest_Median_Max_Gain_% > 5%      this ticker's own history of the
+                                        pattern has worked well
+  Backtest_HitRate_% > 50%             reached a meaningful gain most
+                                        of the time historically
+  Days_Since_Signal = 0-3               freshest pattern
 
   ⚙️  TUNE IF 0 RESULTS
   near_sma50_pct              3.0 → 5.0   (allow a looser test of support)
@@ -1021,5 +1242,11 @@ print(f"""
   signal_lookback_days         15 → 25    (search further back)
   min_price                      2 → 1
   min_avg_volume             80000 → 50000
+
+  ⚙️  BACKTEST TUNING
+  mfe_holding_days             15 → 20    (longer forward window)
+  mfe_hit_threshold_pct       5.0 → 3.0   (easier "hit" bar)
+  history_days                750 → 1500  (deeper backtest sample,
+                                            slower fetch)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
