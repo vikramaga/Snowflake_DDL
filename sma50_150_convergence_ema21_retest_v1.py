@@ -157,7 +157,14 @@ def check_convergence_retest_at(df, ema21, sma50, sma150, i, cfg):
     Checks the full pattern with the retest day anchored at bar `i`.
     This is the SINGLE SOURCE OF TRUTH for the pattern logic.
 
-    Returns (passed: bool, details: dict).
+    Unlike a simple short-circuit check, this computes EVERY stage's
+    pass/fail regardless of earlier failures (guarding only on
+    missing/insufficient data), so callers can diagnose exactly
+    which stage is filtering results out — see FUNNEL_COUNTS below.
+
+    Returns (passed: bool, details: dict). details is {} only when
+    there isn't enough data to evaluate at all; otherwise it always
+    contains every stage's boolean, even on failure.
     """
     if i < 1 or i >= len(df):
         return False, {}
@@ -181,44 +188,68 @@ def check_convergence_retest_at(df, ema21, sma50, sma150, i, cfg):
     if i - sb >= 0 and not np.isnan(sma50.iloc[i-sb]):
         slope_ok = s50 > float(sma50.iloc[i-sb])
 
-    if not (still_below and gap_ok and slope_ok):
-        return False, {}
+    step1_ok = still_below and gap_ok and slope_ok
 
     # ── Step 2: EMA21 already above SMA150 ──────────────────────────
-    ema21_above_sma150 = e21 > s150
-    if not ema21_above_sma150:
-        return False, {}
+    step2_ok = e21 > s150
 
     # ── Step 3: price retesting EMA21 (low near it, close holding) ──
     near_pct = abs(low_i - e21) / e21 * 100 if e21 > 0 else 999
     retest_ok = near_pct <= cfg["retest_tolerance_pct"]
     holds_ok  = (close_i >= e21) if cfg["require_close_above_ema21"] else True
-    if not (retest_ok and holds_ok):
-        return False, {}
+    step3_ok = retest_ok and holds_ok
 
     # ── Step 4: volume higher than the previous day ─────────────────
-    vol_confirmed = vol_i > vol_prev
-    if not vol_confirmed:
-        return False, {}
+    step4_ok = vol_i > vol_prev
 
-    return True, {
+    passed = step1_ok and step2_ok and step3_ok and step4_ok
+
+    details = {
         "idx": i, "gap_pct": gap_pct, "near_pct": near_pct,
         "ema21": float(e21), "sma50": float(s50), "sma150": float(s150),
         "close": close_i, "low": low_i,
         "vol": vol_i, "vol_prev": vol_prev,
+        "step1_ok": step1_ok, "step2_ok": step2_ok,
+        "step3_ok": step3_ok, "step4_ok": step4_ok,
+        "still_below": still_below, "gap_ok": gap_ok, "slope_ok": slope_ok,
     }
+    return passed, details
+
+# ── Diagnostic funnel — tallies how far each ticker-day gets through
+#    the pattern, across the FULL universe scan, so a 0-match run can
+#    be diagnosed empirically instead of guessed at ─────────────────
+FUNNEL_COUNTS = {
+    "days_checked": 0,      # every (ticker, day) evaluated at all
+    "passed_step1_convergence": 0,   # SMA50 still below SMA150, gap small, rising
+    "passed_step2_ema21_above": 0,   # + EMA21 already above SMA150
+    "passed_step3_retest": 0,        # + price retesting EMA21 and holding
+    "passed_step4_volume": 0,        # + volume higher than prior day (= full match)
+}
 
 def find_convergence_retest_signals(df, ema21, sma50, sma150, cfg):
     """
     Scans the last `signal_lookback_days` trading days for the full
-    pattern. Returns a list of hit dicts, most recent first.
+    pattern. Returns a list of hit dicts, most recent first. Also
+    tallies FUNNEL_COUNTS for every day checked, regardless of match.
     """
+    global FUNNEL_COUNTS
     n = len(df)
     lb = cfg["signal_lookback_days"]
     hits = []
     for back in range(0, lb):
         i = (n - 1) - back
         passed, details = check_convergence_retest_at(df, ema21, sma50, sma150, i, cfg)
+        if not details:
+            continue   # insufficient data that day — not counted in the funnel
+        FUNNEL_COUNTS["days_checked"] += 1
+        if details["step1_ok"]:
+            FUNNEL_COUNTS["passed_step1_convergence"] += 1
+            if details["step2_ok"]:
+                FUNNEL_COUNTS["passed_step2_ema21_above"] += 1
+                if details["step3_ok"]:
+                    FUNNEL_COUNTS["passed_step3_retest"] += 1
+                    if details["step4_ok"]:
+                        FUNNEL_COUNTS["passed_step4_volume"] += 1
         if passed:
             hits.append(details)
     return hits
@@ -506,8 +537,22 @@ print(f"  Daily data      : {got_daily}")
 print(f"  ✅ Matches       : {len(results)}")
 print(f"{'━'*65}")
 
+# ── Diagnostic funnel — where ticker-days got filtered out ──────
+print(f"\n{'━'*65}")
+print(f"  🔍 FUNNEL — where ticker-days were filtered out")
+print(f"  (tallied across every liquid ticker's last {CFG['signal_lookback_days']} trading days)")
+print(f"{'━'*65}")
+fc = FUNNEL_COUNTS
+print(f"  Ticker-days checked                        : {fc['days_checked']}")
+print(f"  Step 1 — SMA50 converging (below, tight, rising) : {fc['passed_step1_convergence']}")
+print(f"  Step 2 — + EMA21 already above SMA150      : {fc['passed_step2_ema21_above']}")
+print(f"  Step 3 — + retesting EMA21 and holding     : {fc['passed_step3_retest']}")
+print(f"  Step 4 — + volume higher than prior day    : {fc['passed_step4_volume']}  (= full pattern)")
+print(f"{'━'*65}")
+
 if not results:
-    print("\n  No matches. Try relaxing:")
+    print("\n  No matches. Try relaxing (see the FUNNEL above to see which")
+    print("  step is actually the bottleneck before guessing):")
     print("   sma_convergence_pct         2.0 → 3.5   (allow a wider convergence gap)")
     print("   retest_tolerance_pct        1.5 → 2.5   (allow a looser retest)")
     print("   sma50_slope_lookback          5 → 10")
@@ -779,6 +824,20 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   on rising volume
 </p>
   </td></tr>
+  <tr><td style="padding:14px 28px 4px;background:#0b1220">
+<div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px 16px">
+  <p style="margin:0 0 6px;color:#93c5fd;font-size:12px;font-weight:700">
+    🔍 FUNNEL — where ticker-days were filtered out (last {CFG['signal_lookback_days']} trading days, every liquid ticker)
+  </p>
+  <p style="margin:0;color:#cbd5e1;font-size:12px">
+    {FUNNEL_COUNTS['days_checked']} ticker-days checked &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step1_convergence']} passed Step 1 (convergence) &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step2_ema21_above']} passed Step 2 (EMA21&gt;SMA150) &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step3_retest']} passed Step 3 (retest holds) &nbsp;→&nbsp;
+    <b style="color:#facc15">{FUNNEL_COUNTS['passed_step4_volume']} passed Step 4 (volume) = full match</b>
+  </p>
+</div>
+  </td></tr>
   <tr><td style="padding:16px">
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
   <table style="border-collapse:collapse;width:100%;min-width:600px">
@@ -811,6 +870,12 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         plain_lines = [
             f"SMA50/SMA150 Convergence + EMA21 Retest (checked over last {CFG['signal_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches (SMA50 converging toward SMA150 from below + EMA21 above SMA150 + price retesting EMA21 on rising volume)",
+            "="*60,
+            f"FUNNEL: {FUNNEL_COUNTS['days_checked']} ticker-days -> "
+            f"{FUNNEL_COUNTS['passed_step1_convergence']} passed convergence -> "
+            f"{FUNNEL_COUNTS['passed_step2_ema21_above']} passed EMA21>SMA150 -> "
+            f"{FUNNEL_COUNTS['passed_step3_retest']} passed retest -> "
+            f"{FUNNEL_COUNTS['passed_step4_volume']} passed volume (=full match)",
             "="*60,
         ]
         if rl:
