@@ -1,0 +1,46 @@
+name: SMA50150ConvergenceEMA21Retest
+
+on:
+  
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-sma-retest
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install --upgrade yfinance pandas numpy requests tqdm matplotlib
+
+      - name: Run scanner
+        env:
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
+        run: python sma50_150_convergence_ema21_retest_v1.py
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sma50-150-convergence-ema21-retest-results-${{ github.run_id }}
+          path: |
+            sma50_150_convergence_ema21_retest_*.csv
+            sma50_150_convergence_ema21_retest_chart_*.png
+            tv_sma50_150_convergence_ema21_retest_*.txt
+          retention-days: 30
