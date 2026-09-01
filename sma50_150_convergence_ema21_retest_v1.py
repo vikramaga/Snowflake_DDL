@@ -130,7 +130,7 @@ CFG = {
     "sma150_period"          : 150,
 
     # ── Step 1: SMA50/SMA150 convergence (SMA50 still below) ───────
-    "sma_convergence_pct"    : 2.0,  # max gap (as % of SMA150) — SMA50
+    "sma_convergence_pct"    : 15.0, # max gap (as % of SMA150) — SMA50
                                       # must be within this % of SMA150
     "sma50_slope_lookback"   : 5,    # bars back to confirm SMA50 is
                                       # rising toward SMA150, not just
