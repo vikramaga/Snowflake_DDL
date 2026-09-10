@@ -10,12 +10,14 @@
 #
 #   2. CONVERGENCE (on the day BEFORE the breakout — the "coiled"
 #      state going into it): JMA is still ABOVE EMA8 but the gap is
-#      small (within convergence_pct% of EMA8) — JMA approaching
-#      EMA8 from above, not just incidentally close.
+#      small (within convergence_pct% of EMA8, default 8%) — JMA
+#      approaching EMA8 from above, not just incidentally close.
 #
-#   3. FRESH BREAKOUT: the day before did NOT have price closing
-#      above both JMA and EMA8 simultaneously, but TODAY's close IS
-#      above both at once — a decisive breakout day out of the coil.
+#   3. TRIGGER: price closed above both JMA and EMA8 simultaneously
+#      today. A FRESH cross (yesterday below, today above) is
+#      PREFERRED and scored as a bonus (Is_Fresh_Cross), but not
+#      required — a stock that has already held above both for a
+#      day or two still counts, to avoid over-narrowing results.
 #
 #   4. VOLUME: today's volume is higher than the previous day's.
 #
@@ -123,7 +125,7 @@ CFG = {
     "jma_phase"               : 40,
 
     # ── Convergence (JMA above EMA8, gap small, on the pre-breakout day) ──
-    "convergence_pct"         : 2.0,  # max gap (as % of EMA8) between JMA and EMA8
+    "convergence_pct"         : 8.0,  # max gap (as % of EMA8) between JMA and EMA8
 
     "volume_multiplier"       : 1.0,  # breakout day's volume >= this x prior day's
     "signal_lookback_days"    : 15,   # ~3 trading weeks — how far back to look
@@ -194,10 +196,14 @@ def check_pattern_at(df, ema8, jma, sma50, sma150, i, cfg):
     conv_pct = (j_prev - e8_prev) / e8_prev * 100 if e8_prev > 0 else 999
     conv_ok = jma_above_ema8 and conv_pct <= cfg["convergence_pct"]
 
-    # ── Step 3: fresh breakout — yesterday NOT above both, today IS ──
+    # ── Step 3: price closed above JMA and EMA8 simultaneously today.
+    #    A FRESH cross (yesterday below, today above) is preferred and
+    #    scored as a bonus, but not required — a stock that has held
+    #    above both for a day or two still counts. ─────────────────
     was_below = not (close_prev > j_prev and close_prev > e8_prev)
     now_above = close_i > j and close_i > e8
-    trigger_ok = was_below and now_above
+    trigger_ok = now_above
+    is_fresh_cross = was_below and now_above
 
     # ── Step 4: volume higher than the previous day ─────────────────
     vol_ok = vol_i >= cfg["volume_multiplier"] * vol_prev
@@ -207,7 +213,7 @@ def check_pattern_at(df, ema8, jma, sma50, sma150, i, cfg):
         return False, {}
 
     return True, {
-        "idx": i, "conv_pct": conv_pct,
+        "idx": i, "conv_pct": conv_pct, "is_fresh_cross": is_fresh_cross,
         "close": close_i, "jma": float(j), "ema8": float(e8),
         "sma50": float(s50), "sma150": float(s150),
         "high": float(df["High"].iloc[i]), "low": float(df["Low"].iloc[i]),
@@ -275,14 +281,19 @@ def analyze_convergence_breakout(sym, df_daily):
     # ── Score (0-100) ────────────────────────────────────────────
     score = 0
     reasons = []
-    score += max(0, min(30, 30 - sig["conv_pct"] * 15))
+    score += max(0, min(30, 30 - sig["conv_pct"] * (30/CFG["convergence_pct"])))
     reasons.append(f"Convergence{sig['conv_pct']:.2f}%")
-    score += min(30, (vol_ratio - 1.0) * 30)
+    score += min(25, (vol_ratio - 1.0) * 25)
     reasons.append(f"Vol{vol_ratio:.1f}x")
     freshness_pts = max(0, 15 - days_since_signal)
     score += freshness_pts
     reasons.append(f"{days_since_signal}dAgo")
-    score += 25   # base for clearing every gate
+    if sig["is_fresh_cross"]:
+        score += 10
+        reasons.append("FreshCross")
+    else:
+        reasons.append("AlreadyAbove")
+    score += 20   # base for clearing every gate
     score = round(min(100, max(0, score)))
 
     return {
@@ -292,6 +303,7 @@ def analyze_convergence_breakout(sym, df_daily):
         "Stop_Loss"      : round(stop_loss, 2),
         "Risk_%"         : round(risk_pct, 1),
         "Convergence_%"  : round(sig["conv_pct"], 2),
+        "Is_Fresh_Cross" : sig["is_fresh_cross"],
         "JMA"            : round(sig["jma"], 2),
         "EMA8"           : round(sig["ema8"], 2),
         "SMA50"          : round(sig["sma50"], 2),
@@ -531,7 +543,7 @@ out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 COLS = [
     "Ticker","Price","Score",
     "Entry_Price","Stop_Loss","Risk_%",
-    "Convergence_%","JMA","EMA8","SMA50","SMA150","Vol_Ratio",
+    "Convergence_%","Is_Fresh_Cross","JMA","EMA8","SMA50","SMA150","Vol_Ratio",
     "Signal_Date","Days_Since_Signal","Recent_Signal_Count","Recent_Signals",
     "Flags",
 ]
@@ -961,11 +973,13 @@ print(f"""
      SMA50, SMA150, AND JMA. EMA8 is above SMA50 AND SMA150.
   2) CONVERGENCE (on the day BEFORE the breakout — the "coiled"
      state going into it): JMA is still ABOVE EMA8 but the gap is
-     small (within convergence_pct% of EMA8) — JMA approaching
-     EMA8 from above.
-  3) FRESH BREAKOUT: the day before did NOT have price closing
-     above both JMA and EMA8 simultaneously, but TODAY's close IS
-     above both at once.
+     small (within convergence_pct% of EMA8, default 8%) —
+     JMA approaching EMA8 from above.
+  3) TRIGGER: price closed above both JMA and EMA8 simultaneously
+     today. A FRESH cross (yesterday below, today above) is
+     preferred and scored as a bonus (Is_Fresh_Cross), but NOT
+     required — a stock already holding above both for a day or
+     two still counts, so results aren't over-narrowed.
   4) VOLUME: today's volume is higher than the previous day's.
 
   If the pattern fired more than once in the window, the MOST
@@ -977,22 +991,25 @@ print(f"""
   📋 OUTPUT (reasonable defaults — not explicitly requested)
   Entry_Price = the breakout day's HIGH
   Stop_Loss   = the breakout day's LOW
+  Is_Fresh_Cross = whether this was a fresh cross (bonus, not required)
   Signal_Date = the exact calendar date the pattern fired
   Days_Since_Signal = how many trading days ago (0 = today)
   Recent_Signals    = every date the pattern fired within the window
 
   📋 SCORE (0-100)
-  Convergence tightness (0-30) + volume increase strength (0-30) +
-  freshness (0-15) + base points for clearing every gate (25)
+  Convergence tightness (0-30) + volume increase strength (0-25) +
+  freshness (0-15) + fresh-cross bonus (0-10) + base points for
+  clearing every gate (20)
 
   💡 BEST SETUPS
   Score > 70               tight convergence, strong volume, fresh
-  Convergence_% < 0.5%        JMA and EMA8 were nearly touching
-  Vol_Ratio > 1.5                well above the prior day's volume
-  Days_Since_Signal = 0-3           freshest breakout
+  Is_Fresh_Cross = True       a genuine breakout day, not just holding
+  Convergence_% < 1%             JMA and EMA8 were nearly touching
+  Vol_Ratio > 1.5                   well above the prior day's volume
+  Days_Since_Signal = 0-3              freshest signal
 
-  ⚙️  TUNE IF 0 RESULTS
-  convergence_pct              2.0 → 4.0   (allow a wider JMA/EMA8 gap)
+  ⚙️  TUNE IF STILL 0 RESULTS
+  convergence_pct              8.0 → 15.0  (allow an even wider JMA/EMA8 gap)
   volume_multiplier            1.0 → 0.9   (allow slightly lower volume)
   signal_lookback_days           15 → 25    (search further back)
   min_price                        2 → 1
