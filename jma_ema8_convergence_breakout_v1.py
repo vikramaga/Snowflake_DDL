@@ -171,7 +171,14 @@ def check_pattern_at(df, ema8, jma, sma50, sma150, i, cfg):
     Checks the full pattern with the breakout day anchored at bar
     `i`. This is the SINGLE SOURCE OF TRUTH for the pattern logic.
 
-    Returns (passed: bool, details: dict).
+    Unlike a simple short-circuit check, this computes EVERY stage's
+    pass/fail regardless of earlier failures (guarding only on
+    missing/insufficient data), so callers can diagnose exactly
+    which stage is filtering results out — see FUNNEL_COUNTS below.
+
+    Returns (passed: bool, details: dict). details is {} only when
+    there isn't enough data to evaluate at all; otherwise it always
+    contains every stage's boolean, even on failure.
     """
     if i < 1 or i >= len(df):
         return False, {}
@@ -209,28 +216,52 @@ def check_pattern_at(df, ema8, jma, sma50, sma150, i, cfg):
     vol_ok = vol_i >= cfg["volume_multiplier"] * vol_prev
 
     passed = structure_ok and conv_ok and trigger_ok and vol_ok
-    if not passed:
-        return False, {}
 
-    return True, {
+    return passed, {
         "idx": i, "conv_pct": conv_pct, "is_fresh_cross": is_fresh_cross,
         "close": close_i, "jma": float(j), "ema8": float(e8),
         "sma50": float(s50), "sma150": float(s150),
         "high": float(df["High"].iloc[i]), "low": float(df["Low"].iloc[i]),
         "vol": vol_i, "vol_prev": vol_prev,
+        "structure_ok": structure_ok, "conv_ok": conv_ok,
+        "trigger_ok": trigger_ok, "vol_ok": vol_ok,
     }
+
+# ── Diagnostic funnel — tallies how far each ticker-day gets through
+#    the pattern, across the FULL universe scan, so a 0-match run can
+#    be diagnosed empirically instead of guessed at ─────────────────
+FUNNEL_COUNTS = {
+    "days_checked": 0,
+    "passed_step1_structure": 0,
+    "passed_step2_convergence": 0,
+    "passed_step3_trigger": 0,
+    "passed_step4_volume": 0,
+}
 
 def find_convergence_breakout_signals(df, ema8, jma, sma50, sma150, cfg):
     """
     Scans the last `signal_lookback_days` trading days for the full
-    pattern. Returns a list of hit dicts, most recent first.
+    pattern. Returns a list of hit dicts, most recent first. Also
+    tallies FUNNEL_COUNTS for every day checked, regardless of match.
     """
+    global FUNNEL_COUNTS
     n = len(df)
     lb = cfg["signal_lookback_days"]
     hits = []
     for back in range(0, lb):
         i = (n - 1) - back
         passed, details = check_pattern_at(df, ema8, jma, sma50, sma150, i, cfg)
+        if not details:
+            continue
+        FUNNEL_COUNTS["days_checked"] += 1
+        if details["structure_ok"]:
+            FUNNEL_COUNTS["passed_step1_structure"] += 1
+            if details["conv_ok"]:
+                FUNNEL_COUNTS["passed_step2_convergence"] += 1
+                if details["trigger_ok"]:
+                    FUNNEL_COUNTS["passed_step3_trigger"] += 1
+                    if details["vol_ok"]:
+                        FUNNEL_COUNTS["passed_step4_volume"] += 1
         if passed:
             hits.append(details)
     return hits
@@ -524,13 +555,25 @@ print(f"  Daily data      : {got_daily}")
 print(f"  ✅ Matches       : {len(results)}")
 print(f"{'━'*65}")
 
+# ── Diagnostic funnel — where ticker-days were filtered out ──────
+print(f"\n{'━'*65}")
+print(f"  🔍 FUNNEL — where ticker-days were filtered out")
+print(f"  (tallied across every liquid ticker's last {CFG['signal_lookback_days']} trading days)")
+print(f"{'━'*65}")
+fc = FUNNEL_COUNTS
+print(f"  Ticker-days checked                       : {fc['days_checked']}")
+print(f"  Step 1 — structure (price/EMA8 above SMAs) : {fc['passed_step1_structure']}")
+print(f"  Step 2 — + JMA/EMA8 convergence tight      : {fc['passed_step2_convergence']}")
+print(f"  Step 3 — + price above both JMA and EMA8   : {fc['passed_step3_trigger']}")
+print(f"  Step 4 — + volume higher than prior day    : {fc['passed_step4_volume']}  (= full pattern)")
+print(f"{'━'*65}")
+
 if not results:
-    print("\n  No matches. Try relaxing:")
-    print("   min_cup_depth_pct           20.0 → 12.0  (allow a shallower cup)")
-    print("   min_cup_duration_weeks         52 → 26    (allow a shorter cup)")
-    print("   right_rim_tolerance_pct       5.0 → 10.0  (allow a lower right rim)")
-    print("   retest_tolerance_pct          5.0 → 8.0   (allow a looser retest)")
-    print("   max_days_since_breakout        365 → 730   (older breakouts count too)")
+    print("\n  No matches. Try relaxing (see the FUNNEL above to see which")
+    print("  step is actually the bottleneck before guessing):")
+    print("   convergence_pct              2.0 → 4.0   (allow a wider JMA/EMA8 gap)")
+    print("   volume_multiplier            1.0 → 0.9   (allow slightly lower volume)")
+    print("   signal_lookback_days           15 → 25    (search further back)")
     print("   min_price                        2 → 1")
     print("   min_avg_volume               80000 → 50000")
 
@@ -651,14 +694,16 @@ if _IN_NOTEBOOK and results:
         padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
-  A genuine multi-year cup (left rim, deep decline, bottom, recovery
-  back to the right rim) &nbsp;·&nbsp;
-  Price broke out above the old rim within the last year &nbsp;·&nbsp;
-  Price pulled back to retest that level and is still holding above it &nbsp;·&nbsp;
+  Price above SMA50, SMA150, AND JMA &nbsp;·&nbsp;
+  EMA8 above SMA50 AND SMA150 &nbsp;·&nbsp;
+  JMA still above EMA8 but the gap is tight (coming close from above) &nbsp;·&nbsp;
+  Price closed above both JMA and EMA8 today &nbsp;·&nbsp;
   Volume higher than the previous day &nbsp;·&nbsp;
-  Entry_Price = the retest day's close &nbsp;·&nbsp;
-  Stop_Loss = the retest day's low — reasonable defaults, not explicitly
+  Entry_Price = the breakout day's high &nbsp;·&nbsp;
+  Stop_Loss = the breakout day's low — reasonable defaults, not explicitly
   requested &nbsp;·&nbsp;
+  Is_Fresh_Cross shows whether it was a genuine fresh crossover (bonus) or
+  already holding above both &nbsp;·&nbsp;
   Signal_Date is the exact date the pattern fired (checked over the
   last {CFG['signal_lookback_days']} trading days, not just today)
 </div>"""
@@ -794,9 +839,23 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-  {cnt} match{'es' if cnt!=1 else ''} found — a big multi-year cup, a
-  breakout above the old high, and a successful retest holding
+  {cnt} match{'es' if cnt!=1 else ''} found — JMA converging toward
+  EMA8 from above, then price breaking above both on rising volume
 </p>
+  </td></tr>
+  <tr><td style="padding:14px 28px 4px;background:#0b1220">
+<div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px 16px">
+  <p style="margin:0 0 6px;color:#93c5fd;font-size:12px;font-weight:700">
+    🔍 FUNNEL — where ticker-days were filtered out (last {CFG['signal_lookback_days']} trading days, every liquid ticker)
+  </p>
+  <p style="margin:0;color:#cbd5e1;font-size:12px">
+    {FUNNEL_COUNTS['days_checked']} ticker-days checked &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step1_structure']} passed Step 1 (structure) &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step2_convergence']} passed Step 2 (JMA/EMA8 convergence) &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step3_trigger']} passed Step 3 (price above both) &nbsp;→&nbsp;
+    <b style="color:#facc15">{FUNNEL_COUNTS['passed_step4_volume']} passed Step 4 (volume) = full match</b>
+  </p>
+</div>
   </td></tr>
   <tr><td style="padding:16px">
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
@@ -829,7 +888,13 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 
         plain_lines = [
             f"JMA/EMA8 Convergence Breakout — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches (big multi-year cup + breakout above the old high + successful retest holding)",
+            f"{cnt} matches (JMA converging toward EMA8 from above + fresh breakout + volume up)",
+            "="*60,
+            f"FUNNEL: {FUNNEL_COUNTS['days_checked']} ticker-days -> "
+            f"{FUNNEL_COUNTS['passed_step1_structure']} passed structure -> "
+            f"{FUNNEL_COUNTS['passed_step2_convergence']} passed convergence -> "
+            f"{FUNNEL_COUNTS['passed_step3_trigger']} passed trigger -> "
+            f"{FUNNEL_COUNTS['passed_step4_volume']} passed volume (=full match)",
             "="*60,
         ]
         if rl:
