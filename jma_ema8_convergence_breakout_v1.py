@@ -10,7 +10,7 @@
 #
 #   2. CONVERGENCE (on the day BEFORE the breakout — the "coiled"
 #      state going into it): JMA is still ABOVE EMA8 but the gap is
-#      small (within convergence_pct% of EMA8, default 8%) — JMA
+#      small (within convergence_pct% of EMA8, default 2%) — JMA
 #      approaching EMA8 from above, not just incidentally close.
 #
 #   3. TRIGGER: price closed above both JMA and EMA8 simultaneously
@@ -125,7 +125,7 @@ CFG = {
     "jma_phase"               : 40,
 
     # ── Convergence (JMA above EMA8, gap small, on the pre-breakout day) ──
-    "convergence_pct"         : 8.0,  # max gap (as % of EMA8) between JMA and EMA8
+    "convergence_pct"         : 2.0,  # max gap (as % of EMA8) between JMA and EMA8
 
     "volume_multiplier"       : 1.0,  # breakout day's volume >= this x prior day's
     "signal_lookback_days"    : 15,   # ~3 trading weeks — how far back to look
@@ -973,7 +973,7 @@ print(f"""
      SMA50, SMA150, AND JMA. EMA8 is above SMA50 AND SMA150.
   2) CONVERGENCE (on the day BEFORE the breakout — the "coiled"
      state going into it): JMA is still ABOVE EMA8 but the gap is
-     small (within convergence_pct% of EMA8, default 8%) —
+     small (within convergence_pct% of EMA8, default 2%) —
      JMA approaching EMA8 from above.
   3) TRIGGER: price closed above both JMA and EMA8 simultaneously
      today. A FRESH cross (yesterday below, today above) is
@@ -1009,7 +1009,7 @@ print(f"""
   Days_Since_Signal = 0-3              freshest signal
 
   ⚙️  TUNE IF STILL 0 RESULTS
-  convergence_pct              8.0 → 15.0  (allow an even wider JMA/EMA8 gap)
+  convergence_pct              2.0 → 4.0   (allow a wider JMA/EMA8 gap)
   volume_multiplier            1.0 → 0.9   (allow slightly lower volume)
   signal_lookback_days           15 → 25    (search further back)
   min_price                        2 → 1
