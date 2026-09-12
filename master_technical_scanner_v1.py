@@ -196,6 +196,12 @@ CFG = {
     "min_total_score"             : 45,   # out of 100 — only show genuinely
                                            # strong composite setups
 
+    # ── Highlighted pattern (appended check, not a gate) — fast-MA
+    #    cluster {EMA8,JMA,SMA21} pulls back to test SMA50, red day
+    #    then green reclaim day, on higher volume ───────────────────
+    "highlighted_near_sma50_pct"  : 3.0,
+    "highlighted_lookback_days"   : 15,
+
     # ── Filters ─────────────────────────────────────────────────
     "min_avg_volume"              : 80_000,
     "min_price"                   : 2.0,
@@ -621,6 +627,61 @@ def analyze_master(sym, df, spy_perf_pct):
         "_ema8"  : ema8, "_jma": jma,
     }
 
+# ── Appended check: highlighted chart pattern (cluster tests SMA50) ──
+# Reuses the SAME indicators already computed for the Trend/Stack
+# layers above (no extra download, no extra indicator computation) —
+# applied only to stocks that already made the main composite result
+# list, as an additional annotation + a second, separate result.
+def check_highlighted_pattern(df, ema8, jma, sma21, sma50, sma150, cfg):
+    """
+    Scans the last highlighted_lookback_days trading days for: SMA50
+    > SMA150; the {EMA8,JMA,SMA21} cluster average sitting within
+    highlighted_near_sma50_pct% of SMA50 on a test day; that test day
+    red and closed below the cluster; the next day green and closed
+    above the cluster; volume higher on the reclaim day. Returns the
+    most recent match's details dict, or None.
+    """
+    n = len(df)
+    lb = cfg["highlighted_lookback_days"]
+    hits = []
+    for back in range(0, lb):
+        i = (n - 1) - back
+        if i < 1: break
+        s50, s150 = sma50.iloc[i-1], sma150.iloc[i-1]
+        e8, j, s21 = ema8.iloc[i-1], jma.iloc[i-1], sma21.iloc[i-1]
+        if any(np.isnan(v) for v in [s50, s150, e8, j, s21]):
+            continue
+
+        structure_ok = s50 > s150
+        cluster_avg = (e8 + j + s21) / 3
+        near_pct = abs(cluster_avg - s50) / s50 * 100 if s50 > 0 else 999
+        near_ok = near_pct <= cfg["highlighted_near_sma50_pct"]
+
+        close_A, open_A = float(df["Close"].iloc[i-1]), float(df["Open"].iloc[i-1])
+        close_B, open_B = float(df["Close"].iloc[i]),   float(df["Open"].iloc[i])
+        vol_A, vol_B = float(df["Volume"].iloc[i-1]), float(df["Volume"].iloc[i])
+
+        candle_A_red   = close_A < open_A and close_A < cluster_avg
+        candle_B_green = close_B > open_B and close_B > cluster_avg
+        vol_ok = vol_B > vol_A
+
+        if structure_ok and near_ok and candle_A_red and candle_B_green and vol_ok:
+            hits.append({
+                "idx": i, "near_pct": near_pct, "vol_ratio": vol_B/vol_A if vol_A>0 else 0,
+                "high_B": float(df["High"].iloc[i]), "low_A": float(df["Low"].iloc[i-1]),
+            })
+
+    if not hits:
+        return None
+    sig = hits[0]   # most recent
+    days_ago = (n - 1) - sig["idx"]
+    return {
+        "near_pct": sig["near_pct"], "vol_ratio": sig["vol_ratio"],
+        "signal_date": df.index[sig["idx"]].strftime("%Y-%m-%d"),
+        "days_ago": days_ago, "entry_price": sig["high_B"], "stop_loss": sig["low_A"],
+        "match_count": len(hits),
+    }
+
 def get_spy_perf(rs_lookback_days, history_days):
     try:
         end   = datetime.today()
@@ -936,6 +997,37 @@ if not results:
 # Sort by total score (always runs, even on empty list)
 results.sort(key=lambda x: x["Total"], reverse=True)
 
+# ── APPENDED CHECK: highlighted chart pattern, run on the FINAL
+#    results only (not the full universe) — reuses each result's
+#    already-computed indicators, no extra download or computation ──
+print(f"\n{'━'*65}")
+print(f"  APPENDED CHECK  Highlighted pattern (cluster tests SMA50)")
+print(f"  Applied to the {len(results)} final results above — no extra")
+print(f"  downloads, reuses their already-computed indicators")
+print(f"{'━'*65}")
+
+highlighted_matches = []
+for r in results:
+    hp = check_highlighted_pattern(
+        r["_df"], r["_ema8"], r["_jma"], r["_sma21"], r["_sma50"], r["_sma150"], CFG)
+    if hp:
+        r["Highlighted_Pattern"]      = True
+        r["Highlighted_Near_SMA50_%"] = round(hp["near_pct"], 2)
+        r["Highlighted_Vol_Ratio"]    = round(hp["vol_ratio"], 2)
+        r["Highlighted_Signal_Date"]  = hp["signal_date"]
+        r["Highlighted_Days_Ago"]     = hp["days_ago"]
+        highlighted_matches.append(r)
+    else:
+        r["Highlighted_Pattern"]      = False
+        r["Highlighted_Near_SMA50_%"] = None
+        r["Highlighted_Vol_Ratio"]    = None
+        r["Highlighted_Signal_Date"]  = None
+        r["Highlighted_Days_Ago"]     = None
+
+highlighted_matches.sort(key=lambda x: x["Highlighted_Near_SMA50_%"])
+print(f"  🎯 Highlighted pattern matches: {len(highlighted_matches)} of {len(results)}")
+print(f"{'━'*65}")
+
 # ── Always build df_out and save/email (even if 0 results) ────
 ts      = datetime.today().strftime("%Y%m%d_%H%M")
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
@@ -947,6 +1039,8 @@ COLS = [
     "Off_52wHigh_%","Above_52wLow_%","RS_vs_SPY_%","Stack_Compression_%",
     "Trigger_MA","Trigger_Days_Ago","RSI","Vol_Ratio",
     "SMA50","SMA150","SMA200",
+    "Highlighted_Pattern","Highlighted_Near_SMA50_%","Highlighted_Vol_Ratio",
+    "Highlighted_Signal_Date","Highlighted_Days_Ago",
     "Rev_Growth_%","Profit_Margin_%","ROE_%","PE_Ratio","EPS",
     "Tech_Flags","Fund_Flags",
 ]
@@ -986,6 +1080,9 @@ FMT = {
     "SMA50"          : lambda v: f"${v:.2f}",
     "SMA150"         : lambda v: f"${v:.2f}",
     "SMA200"         : lambda v: f"${v:.2f}",
+    "Highlighted_Near_SMA50_%": lambda v: f"{v:.2f}%",
+    "Highlighted_Vol_Ratio"   : lambda v: f"{v:.2f}x",
+    "Highlighted_Days_Ago"    : lambda v: f"{int(v)}d ago",
 }
 
 def fmt_v(col, val):
@@ -1144,8 +1241,23 @@ if results:
     print(f"\n  📋 Tickers (comma-separated):")
     print(f"  {', '.join(r['Ticker'] for r in results)}")
 
+# ── SECOND RESULT: highlighted-pattern matches only ───────────────
+hp_fpath = os.path.join(out_dir, f"master_technical_scanner_highlighted_pattern_{ts}.csv")
+hp_cols  = [c for c in COLS if c in ["Ticker","Company","Sector","Price","Total","Tech",
+    "Highlighted_Near_SMA50_%","Highlighted_Vol_Ratio","Highlighted_Signal_Date",
+    "Highlighted_Days_Ago","Trigger_MA","RSI"]]
+hp_df = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
+                       for r in highlighted_matches]) if highlighted_matches else pd.DataFrame(columns=hp_cols)
+if not hp_df.empty:
+    hp_df = hp_df[[c for c in hp_cols if c in hp_df.columns]]
+hp_df.to_csv(hp_fpath, index=False)
+print(f"  💾 Highlighted-pattern CSV → {hp_fpath}  ({len(highlighted_matches)} matches)")
+if highlighted_matches:
+    print(f"  🎯 Highlighted-pattern tickers (comma-separated):")
+    print(f"  {', '.join(r['Ticker'] for r in highlighted_matches)}")
+
 # ── Email with CSV attached ───────────────────────────────
-def _send_email(rl, csv_path):
+def _send_email(rl, csv_path, hp_list=None, hp_csv_path=None):
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text      import MIMEText
@@ -1210,6 +1322,35 @@ def _send_email(rl, csv_path):
         no_results_msg = ('<tr><td colspan="8" style="padding:20px;text-align:center;'
                            'color:#94a3b8;font-size:13px">No matches today</td></tr>')
 
+        hp_cnt = len(hp_list or [])
+        hp_th = "".join(
+            f'<th style="background:#1f2937;color:#e2e8f0;padding:6px 9px;'
+            f'font-size:10px;font-weight:700;border-bottom:2px solid #facc15;'
+            f'white-space:nowrap">{c}</th>'
+            for c in ["Ticker","Price","Total","Near_SMA50_%","Vol_Ratio","Signal_Date"]
+        )
+        hp_rows = ""
+        for i, r in enumerate((hp_list or [])[:50]):
+            bg = "#111827" if i % 2 == 0 else "#0b1220"
+            ticker = r.get("Ticker","—")
+            price  = r.get("Price",0) or 0
+            total  = r.get("Total",0) or 0
+            near   = r.get("Highlighted_Near_SMA50_%",0) or 0
+            vr     = r.get("Highlighted_Vol_Ratio",0) or 0
+            sdate  = r.get("Highlighted_Signal_Date","—")
+            hp_rows += (
+                f'<tr style="background:{bg}">'
+                f'<td style="padding:5px 9px;font-size:11px;font-weight:700;color:#e2e8f0">{ticker}</td>'
+                f'<td style="padding:5px 9px;font-size:11px;color:#cbd5e1">${float(price):.2f}</td>'
+                f'<td style="padding:5px 9px;font-size:11px;color:#22c55e;font-weight:600">{float(total):.0f}</td>'
+                f'<td style="padding:5px 9px;font-size:11px;color:#facc15">{float(near):.2f}%</td>'
+                f'<td style="padding:5px 9px;font-size:11px;color:#cbd5e1">{float(vr):.2f}x</td>'
+                f'<td style="padding:5px 9px;font-size:11px;color:#a78bfa">{sdate}</td>'
+                f'</tr>'
+            )
+        hp_no_results_msg = ('<tr><td colspan="6" style="padding:14px;text-align:center;'
+                              'color:#64748b;font-size:11px">None of today\'s results match</td></tr>')
+
         html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
 background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:20px 10px">
@@ -1236,6 +1377,28 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 <p style="font-size:11px;color:#64748b;margin:8px 0 0">
   📎 Full results (with per-layer score breakdown) attached as CSV
 </p>
+  </td></tr>
+  <tr><td style="padding:6px 16px 16px">
+<div style="background:#0b1220;border:1px solid #1f2937;border-radius:8px;padding:14px 18px">
+  <p style="margin:0 0 8px;color:#facc15;font-size:13px;font-weight:700">
+    🎯 ADDITIONAL RESULT — Highlighted Chart Pattern Matches
+  </p>
+  <p style="margin:0 0 10px;color:#94a3b8;font-size:11px">
+    Fast-MA cluster (EMA8/JMA/SMA21) pulls back to test SMA50, a red
+    day then a green reclaim day, on higher volume — checked only
+    against the {cnt} result{'s' if cnt!=1 else ''} above (no extra
+    downloads). {hp_cnt} of them also match.
+  </p>
+  <div style="overflow-x:auto;border-radius:6px;border:1px solid #1f2937">
+    <table style="border-collapse:collapse;width:100%;min-width:500px">
+      <thead><tr>{hp_th}</tr></thead>
+      <tbody>{hp_rows or hp_no_results_msg}</tbody>
+    </table>
+  </div>
+  <p style="font-size:10px;color:#64748b;margin:8px 0 0">
+    📎 This subset also attached as a separate CSV
+  </p>
+</div>
   </td></tr>
   <tr><td style="background:#f8fafc;padding:12px 28px;
              border-top:1px solid #e2e8f0;text-align:center">
@@ -1272,10 +1435,33 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             plain_lines.append(", ".join(r.get("Ticker","") for r in rl))
         else:
             plain_lines.append("No matches today")
+        plain_lines.append("")
+        plain_lines.append("="*60)
+        plain_lines.append(f"ADDITIONAL RESULT — Highlighted Chart Pattern Matches: {hp_cnt} of {cnt}")
+        plain_lines.append("(fast-MA cluster tests SMA50, red then green reclaim, volume up)")
+        plain_lines.append("="*60)
+        if hp_list:
+            for r in hp_list[:50]:
+                ticker = r.get("Ticker","—")
+                price  = r.get("Price",0) or 0
+                total  = r.get("Total",0) or 0
+                near   = r.get("Highlighted_Near_SMA50_%",0) or 0
+                vr     = r.get("Highlighted_Vol_Ratio",0) or 0
+                sdate  = r.get("Highlighted_Signal_Date","—")
+                plain_lines.append(
+                    f"{ticker:<7} ${float(price):.2f}  Total:{float(total):.0f}  "
+                    f"Near:{float(near):.2f}%  Vol:{float(vr):.2f}x  Signal:{sdate}"
+                )
+            plain_lines.append("")
+            plain_lines.append("Highlighted-pattern tickers (comma-separated):")
+            plain_lines.append(", ".join(r.get("Ticker","") for r in hp_list))
+        else:
+            plain_lines.append("None of today's results match")
         plain_lines.append("\nFull results (with per-layer score breakdown) in CSV attachment.")
         plain_e = "\n".join(plain_lines)
 
         subj = (f"📊 Master Technical Scanner — {cnt} best setup{'s' if cnt!=1 else ''}"
+                f" ({hp_cnt} highlighted-pattern match{'es' if hp_cnt!=1 else ''})"
                 f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
@@ -1292,19 +1478,20 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] ❌  Failed to build email body: {type(e).__name__}: {e}")
         return
 
-    if csv_path and os.path.exists(csv_path):
-        try:
-            with open(csv_path, "rb") as f:
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(f.read())
-            encoders.encode_base64(part)
-            part.add_header("Content-Disposition",
-                f"attachment; filename={os.path.basename(csv_path)}")
-            msg.attach(part)
-            sz = os.path.getsize(csv_path)
-            print(f"[Email] 📎 Attached: {os.path.basename(csv_path)} ({sz:,} bytes)")
-        except Exception as e:
-            print(f"[Email] ⚠️  CSV attach failed: {e}")
+    for attach_path in [csv_path, hp_csv_path]:
+        if attach_path and os.path.exists(attach_path):
+            try:
+                with open(attach_path, "rb") as f:
+                    part = MIMEBase("application", "octet-stream")
+                    part.set_payload(f.read())
+                encoders.encode_base64(part)
+                part.add_header("Content-Disposition",
+                    f"attachment; filename={os.path.basename(attach_path)}")
+                msg.attach(part)
+                sz = os.path.getsize(attach_path)
+                print(f"[Email] 📎 Attached: {os.path.basename(attach_path)} ({sz:,} bytes)")
+            except Exception as e:
+                print(f"[Email] ⚠️  Attach failed for {attach_path}: {e}")
 
     try:
         print(f"[Email] Connecting to smtp.gmail.com:465 ...")
@@ -1324,7 +1511,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] ❌  Unexpected error: {type(e).__name__}: {e}")
 
 try:
-    _send_email(results, fpath)
+    _send_email(results, fpath, highlighted_matches, hp_fpath)
 except Exception as e:
     print(f"[Email] ❌  Unexpected top-level error: {type(e).__name__}: {e}")
     print("[Email]    Continuing — CSV and charts are still saved.")
@@ -1426,6 +1613,21 @@ print("""
   one fired recently, otherwise today's close / a 10-day swing-low
   proxy — a stock can rank highly on trend/RS/stack/momentum/volume
   alone even without an active entry trigger right now.
+
+  📋 APPENDED CHECK — Highlighted Chart Pattern (new)
+  After the composite score above is finalized, EVERY result also
+  gets checked for a specific pattern: the fast-MA cluster
+  (EMA8/JMA/SMA21) pulling back to test SMA50 within
+  highlighted_near_sma50_pct%, a red day, then a green reclaim day
+  above the cluster, on higher volume. This reuses each result's
+  ALREADY-COMPUTED indicators — no extra downloads, no extra
+  indicator computation. Matches get Highlighted_Pattern=True plus
+  Highlighted_Near_SMA50_%/Highlighted_Vol_Ratio/Highlighted_
+  Signal_Date/Highlighted_Days_Ago columns in the main CSV, AND are
+  additionally saved to their own
+  master_technical_scanner_highlighted_pattern_<timestamp>.csv,
+  shown as a separate section in the email — a second, distinct
+  result on top of the main ranked list, not a filter on it.
 
   💡 BEST SETUPS
   Total > 70                  elite across nearly every layer
