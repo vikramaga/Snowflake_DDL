@@ -611,12 +611,10 @@ if _IN_NOTEBOOK and results:
         padding:12px 18px;margin-top:6px;font-size:11px;color:#64748b;
         font-family:'Segoe UI',Arial,sans-serif">
   <b style="color:#475569">GUIDE</b> &nbsp;·&nbsp;
-  Monthly RSI currently at/above 60 (current month) &nbsp;·&nbsp;
-  Weekly RSI currently above 60 (current week) &nbsp;·&nbsp;
-  Daily RSI crossed above 40 with a GREEN candle that day, any day in
-  the last {CFG['signal_lookback_days']} trading days &nbsp;·&nbsp;
-  Entry_Price/Stop_Loss = that green candle's high/low (may be a few
-  days old — see Days_Since_Signal) &nbsp;·&nbsp;
+  Yesterday's daily RSI was below 55, today's is in the 59-64 zone &nbsp;·&nbsp;
+  Weekly RSI currently above 55 (level only) &nbsp;·&nbsp;
+  Monthly RSI currently above 55 (level only) &nbsp;·&nbsp;
+  checked over the last {CFG['signal_lookback_days']} trading days, not just today &nbsp;·&nbsp;
   Entry_Price/Stop_Loss are reasonable defaults, not explicitly requested
 </div>"""
 
@@ -637,7 +635,7 @@ elif results:
     inner= sum(col_w.values()) + len(CLI_COLS) - 1
     print()
     print(f"  ╔{'═'*inner}╗")
-    tit = f"  RSI Multi-TF Reversal (Monthly+Weekly+Daily)   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
+    tit = f"  Daily RSI Pop + Weekly/Monthly Confirm   {datetime.today().strftime('%Y-%m-%d')}   {len(df_out)} matches"
     print(f"  ║{tit.center(inner)}║")
     print(f"  ╚{'═'*inner}╝\n")
     print(f"  ┌{top}┐")
@@ -656,7 +654,7 @@ elif results:
   Stop_Loss       low of that same green candle
   Daily_RSI_Prev  yesterday's daily RSI (must have been < daily_rsi_prev_max)
   Daily_RSI       today's daily RSI (must land in the 59-64 band)
-  Days_Since_Signal  how many trading days ago the daily RSI cross fired
+  Days_Since_Signal  how many trading days ago the RSI transition fired
                      (0 = today; checked over the last daily_cross_
                      lookback_days trading days, not just today)
   ──────────────────────────────────────────────────────""")
@@ -706,7 +704,7 @@ def _send_email(rl, csv_path):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-                      "Daily_RSI","Weekly_RSI","Monthly_RSI"]
+                      "Daily_RSI","Weekly_RSI","Monthly_RSI","Signal"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -729,13 +727,14 @@ def _send_email(rl, csv_path):
                 f'background:#166534;color:#fff;text-align:center">{float(score):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#22c55e">${float(entry):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#ef4444">${float(stop):.2f}</td>'
-                f'<td style="padding:6px 11px;font-size:12px;color:#3b82f6">${float(target):.2f}</td>'
-                f'<td style="padding:6px 11px;font-size:12px;font-weight:600">{float(rr):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:#3b82f6">{float(drsi):.1f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:#8b5cf6">{float(wrsi):.1f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:#ec4899">{float(mrsi):.1f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;text-align:center;'
                 f'color:#a78bfa;font-weight:600">{dsig_disp}</td>'
                 f'</tr>'
             )
-        no_results_msg = ('<tr><td colspan="8" style="padding:20px;text-align:center;'
+        no_results_msg = ('<tr><td colspan="9" style="padding:20px;text-align:center;'
                            'color:#94a3b8;font-size:13px">No matches today</td></tr>')
 
         html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
@@ -749,8 +748,8 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-  {cnt} match{'es' if cnt!=1 else ''} found — Monthly RSI cross, Weekly RSI strength,
-  Daily RSI reversal, all at once
+  {cnt} match{'es' if cnt!=1 else ''} found — daily RSI popped from below 55
+  into the 59-64 zone, confirmed by weekly and monthly RSI both above 55
 </p>
   </td></tr>
   <tr><td style="padding:16px">
@@ -784,7 +783,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 
         plain_lines = [
             f"Daily RSI Pop + Weekly/Monthly Confirm (checked over last {CFG['signal_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches (Monthly RSI cross + Weekly RSI strength + Daily RSI reversal)",
+            f"{cnt} matches (daily RSI popped from below 55 into the 59-64 zone, weekly+monthly RSI both above 55)",
             "="*60,
         ]
         if rl:
@@ -812,7 +811,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         plain_lines.append("\nFull results in CSV attachment.")
         plain_e = "\n".join(plain_lines)
 
-        subj = (f"📊 RSI Multi-TF Reversal (M+W+D) — {cnt} signal{'s' if cnt!=1 else ''}"
+        subj = (f"📊 Daily RSI Pop + Weekly/Monthly Confirm — {cnt} signal{'s' if cnt!=1 else ''}"
                 f" — {datetime.today().strftime('%Y-%m-%d')}")
 
         msg = MIMEMultipart("mixed")
