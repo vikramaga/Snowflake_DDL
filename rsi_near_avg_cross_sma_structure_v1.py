@@ -121,11 +121,11 @@ CFG = {
     "rsi_avg_period"         : 9,    # period of RSI's own moving average
 
     # ── RSI trigger: near/crossing its own average from below ─────
-    "near_tolerance"         : 2.0,  # RSI within this many points below its
+    "near_tolerance"         : 6.0,  # RSI within this many points below its
                                       # average still counts as "very near"
-    "rsi_avg_min_level"      : 50.0, # RSI's own average must be above this
+    "rsi_avg_min_level"      : 45.0, # RSI's own average must be above this
 
-    "signal_lookback_days"   : 15,   # ~3 trading weeks — how far back to look
+    "signal_lookback_days"   : 30,   # ~6 trading weeks — how far back to look
                                       # for the pattern, not just today
 
     # ── Filters ─────────────────────────────────────────────────
@@ -152,7 +152,14 @@ def check_pattern_at(df, rsi, rsi_avg, sma50, sma150, i, cfg):
     Checks the full pattern with the candidate day anchored at bar
     `i`. This is the SINGLE SOURCE OF TRUTH for the pattern logic.
 
-    Returns (passed: bool, details: dict).
+    Unlike a simple short-circuit check, this computes EVERY stage's
+    pass/fail regardless of earlier failures (guarding only on
+    missing/insufficient data), so callers can diagnose exactly
+    which stage is filtering results out — see FUNNEL_COUNTS below.
+
+    Returns (passed: bool, details: dict). details is {} only when
+    there isn't enough data; otherwise it always contains every
+    stage's boolean, even on failure.
     """
     if i < 1 or i >= len(df):
         return False, {}
@@ -171,7 +178,7 @@ def check_pattern_at(df, rsi, rsi_avg, sma50, sma150, i, cfg):
     near_or_crossed = gap_now >= -cfg["near_tolerance"]
     rsi_trigger_ok = was_below and near_or_crossed
 
-    # ── Step 2: RSI's own average is itself strong (> 50) ───────────
+    # ── Step 2: RSI's own average is itself strong (> min level) ────
     rsi_avg_strong = ra_now > cfg["rsi_avg_min_level"]
 
     # ── Step 3: structure — price above SMA50/SMA150, SMA50>SMA150 ──
@@ -183,19 +190,42 @@ def check_pattern_at(df, rsi, rsi_avg, sma50, sma150, i, cfg):
         "idx": i, "rsi_now": float(r_now), "rsi_avg_now": float(ra_now),
         "gap_now": gap_now, "sma50": float(s50), "sma150": float(s150),
         "close": close_i, "low": float(df["Low"].iloc[i]),
+        "rsi_trigger_ok": rsi_trigger_ok, "rsi_avg_strong": rsi_avg_strong,
+        "structure_ok": structure_ok,
     }
+
+# ── Diagnostic funnel — tallies how far each ticker-day gets through
+#    the pattern, across the full universe scan, so a 0-match run can
+#    be diagnosed empirically instead of guessed at ─────────────────
+FUNNEL_COUNTS = {
+    "days_checked": 0,
+    "passed_step1_rsi_trigger": 0,
+    "passed_step2_rsi_avg_strong": 0,
+    "passed_step3_structure": 0,
+}
 
 def find_rsi_avg_cross_signals(df, rsi, rsi_avg, sma50, sma150, cfg):
     """
     Scans the last `signal_lookback_days` trading days for the full
-    pattern. Returns a list of hit dicts, most recent first.
+    pattern. Returns a list of hit dicts, most recent first. Also
+    tallies FUNNEL_COUNTS for every day checked, regardless of match.
     """
+    global FUNNEL_COUNTS
     n = len(df)
     lb = cfg["signal_lookback_days"]
     hits = []
     for back in range(0, lb):
         i = (n - 1) - back
         passed, details = check_pattern_at(df, rsi, rsi_avg, sma50, sma150, i, cfg)
+        if not details:
+            continue
+        FUNNEL_COUNTS["days_checked"] += 1
+        if details["rsi_trigger_ok"]:
+            FUNNEL_COUNTS["passed_step1_rsi_trigger"] += 1
+            if details["rsi_avg_strong"]:
+                FUNNEL_COUNTS["passed_step2_rsi_avg_strong"] += 1
+                if details["structure_ok"]:
+                    FUNNEL_COUNTS["passed_step3_structure"] += 1
         if passed:
             hits.append(details)
     return hits
@@ -484,13 +514,26 @@ print(f"  Daily data      : {got_daily}")
 print(f"  ✅ Matches       : {len(results)}")
 print(f"{'━'*65}")
 
+# ── Diagnostic funnel — where ticker-days were filtered out ──────
+print(f"\n{'━'*65}")
+print(f"  🔍 FUNNEL — where ticker-days were filtered out")
+print(f"  (tallied across every liquid ticker's last {CFG['signal_lookback_days']} trading days)")
+print(f"{'━'*65}")
+fc = FUNNEL_COUNTS
+print(f"  Ticker-days checked                        : {fc['days_checked']}")
+print(f"  Step 1 — RSI near/crossing its average      : {fc['passed_step1_rsi_trigger']}")
+print(f"  Step 2 — + RSI's own average above {CFG['rsi_avg_min_level']:.0f}       : {fc['passed_step2_rsi_avg_strong']}")
+print(f"  Step 3 — + bullish SMA structure            : {fc['passed_step3_structure']}  (= full pattern)")
+print(f"{'━'*65}")
+
 if not results:
-    print("\n  No matches. Try relaxing:")
-    print("   near_tolerance              2.0 → 4.0   (allow a wider RSI gap)")
-    print("   rsi_avg_min_level           50.0 → 45.0")
-    print("   signal_lookback_days          15 → 25    (search further back)")
-    print("   min_price                     2 → 1")
-    print("   min_avg_volume            80000 → 50000")
+    print("\n  No matches. Try relaxing (see the FUNNEL above to see which")
+    print("  step is actually the bottleneck before guessing):")
+    print("   near_tolerance               6.0 → 10.0  (allow an even wider RSI gap)")
+    print("   rsi_avg_min_level            45.0 → 40.0")
+    print("   signal_lookback_days           30 → 45    (search further back)")
+    print("   min_price                      2 → 1")
+    print("   min_avg_volume              80000 → 50000")
 
 results.sort(key=lambda x: x["Score"], reverse=True)
 
@@ -753,9 +796,22 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-  {cnt} match{'es' if cnt!=1 else ''} found — Monthly RSI cross, Weekly RSI strength,
-  Daily RSI reversal, all at once
+  {cnt} match{'es' if cnt!=1 else ''} found — RSI near/crossing its own
+  average from below, that average above {CFG['rsi_avg_min_level']:.0f}, bullish SMA structure
 </p>
+  </td></tr>
+  <tr><td style="padding:14px 28px 4px;background:#0b1220">
+<div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px 16px">
+  <p style="margin:0 0 6px;color:#93c5fd;font-size:12px;font-weight:700">
+    🔍 FUNNEL — where ticker-days were filtered out (last {CFG['signal_lookback_days']} trading days, every liquid ticker)
+  </p>
+  <p style="margin:0;color:#cbd5e1;font-size:12px">
+    {FUNNEL_COUNTS['days_checked']} ticker-days checked &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step1_rsi_trigger']} passed Step 1 (RSI trigger) &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step2_rsi_avg_strong']} passed Step 2 (RSI avg strong) &nbsp;→&nbsp;
+    <b style="color:#facc15">{FUNNEL_COUNTS['passed_step3_structure']} passed Step 3 (structure) = full match</b>
+  </p>
+</div>
   </td></tr>
   <tr><td style="padding:16px">
 <div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0">
@@ -788,7 +844,12 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 
         plain_lines = [
             f"RSI Near/Crossing Its Average (checked over last {CFG['signal_lookback_days']} trading days) — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches (RSI near/crossing its own average from below + average RSI above 50 + bullish SMA structure)",
+            f"{cnt} matches (RSI near/crossing its own average from below + average RSI above {CFG['rsi_avg_min_level']:.0f} + bullish SMA structure)",
+            "="*60,
+            f"FUNNEL: {FUNNEL_COUNTS['days_checked']} ticker-days -> "
+            f"{FUNNEL_COUNTS['passed_step1_rsi_trigger']} passed RSI trigger -> "
+            f"{FUNNEL_COUNTS['passed_step2_rsi_avg_strong']} passed RSI avg strength -> "
+            f"{FUNNEL_COUNTS['passed_step3_structure']} passed structure (=full match)",
             "="*60,
         ]
         if rl:
