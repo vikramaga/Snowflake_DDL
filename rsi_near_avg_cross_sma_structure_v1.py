@@ -112,7 +112,8 @@ print()
 
 # ── CONFIG ────────────────────────────────────────────────────
 CFG = {
-    "history_days"          : 400,   # daily bars — plenty for SMA150 + buffer
+    "history_days"          : 550,   # daily bars — ~390 trading days, comfortable
+                                      # margin above _clean()'s 220-bar floor
 
     # ── Indicator periods ────────────────────────────────────────
     "sma50_period"           : 50,
@@ -337,11 +338,11 @@ def download_daily(symbols, days):
                 for sym in symbols:
                     try:
                         df = raw.xs(sym,axis=1,level=1) if l0&pf else raw[sym]
-                        df = _clean(df, min_bars=300)
+                        df = _clean(df, min_bars=220)
                         if df is not None: out[sym] = df
                     except Exception: pass
             elif len(symbols) == 1:
-                df = _clean(raw, min_bars=300)
+                df = _clean(raw, min_bars=220)
                 if df is not None: out[symbols[0]] = df
     except Exception: pass
     for sym in [s for s in symbols if s not in out]:
@@ -351,7 +352,7 @@ def download_daily(symbols, days):
                     start=start.strftime("%Y-%m-%d"),
                     end=end.strftime("%Y-%m-%d"),
                     auto_adjust=True, actions=False)
-                df = _clean(df, min_bars=300)
+                df = _clean(df, min_bars=220)
                 if df is not None: out[sym] = df; break
             except Exception: time.sleep(0.2)
         time.sleep(0.04)
