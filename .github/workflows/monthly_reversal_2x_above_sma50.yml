@@ -1,7 +1,8 @@
 name: MonthlyReversal2xAboveSMA50
 
 on:
-  
+  schedule:
+    - cron: '30 0 * * *'   # 00:30 UTC = 06:00 IST, daily
   workflow_dispatch:
 
 jobs:
