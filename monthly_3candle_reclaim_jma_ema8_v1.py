@@ -135,6 +135,10 @@ CFG = {
     "jma_phase"                : 40,
     "sma50_period"             : 50,
 
+    "signal_lookback_months"   : 4,  # candle C can be the current month
+                                      # or any of the 3 months before it —
+                                      # not just the single most recent one
+
     # ── Filters ─────────────────────────────────────────────────
     "min_avg_volume"         : 80_000,
     "min_price"              : 2.0,
@@ -244,7 +248,7 @@ def check_3candle_reclaim(df_monthly, ema8, jma, sma50, i, cfg):
 #    diagnosed empirically instead of guessed at. Evaluated once per
 #    ticker (the most recent 3 monthly candles), not per rolling day ──
 FUNNEL_COUNTS = {
-    "tickers_checked": 0,
+    "windows_checked": 0,
     "passed_step1_A_red": 0,
     "passed_step2_B_partial_reclaim": 0,
     "passed_step3_C_full_reclaim": 0,
@@ -252,33 +256,24 @@ FUNNEL_COUNTS = {
     "passed_step5_structure": 0,
 }
 
-# ── Technical signal: monthly 3-candle reclaim ─────────────────────
-def analyze_3candle_reclaim(sym, df_daily):
+def find_3candle_signals(df_monthly, ema8, jma, sma50, cfg):
     """
-    Returns dict with score and setup details, or None if no
-    required condition is met.
+    Scans the last `signal_lookback_months` monthly windows (candle C
+    ranging from the current month back through the prior
+    signal_lookback_months-1 months) for the full pattern. Returns a
+    list of hit dicts, most recent first. Also tallies FUNNEL_COUNTS
+    for every window checked, regardless of match.
     """
-    if df_daily is None:
-        return None
-
-    price   = float(df_daily["Close"].iloc[-1])
-    avg_vol = float(df_daily["Volume"].tail(20).mean())
-    if price   < CFG["min_price"]:      return None
-    if avg_vol < CFG["min_avg_volume"]: return None
-
-    df_monthly = resample_ohlcv(df_daily, "ME")
-    if len(df_monthly) < CFG["sma50_period"] + 10:
-        return None   # not enough monthly bars for a stable monthly SMA50
-
-    ema8  = df_monthly["Close"].ewm(span=CFG["ema8_period"], adjust=False).mean()
-    jma   = calc_jma(df_monthly["Close"], CFG["jma_period"], CFG["jma_phase"])
-    sma50 = df_monthly["Close"].rolling(CFG["sma50_period"]).mean()
-
-    i = len(df_monthly) - 1
     global FUNNEL_COUNTS
-    passed, sig = check_3candle_reclaim(df_monthly, ema8, jma, sma50, i, CFG)
-    if sig:
-        FUNNEL_COUNTS["tickers_checked"] += 1
+    n = len(df_monthly)
+    lb = cfg["signal_lookback_months"]
+    hits = []
+    for back in range(0, lb):
+        i = (n - 1) - back
+        passed, sig = check_3candle_reclaim(df_monthly, ema8, jma, sma50, i, cfg)
+        if not sig:
+            continue
+        FUNNEL_COUNTS["windows_checked"] += 1
         if sig["A_red"]:
             FUNNEL_COUNTS["passed_step1_A_red"] += 1
             if sig["B_green"] and sig["B_partial_reclaim"]:
@@ -289,8 +284,39 @@ def analyze_3candle_reclaim(sym, df_daily):
                         FUNNEL_COUNTS["passed_step4_vol_increasing"] += 1
                         if sig["structure_ok"]:
                             FUNNEL_COUNTS["passed_step5_structure"] += 1
-    if not passed:
+        if passed:
+            hits.append(sig)
+    return hits
+
+# ── Technical signal: monthly 3-candle reclaim ─────────────────────
+def analyze_3candle_reclaim(sym, df_daily):
+    """
+    Returns dict with score and setup details, or None if no
+    required condition is met anywhere in the lookback window.
+    """
+    if df_daily is None:
         return None
+
+    price   = float(df_daily["Close"].iloc[-1])
+    avg_vol = float(df_daily["Volume"].tail(20).mean())
+    if price   < CFG["min_price"]:      return None
+    if avg_vol < CFG["min_avg_volume"]: return None
+
+    df_monthly = resample_ohlcv(df_daily, "ME")
+    if len(df_monthly) < CFG["sma50_period"] + CFG["signal_lookback_months"] + 5:
+        return None   # not enough monthly bars for a stable monthly SMA50
+
+    ema8  = df_monthly["Close"].ewm(span=CFG["ema8_period"], adjust=False).mean()
+    jma   = calc_jma(df_monthly["Close"], CFG["jma_period"], CFG["jma_phase"])
+    sma50 = df_monthly["Close"].rolling(CFG["sma50_period"]).mean()
+
+    hits = find_3candle_signals(df_monthly, ema8, jma, sma50, CFG)
+    if not hits:
+        return None
+
+    sig = hits[0]   # most recent
+    months_since_signal = (len(df_monthly) - 1) - sig["idx"]
+    recent_signals = [h["date_C"].strftime("%Y-%m") for h in hits]
 
     # ── Entry / Stop (reasonable defaults — see header note) ─────────
     entry_price = sig["cC"]
@@ -329,6 +355,9 @@ def analyze_3candle_reclaim(sym, df_daily):
         "Month_A"        : sig["date_A"].strftime("%Y-%m"),
         "Month_B"        : sig["date_B"].strftime("%Y-%m"),
         "Month_C"        : sig["date_C"].strftime("%Y-%m"),
+        "Months_Since_Signal": months_since_signal,
+        "Recent_Signal_Count": len(hits),
+        "Recent_Signals" : " | ".join(recent_signals),
         "Flags"          : " | ".join(reasons),
         "_df_daily"      : df_daily,
         "_df_monthly"    : df_monthly,
@@ -542,10 +571,10 @@ print(f"{'━'*65}")
 # ── Diagnostic funnel — where tickers were filtered out ──────────
 print(f"\n{'━'*65}")
 print(f"  🔍 FUNNEL — where tickers were filtered out")
-print(f"  (evaluated once per liquid ticker, on its last 2 monthly candles)")
+print(f"  (scanned over the last {CFG['signal_lookback_months']} monthly windows per ticker)")
 print(f"{'━'*65}")
 fc = FUNNEL_COUNTS
-print(f"  Tickers checked                             : {fc['tickers_checked']}")
+print(f"  Ticker-windows checked                      : {fc['windows_checked']}")
 print(f"  Step 1 — candle A red                       : {fc['passed_step1_A_red']}")
 print(f"  Step 2 — + candle B green, partial reclaim  : {fc['passed_step2_B_partial_reclaim']}")
 print(f"  Step 3 — + candle C green, full reclaim     : {fc['passed_step3_C_full_reclaim']}")
@@ -571,7 +600,7 @@ COLS = [
     "Entry_Price","Stop_Loss","Risk_%",
     "EMA8","JMA","SMA50","Vol_Ratio","Above_SMA50_%",
     "Month_A","Month_B","Month_C",
-    "Signal_Date","Days_Since_Signal","Recent_Signal_Count","Recent_Signals",
+    "Months_Since_Signal","Recent_Signal_Count","Recent_Signals",
     "Flags",
 ]
 df_out = pd.DataFrame([{k:v for k,v in r.items() if not k.startswith("_")}
@@ -593,7 +622,7 @@ FMT = {
     "SMA50"          : lambda v: f"${v:.2f}",
     "Vol_Ratio"      : lambda v: f"{v:.2f}x",
     "Above_SMA50_%"  : lambda v: f"{v:+.1f}%",
-    "Days_Since_Signal": lambda v: f"{int(v)}d ago",
+    "Months_Since_Signal": lambda v: f"{int(v)}mo ago",
 }
 
 def fmt_v(col, val):
@@ -605,7 +634,7 @@ def fmt_v(col, val):
 
 if _IN_NOTEBOOK and results:
     DISP = ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-            "EMA8","JMA","SMA50","Vol_Ratio","Month_C"]
+            "EMA8","JMA","SMA50","Vol_Ratio","Month_C","Months_Since_Signal"]
     DISP = [c for c in DISP if c in df_out.columns]
 
     gc = "#22c55e"
@@ -695,7 +724,7 @@ if _IN_NOTEBOOK and results:
 elif results:
     # ASCII table (CLI/GitHub Actions mode)
     CLI_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-                "EMA8","JMA","SMA50","Vol_Ratio","Month_C"]
+                "EMA8","JMA","SMA50","Vol_Ratio","Month_C","Months_Since_Signal"]
     CLI_COLS = [c for c in CLI_COLS if c in df_out.columns]
     col_w = {c: max(len(c), max(
         len(fmt_v(c, df_out[c].iloc[i])) for i in range(len(df_out))
@@ -776,7 +805,7 @@ def _send_email(rl, csv_path):
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
             for c in ["Ticker","Price","Score","Entry_Price","Stop_Loss",
-                      "EMA8","JMA","SMA50","Vol_Ratio","Month_C"]
+                      "EMA8","JMA","SMA50","Vol_Ratio","Month_C","Months_Since_Signal"]
         )
         rows_e = ""
         for i, r in enumerate(rl[:50]):
@@ -828,10 +857,10 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   <tr><td style="padding:14px 28px 4px;background:#0b1220">
 <div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:12px 16px">
   <p style="margin:0 0 6px;color:#93c5fd;font-size:12px;font-weight:700">
-    🔍 FUNNEL — where tickers were filtered out (evaluated once per liquid ticker)
+    🔍 FUNNEL — where ticker-windows were filtered out (last {CFG['signal_lookback_months']} months, every liquid ticker)
   </p>
   <p style="margin:0;color:#cbd5e1;font-size:12px">
-    {FUNNEL_COUNTS['tickers_checked']} tickers checked &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['windows_checked']} ticker-windows checked &nbsp;→&nbsp;
     {FUNNEL_COUNTS['passed_step1_A_red']} passed Step 1 (A red) &nbsp;→&nbsp;
     {FUNNEL_COUNTS['passed_step2_B_partial_reclaim']} passed Step 2 (B partial reclaim) &nbsp;→&nbsp;
     {FUNNEL_COUNTS['passed_step3_C_full_reclaim']} passed Step 3 (C full reclaim) &nbsp;→&nbsp;
@@ -873,7 +902,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             f"Monthly 3-Candle Reclaim (JMA/EMA8/SMA50) — {datetime.today().strftime('%Y-%m-%d')}",
             f"{cnt} matches (red month + partial reclaim above EMA8/below JMA + full reclaim above both, rising volume, above monthly SMA50)",
             "="*60,
-            f"FUNNEL: {FUNNEL_COUNTS['tickers_checked']} tickers -> "
+            f"FUNNEL: {FUNNEL_COUNTS['windows_checked']} ticker-windows -> "
             f"{FUNNEL_COUNTS['passed_step1_A_red']} passed A-red -> "
             f"{FUNNEL_COUNTS['passed_step2_B_partial_reclaim']} passed B-partial -> "
             f"{FUNNEL_COUNTS['passed_step3_C_full_reclaim']} passed C-full -> "
