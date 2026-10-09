@@ -1,0 +1,127 @@
+# ClaudeRunner — lets Claude run any scanner by committing a plain file.
+#
+# On demand : Claude edits claude_run/run.txt (one script per line) → push triggers this.
+# Scheduled : 06:00 IST daily, runs every script listed in claude_run/schedule.txt.
+# Results : logs + CSV/PNG/TradingView files are committed to claude_run/results/<run_id>/
+# and a summary to claude_run/results/latest.md, so Claude can read them back.
+
+name: ClaudeRunner
+
+on:
+  push:
+    branches: [master]
+    paths: ['claude_run/run.txt']
+  schedule:
+    - cron: '30 0 * * *'   # 00:30 UTC = 06:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claude-runner
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-claude-runner
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade yfinance pandas numpy requests tqdm matplotlib openpyxl
+          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
+
+      - name: Pick scripts
+        id: pick
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then LIST=claude_run/schedule.txt; else LIST=claude_run/run.txt; fi
+          echo "list=$LIST" >> "$GITHUB_OUTPUT"
+          touch scripts.txt
+          if [ -f "$LIST" ]; then
+            grep -vE '^\s*(#|$)' "$LIST" | sed 's/[[:space:]]*$//' \
+              | grep -E '^[A-Za-z0-9_./-]+\.py$' | grep -v '\.\.' > scripts.txt || true
+          fi
+          echo "Scripts to run:"; cat scripts.txt
+
+      - name: Run scripts
+        env:
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: |
+          OUT="claude_run/results/${{ github.run_id }}"
+          mkdir -p "$OUT"
+          SUMMARY="claude_run/results/latest.md"
+          {
+            echo "# ClaudeRunner run ${{ github.run_id }}"
+            echo ""
+            echo "- Trigger: ${{ github.event_name }} (${{ steps.pick.outputs.list }})"
+            echo "- Started: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo "- Run page: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            echo "| Script | Exit | Log |"
+            echo "|---|---|---|"
+          } > "$SUMMARY"
+          while read -r s; do
+            [ -z "$s" ] && continue
+            name=$(basename "$s" .py)
+            if [ ! -f "$s" ]; then
+              echo "| $s | missing | — |" >> "$SUMMARY"; continue
+            fi
+            echo "::group::$s"
+            touch .start_marker
+            set +e
+            python "$s" > "$OUT/$name.log" 2>&1
+            code=$?
+            set -e
+            tail -n 60 "$OUT/$name.log"
+            echo "::endgroup::"
+            # move any new output files from this script into the results folder
+            find . -maxdepth 1 -type f -newer .start_marker \
+              \( -name '*.csv' -o -name '*.png' -o -name 'tv_*.txt' -o -name '*.xlsx' \) \
+              -exec mv {} "$OUT/" \;
+            echo "| $s | $code | $OUT/$name.log |" >> "$SUMMARY"
+          done < scripts.txt
+          echo "" >> "$SUMMARY"
+          echo "- Finished: $(date -u '+%Y-%m-%d %H:%M UTC')" >> "$SUMMARY"
+          cat "$SUMMARY"
+
+      - name: Commit results back
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add claude_run/results || true
+          if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
+          git commit -m "ClaudeRunner results ${{ github.run_id }}"
+          for i in 1 2 3; do
+            git pull --rebase origin master && git push origin HEAD:master && break
+            sleep 5
+          done
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: claude-runner-${{ github.run_id }}
+          path: claude_run/results/${{ github.run_id }}
+          retention-days: 30
