@@ -2,20 +2,22 @@
 # NASDAQ — Daily Price > JMA > EMA21 & SMA50, Volume > Prior Day (v1)
 # ============================================================
 #
-# SIGNAL — all six must hold on the same daily bar:
+# SIGNAL — all seven must hold on the same daily bar:
 #
 #   1. PRICE ABOVE JMA:      Close > JMA(13, phase 40)
 #   2. NOT EXTENDED:         Close <= JMA * (1 + max_above_jma_pct/100)
 #   3. JMA ABOVE EMA 21:     JMA   > EMA(21)
 #   4. JMA ABOVE SMA 50:     JMA   > SMA(50)
 #   5. VOLUME EXPANSION:     Volume > previous day's Volume
-#   6. VOLUME ABOVE AVERAGE: Volume > 20-day average volume (prior 20 bars)
+#   6. VOLUME ABOVE AVERAGE: Volume > 1.5 x 20-day average volume (prior 20 bars)
+#   7. RISK CAP:             (Close - Stop) / Close <= max_risk_pct (12%),
+#                            Stop = lowest low of the prior 10 bars
 #
 # Universe filter: last close >= min_price ($10) and 20-day avg volume
 # >= min_avg_volume.
 #
 # The last signal_lookback_days bars are checked and the most recent
-# bar that satisfies all six is reported (Signal_Date /
+# bar that satisfies all seven is reported (Signal_Date /
 # Days_Since_Signal), so a signal firing yesterday is not missed.
 #
 # DATA — only 1 download per ticker: daily bars.
@@ -118,7 +120,10 @@ CFG = {
     "signal_lookback_days"  : 3,     # check the last N bars, report most recent hit
 
     "max_above_jma_pct"     : 8.0,   # reject bars where Close is > 8% above JMA (extended)
-    "vol_avg_period"        : 20,    # signal volume must exceed this average (prior bars)
+    "vol_avg_period"        : 20,    # signal volume must exceed this average (prior bars)...
+    "vol_avg_mult"          : 1.5,   # ...by at least this multiple
+    "stop_lookback"         : 10,    # stop = lowest low of the prior N bars
+    "max_risk_pct"          : 12.0,  # reject setups whose entry-to-stop risk exceeds this
 
     "min_avg_volume"        : 100_000,
     "min_price"             : 10.0,
@@ -166,9 +171,16 @@ def compute_flags(df, cfg):
     f["jma_gt_ema21"]  = (jma > ema21) & f["valid"]
     f["jma_gt_sma50"]  = (jma > sma50) & f["valid"]
     f["vol_gt_prev"]   = (vol > vol.shift(1)) & f["valid"]
-    f["vol_gt_avg"]    = (vol > vavg) & f["valid"]
+    f["vol_gt_avg"]    = (vol > vavg * cfg["vol_avg_mult"]) & f["valid"]
+    # stop = lowest low of the prior N bars; if that is not below close, fall back to 5%
+    stop  = df["Low"].rolling(cfg["stop_lookback"], min_periods=1).min().shift(1)
+    stop  = stop.where(stop < close, close * 0.95)
+    f["stop"]          = stop
+    f["risk_pct"]      = (close - stop) / close * 100
+    f["risk_ok"]       = (f["risk_pct"] <= cfg["max_risk_pct"]) & f["valid"]
     f["full"] = (f["price_gt_jma"] & f["not_extended"] & f["jma_gt_ema21"]
-                 & f["jma_gt_sma50"] & f["vol_gt_prev"] & f["vol_gt_avg"])
+                 & f["jma_gt_sma50"] & f["vol_gt_prev"] & f["vol_gt_avg"]
+                 & f["risk_ok"])
     return f
 
 # ── Diagnostic funnel — tallied per ticker-day over the lookback window ──
@@ -180,6 +192,7 @@ FUNNEL_COUNTS = {
     "passed_step4_jma_gt_sma50": 0,
     "passed_step5_vol_gt_prev": 0,
     "passed_step6_vol_gt_avg": 0,
+    "passed_step7_risk_ok": 0,
 }
 
 # ── Technical signal ───────────────────────────────────────────
@@ -207,12 +220,14 @@ def analyze_pattern(sym, df_daily):
     s4 = s3 & w["jma_gt_sma50"]
     s5 = s4 & w["vol_gt_prev"]
     s6 = s5 & w["vol_gt_avg"]
+    s7 = s6 & w["risk_ok"]
     FUNNEL_COUNTS["passed_step1_price_gt_jma"] += int(s1.sum())
     FUNNEL_COUNTS["passed_step2_not_extended"] += int(s2.sum())
     FUNNEL_COUNTS["passed_step3_jma_gt_ema21"] += int(s3.sum())
     FUNNEL_COUNTS["passed_step4_jma_gt_sma50"] += int(s4.sum())
     FUNNEL_COUNTS["passed_step5_vol_gt_prev"] += int(s5.sum())
     FUNNEL_COUNTS["passed_step6_vol_gt_avg"]  += int(s6.sum())
+    FUNNEL_COUNTS["passed_step7_risk_ok"]     += int(s7.sum())
 
     hits = [i for i in range(n - lb, n) if bool(f["full"].iloc[i])]
     if not hits:
@@ -226,9 +241,8 @@ def analyze_pattern(sym, df_daily):
     jma_k, ema_k, sma_k = float(f["jma"].iloc[k]), float(f["ema21"].iloc[k]), float(f["sma50"].iloc[k])
 
     entry_price = close_k
-    lo10 = float(df_daily["Low"].iloc[max(0, k-10):k].min()) if k > 0 else close_k * 0.95
-    stop_loss = lo10 if lo10 < entry_price else entry_price * 0.95
-    risk_pct = (entry_price - stop_loss) / entry_price * 100
+    stop_loss = float(f["stop"].iloc[k])
+    risk_pct  = float(f["risk_pct"].iloc[k])
 
     above_jma_pct  = (close_k / jma_k - 1) * 100
     jma_ema_pct    = (jma_k / ema_k - 1) * 100
@@ -244,7 +258,8 @@ def analyze_pattern(sym, df_daily):
     score += min(20, jma_sma_pct * 2);  reasons.append(f"JMA>SMA50+{jma_sma_pct:.1f}%")
     score += min(15, above_jma_pct * 3); reasons.append(f"Px>JMA+{above_jma_pct:.1f}%")
     score += min(15, max(0.0, (vol_ratio - 1) * 10)); reasons.append(f"Vol x{vol_ratio:.2f}")
-    score += min(10, max(0.0, (vol_vs_avg - 1) * 10)); reasons.append(f"Vol/20d x{vol_vs_avg:.2f}")
+    score += min(10, max(0.0, (vol_vs_avg - 1.5) * 5)); reasons.append(f"Vol/20d x{vol_vs_avg:.2f}")
+    score += min(5, max(0.0, (CFG["max_risk_pct"] - risk_pct) / 2)); reasons.append(f"Risk {risk_pct:.1f}%")
     score += max(0, 5 - days_since * 2)
     score = round(min(100, max(0, score)))
 
@@ -331,7 +346,7 @@ def _live_header():
     global _hdr_done
     if _hdr_done: return
     print("\n" + "━"*95)
-    print("  📊  LIVE MATCHES  —  each stock printed the moment it passes all 6 conditions")
+    print("  📊  LIVE MATCHES  —  each stock printed the moment it passes all 7 conditions")
     print("━"*95)
     print("".join(f"  {c:<{_CW.get(c,12)}}" for c in LIVE_COLS))
     print("  " + "─"*93)
@@ -434,7 +449,7 @@ print("━"*65)
 print(f"  STEP 3  SCANNING {len(TICKERS)} TICKERS")
 print("━"*65)
 print("  Fetching daily bars (single download per ticker)")
-print(f"  Signal: JMA < Close <= JMA+{CFG['max_above_jma_pct']:.0f}%, JMA > EMA21, JMA > SMA50, Vol > prior day & > {CFG['vol_avg_period']}d avg\n")
+print(f"  Signal: JMA < Close <= JMA+{CFG['max_above_jma_pct']:.0f}%, JMA > EMA21, JMA > SMA50, Vol > prior day & > {CFG['vol_avg_mult']}x {CFG['vol_avg_period']}d avg, risk <= {CFG['max_risk_pct']:.0f}%\n")
 
 _hdr_done = False
 results = []
@@ -483,7 +498,8 @@ print(f"  Step 2 — + not > {CFG['max_above_jma_pct']:.0f}% above JMA     : {fc
 print(f"  Step 3 — + JMA > EMA21               : {fc['passed_step3_jma_gt_ema21']}")
 print(f"  Step 4 — + JMA > SMA50               : {fc['passed_step4_jma_gt_sma50']}")
 print(f"  Step 5 — + Volume > prior day        : {fc['passed_step5_vol_gt_prev']}")
-print(f"  Step 6 — + Volume > {CFG['vol_avg_period']}d avg          : {fc['passed_step6_vol_gt_avg']}  (= full pattern)")
+print(f"  Step 6 — + Volume > {CFG['vol_avg_mult']}x {CFG['vol_avg_period']}d avg     : {fc['passed_step6_vol_gt_avg']}")
+print(f"  Step 7 — + Risk <= {CFG['max_risk_pct']:.0f}%              : {fc['passed_step7_risk_ok']}  (= full pattern)")
 print(f"{'━'*65}")
 
 if not results:
@@ -491,6 +507,8 @@ if not results:
     print("   signal_lookback_days   3 → 5")
     print("   min_price             10 → 5")
     print("   max_above_jma_pct      8 → 12")
+    print("   vol_avg_mult         1.5 → 1.2")
+    print("   max_risk_pct          12 → 15")
     print("   min_avg_volume    100000 → 50000")
 
 results.sort(key=lambda x: x["Score"], reverse=True)
@@ -602,7 +620,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-  {cnt} match{'es' if cnt!=1 else ''} — Close &gt; JMA (≤8% above), JMA &gt; EMA21, JMA &gt; SMA50, Volume &gt; prior day &amp; 20d avg
+  {cnt} match{'es' if cnt!=1 else ''} — Close &gt; JMA (≤8% above), JMA &gt; EMA21, JMA &gt; SMA50, Volume &gt; prior day &amp; 1.5× 20d avg, risk ≤12%
 </p>
   </td></tr>
   <tr><td style="padding:14px 28px 4px;background:#0b1220">
@@ -617,7 +635,8 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
     {fc['passed_step3_jma_gt_ema21']} JMA&gt;EMA21 &nbsp;→&nbsp;
     {fc['passed_step4_jma_gt_sma50']} JMA&gt;SMA50 &nbsp;→&nbsp;
     {fc['passed_step5_vol_gt_prev']} Vol&gt;prior day &nbsp;→&nbsp;
-    <b style="color:#facc15">{fc['passed_step6_vol_gt_avg']} Vol&gt;20d avg = full match</b>
+    {fc['passed_step6_vol_gt_avg']} Vol&gt;1.5× 20d avg &nbsp;→&nbsp;
+    <b style="color:#facc15">{fc['passed_step7_risk_ok']} risk ≤12% = full match</b>
   </p>
 </div>
   </td></tr>
@@ -643,7 +662,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 
         plain_lines = [
             f"Daily Price > JMA > EMA21 & SMA50 + Volume Up — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches (Close>JMA <=8% above, JMA>EMA21, JMA>SMA50, Volume>prior day & 20d avg)",
+            f"{cnt} matches (Close>JMA <=8% above, JMA>EMA21, JMA>SMA50, Volume>prior day & 1.5x 20d avg, risk<=12%)",
             "="*60,
             f"FUNNEL: {fc['ticker_days_checked']} ticker-days -> "
             f"{fc['passed_step1_price_gt_jma']} Close>JMA -> "
@@ -651,7 +670,8 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
             f"{fc['passed_step3_jma_gt_ema21']} JMA>EMA21 -> "
             f"{fc['passed_step4_jma_gt_sma50']} JMA>SMA50 -> "
             f"{fc['passed_step5_vol_gt_prev']} Vol>prev -> "
-            f"{fc['passed_step6_vol_gt_avg']} Vol>20d avg (=full match)",
+            f"{fc['passed_step6_vol_gt_avg']} Vol>1.5x 20d avg -> "
+            f"{fc['passed_step7_risk_ok']} risk<=12% (=full match)",
             "="*60,
         ]
         if rl:
@@ -782,11 +802,12 @@ print("""
   3) JMA > EMA(21)
   4) JMA > SMA(50)
   5) Volume > previous day's volume
-  6) Volume > 20-day average volume
+  6) Volume > 1.5 x 20-day average volume
+  7) Risk to stop (prior 10-bar low) <= 12%
   Universe: price >= $10, 20d avg volume >= 100k
   Last signal_lookback_days bars are checked; most recent hit reported.
 
   📋 SCORE (0-100): base 15 + JMA/EMA21 gap + JMA/SMA50 gap + price
-  above JMA + volume vs prior day + volume vs 20d avg + freshness
+  above JMA + volume vs prior day + volume vs 20d avg + low risk + freshness
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
