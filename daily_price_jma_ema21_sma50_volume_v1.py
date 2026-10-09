@@ -2,15 +2,20 @@
 # NASDAQ — Daily Price > JMA > EMA21 & SMA50, Volume > Prior Day (v1)
 # ============================================================
 #
-# SIGNAL — all four must hold on the same daily bar:
+# SIGNAL — all six must hold on the same daily bar:
 #
 #   1. PRICE ABOVE JMA:      Close > JMA(13, phase 40)
-#   2. JMA ABOVE EMA 21:     JMA   > EMA(21)
-#   3. JMA ABOVE SMA 50:     JMA   > SMA(50)
-#   4. VOLUME EXPANSION:     Volume > previous day's Volume
+#   2. NOT EXTENDED:         Close <= JMA * (1 + max_above_jma_pct/100)
+#   3. JMA ABOVE EMA 21:     JMA   > EMA(21)
+#   4. JMA ABOVE SMA 50:     JMA   > SMA(50)
+#   5. VOLUME EXPANSION:     Volume > previous day's Volume
+#   6. VOLUME ABOVE AVERAGE: Volume > 20-day average volume (prior 20 bars)
+#
+# Universe filter: last close >= min_price ($10) and 20-day avg volume
+# >= min_avg_volume.
 #
 # The last signal_lookback_days bars are checked and the most recent
-# bar that satisfies all four is reported (Signal_Date /
+# bar that satisfies all six is reported (Signal_Date /
 # Days_Since_Signal), so a signal firing yesterday is not missed.
 #
 # DATA — only 1 download per ticker: daily bars.
@@ -112,8 +117,11 @@ CFG = {
 
     "signal_lookback_days"  : 3,     # check the last N bars, report most recent hit
 
+    "max_above_jma_pct"     : 8.0,   # reject bars where Close is > 8% above JMA (extended)
+    "vol_avg_period"        : 20,    # signal volume must exceed this average (prior bars)
+
     "min_avg_volume"        : 100_000,
-    "min_price"             : 2.0,
+    "min_price"             : 10.0,
 
     "batch_size"            : 50,
     "batch_sleep"           : 1.5,
@@ -149,24 +157,29 @@ def compute_flags(df, cfg):
     jma.index = df.index
     ema21 = close.ewm(span=cfg["ema_period"], adjust=False).mean()
     sma50 = close.rolling(cfg["sma_period"]).mean()
+    vavg  = vol.rolling(cfg["vol_avg_period"]).mean().shift(1)   # prior N bars, excludes today
     f = pd.DataFrame(index=df.index)
-    f["jma"], f["ema21"], f["sma50"] = jma, ema21, sma50
-    f["valid"]         = sma50.notna() & jma.notna() & vol.shift(1).notna()
+    f["jma"], f["ema21"], f["sma50"], f["vol_avg"] = jma, ema21, sma50, vavg
+    f["valid"]         = sma50.notna() & jma.notna() & vol.shift(1).notna() & vavg.notna()
     f["price_gt_jma"]  = (close > jma) & f["valid"]
+    f["not_extended"]  = (close <= jma * (1 + cfg["max_above_jma_pct"] / 100.0)) & f["valid"]
     f["jma_gt_ema21"]  = (jma > ema21) & f["valid"]
     f["jma_gt_sma50"]  = (jma > sma50) & f["valid"]
     f["vol_gt_prev"]   = (vol > vol.shift(1)) & f["valid"]
-    f["full"] = (f["price_gt_jma"] & f["jma_gt_ema21"]
-                 & f["jma_gt_sma50"] & f["vol_gt_prev"])
+    f["vol_gt_avg"]    = (vol > vavg) & f["valid"]
+    f["full"] = (f["price_gt_jma"] & f["not_extended"] & f["jma_gt_ema21"]
+                 & f["jma_gt_sma50"] & f["vol_gt_prev"] & f["vol_gt_avg"])
     return f
 
 # ── Diagnostic funnel — tallied per ticker-day over the lookback window ──
 FUNNEL_COUNTS = {
     "ticker_days_checked": 0,
     "passed_step1_price_gt_jma": 0,
-    "passed_step2_jma_gt_ema21": 0,
-    "passed_step3_jma_gt_sma50": 0,
-    "passed_step4_vol_gt_prev": 0,
+    "passed_step2_not_extended": 0,
+    "passed_step3_jma_gt_ema21": 0,
+    "passed_step4_jma_gt_sma50": 0,
+    "passed_step5_vol_gt_prev": 0,
+    "passed_step6_vol_gt_avg": 0,
 }
 
 # ── Technical signal ───────────────────────────────────────────
@@ -189,13 +202,17 @@ def analyze_pattern(sym, df_daily):
     global FUNNEL_COUNTS
     FUNNEL_COUNTS["ticker_days_checked"] += int(w["valid"].sum())
     s1 = w["price_gt_jma"]
-    s2 = s1 & w["jma_gt_ema21"]
-    s3 = s2 & w["jma_gt_sma50"]
-    s4 = s3 & w["vol_gt_prev"]
+    s2 = s1 & w["not_extended"]
+    s3 = s2 & w["jma_gt_ema21"]
+    s4 = s3 & w["jma_gt_sma50"]
+    s5 = s4 & w["vol_gt_prev"]
+    s6 = s5 & w["vol_gt_avg"]
     FUNNEL_COUNTS["passed_step1_price_gt_jma"] += int(s1.sum())
-    FUNNEL_COUNTS["passed_step2_jma_gt_ema21"] += int(s2.sum())
-    FUNNEL_COUNTS["passed_step3_jma_gt_sma50"] += int(s3.sum())
-    FUNNEL_COUNTS["passed_step4_vol_gt_prev"] += int(s4.sum())
+    FUNNEL_COUNTS["passed_step2_not_extended"] += int(s2.sum())
+    FUNNEL_COUNTS["passed_step3_jma_gt_ema21"] += int(s3.sum())
+    FUNNEL_COUNTS["passed_step4_jma_gt_sma50"] += int(s4.sum())
+    FUNNEL_COUNTS["passed_step5_vol_gt_prev"] += int(s5.sum())
+    FUNNEL_COUNTS["passed_step6_vol_gt_avg"]  += int(s6.sum())
 
     hits = [i for i in range(n - lb, n) if bool(f["full"].iloc[i])]
     if not hits:
@@ -226,11 +243,8 @@ def analyze_pattern(sym, df_daily):
     score += min(20, jma_ema_pct * 4);  reasons.append(f"JMA>EMA21+{jma_ema_pct:.1f}%")
     score += min(20, jma_sma_pct * 2);  reasons.append(f"JMA>SMA50+{jma_sma_pct:.1f}%")
     score += min(15, above_jma_pct * 3); reasons.append(f"Px>JMA+{above_jma_pct:.1f}%")
-    if above_jma_pct > 12:
-        score -= 10; reasons.append("Extended")
-    score += min(20, max(0.0, (vol_ratio - 1) * 10)); reasons.append(f"Vol x{vol_ratio:.2f}")
-    if vol_vs_avg >= 1.0:
-        score += 5; reasons.append("VolAbvAvg")
+    score += min(15, max(0.0, (vol_ratio - 1) * 10)); reasons.append(f"Vol x{vol_ratio:.2f}")
+    score += min(10, max(0.0, (vol_vs_avg - 1) * 10)); reasons.append(f"Vol/20d x{vol_vs_avg:.2f}")
     score += max(0, 5 - days_since * 2)
     score = round(min(100, max(0, score)))
 
@@ -317,7 +331,7 @@ def _live_header():
     global _hdr_done
     if _hdr_done: return
     print("\n" + "━"*95)
-    print("  📊  LIVE MATCHES  —  each stock printed the moment it passes all 4 conditions")
+    print("  📊  LIVE MATCHES  —  each stock printed the moment it passes all 6 conditions")
     print("━"*95)
     print("".join(f"  {c:<{_CW.get(c,12)}}" for c in LIVE_COLS))
     print("  " + "─"*93)
@@ -420,7 +434,7 @@ print("━"*65)
 print(f"  STEP 3  SCANNING {len(TICKERS)} TICKERS")
 print("━"*65)
 print("  Fetching daily bars (single download per ticker)")
-print("  Signal: Close > JMA, JMA > EMA21, JMA > SMA50, Volume > prior day\n")
+print(f"  Signal: JMA < Close <= JMA+{CFG['max_above_jma_pct']:.0f}%, JMA > EMA21, JMA > SMA50, Vol > prior day & > {CFG['vol_avg_period']}d avg\n")
 
 _hdr_done = False
 results = []
@@ -465,15 +479,18 @@ print(f"{'━'*65}")
 fc = FUNNEL_COUNTS
 print(f"  Ticker-days checked                  : {fc['ticker_days_checked']}")
 print(f"  Step 1 — Close > JMA                 : {fc['passed_step1_price_gt_jma']}")
-print(f"  Step 2 — + JMA > EMA21               : {fc['passed_step2_jma_gt_ema21']}")
-print(f"  Step 3 — + JMA > SMA50               : {fc['passed_step3_jma_gt_sma50']}")
-print(f"  Step 4 — + Volume > prior day        : {fc['passed_step4_vol_gt_prev']}  (= full pattern)")
+print(f"  Step 2 — + not > {CFG['max_above_jma_pct']:.0f}% above JMA     : {fc['passed_step2_not_extended']}")
+print(f"  Step 3 — + JMA > EMA21               : {fc['passed_step3_jma_gt_ema21']}")
+print(f"  Step 4 — + JMA > SMA50               : {fc['passed_step4_jma_gt_sma50']}")
+print(f"  Step 5 — + Volume > prior day        : {fc['passed_step5_vol_gt_prev']}")
+print(f"  Step 6 — + Volume > {CFG['vol_avg_period']}d avg          : {fc['passed_step6_vol_gt_avg']}  (= full pattern)")
 print(f"{'━'*65}")
 
 if not results:
     print("\n  No matches. Check the FUNNEL above for the bottleneck, then try:")
     print("   signal_lookback_days   3 → 5")
-    print("   min_price              2 → 1")
+    print("   min_price             10 → 5")
+    print("   max_above_jma_pct      8 → 12")
     print("   min_avg_volume    100000 → 50000")
 
 results.sort(key=lambda x: x["Score"], reverse=True)
@@ -585,7 +602,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-  {cnt} match{'es' if cnt!=1 else ''} — Close &gt; JMA, JMA &gt; EMA21, JMA &gt; SMA50, Volume &gt; prior day
+  {cnt} match{'es' if cnt!=1 else ''} — Close &gt; JMA (≤8% above), JMA &gt; EMA21, JMA &gt; SMA50, Volume &gt; prior day &amp; 20d avg
 </p>
   </td></tr>
   <tr><td style="padding:14px 28px 4px;background:#0b1220">
@@ -596,9 +613,11 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   <p style="margin:0;color:#cbd5e1;font-size:12px">
     {fc['ticker_days_checked']} checked &nbsp;→&nbsp;
     {fc['passed_step1_price_gt_jma']} Close&gt;JMA &nbsp;→&nbsp;
-    {fc['passed_step2_jma_gt_ema21']} JMA&gt;EMA21 &nbsp;→&nbsp;
-    {fc['passed_step3_jma_gt_sma50']} JMA&gt;SMA50 &nbsp;→&nbsp;
-    <b style="color:#facc15">{fc['passed_step4_vol_gt_prev']} Volume&gt;prior day = full match</b>
+    {fc['passed_step2_not_extended']} not extended &nbsp;→&nbsp;
+    {fc['passed_step3_jma_gt_ema21']} JMA&gt;EMA21 &nbsp;→&nbsp;
+    {fc['passed_step4_jma_gt_sma50']} JMA&gt;SMA50 &nbsp;→&nbsp;
+    {fc['passed_step5_vol_gt_prev']} Vol&gt;prior day &nbsp;→&nbsp;
+    <b style="color:#facc15">{fc['passed_step6_vol_gt_avg']} Vol&gt;20d avg = full match</b>
   </p>
 </div>
   </td></tr>
@@ -624,13 +643,15 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 
         plain_lines = [
             f"Daily Price > JMA > EMA21 & SMA50 + Volume Up — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches (Close>JMA, JMA>EMA21, JMA>SMA50, Volume>prior day)",
+            f"{cnt} matches (Close>JMA <=8% above, JMA>EMA21, JMA>SMA50, Volume>prior day & 20d avg)",
             "="*60,
             f"FUNNEL: {fc['ticker_days_checked']} ticker-days -> "
             f"{fc['passed_step1_price_gt_jma']} Close>JMA -> "
-            f"{fc['passed_step2_jma_gt_ema21']} JMA>EMA21 -> "
-            f"{fc['passed_step3_jma_gt_sma50']} JMA>SMA50 -> "
-            f"{fc['passed_step4_vol_gt_prev']} Volume>prev (=full match)",
+            f"{fc['passed_step2_not_extended']} not extended -> "
+            f"{fc['passed_step3_jma_gt_ema21']} JMA>EMA21 -> "
+            f"{fc['passed_step4_jma_gt_sma50']} JMA>SMA50 -> "
+            f"{fc['passed_step5_vol_gt_prev']} Vol>prev -> "
+            f"{fc['passed_step6_vol_gt_avg']} Vol>20d avg (=full match)",
             "="*60,
         ]
         if rl:
@@ -757,13 +778,15 @@ print("""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   📋 SIGNAL (all required, same daily bar)
   1) Close > JMA(13, phase 40)
-  2) JMA > EMA(21)
-  3) JMA > SMA(50)
-  4) Volume > previous day's volume
+  2) Close no more than 8% above JMA (not extended)
+  3) JMA > EMA(21)
+  4) JMA > SMA(50)
+  5) Volume > previous day's volume
+  6) Volume > 20-day average volume
+  Universe: price >= $10, 20d avg volume >= 100k
   Last signal_lookback_days bars are checked; most recent hit reported.
 
   📋 SCORE (0-100): base 15 + JMA/EMA21 gap + JMA/SMA50 gap + price
-  above JMA (penalised if >12% extended) + volume ratio + volume above
-  20d avg + freshness
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  above JMA + volume vs prior day + volume vs 20d avg + freshness
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
