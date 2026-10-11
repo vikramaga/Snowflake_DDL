@@ -1,0 +1,260 @@
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK + SPY BASELINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SPY 52d performance: +7.0%
+  ✅ AAPL: $336.64  SMA50=$322.36  SMA200=$290.40  2026-10-09
+  ✅ NVDA: $229.28  SMA50=$221.94  SMA200=$201.83  2026-10-09
+  ✅ MSFT: $535.07  SMA50=$500.19  SMA200=$432.70  2026-10-09
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  DIAGNOSTIC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Downloaded 10/10
+
+  SYM      P>S50>S150>S200   DIST_S50   DRYUP%   BUY_D  RESULT
+  ────────────────────────────────────────────────────────────
+  AAPL                   ✅     +4.43%        —       —  ❌
+  NVDA                   ✅     +3.31%        —       —  ❌
+  MSFT                   ❌     +6.97%        —       —  ❌
+  AMD                    ✅    +14.97%        —       —  ❌
+  PLTR                   ❌    +18.12%        —       —  ❌
+  META                   ❌    +12.40%        —       —  ❌
+  CRWD                   ✅    +20.26%        —       —  ❌
+  AVGO                   ❌     -2.65%        —       —  ❌
+  MU                     ✅     +5.41%        —       —  ❌
+  AXON                   ❌    -18.47%        —       —  ❌
+
+  Minervini Stage 2:
+    Price > SMA50 > SMA150 > SMA200 (trend alignment)
+    SMA150 and SMA200 both RISING (slope over 20 bars)
+    Price >= 30.0% above 52-week low  (left base)
+    Price within 25.0% of 52-week high  (near highs)
+    RS >= SPY 52d performance - 5.0%
+
+  SMA50 Pullback + VCP:
+    Price within 5.0% of SMA50
+    Vol in last 10 bars <= 75.0% of prior 20d avg (drying up)
+    Last 5 bars: >= 1 green day with vol > pullback avg
+
+  Tune if mostly ❌:
+    sma50_zone_pct          5 → 8
+    vol_dryup_pct          75 → 85
+    min_above_52w_low_pct  30 → 20
+    max_below_52w_high_pct 25 → 35
+    min_buying_days         1 → 1  (already at minimum)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2273 → 5432
+  ✅ NASDAQ API        : + 882 → 6314
+  ✅ Static fallback   : +   4 → 6318
+
+  🎯 Total: 6318 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 4  SCANNING 6318 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scanning:   0%|          | 0/6318 [00:00<?, ?stk/s]Scanning:   0%|          | 1/6318 [00:03<6:46:57,  3.87s/stk]Scanning:   1%|          | 51/6318 [00:08<15:00,  6.96stk/s] Scanning:   2%|▏         | 101/6318 [00:13<12:10,  8.52stk/s]Scanning:   2%|▏         | 151/6318 [00:18<11:03,  9.30stk/s]Scanning:   3%|▎         | 201/6318 [00:23<10:55,  9.33stk/s]Scanning:   4%|▍         | 251/6318 [00:28<10:33,  9.58stk/s]Scanning:   5%|▍         | 301/6318 [00:33<10:14,  9.79stk/s]Scanning:   6%|▌         | 351/6318 [00:38<09:53, 10.05stk/s]Scanning:   6%|▋         | 401/6318 [00:43<09:51, 10.01stk/s]Scanning:   7%|▋         | 451/6318 [00:48<10:05,  9.69stk/s]Scanning:   8%|▊         | 501/6318 [00:53<10:03,  9.64stk/s]Scanning:   9%|▊         | 551/6318 [00:58<09:35, 10.02stk/s]Scanning:  10%|▉         | 601/6318 [01:03<09:45,  9.77stk/s]Scanning:  10%|█         | 651/6318 [01:08<09:34,  9.86stk/s]Scanning:  11%|█         | 701/6318 [01:14<09:37,  9.72stk/s]Scanning:  12%|█▏        | 751/6318 [01:19<09:43,  9.53stk/s]Scanning:  13%|█▎        | 801/6318 [01:24<09:38,  9.54stk/s]Scanning:  13%|█▎        | 851/6318 [01:29<09:29,  9.59stk/s]Scanning:  14%|█▍        | 901/6318 [01:35<09:28,  9.53stk/s]Scanning:  15%|█▌        | 951/6318 [01:40<09:08,  9.78stk/s]Scanning:  16%|█▌        | 1001/6318 [01:44<08:48, 10.06stk/s]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBO"}}}
+$CBO: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBX"}}}
+$CBX: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Scanning:  17%|█▋        | 1051/6318 [01:49<08:49,  9.94stk/s]Scanning:  17%|█▋        | 1101/6318 [01:54<08:34, 10.14stk/s]Scanning:  18%|█▊        | 1151/6318 [01:59<08:35, 10.03stk/s]Scanning:  19%|█▉        | 1201/6318 [02:04<08:12, 10.40stk/s]Scanning:  20%|█▉        | 1251/6318 [02:08<07:47, 10.84stk/s]Scanning:  21%|██        | 1301/6318 [02:12<07:27, 11.22stk/s]Scanning:  21%|██▏       | 1351/6318 [02:17<07:30, 11.03stk/s]Scanning:  22%|██▏       | 1401/6318 [02:21<07:29, 10.93stk/s]$CTEST: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+Scanning:  23%|██▎       | 1451/6318 [02:26<07:27, 10.89stk/s]Scanning:  24%|██▍       | 1501/6318 [02:31<07:25, 10.81stk/s]Scanning:  25%|██▍       | 1551/6318 [02:36<07:31, 10.56stk/s]Scanning:  25%|██▌       | 1601/6318 [02:41<07:37, 10.31stk/s]Scanning:  26%|██▌       | 1651/6318 [02:45<07:29, 10.39stk/s]Scanning:  27%|██▋       | 1701/6318 [02:50<07:30, 10.24stk/s]Scanning:  28%|██▊       | 1751/6318 [02:55<07:24, 10.27stk/s]Scanning:  29%|██▊       | 1801/6318 [03:00<07:09, 10.52stk/s]Scanning:  29%|██▉       | 1851/6318 [03:04<06:54, 10.79stk/s]Scanning:  30%|███       | 1901/6318 [03:09<06:56, 10.60stk/s]Scanning:  31%|███       | 1951/6318 [03:14<06:48, 10.68stk/s]Scanning:  32%|███▏      | 2001/6318 [03:19<06:50, 10.51stk/s]Scanning:  32%|███▏      | 2051/6318 [03:24<07:00, 10.15stk/s]Scanning:  33%|███▎      | 2101/6318 [03:29<06:52, 10.23stk/s]Scanning:  34%|███▍      | 2151/6318 [03:33<06:29, 10.69stk/s]Scanning:  35%|███▍      | 2201/6318 [03:38<06:27, 10.63stk/s]Scanning:  36%|███▌      | 2251/6318 [03:43<06:43, 10.09stk/s]Scanning:  36%|███▋      | 2301/6318 [03:48<06:33, 10.20stk/s]Scanning:  37%|███▋      | 2351/6318 [03:53<06:39,  9.93stk/s]Scanning:  38%|███▊      | 2401/6318 [03:58<06:36,  9.87stk/s]Scanning:  39%|███▉      | 2451/6318 [04:03<06:20, 10.18stk/s]Scanning:  40%|███▉      | 2501/6318 [04:07<06:05, 10.44stk/s]Scanning:  40%|████      | 2551/6318 [04:13<06:06, 10.28stk/s]Scanning:  41%|████      | 2601/6318 [04:17<05:51, 10.56stk/s]Scanning:  42%|████▏     | 2651/6318 [04:22<05:46, 10.59stk/s]Scanning:  43%|████▎     | 2701/6318 [04:27<05:47, 10.40stk/s]Scanning:  44%|████▎     | 2751/6318 [04:31<05:41, 10.46stk/s]$ICAD: possibly delisted; no timezone found
+
+1 Failed download:
+['ICAD']: possibly delisted; no timezone found
+$ICAD: possibly delisted; no timezone found
+$ICAD: possibly delisted; no timezone found
+Scanning:  44%|████▍     | 2801/6318 [04:36<05:37, 10.42stk/s]Scanning:  45%|████▌     | 2851/6318 [04:41<05:34, 10.37stk/s]Scanning:  46%|████▌     | 2901/6318 [04:45<05:17, 10.77stk/s]Scanning:  47%|████▋     | 2951/6318 [04:51<05:32, 10.14stk/s]Scanning:  47%|████▋     | 3001/6318 [04:56<05:21, 10.31stk/s]Scanning:  48%|████▊     | 3051/6318 [05:00<05:12, 10.45stk/s]Scanning:  49%|████▉     | 3101/6318 [05:05<05:08, 10.42stk/s]Scanning:  50%|████▉     | 3151/6318 [05:10<04:58, 10.62stk/s]Scanning:  51%|█████     | 3201/6318 [05:14<04:45, 10.91stk/s]Scanning:  51%|█████▏    | 3251/6318 [05:19<04:44, 10.78stk/s]Scanning:  52%|█████▏    | 3301/6318 [05:23<04:36, 10.92stk/s]Scanning:  53%|█████▎    | 3351/6318 [05:28<04:32, 10.87stk/s]Scanning:  54%|█████▍    | 3401/6318 [05:32<04:27, 10.88stk/s]Scanning:  55%|█████▍    | 3451/6318 [05:37<04:17, 11.14stk/s]Scanning:  55%|█████▌    | 3501/6318 [05:41<04:12, 11.16stk/s]Scanning:  56%|█████▌    | 3551/6318 [05:46<04:11, 10.99stk/s]Scanning:  57%|█████▋    | 3601/6318 [05:50<04:08, 10.94stk/s]Scanning:  58%|█████▊    | 3651/6318 [05:56<04:17, 10.37stk/s]Scanning:  59%|█████▊    | 3701/6318 [06:01<04:21, 10.01stk/s]Scanning:  59%|█████▉    | 3751/6318 [06:06<04:17,  9.95stk/s]Scanning:  60%|██████    | 3801/6318 [06:11<04:09, 10.09stk/s]Scanning:  61%|██████    | 3851/6318 [06:15<03:56, 10.43stk/s]Scanning:  62%|██████▏   | 3901/6318 [06:21<03:58, 10.14stk/s]Scanning:  63%|██████▎   | 3951/6318 [06:25<03:45, 10.51stk/s]Scanning:  63%|██████▎   | 4001/6318 [06:30<03:44, 10.31stk/s]Scanning:  64%|██████▍   | 4051/6318 [06:35<03:36, 10.46stk/s]Scanning:  65%|██████▍   | 4101/6318 [06:41<03:50,  9.61stk/s]Scanning:  66%|██████▌   | 4151/6318 [06:46<03:39,  9.87stk/s]Scanning:  66%|██████▋   | 4201/6318 [06:51<03:34,  9.86stk/s]Scanning:  67%|██████▋   | 4251/6318 [06:56<03:26, 10.02stk/s]Scanning:  68%|██████▊   | 4301/6318 [07:00<03:14, 10.39stk/s]Scanning:  69%|██████▉   | 4351/6318 [07:04<03:03, 10.75stk/s]Scanning:  70%|██████▉   | 4401/6318 [07:08<02:53, 11.04stk/s]Scanning:  70%|███████   | 4451/6318 [07:13<02:49, 11.02stk/s]Scanning:  71%|███████   | 4501/6318 [07:17<02:43, 11.10stk/s]Scanning:  72%|███████▏  | 4551/6318 [07:22<02:38, 11.13stk/s]Scanning:  73%|███████▎  | 4601/6318 [07:27<02:40, 10.70stk/s]Scanning:  74%|███████▎  | 4651/6318 [07:32<02:43, 10.19stk/s]Scanning:  74%|███████▍  | 4701/6318 [07:37<02:31, 10.67stk/s]Scanning:  75%|███████▌  | 4751/6318 [07:42<02:29, 10.51stk/s]Scanning:  76%|███████▌  | 4801/6318 [07:46<02:24, 10.46stk/s]Scanning:  77%|███████▋  | 4851/6318 [07:52<02:25, 10.08stk/s]Scanning:  78%|███████▊  | 4901/6318 [07:57<02:24,  9.78stk/s]Scanning:  78%|███████▊  | 4951/6318 [08:03<02:26,  9.33stk/s]Scanning:  79%|███████▉  | 5001/6318 [08:09<02:27,  8.92stk/s]Scanning:  80%|███████▉  | 5051/6318 [08:14<02:15,  9.37stk/s]Scanning:  81%|████████  | 5101/6318 [08:19<02:04,  9.77stk/s]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Scanning:  82%|████████▏ | 5151/6318 [08:23<01:54, 10.18stk/s]Scanning:  82%|████████▏ | 5201/6318 [08:28<01:52,  9.93stk/s]Scanning:  83%|████████▎ | 5251/6318 [08:33<01:44, 10.18stk/s]Scanning:  84%|████████▍ | 5301/6318 [08:38<01:40, 10.17stk/s]Scanning:  85%|████████▍ | 5351/6318 [08:43<01:35, 10.16stk/s]Scanning:  85%|████████▌ | 5401/6318 [08:48<01:32,  9.94stk/s]Scanning:  86%|████████▋ | 5451/6318 [08:53<01:26,  9.97stk/s]Scanning:  87%|████████▋ | 5501/6318 [08:57<01:16, 10.71stk/s]Scanning:  88%|████████▊ | 5551/6318 [09:01<01:10, 10.89stk/s]Scanning:  89%|████████▊ | 5601/6318 [09:07<01:08, 10.47stk/s]Scanning:  89%|████████▉ | 5651/6318 [09:11<01:01, 10.90stk/s]Scanning:  90%|█████████ | 5701/6318 [09:16<00:57, 10.71stk/s]Scanning:  91%|█████████ | 5751/6318 [09:19<00:49, 11.38stk/s]Scanning:  92%|█████████▏| 5801/6318 [09:23<00:44, 11.65stk/s]Scanning:  93%|█████████▎| 5851/6318 [09:28<00:42, 11.09stk/s]Scanning:  93%|█████████▎| 5901/6318 [09:33<00:37, 11.13stk/s]Scanning:  94%|█████████▍| 5951/6318 [09:37<00:33, 11.08stk/s]Scanning:  95%|█████████▍| 6001/6318 [09:41<00:27, 11.52stk/s]Scanning:  96%|█████████▌| 6051/6318 [09:46<00:24, 10.97stk/s]Scanning:  97%|█████████▋| 6101/6318 [09:51<00:19, 10.89stk/s]Scanning:  97%|█████████▋| 6151/6318 [09:56<00:15, 10.67stk/s]Scanning:  98%|█████████▊| 6201/6318 [10:01<00:11, 10.30stk/s]$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+
+5 Failed downloads:
+['ZBZX', 'ZBZZT', 'ZCZZT', 'ZIEXT', 'ZEXIT']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Scanning:  99%|█████████▉| 6251/6318 [10:07<00:06, 10.07stk/s]$ZTEST: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+
+3 Failed downloads:
+['ZTEST', 'ZXIET']: possibly delisted; no timezone found
+['ZVV']: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$ZVV: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Scanning: 100%|█████████▉| 6301/6318 [10:10<00:01, 11.25stk/s]Scanning: 100%|██████████| 6318/6318 [10:11<00:00, 10.33stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE — Minervini Stage 2 + SMA50 Pullback + Volume Dry-Up + Buying Returning
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Dist_SMA50_%   Below_52w_Hi_%   Above_52w_Lo_%    RS_vs_SPY_%    Vol_Dryup_%   Buying_Days   RSI   
+  ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ACOG      $9.04       50       +0.63%         10.8%            100.9%            -4.3%          73.3%         1d            52.8  
+  BWIN      $31.87      63       +3.27%         2.6%             100.7%            +5.9%          61.6%         1d            57.7  
+  CVX       $211.98     54       +4.00%         2.7%             48.7%             +4.5%          65.4%         1d            59.8  
+  DVN       $48.26      52       +2.31%         7.2%             57.3%             +2.3%          64.6%         1d            53.0  
+  ECPG      $99.77      73       +1.54%         5.0%             149.7%            -0.7%          50.7%         2d            55.9  
+  EPSN      $5.95       55       +1.35%         8.6%             46.3%             +1.1%          54.9%         2d            50.0  
+  LFST      $12.42      76       +2.13%         8.4%             160.4%            +7.4%          51.8%         2d            54.9  
+  LNG       $278.18     48       +1.64%         7.1%             50.5%             +0.8%          73.8%         1d            55.4  
+  NMAX      $10.34      55       +0.94%         16.7%            102.3%            +28.3%         62.6%         1d            49.4  
+  NVT       $167.43     56       +4.77%         9.2%             80.4%             +18.3%         72.5%         1d            55.7  
+  RBKB      $12.86      60       +0.96%         3.2%             90.9%             -2.6%          45.9%         1d            49.2  
+  RELY      $24.13      60       +1.11%         12.2%            99.8%             -3.4%          69.1%         3d            59.4  
+  RRGB      $8.61       65       +2.62%         21.4%            250.0%            +7.8%          59.3%         2d            60.1  
+  SN        $184.98     70       +3.84%         4.9%             122.5%            +9.2%          48.3%         1d            62.6  
+  THC       $263.78     55       +0.38%         6.8%             67.4%             -4.6%          62.5%         2d            55.7  
+  TXN       $283.74     47       +4.36%         14.6%            88.9%             -1.9%          72.8%         1d            55.7  
+  ZD        $56.52      62       +1.50%         6.5%             151.8%            -2.9%          68.5%         1d            52.7  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE | 6318 tickers | 5532 (88%) | ✅ 17 matches
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  📊 DEBUG BREAKDOWN:
+  Total processed           : 5542
+  Passed vol/price/bars     : 2955
+  ❌ Failed Stage 2          : 2581
+  ❌ Failed SMA50 pullback   : 228
+  ❌ Failed vol dry-up       : 124
+  ❌ Failed buying signal    : 5
+  ✅ Passed all              : 17
+
+
+  ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║  Minervini Stage 2 + SMA50 VCP Pullback   2026-10-11   17                                                   matches                                                 ║
+  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬─────────┬───────┬──────────────┬────────────────┬─────────────┬─────────────┬─────────────┬──────┐
+  │ Ticker │  Price  │ Score │ Dist_SMA50_% │ Below_52w_Hi_% │ Vol_Dryup_% │ Buying_Days │ RS_vs_SPY_% │ RSI  │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  LFST  │  $12.42 │   76  │    +2.13%    │      8.4%      │    51.8%    │      2      │    +7.4%    │ 54.9 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  ECPG  │  $99.77 │   73  │    +1.54%    │      5.0%      │    50.7%    │      2      │    -0.7%    │ 55.9 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │   SN   │ $184.98 │   70  │    +3.84%    │      4.9%      │    48.3%    │      1      │    +9.2%    │ 62.6 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  RRGB  │  $8.61  │   65  │    +2.62%    │     21.4%      │    59.3%    │      2      │    +7.8%    │ 60.1 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  BWIN  │  $31.87 │   63  │    +3.27%    │      2.6%      │    61.6%    │      1      │    +5.9%    │ 57.7 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │   ZD   │  $56.52 │   62  │    +1.50%    │      6.5%      │    68.5%    │      1      │    -2.9%    │ 52.7 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  RBKB  │  $12.86 │   60  │    +0.96%    │      3.2%      │    45.9%    │      1      │    -2.6%    │ 49.2 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  RELY  │  $24.13 │   60  │    +1.11%    │     12.2%      │    69.1%    │      3      │    -3.4%    │ 59.4 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  NVT   │ $167.43 │   56  │    +4.77%    │      9.2%      │    72.5%    │      1      │    +18.3%   │ 55.7 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  EPSN  │  $5.95  │   55  │    +1.35%    │      8.6%      │    54.9%    │      2      │    +1.1%    │ 50.0 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  NMAX  │  $10.34 │   55  │    +0.94%    │     16.7%      │    62.6%    │      1      │    +28.3%   │ 49.4 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  THC   │ $263.78 │   55  │    +0.38%    │      6.8%      │    62.5%    │      2      │    -4.6%    │ 55.7 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  CVX   │ $211.98 │   54  │    +4.00%    │      2.7%      │    65.4%    │      1      │    +4.5%    │ 59.8 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  DVN   │  $48.26 │   52  │    +2.31%    │      7.2%      │    64.6%    │      1      │    +2.3%    │ 53.0 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  ACOG  │  $9.04  │   50  │    +0.63%    │     10.8%      │    73.3%    │      1      │    -4.3%    │ 52.8 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  LNG   │ $278.18 │   48  │    +1.64%    │      7.1%      │    73.8%    │      1      │    +0.8%    │ 55.4 │
+  ├────────┼─────────┼───────┼──────────────┼────────────────┼─────────────┼─────────────┼─────────────┼──────┤
+  │  TXN   │ $283.74 │   47  │    +4.36%    │     14.6%      │    72.8%    │      1      │    -1.9%    │ 55.7 │
+  └────────┴─────────┴───────┴──────────────┴────────────────┴─────────────┴─────────────┴─────────────┴──────┘
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/minervini_stage2_vcp_20261011_0417.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_stage2_vcp_20261011_0417.txt
+[Email] Sending to vikramaga24@gmail.com  (17 results)...
+[Email] 📎 minervini_stage2_vcp_20261011_0417.csv
+[Email] 📎 tv_stage2_vcp_20261011_0417.txt
+[Email] ✅  Sent to: vikramaga24@gmail.com
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/stage2_vcp_chart_20261011_0417.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 PATTERN EXPLAINED
+
+  MINERVINI STAGE 2 (all 6 must pass):
+    ① Price > SMA50 > SMA150 > SMA200 (full trend alignment)
+    ② SMA150 and SMA200 both RISING (positive slopes)
+    ③ Price >= 30% above 52-week low (emerged from base)
+    ④ Price within 25% of 52-week high (near highs = stage 2)
+    ⑤ Stock RS >= SPY performance (outperforming market)
+
+  SMA50 PULLBACK + VOLUME DRY-UP:
+    Price pulls back to within 5% of SMA50 (health check)
+    Volume CONTRACTS during pullback vs prior baseline:
+      Vol_Dryup_% <= 75% means sellers are not present
+      = No distribution, just natural healthy pullback
+    This is the "VCP" (Volatility Contraction Pattern):
+      each pullback tightens with declining volume
+
+  BUYING VOLUME RETURNING:
+    In the last 5 bars, at least 1 GREEN day where
+    volume exceeded the pullback average
+    = Buyers stepping in at SMA50 support
+
+  💡 BEST SETUPS
+  Score >= 70           elite setup quality
+  Dist_SMA50_% near 0  right at SMA50 (tightest entry)
+  Vol_Dryup_% < 50%    very dry — strong VCP
+  Below_52w_Hi_% < 10  very tight, near highs
+  RS_vs_SPY_% positive outperforming market
+
+  ⚙️  TUNE IF 0 RESULTS
+  sma50_zone_pct          5 → 8
+  vol_dryup_pct          75 → 85
+  min_above_52w_low_pct  30 → 20
+  max_below_52w_high_pct 25 → 35
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

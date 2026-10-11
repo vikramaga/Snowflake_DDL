@@ -1,0 +1,217 @@
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: 206 bars  $336.64  2026-10-09
+  ✅ MSFT: 206 bars  $535.07  2026-10-09
+  ✅ NVDA: 206 bars  $229.28  2026-10-09
+
+  Testing .info fetch for AAPL...
+  ✅ Fund_Score=44/50  Flags: RevG+16% HiGrw EPS$8.72 Mgn28% CR1.0 ROE149% PE39  (0.3s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2273 → 5432
+  ✅ NASDAQ API        : + 882 → 6314
+  ✅ Static fallback   : +   9 → 6323
+
+  🎯 Total: 6323 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6323 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Pass 1: JMA price-cross + MA stack + volume screening (fast)
+  Pass 2: Fundamental fetch for pass-1 stocks only
+
+Pass 1 Tech:   0%|          | 0/6323 [00:00<?]Pass 1 Tech:   0%|          | 1/6323 [00:05<9:46:16]Pass 1 Tech:   1%|          | 51/6323 [00:11<20:12] Pass 1 Tech:   2%|▏         | 101/6323 [00:17<15:58]Pass 1 Tech:   2%|▏         | 151/6323 [00:23<14:19]Pass 1 Tech:   3%|▎         | 201/6323 [00:30<13:49]Pass 1 Tech:   4%|▍         | 251/6323 [00:36<13:05]Pass 1 Tech:   5%|▍         | 301/6323 [00:42<12:46]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Pass 1 Tech:   6%|▌         | 351/6323 [00:48<12:38]Pass 1 Tech:   6%|▋         | 401/6323 [00:54<12:25]Pass 1 Tech:   7%|▋         | 451/6323 [01:00<12:06]Pass 1 Tech:   8%|▊         | 501/6323 [01:07<12:03]Pass 1 Tech:   9%|▊         | 551/6323 [01:12<11:39]Pass 1 Tech:  10%|▉         | 601/6323 [01:18<11:26]Pass 1 Tech:  10%|█         | 651/6323 [01:24<11:23]Pass 1 Tech:  11%|█         | 701/6323 [01:31<11:25]Pass 1 Tech:  12%|█▏        | 751/6323 [01:36<11:09]Pass 1 Tech:  13%|█▎        | 801/6323 [01:42<11:03]Pass 1 Tech:  13%|█▎        | 851/6323 [01:48<10:58]Pass 1 Tech:  14%|█▍        | 901/6323 [01:55<11:09]Pass 1 Tech:  15%|█▌        | 951/6323 [02:01<10:50]Pass 1 Tech:  16%|█▌        | 1001/6323 [02:07<10:39]$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Pass 1 Tech:  17%|█▋        | 1051/6323 [02:13<10:56]Pass 1 Tech:  17%|█▋        | 1101/6323 [02:19<10:40]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Pass 1 Tech:  18%|█▊        | 1151/6323 [02:25<10:26]Pass 1 Tech:  19%|█▉        | 1201/6323 [02:31<10:03]Pass 1 Tech:  20%|█▉        | 1251/6323 [02:36<09:31]Pass 1 Tech:  21%|██        | 1301/6323 [02:41<09:04]Pass 1 Tech:  21%|██▏       | 1351/6323 [02:47<09:15]Pass 1 Tech:  22%|██▏       | 1401/6323 [02:52<09:14]$CTEST: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+Pass 1 Tech:  23%|██▎       | 1451/6323 [02:58<09:22]Pass 1 Tech:  24%|██▎       | 1501/6323 [03:05<09:31]Pass 1 Tech:  25%|██▍       | 1551/6323 [03:10<09:15]Pass 1 Tech:  25%|██▌       | 1601/6323 [03:16<09:20]Pass 1 Tech:  26%|██▌       | 1651/6323 [03:22<09:06]Pass 1 Tech:  27%|██▋       | 1701/6323 [03:28<09:08]Pass 1 Tech:  28%|██▊       | 1751/6323 [03:33<08:42]Pass 1 Tech:  28%|██▊       | 1801/6323 [03:39<08:34]Pass 1 Tech:  29%|██▉       | 1851/6323 [03:45<08:28]Pass 1 Tech:  30%|███       | 1901/6323 [03:51<08:31]Pass 1 Tech:  31%|███       | 1951/6323 [03:56<08:23]$EXAS: possibly delisted; no timezone found
+
+1 Failed download:
+['EXAS']: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+Pass 1 Tech:  32%|███▏      | 2001/6323 [04:03<08:29]Pass 1 Tech:  32%|███▏      | 2051/6323 [04:09<08:26]Pass 1 Tech:  33%|███▎      | 2101/6323 [04:15<08:21]Pass 1 Tech:  34%|███▍      | 2151/6323 [04:20<08:05]Pass 1 Tech:  35%|███▍      | 2201/6323 [04:26<08:00]Pass 1 Tech:  36%|███▌      | 2251/6323 [04:32<08:02]Pass 1 Tech:  36%|███▋      | 2301/6323 [04:39<08:06]Pass 1 Tech:  37%|███▋      | 2351/6323 [04:44<07:53]Pass 1 Tech:  38%|███▊      | 2401/6323 [04:50<07:42]Pass 1 Tech:  39%|███▉      | 2451/6323 [04:56<07:42]Pass 1 Tech:  40%|███▉      | 2501/6323 [05:02<07:34]Pass 1 Tech:  40%|████      | 2551/6323 [05:08<07:34]Pass 1 Tech:  41%|████      | 2601/6323 [05:14<07:22]Pass 1 Tech:  42%|████▏     | 2651/6323 [05:20<07:09]Pass 1 Tech:  43%|████▎     | 2701/6323 [05:26<07:10]Pass 1 Tech:  44%|████▎     | 2751/6323 [05:32<07:09]Pass 1 Tech:  44%|████▍     | 2801/6323 [05:38<07:06]Pass 1 Tech:  45%|████▌     | 2851/6323 [05:44<06:56]Pass 1 Tech:  46%|████▌     | 2901/6323 [05:49<06:35]Pass 1 Tech:  47%|████▋     | 2951/6323 [05:57<06:59]Pass 1 Tech:  47%|████▋     | 3001/6323 [06:02<06:46]Pass 1 Tech:  48%|████▊     | 3051/6323 [06:08<06:31]Pass 1 Tech:  49%|████▉     | 3101/6323 [06:14<06:25]Pass 1 Tech:  50%|████▉     | 3151/6323 [06:20<06:22]Pass 1 Tech:  51%|█████     | 3201/6323 [06:26<06:04]Pass 1 Tech:  51%|█████▏    | 3251/6323 [06:32<06:05]Pass 1 Tech:  52%|█████▏    | 3301/6323 [06:37<05:53]Pass 1 Tech:  53%|█████▎    | 3351/6323 [06:43<05:50]Pass 1 Tech:  54%|█████▍    | 3401/6323 [06:49<05:41]Pass 1 Tech:  55%|█████▍    | 3451/6323 [06:55<05:34]Pass 1 Tech:  55%|█████▌    | 3501/6323 [07:01<05:26]Pass 1 Tech:  56%|█████▌    | 3551/6323 [07:06<05:21]Pass 1 Tech:  57%|█████▋    | 3601/6323 [07:13<05:24]Pass 1 Tech:  58%|█████▊    | 3651/6323 [07:19<05:21]Pass 1 Tech:  59%|█████▊    | 3701/6323 [07:25<05:07]Pass 1 Tech:  59%|█████▉    | 3751/6323 [07:31<05:08]Pass 1 Tech:  60%|██████    | 3801/6323 [07:37<04:58]Pass 1 Tech:  61%|██████    | 3851/6323 [07:42<04:49]Pass 1 Tech:  62%|██████▏   | 3901/6323 [07:48<04:47]Pass 1 Tech:  62%|██████▏   | 3951/6323 [07:54<04:36]Pass 1 Tech:  63%|██████▎   | 4001/6323 [08:00<04:34]Pass 1 Tech:  64%|██████▍   | 4051/6323 [08:06<04:32]Pass 1 Tech:  65%|██████▍   | 4101/6323 [08:13<04:41]Pass 1 Tech:  66%|██████▌   | 4151/6323 [08:19<04:29]Pass 1 Tech:  66%|██████▋   | 4201/6323 [08:25<04:14]Pass 1 Tech:  67%|██████▋   | 4251/6323 [08:31<04:08]Pass 1 Tech:  68%|██████▊   | 4301/6323 [08:37<04:00]Pass 1 Tech:  69%|██████▉   | 4351/6323 [08:42<03:51]Pass 1 Tech:  70%|██████▉   | 4401/6323 [08:48<03:45]Pass 1 Tech:  70%|███████   | 4451/6323 [08:54<03:41]Pass 1 Tech:  71%|███████   | 4501/6323 [09:00<03:31]Pass 1 Tech:  72%|███████▏  | 4551/6323 [09:06<03:26]$PSTG: possibly delisted; no timezone found
+
+1 Failed download:
+['PSTG']: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+Pass 1 Tech:  73%|███████▎  | 4601/6323 [09:12<03:26]Pass 1 Tech:  74%|███████▎  | 4651/6323 [09:18<03:22]Pass 1 Tech:  74%|███████▍  | 4701/6323 [09:24<03:11]Pass 1 Tech:  75%|███████▌  | 4751/6323 [09:30<03:05]Pass 1 Tech:  76%|███████▌  | 4801/6323 [09:35<02:51]Pass 1 Tech:  77%|███████▋  | 4851/6323 [09:41<02:49]Pass 1 Tech:  78%|███████▊  | 4901/6323 [09:47<02:45]Pass 1 Tech:  78%|███████▊  | 4951/6323 [09:54<02:48]Pass 1 Tech:  79%|███████▉  | 5001/6323 [10:00<02:46]Pass 1 Tech:  80%|███████▉  | 5051/6323 [10:06<02:34]Pass 1 Tech:  81%|████████  | 5101/6323 [10:12<02:26]Pass 1 Tech:  81%|████████▏ | 5151/6323 [10:17<02:16]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Pass 1 Tech:  82%|████████▏ | 5201/6323 [10:22<02:06]Pass 1 Tech:  83%|████████▎ | 5251/6323 [10:27<01:58]Pass 1 Tech:  84%|████████▍ | 5301/6323 [10:34<01:56]Pass 1 Tech:  85%|████████▍ | 5351/6323 [10:39<01:50]$SVA: possibly delisted; no timezone found
+
+1 Failed download:
+['SVA']: possibly delisted; no timezone found
+$SVA: possibly delisted; no timezone found
+$SVA: possibly delisted; no timezone found
+Pass 1 Tech:  85%|████████▌ | 5401/6323 [10:46<01:49]Pass 1 Tech:  86%|████████▌ | 5451/6323 [10:51<01:41]Pass 1 Tech:  87%|████████▋ | 5501/6323 [10:56<01:32]Pass 1 Tech:  88%|████████▊ | 5551/6323 [11:02<01:27]Pass 1 Tech:  89%|████████▊ | 5601/6323 [11:08<01:23]Pass 1 Tech:  89%|████████▉ | 5651/6323 [11:14<01:16]Pass 1 Tech:  90%|█████████ | 5701/6323 [11:20<01:10]Pass 1 Tech:  91%|█████████ | 5751/6323 [11:25<01:03]Pass 1 Tech:  92%|█████████▏| 5801/6323 [11:30<00:56]Pass 1 Tech:  93%|█████████▎| 5851/6323 [11:35<00:51]Pass 1 Tech:  93%|█████████▎| 5901/6323 [11:41<00:47]Pass 1 Tech:  94%|█████████▍| 5951/6323 [11:47<00:41]Pass 1 Tech:  95%|█████████▍| 6001/6323 [11:52<00:34]Pass 1 Tech:  96%|█████████▌| 6051/6323 [11:58<00:30]Pass 1 Tech:  96%|█████████▋| 6101/6323 [12:04<00:25]Pass 1 Tech:  97%|█████████▋| 6151/6323 [12:10<00:20]Pass 1 Tech:  98%|█████████▊| 6201/6323 [12:16<00:14]$ZBZX: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+
+5 Failed downloads:
+['ZBZX', 'ZIEXT', 'ZEXIT', 'ZCZZT', 'ZBZZT']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Pass 1 Tech:  99%|█████████▉| 6251/6323 [12:22<00:08]$ZVV: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+$ZTEST: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+
+3 Failed downloads:
+['ZVV']: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+['ZTEST', 'ZXIET']: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+$ZVV: possibly delisted; no price data found  (1d 2025-04-09 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Pass 1 Tech: 100%|█████████▉| 6301/6323 [12:27<00:02]Pass 1 Tech: 100%|██████████| 6323/6323 [12:28<00:00]
+
+  Pass 1 done: 5552/6323 got data (88%)
+  Tech passes: 3 stocks → fetching fundamentals now
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PASS 2  FUNDAMENTAL CHECK (3 stocks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pass 2 Fund:   0%|          | 0/3 [00:00<?, ?stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  33%|███▎      | 1/3 [00:00<00:01,  1.18stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  67%|██████▋   | 2/3 [00:01<00:00,  1.22stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund: 100%|██████████| 3/3 [00:02<00:00,  1.16stk/s]Pass 2 Fund: 100%|██████████| 3/3 [00:02<00:00,  1.17stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all filters
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Total    Fund    Tech    Bars_Since_Cross  Vol_Chg_%   Sector              
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  BATRK     $52.00      24       0       24      1           +49.3%      —                   
+  FSSL      $11.53      22       0       22      1           +9.8%       —                   
+  LOGI      $98.27      24       0       24      3           +134.7%     —                   
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers    : 6323
+  Got data   : 5552  (88%)
+  Tech passes: 3
+  ✅ Matches  : 3
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔═══════════════════════════════════════════════════════════════════════════════╗
+  ║               JMA Price-Cross + MA Stack   2026-10-11   3 matches             ║
+  ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬────────┬───────┬──────┬──────┬──────────────────┬───────────┬────────┐
+  │ Ticker │ Price  │ Total │ Fund │ Tech │ Bars_Since_Cross │ Vol_Chg_% │ Sector │
+  ├────────┼────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────┤
+  │ BATRK  │ $52.00 │   24  │  0   │  24  │      1d ago      │   +49.3%  │   —    │
+  ├────────┼────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────┤
+  │  LOGI  │ $98.27 │   24  │  0   │  24  │      3d ago      │  +134.7%  │   —    │
+  ├────────┼────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────┤
+  │  FSSL  │ $11.53 │   22  │  0   │  22  │      1d ago      │   +9.8%   │   —    │
+  └────────┴────────┴───────┴──────┴──────┴──────────────────┴───────────┴────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Total               Fund(0-50) + Tech(0-30)
+  Bars_Since_Cross     bars since price closed above JMA from below
+  Vol_Chg_%            today's volume vs yesterday's volume
+  ──────────────────────────────────────────────────────
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/jma_stack_cross_20261011_0420.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_jma_stack_cross_20261011_0420.txt
+[Email] Sending to vikramaga24@gmail.com  (3 results)...
+[Email] 📎 Attached: jma_stack_cross_20261011_0420.csv (579 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 JMA Price-Cross + MA Stack — 3 signals — 2026-10-11
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/jma_stack_cross_chart_20261011_0420.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SCORE BREAKDOWN  (80 total)
+  Fund  0–50   8 fundamental metrics
+  Tech  0–30   cross freshness + MA stack breadth + volume surge
+
+  📋 SIGNAL (all 3 required)
+  1) Price closed above JMA from below (fresh cross, within
+     price_jma_cross_lookback bars)
+  2) JMA sits above EMA8, SMA21, SMA50, AND SMA150
+  3) Today's volume > yesterday's volume
+
+  📋 Bars_Since_Cross = 0d ago means the cross happened on the
+  latest bar. Vol_Chg_% = today's volume vs yesterday's.
+
+  💡 BEST SETUPS
+  Total > 50              elite fundamental + technical combo
+  Bars_Since_Cross = 0-1   freshest crosses
+  Vol_Chg_% > 50           strong volume confirmation
+  Fund > 35                genuinely strong business quality
+
+  ⚙️  TUNE IF 0 RESULTS
+  min_tech_score              10 → 6
+  min_total_score              15 → 5
+  price_jma_cross_lookback      3 → 6   (widen the cross window)
+  require_jma_above_sma150   True → False
+  require_volume_increase    True → False
+  min_price                     2 → 1
+  min_avg_volume            80000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

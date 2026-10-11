@@ -1,0 +1,197 @@
+
+1 Failed download:
+['AMD']: OperationalError('database is locked')
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: $336.64  Cam S3=$323.27  2026-10-09
+  ✅ NVDA: $229.28  Cam S3=$221.35  2026-10-09
+  ✅ AMD: $608.10  Cam S3=$557.17  2026-10-09
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  DIAGNOSTIC (10 stocks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Downloaded 10/10
+
+  SYM        PRICE    COMP%        S3  RESULT
+  ──────────────────────────────────────────
+  AAPL    $ 336.64  Spread:47.48%  VolOK  ❌ no_compression
+  NVDA    $ 229.28  Spread:46.66%  VolOK  ❌ no_compression
+  AMD     $ 608.10  Spread:39.31%  VolOK  ❌ no_compression
+  PLTR    $ 209.05  Spread:37.13%  VolOK  ❌ no_compression
+  MU      $1029.00  Spread:43.81%  VolOK  ❌ no_compression
+  SMCI    $  41.86  Spread:39.66%  VolOK  ❌ no_compression
+  META    $ 718.67  Spread:40.06%  VolOK  ❌ no_compression
+  AVGO    $ 361.54  Spread:51.05%  VolOK  ❌ no_compression
+  CRWD    $ 275.04  Spread:39.73%  VolOK  ❌ no_compression
+  MXL     $  96.16  Spread:32.61%  VolOK  ❌ no_compression
+
+  Pattern (MYO-style MA compression + volume explosion):
+    C1  Compression : JMA/EMA8/SMA21 all within 8.0% of SMA50
+                      while price was AT or BELOW SMA50 (suppressed)
+                      Searched in last 20 bars
+    C2  Breakout    : Single GREEN candle closes above all 4 MAs
+                      Volume >= 0.3x 20-day avg volume
+                      Price was below SMA50 within last 15 bars
+    Cam S3 = info only (not a gate)
+
+  Tune if mostly ❌:
+    compression_pct       8 → 12   (widen MA spread tolerance)
+    vol_explosion_mult    2 → 1.5  (lower volume bar)
+    compression_lookback 20 → 30   (look further back)
+    cross_lookback       10 → 15
+    lookback_below_bars  15 → 25
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2273 → 5432
+  ✅ NASDAQ API        : + 882 → 6314
+  ✅ Static fallback   : +   4 → 6318
+
+  🎯 Total: 6318 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 4  SCANNING 6318 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scanning:   0%|          | 0/6318 [00:00<?, ?stk/s]Scanning:   0%|          | 1/6318 [00:03<6:22:36,  3.63s/stk]Scanning:   1%|          | 38/6318 [00:03<07:20, 14.25stk/s] Scanning:   1%|          | 60/6318 [00:08<14:36,  7.14stk/s]Scanning:   1%|▏         | 86/6318 [00:08<08:24, 12.36stk/s]Scanning:   2%|▏         | 104/6318 [00:14<15:14,  6.80stk/s]Scanning:   2%|▏         | 139/6318 [00:14<08:23, 12.26stk/s]Scanning:   3%|▎         | 159/6318 [00:19<13:13,  7.76stk/s]Scanning:   3%|▎         | 195/6318 [00:19<07:52, 12.97stk/s]Scanning:   3%|▎         | 216/6318 [00:24<12:09,  8.37stk/s]Scanning:   4%|▍         | 251/6318 [00:29<12:50,  7.87stk/s]Scanning:   4%|▍         | 281/6318 [00:29<08:50, 11.37stk/s]Scanning:   5%|▍         | 301/6318 [00:34<12:38,  7.93stk/s]Scanning:   5%|▌         | 329/6318 [00:34<08:42, 11.45stk/s]Scanning:   6%|▌         | 351/6318 [00:39<11:55,  8.34stk/s]Scanning:   6%|▌         | 378/6318 [00:39<08:14, 12.00stk/s]Scanning:   6%|▋         | 401/6318 [00:44<11:34,  8.52stk/s]Scanning:   7%|▋         | 437/6318 [00:44<07:12, 13.59stk/s]Scanning:   7%|▋         | 456/6318 [00:48<10:53,  8.97stk/s]Scanning:   8%|▊         | 484/6318 [00:49<07:28, 12.99stk/s]Scanning:   8%|▊         | 502/6318 [00:54<12:03,  8.04stk/s]Scanning:   9%|▊         | 544/6318 [00:54<06:54, 13.92stk/s]Scanning:   9%|▉         | 565/6318 [01:00<12:05,  7.93stk/s]Scanning:   9%|▉         | 589/6318 [01:00<08:48, 10.83stk/s]Scanning:  10%|▉         | 607/6318 [01:06<14:12,  6.70stk/s]Scanning:  10%|▉         | 631/6318 [01:07<09:58,  9.51stk/s]Scanning:  10%|█         | 651/6318 [01:13<15:23,  6.13stk/s]Scanning:  11%|█         | 682/6318 [01:13<09:45,  9.63stk/s]Scanning:  11%|█         | 701/6318 [01:20<15:44,  5.95stk/s]Scanning:  12%|█▏        | 736/6318 [01:20<09:36,  9.67stk/s]Scanning:  12%|█▏        | 755/6318 [01:26<14:30,  6.39stk/s]Scanning:  13%|█▎        | 798/6318 [01:27<08:18, 11.07stk/s]Scanning:  13%|█▎        | 820/6318 [01:33<12:21,  7.42stk/s]Scanning:  13%|█▎        | 851/6318 [01:39<14:17,  6.37stk/s]Scanning:  14%|█▍        | 887/6318 [01:39<09:18,  9.72stk/s]Scanning:  14%|█▍        | 906/6318 [01:46<13:52,  6.50stk/s]Scanning:  15%|█▌        | 949/6318 [01:46<08:18, 10.78stk/s]Scanning:  15%|█▌        | 971/6318 [01:51<11:15,  7.91stk/s]Scanning:  16%|█▌        | 1001/6318 [01:57<12:56,  6.85stk/s]Scanning:  16%|█▋        | 1035/6318 [01:57<08:40, 10.15stk/s]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBO"}}}
+$CBO: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBX"}}}
+$CBX: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Scanning:  17%|█▋        | 1053/6318 [02:03<13:06,  6.69stk/s]Scanning:  17%|█▋        | 1082/6318 [02:03<09:01,  9.68stk/s]Scanning:  17%|█▋        | 1101/6318 [02:10<13:47,  6.31stk/s]Scanning:  18%|█▊        | 1137/6318 [02:10<08:33, 10.09stk/s]Scanning:  18%|█▊        | 1156/6318 [02:16<12:53,  6.67stk/s]Scanning:  19%|█▉        | 1191/6318 [02:16<08:09, 10.48stk/s]Scanning:  19%|█▉        | 1211/6318 [02:22<11:51,  7.18stk/s]Scanning:  20%|█▉        | 1246/6318 [02:22<07:32, 11.21stk/s]Scanning:  20%|██        | 1267/6318 [02:28<11:29,  7.33stk/s]Scanning:  21%|██        | 1296/6318 [02:28<07:51, 10.66stk/s]Scanning:  21%|██        | 1315/6318 [02:34<11:32,  7.22stk/s]Scanning:  21%|██▏       | 1346/6318 [02:34<07:33, 10.97stk/s]Scanning:  22%|██▏       | 1365/6318 [02:40<12:03,  6.85stk/s]Scanning:  22%|██▏       | 1398/6318 [02:40<07:39, 10.70stk/s]Scanning:  22%|██▏       | 1417/6318 [02:46<11:54,  6.86stk/s]Scanning:  23%|██▎       | 1444/6318 [02:46<08:08,  9.98stk/s]$CTEST: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+Scanning:  23%|██▎       | 1462/6318 [02:52<12:34,  6.44stk/s]Scanning:  24%|██▎       | 1489/6318 [02:52<08:25,  9.55stk/s]Scanning:  24%|██▍       | 1506/6318 [02:58<13:02,  6.15stk/s]Scanning:  24%|██▍       | 1522/6318 [02:58<10:02,  7.96stk/s]Scanning:  25%|██▍       | 1551/6318 [03:04<12:25,  6.39stk/s]Scanning:  25%|██▌       | 1582/6318 [03:04<07:54,  9.98stk/s]Scanning:  25%|██▌       | 1601/6318 [03:11<12:33,  6.26stk/s]Scanning:  26%|██▌       | 1631/6318 [03:11<08:09,  9.58stk/s]Scanning:  26%|██▌       | 1651/6318 [03:17<11:34,  6.72stk/s]Scanning:  27%|██▋       | 1682/6318 [03:17<07:27, 10.36stk/s]Scanning:  27%|██▋       | 1701/6318 [03:23<11:39,  6.60stk/s]Scanning:  28%|██▊       | 1738/6318 [03:23<07:01, 10.86stk/s]Scanning:  28%|██▊       | 1758/6318 [03:29<10:45,  7.07stk/s]Scanning:  28%|██▊       | 1796/6318 [03:29<06:35, 11.45stk/s]Scanning:  29%|██▉       | 1817/6318 [03:35<09:54,  7.57stk/s]Scanning:  29%|██▉       | 1850/6318 [03:35<06:30, 11.43stk/s]Scanning:  30%|██▉       | 1870/6318 [03:41<09:44,  7.61stk/s]Scanning:  30%|███       | 1901/6318 [03:47<11:09,  6.60stk/s]Scanning:  31%|███       | 1928/6318 [03:47<07:53,  9.28stk/s]Scanning:  31%|███       | 1951/6318 [03:53<10:42,  6.80stk/s]Scanning:  31%|███▏      | 1981/6318 [03:53<07:12, 10.04stk/s]Scanning:  32%|███▏      | 2001/6318 [03:59<10:42,  6.71stk/s]Scanning:  32%|███▏      | 2028/6318 [03:59<07:22,  9.70stk/s]Scanning:  32%|███▏      | 2051/6318 [04:05<10:33,  6.74stk/s]Scanning:  33%|███▎      | 2083/6318 [04:05<06:49, 10.34stk/s]Scanning:  33%|███▎      | 2101/6318 [04:12<10:49,  6.50stk/s]Scanning:  34%|███▍      | 2138/6318 [04:12<06:33, 10.61stk/s]Scanning:  34%|███▍      | 2158/6318 [04:17<09:30,  7.30stk/s]Scanning:  35%|███▍      | 2188/6318 [04:17<06:21, 10.81stk/s]Scanning:  35%|███▍      | 2207/6318 [04:22<08:36,  7.96stk/s]Scanning:  35%|███▌      | 2236/6318 [04:22<05:45, 11.82stk/s]Scanning:  36%|███▌      | 2254/6318 [04:27<08:36,  7.87stk/s]Scanning:  36%|███▋      | 2296/6318 [04:27<04:53, 13.69stk/s]Scanning:  37%|███▋      | 2317/6318 [04:31<07:07,  9.37stk/s]Scanning:  37%|███▋      | 2349/6318 [04:32<04:44, 13.97stk/s]Scanning:  37%|███▋      | 2369/6318 [04:36<07:14,  9.09stk/s]Scanning:  38%|███▊      | 2401/6318 [04:41<07:54,  8.26stk/s]Scanning:  39%|███▊      | 2437/6318 [04:41<05:05, 12.71stk/s]Scanning:  39%|███▉      | 2455/6318 [04:45<07:20,  8.77stk/s]Scanning:  39%|███▉      | 2489/6318 [04:46<04:45, 13.40stk/s]Scanning:  40%|███▉      | 2508/6318 [04:50<07:11,  8.84stk/s]Scanning:  40%|████      | 2539/6318 [04:50<04:46, 13.19stk/s]Scanning:  40%|████      | 2558/6318 [04:55<07:17,  8.59stk/s]Scanning:  41%|████      | 2589/6318 [04:55<04:47, 12.97stk/s]Scanning:  41%|████▏     | 2607/6318 [05:00<07:04,  8.74stk/s]Scanning:  42%|████▏     | 2641/6318 [05:00<04:26, 13.82stk/s]Scanning:  42%|████▏     | 2661/6318 [05:04<06:40,  9.12stk/s]Scanning:  43%|████▎     | 2690/6318 [05:04<04:29, 13.46stk/s]Scanning:  43%|████▎     | 2709/6318 [05:09<06:56,  8.66stk/s]Scanning:  43%|████▎     | 2737/6318 [05:09<04:39, 12.79stk/s]Scanning:  44%|████▎     | 2755/6318 [05:14<07:20,  8.08stk/s]Scanning:  44%|████▍     | 2788/6318 [05:14<04:34, 12.84stk/s]Scanning:  44%|████▍     | 2807/6318 [05:19<07:18,  8.01stk/s]Scanning:  45%|████▍     | 2824/6318 [05:20<05:39, 10.30stk/s]Scanning:  45%|████▌     | 2851/6318 [05:26<08:14,  7.02stk/s]Scanning:  46%|████▌     | 2882/6318 [05:26<05:16, 10.86stk/s]Scanning:  46%|████▌     | 2901/6318 [05:31<08:03,  7.07stk/s]Scanning:  46%|████▋     | 2927/6318 [05:32<05:30, 10.26stk/s]Scanning:  47%|████▋     | 2951/6318 [05:37<07:45,  7.23stk/s]Scanning:  47%|████▋     | 2985/6318 [05:37<04:51, 11.43stk/s]Scanning:  48%|████▊     | 3003/6318 [05:42<06:59,  7.90stk/s]Scanning:  48%|████▊     | 3034/6318 [05:42<04:33, 12.02stk/s]Scanning:  48%|████▊     | 3052/6318 [05:47<06:56,  7.84stk/s]Scanning:  49%|████▉     | 3088/6318 [05:47<04:13, 12.72stk/s]Scanning:  49%|████▉     | 3108/6318 [05:52<06:19,  8.46stk/s]Scanning:  50%|████▉     | 3144/6318 [05:52<03:56, 13.43stk/s]Scanning:  50%|█████     | 3165/6318 [05:57<05:40,  9.26stk/s]Scanning:  51%|█████     | 3195/6318 [05:57<03:49, 13.59stk/s]Scanning:  51%|█████     | 3214/6318 [06:01<05:38,  9.16stk/s]Scanning:  51%|█████▏    | 3249/6318 [06:01<03:32, 14.45stk/s]Scanning:  52%|█████▏    | 3269/6318 [06:06<05:37,  9.03stk/s]Scanning:  52%|█████▏    | 3301/6318 [06:11<06:10,  8.14stk/s]Scanning:  53%|█████▎    | 3331/6318 [06:11<04:13, 11.80stk/s]Scanning:  53%|█████▎    | 3351/6318 [06:16<06:07,  8.07stk/s]Scanning:  54%|█████▎    | 3381/6318 [06:16<04:06, 11.94stk/s]Scanning:  54%|█████▍    | 3401/6318 [06:21<05:57,  8.15stk/s]Scanning:  54%|█████▍    | 3437/6318 [06:21<03:41, 13.01stk/s]Scanning:  55%|█████▍    | 3456/6318 [06:26<05:20,  8.94stk/s]Scanning:  55%|█████▌    | 3489/6318 [06:26<03:26, 13.70stk/s]Scanning:  56%|█████▌    | 3509/6318 [06:30<05:09,  9.08stk/s]Scanning:  56%|█████▌    | 3541/6318 [06:30<03:21, 13.76stk/s]Scanning:  56%|█████▋    | 3560/6318 [06:35<05:05,  9.01stk/s]Scanning:  57%|█████▋    | 3597/6318 [06:35<03:07, 14.53stk/s]Scanning:  57%|█████▋    | 3618/6318 [06:42<05:40,  7.93stk/s]Scanning:  58%|█████▊    | 3651/6318 [06:48<06:29,  6.85stk/s]Scanning:  58%|█████▊    | 3686/6318 [06:48<04:13, 10.37stk/s]Scanning:  59%|█████▊    | 3704/6318 [06:54<06:28,  6.73stk/s]Scanning:  59%|█████▉    | 3737/6318 [06:54<04:13, 10.19stk/s]Scanning:  59%|█████▉    | 3756/6318 [07:00<06:09,  6.92stk/s]Scanning:  60%|█████▉    | 3784/6318 [07:00<04:12, 10.04stk/s]Scanning:  60%|██████    | 3802/6318 [07:06<06:13,  6.74stk/s]Scanning:  61%|██████    | 3833/6318 [07:06<03:59, 10.37stk/s]Scanning:  61%|██████    | 3851/6318 [07:12<06:19,  6.50stk/s]Scanning:  61%|██████▏   | 3884/6318 [07:12<03:56, 10.28stk/s]Scanning:  62%|██████▏   | 3903/6318 [07:18<05:55,  6.80stk/s]Scanning:  62%|██████▏   | 3937/6318 [07:18<03:41, 10.76stk/s]Scanning:  63%|██████▎   | 3956/6318 [07:24<05:44,  6.85stk/s]Scanning:  63%|██████▎   | 3984/6318 [07:24<03:52, 10.06stk/s]Scanning:  63%|██████▎   | 4002/6318 [07:31<06:21,  6.06stk/s]Scanning:  64%|██████▍   | 4036/6318 [07:31<03:54,  9.73stk/s]Scanning:  64%|██████▍   | 4055/6318 [07:36<05:10,  7.28stk/s]Scanning:  65%|██████▍   | 4082/6318 [07:36<03:30, 10.61stk/s]Scanning:  65%|██████▍   | 4101/6318 [07:42<05:18,  6.96stk/s]Scanning:  66%|██████▌   | 4143/6318 [07:42<02:58, 12.18stk/s]Scanning:  66%|██████▌   | 4165/6318 [07:47<04:06,  8.73stk/s]Scanning:  66%|██████▋   | 4194/6318 [07:47<02:48, 12.59stk/s]Scanning:  67%|██████▋   | 4213/6318 [07:51<04:02,  8.69stk/s]Scanning:  67%|██████▋   | 4243/6318 [07:51<02:40, 12.97stk/s]Scanning:  67%|██████▋   | 4261/6318 [07:56<04:00,  8.56stk/s]Scanning:  68%|██████▊   | 4283/6318 [07:56<02:53, 11.72stk/s]Scanning:  68%|██████▊   | 4301/6318 [08:01<04:19,  7.76stk/s]Scanning:  69%|██████▊   | 4330/6318 [08:01<02:45, 12.02stk/s]Scanning:  69%|██████▉   | 4351/6318 [08:06<04:01,  8.15stk/s]Scanning:  69%|██████▉   | 4386/6318 [08:06<02:25, 13.25stk/s]Scanning:  70%|██████▉   | 4405/6318 [08:10<03:33,  8.95stk/s]Scanning:  70%|███████   | 4431/6318 [08:10<02:26, 12.85stk/s]Scanning:  70%|███████   | 4451/6318 [08:15<03:42,  8.40stk/s]Scanning:  71%|███████   | 4481/6318 [08:15<02:23, 12.81stk/s]Scanning:  71%|███████   | 4501/6318 [08:20<03:32,  8.54stk/s]Scanning:  72%|███████▏  | 4531/6318 [08:20<02:17, 12.95stk/s]Scanning:  72%|███████▏  | 4551/6318 [08:24<03:17,  8.93stk/s]Scanning:  72%|███████▏  | 4578/6318 [08:24<02:13, 13.03stk/s]Scanning:  73%|███████▎  | 4601/6318 [08:28<03:03,  9.33stk/s]Scanning:  73%|███████▎  | 4631/6318 [08:29<02:00, 14.04stk/s]Scanning:  74%|███████▎  | 4651/6318 [08:33<03:06,  8.96stk/s]Scanning:  74%|███████▍  | 4687/6318 [08:33<01:53, 14.43stk/s]Scanning:  75%|███████▍  | 4707/6318 [08:38<02:53,  9.26stk/s]Scanning:  75%|███████▍  | 4734/6318 [08:38<01:59, 13.27stk/s]Scanning:  75%|███████▌  | 4752/6318 [08:43<03:04,  8.48stk/s]Scanning:  76%|███████▌  | 4782/6318 [08:43<01:58, 12.92stk/s]Scanning:  76%|███████▌  | 4801/6318 [08:48<02:59,  8.47stk/s]Scanning:  77%|███████▋  | 4836/6318 [08:48<01:48, 13.66stk/s]Scanning:  77%|███████▋  | 4856/6318 [08:52<02:45,  8.81stk/s]Scanning:  77%|███████▋  | 4886/6318 [08:53<01:48, 13.16stk/s]Scanning:  78%|███████▊  | 4905/6318 [08:58<02:52,  8.19stk/s]Scanning:  78%|███████▊  | 4941/6318 [08:58<01:44, 13.23stk/s]Scanning:  79%|███████▊  | 4961/6318 [09:03<02:46,  8.17stk/s]Scanning:  79%|███████▉  | 4996/6318 [09:03<01:43, 12.81stk/s]Scanning:  79%|███████▉  | 5016/6318 [09:09<02:43,  7.95stk/s]Scanning:  80%|███████▉  | 5051/6318 [09:15<02:56,  7.19stk/s]Scanning:  80%|████████  | 5085/6318 [09:15<01:54, 10.74stk/s]Scanning:  81%|████████  | 5102/6318 [09:21<02:55,  6.95stk/s]Scanning:  81%|████████▏ | 5135/6318 [09:21<01:51, 10.57stk/s]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Scanning:  82%|████████▏ | 5154/6318 [09:27<02:49,  6.86stk/s]Scanning:  82%|████████▏ | 5183/6318 [09:27<01:52, 10.09stk/s]Scanning:  82%|████████▏ | 5201/6318 [09:33<02:45,  6.74stk/s]Scanning:  83%|████████▎ | 5230/6318 [09:33<01:47, 10.11stk/s]Scanning:  83%|████████▎ | 5251/6318 [09:39<02:31,  7.07stk/s]Scanning:  84%|████████▎ | 5282/6318 [09:39<01:35, 10.82stk/s]Scanning:  84%|████████▍ | 5301/6318 [09:45<02:29,  6.81stk/s]Scanning:  84%|████████▍ | 5338/6318 [09:45<01:27, 11.16stk/s]Scanning:  85%|████████▍ | 5358/6318 [09:51<02:10,  7.38stk/s]Scanning:  85%|████████▌ | 5386/6318 [09:51<01:27, 10.71stk/s]Scanning:  86%|████████▌ | 5404/6318 [09:58<02:28,  6.17stk/s]Scanning:  86%|████████▌ | 5443/6318 [09:58<01:24, 10.39stk/s]Scanning:  86%|████████▋ | 5464/6318 [10:05<02:08,  6.64stk/s]Scanning:  87%|████████▋ | 5501/6318 [10:11<02:05,  6.49stk/s]Scanning:  87%|████████▋ | 5526/6318 [10:11<01:30,  8.77stk/s]Scanning:  88%|████████▊ | 5551/6318 [10:17<01:57,  6.53stk/s]Scanning:  88%|████████▊ | 5583/6318 [10:17<01:15,  9.73stk/s]Scanning:  89%|████████▊ | 5601/6318 [10:23<01:47,  6.66stk/s]Scanning:  89%|████████▉ | 5625/6318 [10:23<01:15,  9.21stk/s]Scanning:  89%|████████▉ | 5651/6318 [10:29<01:35,  6.98stk/s]Scanning:  90%|████████▉ | 5678/6318 [10:29<01:03, 10.05stk/s]Scanning:  90%|█████████ | 5701/6318 [10:35<01:29,  6.91stk/s]Scanning:  91%|█████████ | 5730/6318 [10:35<00:57, 10.22stk/s]Scanning:  91%|█████████ | 5751/6318 [10:41<01:19,  7.15stk/s]Scanning:  92%|█████████▏| 5784/6318 [10:41<00:48, 11.12stk/s]Scanning:  92%|█████████▏| 5802/6318 [10:47<01:12,  7.13stk/s]Scanning:  92%|█████████▏| 5827/6318 [10:47<00:48, 10.13stk/s]Scanning:  93%|█████████▎| 5851/6318 [10:52<01:05,  7.17stk/s]Scanning:  93%|█████████▎| 5881/6318 [10:52<00:40, 10.81stk/s]Scanning:  93%|█████████▎| 5901/6318 [10:58<00:58,  7.15stk/s]Scanning:  94%|█████████▍| 5927/6318 [10:58<00:37, 10.30stk/s]Scanning:  94%|█████████▍| 5951/6318 [11:04<00:49,  7.36stk/s]Scanning:  95%|█████████▍| 5980/6318 [11:04<00:30, 10.95stk/s]Scanning:  95%|█████████▍| 6001/6318 [11:09<00:43,  7.35stk/s]Scanning:  95%|█████████▌| 6025/6318 [11:09<00:28, 10.31stk/s]Scanning:  96%|█████████▌| 6049/6318 [11:10<00:18, 14.40stk/s]Scanning:  96%|█████████▌| 6067/6318 [11:16<00:35,  7.13stk/s]Scanning:  97%|█████████▋| 6101/6318 [11:22<00:32,  6.58stk/s]Scanning:  97%|█████████▋| 6131/6318 [11:22<00:19,  9.74stk/s]Scanning:  97%|█████████▋| 6151/6318 [11:28<00:25,  6.60stk/s]Scanning:  98%|█████████▊| 6187/6318 [11:28<00:12, 10.56stk/s]Scanning:  98%|█████████▊| 6205/6318 [11:35<00:17,  6.46stk/s]$ZCZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+
+5 Failed downloads:
+['ZCZZT', 'ZBZX', 'ZBZZT', 'ZIEXT', 'ZEXIT']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Scanning:  99%|█████████▉| 6251/6318 [11:42<00:10,  6.58stk/s]Scanning: 100%|█████████▉| 6294/6318 [11:42<00:02, 10.34stk/s]$ZVV: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+
+3 Failed downloads:
+['ZVV']: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+['ZXIET', 'ZTEST']: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$ZVV: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Scanning: 100%|█████████▉| 6313/6318 [11:46<00:00,  8.04stk/s]Scanning: 100%|██████████| 6318/6318 [11:48<00:00,  8.92stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE | 6318 tickers | 5892 (93%) | ✅ 0 matches
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  📊 DEBUG BREAKDOWN:
+  Total processed          : 5902
+  Passed vol/price filter  : 4503
+  ❌ Failed C1 (compression) : 4503
+  ❌ Failed C2 (vol breakout): 0
+  ✅ Passed all             : 0
+
+  Relax the condition with most failures above:
+   C1: compression_pct       3 → 5
+   C3: cross_lookback        8 → 12
+   C4: min_break_vol_mult  0.8 → 0.5
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/ma_compression_s3_breakout_20261011_0419.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_ma_compression_s3_20261011_0419.txt
+[Email] Sending to vikramaga24@gmail.com  (0 results)...
+[Email] 📎 Attached: ma_compression_s3_breakout_20261011_0419.csv
+[Email] 📎 Attached: tv_ma_compression_s3_20261011_0419.txt
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent to: vikramaga24@gmail.com
+  (CI: files in workspace, email sent)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 PATTERN EXPLAINED
+
+  C1  MA COMPRESSION  (the coil)
+      JMA(13,40) + EMA8 + SMA21 + SMA50 all within 3% of
+      each other (measured as % of price)
+      = All moving averages converging — energy building
+
+  C2  CLUSTER NEAR MONTHLY CAMARILLA S3
+      S3 = Close - (High-Low) × 1.1 / 4  (from prior month)
+      The MA cluster average must be within 3% of Cam S3
+      = Compression is happening RIGHT AT a key monthly
+        support/pivot level — adds institutional significance
+
+  C3  PRICE BROKE ABOVE ALL 4 MAs AND CAM S3  (the trigger)
+      In the last 8 bars, price went from below at least
+      one level to ABOVE ALL of them simultaneously
+      = Everything breaks out together — no lagging MAs
+
+  C4  VOLUME > PREVIOUS DAY'S VOLUME
+      The breakout bar volume exceeds the prior day
+      = Fresh buying entering on the move, not a drift
+
+  WHY THIS IS POWERFUL:
+      When 4 moving averages compress into a tight bundle
+      at a Camarilla support level, and then price breaks
+      all of them at once on rising volume, the subsequent
+      move is often explosive — all the compressed energy
+      releases in one direction with no nearby resistance
+      (all MAs now act as support below price).
+
+  💡 BEST SETUPS
+  Comp_Spread_% < 1%      extremely tight coil
+  SMA50_vs_S3_% near 0   SMA50 was right at Cam S3 level
+  Bars_Since_Cross = 0    breakout today = freshest entry
+  Vol_vs_Prev_x >= 2×     twice yesterday's volume = strong
+
+  ⚙️  TUNE IF 0 RESULTS
+  compression_pct      3 → 5
+    cross_lookback       8 → 12
+  compression_lookback 5 → 8
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

@@ -1,0 +1,569 @@
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 1029 bars ($336.64, 2026-10-09)
+  ✅ MSFT: daily 1029 bars ($535.07, 2026-10-09)
+  ✅ NVDA: daily 1029 bars ($229.28, 2026-10-09)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2273 → 5432
+  ✅ NASDAQ API        : + 882 → 6314
+  ✅ Static fallback   : +   9 → 6323
+
+  🎯 Total: 6323 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6323 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (→ also gives Weekly and Monthly via resample)
+  A stock only matches if Monthly + Weekly + Daily RSI conditions all fire
+
+Daily fetch:   0%|          | 0/6323 [00:00<?]Daily fetch:   1%|          | 50/6323 [00:08<17:49]Daily fetch:   2%|▏         | 100/6323 [00:16<16:52]Daily fetch:   2%|▏         | 150/6323 [00:24<16:42]Daily fetch:   3%|▎         | 200/6323 [00:33<16:56]Daily fetch:   4%|▍         | 250/6323 [00:41<16:39]Daily fetch:   5%|▍         | 300/6323 [00:49<16:37]Daily fetch:   6%|▌         | 350/6323 [00:57<16:07]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▋         | 400/6323 [01:05<16:19]Daily fetch:   7%|▋         | 450/6323 [01:13<16:02]Daily fetch:   8%|▊         | 500/6323 [01:21<15:25]Daily fetch:   9%|▊         | 550/6323 [01:29<15:20]Daily fetch:   9%|▉         | 600/6323 [01:36<14:41]Daily fetch:  10%|█         | 650/6323 [01:43<14:20]Daily fetch:  11%|█         | 700/6323 [01:51<14:19]Daily fetch:  12%|█▏        | 750/6323 [01:59<14:28]Daily fetch:  13%|█▎        | 800/6323 [02:08<14:41]Daily fetch:  13%|█▎        | 850/6323 [02:16<14:39]Daily fetch:  14%|█▍        | 900/6323 [02:24<14:36]Daily fetch:  15%|█▌        | 950/6323 [02:33<14:54]Daily fetch:  16%|█▌        | 1000/6323 [02:41<14:32]Daily fetch:  17%|█▋        | 1050/6323 [02:48<14:05]$CBX: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Daily fetch:  17%|█▋        | 1100/6323 [02:57<14:21]Daily fetch:  18%|█▊        | 1150/6323 [03:05<14:15]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1200/6323 [03:14<14:03]Daily fetch:  20%|█▉        | 1250/6323 [03:21<13:33]Daily fetch:  21%|██        | 1300/6323 [03:28<12:42]Daily fetch:  21%|██▏       | 1350/6323 [03:34<12:02]Daily fetch:  22%|██▏       | 1400/6323 [03:42<12:02]Daily fetch:  23%|██▎       | 1450/6323 [03:49<12:00]$CTEST: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+Daily fetch:  24%|██▎       | 1500/6323 [03:57<11:59]Daily fetch:  25%|██▍       | 1550/6323 [04:04<11:55]Daily fetch:  25%|██▌       | 1600/6323 [04:11<11:36]Daily fetch:  26%|██▌       | 1650/6323 [04:20<11:51]Daily fetch:  27%|██▋       | 1700/6323 [04:27<11:49]Daily fetch:  28%|██▊       | 1750/6323 [04:35<11:43]Daily fetch:  28%|██▊       | 1800/6323 [04:42<11:20]Daily fetch:  29%|██▉       | 1850/6323 [04:50<11:13]Daily fetch:  30%|███       | 1900/6323 [04:58<11:22]Daily fetch:  31%|███       | 1950/6323 [05:06<11:21]Daily fetch:  32%|███▏      | 2000/6323 [05:13<11:02]$EXAS: possibly delisted; no timezone found
+
+1 Failed download:
+['EXAS']: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+Daily fetch:  32%|███▏      | 2050/6323 [05:21<10:58]Daily fetch:  33%|███▎      | 2100/6323 [05:29<11:03]Daily fetch:  34%|███▍      | 2150/6323 [05:37<10:55]Daily fetch:  35%|███▍      | 2200/6323 [05:44<10:28]Daily fetch:  36%|███▌      | 2250/6323 [05:52<10:22]Daily fetch:  36%|███▋      | 2300/6323 [06:00<10:30]Daily fetch:  37%|███▋      | 2350/6323 [06:08<10:22]Daily fetch:  38%|███▊      | 2400/6323 [06:16<10:12]Daily fetch:  39%|███▊      | 2450/6323 [06:24<10:10]Daily fetch:  40%|███▉      | 2500/6323 [06:32<10:01]Daily fetch:  40%|████      | 2550/6323 [06:40<09:56]Daily fetch:  41%|████      | 2600/6323 [06:48<09:53]Daily fetch:  42%|████▏     | 2650/6323 [06:55<09:34]Daily fetch:  43%|████▎     | 2700/6323 [07:02<09:11]Daily fetch:  43%|████▎     | 2750/6323 [07:10<09:03]Daily fetch:  44%|████▍     | 2800/6323 [07:19<09:14]Daily fetch:  45%|████▌     | 2850/6323 [07:26<09:06]Daily fetch:  46%|████▌     | 2900/6323 [07:34<08:48]Daily fetch:  47%|████▋     | 2950/6323 [07:40<08:17]Daily fetch:  47%|████▋     | 3000/6323 [07:49<08:41]Daily fetch:  48%|████▊     | 3050/6323 [07:57<08:30]Daily fetch:  49%|████▉     | 3100/6323 [08:04<08:09]Daily fetch:  50%|████▉     | 3150/6323 [08:12<08:08]Daily fetch:  51%|█████     | 3200/6323 [08:20<08:10]Daily fetch:  51%|█████▏    | 3250/6323 [08:28<07:51]Daily fetch:  52%|█████▏    | 3300/6323 [08:36<08:01]Daily fetch:  53%|█████▎    | 3350/6323 [08:44<07:50]Daily fetch:  54%|█████▍    | 3400/6323 [08:52<07:44]Daily fetch:  55%|█████▍    | 3450/6323 [08:59<07:28]Daily fetch:  55%|█████▌    | 3500/6323 [09:07<07:09]Daily fetch:  56%|█████▌    | 3550/6323 [09:15<07:09]Daily fetch:  57%|█████▋    | 3600/6323 [09:22<07:02]Daily fetch:  58%|█████▊    | 3650/6323 [09:31<07:11]Daily fetch:  59%|█████▊    | 3700/6323 [09:39<06:59]Daily fetch:  59%|█████▉    | 3750/6323 [09:46<06:40]Daily fetch:  60%|██████    | 3800/6323 [09:54<06:33]Daily fetch:  61%|██████    | 3850/6323 [10:02<06:20]Daily fetch:  62%|██████▏   | 3900/6323 [10:09<06:09]Daily fetch:  62%|██████▏   | 3950/6323 [10:17<06:03]Daily fetch:  63%|██████▎   | 4000/6323 [10:24<05:53]Daily fetch:  64%|██████▍   | 4050/6323 [10:32<05:51]Daily fetch:  65%|██████▍   | 4100/6323 [10:40<05:40]Daily fetch:  66%|██████▌   | 4150/6323 [10:49<05:47]Daily fetch:  66%|██████▋   | 4200/6323 [10:55<05:23]Daily fetch:  67%|██████▋   | 4250/6323 [11:02<05:06]Daily fetch:  68%|██████▊   | 4300/6323 [11:09<04:51]Daily fetch:  69%|██████▉   | 4350/6323 [11:16<04:43]Daily fetch:  70%|██████▉   | 4400/6323 [11:22<04:27]Daily fetch:  70%|███████   | 4450/6323 [11:29<04:17]Daily fetch:  71%|███████   | 4500/6323 [11:36<04:12]Daily fetch:  72%|███████▏  | 4550/6323 [11:43<04:05]Daily fetch:  73%|███████▎  | 4600/6323 [11:50<03:55]$PSTG: possibly delisted; no timezone found
+
+1 Failed download:
+['PSTG']: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+Daily fetch:  74%|███████▎  | 4650/6323 [11:58<03:58]Daily fetch:  74%|███████▍  | 4700/6323 [12:04<03:45]Daily fetch:  75%|███████▌  | 4750/6323 [12:11<03:33]Daily fetch:  76%|███████▌  | 4800/6323 [12:17<03:26]Daily fetch:  77%|███████▋  | 4850/6323 [12:24<03:19]Daily fetch:  77%|███████▋  | 4900/6323 [12:31<03:16]Daily fetch:  78%|███████▊  | 4950/6323 [12:38<03:11]Daily fetch:  79%|███████▉  | 5000/6323 [12:46<03:05]Daily fetch:  80%|███████▉  | 5050/6323 [12:53<03:01]Daily fetch:  81%|████████  | 5100/6323 [13:00<02:51]Daily fetch:  81%|████████▏ | 5150/6323 [13:06<02:43]Daily fetch:  82%|████████▏ | 5200/6323 [13:13<02:35]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5250/6323 [13:20<02:26]Daily fetch:  84%|████████▍ | 5300/6323 [13:27<02:19]Daily fetch:  85%|████████▍ | 5350/6323 [13:34<02:13]Daily fetch:  85%|████████▌ | 5400/6323 [13:41<02:06]Daily fetch:  86%|████████▌ | 5450/6323 [13:48<02:03]Daily fetch:  87%|████████▋ | 5500/6323 [13:55<01:55]Daily fetch:  88%|████████▊ | 5550/6323 [14:01<01:45]Daily fetch:  89%|████████▊ | 5600/6323 [14:08<01:39]Daily fetch:  89%|████████▉ | 5650/6323 [14:15<01:32]Daily fetch:  90%|█████████ | 5700/6323 [14:22<01:25]Daily fetch:  91%|█████████ | 5750/6323 [14:29<01:19]Daily fetch:  92%|█████████▏| 5800/6323 [14:35<01:10]Daily fetch:  93%|█████████▎| 5850/6323 [14:42<01:03]Daily fetch:  93%|█████████▎| 5900/6323 [14:49<00:57]Daily fetch:  94%|█████████▍| 5950/6323 [14:56<00:50]Daily fetch:  95%|█████████▍| 6000/6323 [15:03<00:44]Daily fetch:  96%|█████████▌| 6050/6323 [15:09<00:36]Daily fetch:  96%|█████████▋| 6100/6323 [15:17<00:30]Daily fetch:  97%|█████████▋| 6150/6323 [15:24<00:24]Daily fetch:  98%|█████████▊| 6200/6323 [15:31<00:17]Daily fetch:  99%|█████████▉| 6250/6323 [15:38<00:10]$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+
+5 Failed downloads:
+['ZBZZT', 'ZCZZT', 'ZIEXT', 'ZEXIT', 'ZBZX']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Daily fetch: 100%|█████████▉| 6300/6323 [15:46<00:03]$ZVV: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+
+3 Failed downloads:
+['ZVV']: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+['ZXIET', 'ZTEST']: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+$ZVV: possibly delisted; no price data found  (1d 2022-09-02 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6323/6323 [15:50<00:00]Daily fetch: 100%|██████████| 6323/6323 [15:52<00:00]
+
+  Daily data : 5355/6323 tickers
+
+Checking RSI reversal:   0%|          | 0/5355 [00:00<?, ?stk/s]Checking RSI reversal:   0%|          | 22/5355 [00:00<00:24, 218.62stk/s]Checking RSI reversal:   1%|          | 44/5355 [00:00<00:26, 200.72stk/s]Checking RSI reversal:   1%|▏         | 73/5355 [00:00<00:22, 238.43stk/s]Checking RSI reversal:   2%|▏         | 109/5355 [00:00<00:18, 282.85stk/s]Checking RSI reversal:   3%|▎         | 140/5355 [00:00<00:17, 290.09stk/s]Checking RSI reversal:   3%|▎         | 177/5355 [00:00<00:16, 314.01stk/s]Checking RSI reversal:   4%|▍         | 215/5355 [00:00<00:15, 333.23stk/s]Checking RSI reversal:   5%|▍         | 249/5355 [00:00<00:17, 295.08stk/s]Checking RSI reversal:   5%|▌         | 280/5355 [00:00<00:18, 277.42stk/s]Checking RSI reversal:   6%|▌         | 309/5355 [00:01<00:19, 264.40stk/s]Checking RSI reversal:   6%|▋         | 337/5355 [00:01<00:18, 266.37stk/s]Checking RSI reversal:   7%|▋         | 365/5355 [00:01<00:18, 268.71stk/s]Checking RSI reversal:   7%|▋         | 393/5355 [00:01<00:18, 263.00stk/s]Checking RSI reversal:   8%|▊         | 421/5355 [00:01<00:18, 267.54stk/s]Checking RSI reversal:   9%|▊         | 462/5355 [00:01<00:15, 307.02stk/s]Checking RSI reversal:   9%|▉         | 494/5355 [00:01<00:16, 300.53stk/s]Checking RSI reversal:  10%|▉         | 525/5355 [00:01<00:16, 285.24stk/s]Checking RSI reversal:  10%|█         | 554/5355 [00:01<00:17, 273.08stk/s]Checking RSI reversal:  11%|█         | 583/5355 [00:02<00:17, 274.64stk/s]Checking RSI reversal:  12%|█▏        | 618/5355 [00:02<00:16, 292.61stk/s]Checking RSI reversal:  12%|█▏        | 651/5355 [00:02<00:15, 300.18stk/s]Checking RSI reversal:  13%|█▎        | 682/5355 [00:02<00:15, 300.68stk/s]Checking RSI reversal:  13%|█▎        | 716/5355 [00:02<00:15, 309.00stk/s]Checking RSI reversal:  14%|█▍        | 758/5355 [00:02<00:13, 337.77stk/s]Checking RSI reversal:  15%|█▍        | 792/5355 [00:02<00:13, 334.91stk/s]Checking RSI reversal:  15%|█▌        | 826/5355 [00:02<00:14, 305.19stk/s]Checking RSI reversal:  16%|█▌        | 858/5355 [00:02<00:14, 301.94stk/s]Checking RSI reversal:  17%|█▋        | 889/5355 [00:03<00:15, 281.03stk/s]Checking RSI reversal:  17%|█▋        | 918/5355 [00:03<00:16, 276.26stk/s]Checking RSI reversal:  18%|█▊        | 954/5355 [00:03<00:14, 296.12stk/s]Checking RSI reversal:  18%|█▊        | 986/5355 [00:03<00:14, 299.18stk/s]Checking RSI reversal:  19%|█▉        | 1019/5355 [00:03<00:14, 306.65stk/s]Checking RSI reversal:  20%|█▉        | 1054/5355 [00:03<00:13, 315.31stk/s]Checking RSI reversal:  20%|██        | 1086/5355 [00:03<00:14, 298.02stk/s]Checking RSI reversal:  21%|██        | 1125/5355 [00:03<00:13, 320.38stk/s]Checking RSI reversal:  22%|██▏       | 1158/5355 [00:03<00:13, 307.15stk/s]Checking RSI reversal:  22%|██▏       | 1190/5355 [00:04<00:13, 305.96stk/s]Checking RSI reversal:  23%|██▎       | 1221/5355 [00:04<00:14, 286.84stk/s]Checking RSI reversal:  23%|██▎       | 1250/5355 [00:04<00:14, 281.11stk/s]Checking RSI reversal:  24%|██▍       | 1279/5355 [00:04<00:14, 276.18stk/s]Checking RSI reversal:  24%|██▍       | 1307/5355 [00:04<00:15, 268.43stk/s]Checking RSI reversal:  25%|██▍       | 1334/5355 [00:04<00:15, 267.90stk/s]Checking RSI reversal:  25%|██▌       | 1361/5355 [00:04<00:15, 258.16stk/s]Checking RSI reversal:  26%|██▌       | 1387/5355 [00:04<00:15, 255.53stk/s]Checking RSI reversal:  26%|██▋       | 1414/5355 [00:04<00:15, 258.73stk/s]Checking RSI reversal:  27%|██▋       | 1440/5355 [00:05<00:15, 256.90stk/s]Checking RSI reversal:  28%|██▊       | 1475/5355 [00:05<00:13, 281.16stk/s]Checking RSI reversal:  28%|██▊       | 1507/5355 [00:05<00:13, 292.02stk/s]Checking RSI reversal:  29%|██▊       | 1538/5355 [00:05<00:12, 295.96stk/s]Checking RSI reversal:  29%|██▉       | 1569/5355 [00:05<00:12, 298.03stk/s]Checking RSI reversal:  30%|██▉       | 1600/5355 [00:05<00:12, 300.29stk/s]Checking RSI reversal:  30%|███       | 1631/5355 [00:05<00:12, 287.89stk/s]Checking RSI reversal:  31%|███       | 1660/5355 [00:05<00:13, 278.45stk/s]Checking RSI reversal:  32%|███▏      | 1696/5355 [00:05<00:12, 298.81stk/s]Checking RSI reversal:  32%|███▏      | 1727/5355 [00:06<00:12, 286.88stk/s]Checking RSI reversal:  33%|███▎      | 1758/5355 [00:06<00:12, 292.78stk/s]Checking RSI reversal:  33%|███▎      | 1790/5355 [00:06<00:11, 299.49stk/s]Checking RSI reversal:  34%|███▍      | 1821/5355 [00:06<00:12, 291.79stk/s]Checking RSI reversal:  35%|███▍      | 1851/5355 [00:06<00:11, 293.51stk/s]Checking RSI reversal:  35%|███▌      | 1883/5355 [00:06<00:11, 299.75stk/s]Checking RSI reversal:  36%|███▌      | 1914/5355 [00:06<00:11, 297.09stk/s]Checking RSI reversal:  36%|███▋      | 1946/5355 [00:06<00:11, 302.60stk/s]Checking RSI reversal:  37%|███▋      | 1982/5355 [00:06<00:10, 317.65stk/s]Checking RSI reversal:  38%|███▊      | 2015/5355 [00:06<00:10, 320.82stk/s]Checking RSI reversal:  38%|███▊      | 2052/5355 [00:07<00:09, 332.44stk/s]Checking RSI reversal:  39%|███▉      | 2086/5355 [00:07<00:10, 313.34stk/s]Checking RSI reversal:  40%|███▉      | 2118/5355 [00:07<00:10, 307.71stk/s]Checking RSI reversal:  40%|████      | 2152/5355 [00:07<00:10, 312.39stk/s]Checking RSI reversal:  41%|████      | 2184/5355 [00:07<00:10, 310.55stk/s]Checking RSI reversal:  41%|████▏     | 2217/5355 [00:07<00:09, 315.83stk/s]Checking RSI reversal:  42%|████▏     | 2249/5355 [00:07<00:10, 299.12stk/s]Checking RSI reversal:  43%|████▎     | 2280/5355 [00:07<00:10, 289.93stk/s]Checking RSI reversal:  43%|████▎     | 2310/5355 [00:07<00:10, 276.96stk/s]Checking RSI reversal:  44%|████▎     | 2342/5355 [00:08<00:10, 286.93stk/s]Checking RSI reversal:  44%|████▍     | 2373/5355 [00:08<00:10, 291.78stk/s]Checking RSI reversal:  45%|████▍     | 2403/5355 [00:08<00:10, 279.55stk/s]Checking RSI reversal:  45%|████▌     | 2434/5355 [00:08<00:10, 286.05stk/s]Checking RSI reversal:  46%|████▌     | 2464/5355 [00:08<00:10, 288.80stk/s]Checking RSI reversal:  47%|████▋     | 2494/5355 [00:08<00:09, 290.47stk/s]Checking RSI reversal:  47%|████▋     | 2524/5355 [00:08<00:09, 287.39stk/s]Checking RSI reversal:  48%|████▊     | 2553/5355 [00:08<00:09, 282.79stk/s]Checking RSI reversal:  48%|████▊     | 2583/5355 [00:08<00:09, 284.05stk/s]Checking RSI reversal:  49%|████▉     | 2620/5355 [00:08<00:08, 305.16stk/s]Checking RSI reversal:  50%|████▉     | 2655/5355 [00:09<00:08, 318.14stk/s]Checking RSI reversal:  50%|█████     | 2687/5355 [00:09<00:08, 318.29stk/s]Checking RSI reversal:  51%|█████     | 2719/5355 [00:09<00:09, 286.59stk/s]Checking RSI reversal:  51%|█████▏    | 2749/5355 [00:09<00:09, 283.86stk/s]Checking RSI reversal:  52%|█████▏    | 2784/5355 [00:09<00:08, 300.64stk/s]Checking RSI reversal:  53%|█████▎    | 2817/5355 [00:09<00:08, 308.28stk/s]Checking RSI reversal:  53%|█████▎    | 2849/5355 [00:09<00:08, 297.87stk/s]Checking RSI reversal:  54%|█████▍    | 2880/5355 [00:09<00:08, 295.99stk/s]Checking RSI reversal:  54%|█████▍    | 2912/5355 [00:09<00:08, 300.84stk/s]Checking RSI reversal:  55%|█████▍    | 2943/5355 [00:10<00:08, 283.90stk/s]Checking RSI reversal:  56%|█████▌    | 2976/5355 [00:10<00:08, 295.32stk/s]Checking RSI reversal:  56%|█████▌    | 3006/5355 [00:10<00:07, 294.93stk/s]Checking RSI reversal:  57%|█████▋    | 3037/5355 [00:10<00:07, 297.50stk/s]Checking RSI reversal:  57%|█████▋    | 3078/5355 [00:10<00:06, 326.67stk/s]Checking RSI reversal:  58%|█████▊    | 3111/5355 [00:10<00:07, 319.97stk/s]Checking RSI reversal:  59%|█████▊    | 3144/5355 [00:10<00:07, 307.90stk/s]Checking RSI reversal:  59%|█████▉    | 3175/5355 [00:10<00:07, 304.57stk/s]Checking RSI reversal:  60%|█████▉    | 3206/5355 [00:10<00:07, 284.31stk/s]Checking RSI reversal:  61%|██████    | 3246/5355 [00:11<00:06, 314.64stk/s]Checking RSI reversal:  61%|██████    | 3278/5355 [00:11<00:06, 306.64stk/s]Checking RSI reversal:  62%|██████▏   | 3310/5355 [00:11<00:06, 308.63stk/s]Checking RSI reversal:  62%|██████▏   | 3342/5355 [00:11<00:06, 296.58stk/s]Checking RSI reversal:  63%|██████▎   | 3376/5355 [00:11<00:06, 308.16stk/s]Checking RSI reversal:  64%|██████▎   | 3408/5355 [00:11<00:06, 290.71stk/s]Checking RSI reversal:  64%|██████▍   | 3438/5355 [00:11<00:06, 285.35stk/s]Checking RSI reversal:  65%|██████▍   | 3467/5355 [00:12<00:11, 162.50stk/s]Checking RSI reversal:  65%|██████▌   | 3499/5355 [00:12<00:09, 190.16stk/s]Checking RSI reversal:  66%|██████▌   | 3530/5355 [00:12<00:08, 213.45stk/s]Checking RSI reversal:  66%|██████▋   | 3557/5355 [00:12<00:08, 224.63stk/s]Checking RSI reversal:  67%|██████▋   | 3589/5355 [00:12<00:07, 246.07stk/s]Checking RSI reversal:  68%|██████▊   | 3617/5355 [00:12<00:06, 250.98stk/s]Checking RSI reversal:  68%|██████▊   | 3654/5355 [00:12<00:06, 282.42stk/s]Checking RSI reversal:  69%|██████▉   | 3685/5355 [00:12<00:05, 281.33stk/s]Checking RSI reversal:  69%|██████▉   | 3717/5355 [00:12<00:05, 290.11stk/s]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 3 timeframes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Entry_Price   Stop_Loss    Daily_RSI   Weekly_RSI   Monthly_RSI 
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  AAMI      $93.71      30       $94.11        $85.60       59.0        70.5         88.9        
+  ABM       $49.63      28       $49.89        $47.62       59.6        63.0         57.6        
+  ADX       $26.17      45       $26.29        $25.55       60.3        62.3         81.0        
+  AMN       $36.52      35       $36.52        $34.00       60.0        67.3         58.8        
+  AMPL      $15.67      15       $13.76        $12.00       59.1        64.0         64.0        
+  ANF       $142.58     27       $141.40       $130.81      59.6        66.2         60.0        
+  APA       $45.88      39       $45.47        $41.23       60.2        64.3         67.4        
+  ASC       $19.28      38       $19.47        $17.52       62.9        64.0         66.9        
+  AVIR      $5.15       19       $5.64         $5.12        60.1        55.5         65.2        
+  BE        $280.50     28       $291.25       $251.30      60.3        60.2         62.5        
+  BIIB      $225.71     33       $225.36       $208.93      61.4        61.8         62.3        
+  BMEZ      $16.52      20       $16.75        $15.93       59.1        66.8         76.0        
+  BRKR      $58.84      32       $64.00        $51.50       61.3        58.8         57.6        
+  BST       $50.54      48       $49.94        $46.82       61.9        69.5         71.5        
+  CBRL      $57.46      37       $55.76        $44.17       61.1        57.8         57.7        
+  CGON      $63.82      24       $78.25        $70.00       59.4        58.4         81.1        
+  CLOV      $4.79       31       $4.79         $4.11        60.2        55.2         59.4        
+  CMBT      $20.60      47       $19.61        $18.69       61.9        67.4         70.8        
+  CNK       $36.40      22       $36.98        $33.70       59.9        59.8         63.6        
+  CORT      $121.19     48       $122.03       $111.68      61.8        70.6         66.8        
+  CRBG      $34.09      22       $34.84        $32.28       59.1        62.7         62.7        
+  CRCT      $6.39       9        $5.81         $5.32        59.0        64.0         56.9        
+  CRL       $301.79     45       $294.44       $267.27      61.2        68.6         69.2        
+  CVX       $211.98     31       $211.55       $201.96      59.2        60.1         67.0        
+  DDD       $3.38       27       $3.78         $3.35        62.5        58.2         55.5        
+  DHX       $5.10       31       $4.88         $4.54        60.0        67.4         67.1        
+  DRH       $12.62      31       $12.60        $12.15       59.0        62.7         72.9        
+  EHC       $123.33     34       $124.69       $118.39      60.1        58.7         62.5        
+  EIG       $49.40      38       $50.07        $46.84       62.2        58.2         62.9        
+  EQH       $52.92      25       $54.00        $49.83       59.4        62.3         62.8        
+  ETN       $429.65     28       $445.09       $423.00      59.9        59.1         63.2        
+  FDUS      $19.06      26       $19.53        $18.91       59.5        56.0         66.4        
+  FLXS      $85.17      37       $83.92        $77.34       62.3        70.7         72.8        
+  FRHC      $169.65     22       $174.13       $160.63      62.7        56.8         63.6        
+  FRNM      $15.78      30       $16.32        $15.28       59.4        64.9         75.2        
+  FSLY      $29.30      29       $29.30        $24.14       63.6        58.3         64.0        
+  GILD      $151.17     34       $151.17       $142.60      59.4        57.4         73.8        
+  GNK       $26.50      31       $27.81        $25.68       59.1        61.3         77.1        
+  HG        $34.52      34       $35.10        $32.70       59.9        56.1         66.4        
+  HMC       $32.70      20       $32.93        $31.97       59.7        63.6         58.9        
+  HSTM      $33.13      27       $29.74        $28.55       59.9        64.7         60.8        
+  HURN      $167.05     35       $165.31       $155.41      60.1        63.0         58.3        
+  HVT       $27.26      20       $28.27        $26.98       60.2        59.2         61.9        
+  IAG       $18.80      15       $20.89        $19.15       59.5        58.7         65.5        
+  IEX       $234.29     35       $232.99       $220.07      60.7        61.2         62.9        
+  IHD       $7.48       28       $7.69         $7.34        59.8        58.7         76.8        
+  IOSP      $95.65      46       $97.41        $92.30       61.5        71.3         58.9        
+  KYMR      $112.40     36       $122.06       $110.29      60.8        64.2         74.1        
+  LGND      $301.81     31       $298.50       $270.77      60.5        60.7         75.7        
+  LIND      $35.82      22       $29.64        $25.72       59.5        57.2         70.1        
+  LQDT      $43.13      31       $43.64        $42.10       59.4        68.6         74.4        
+  MASS      $12.05      35       $12.05        $11.11       59.5        71.7         66.0        
+  MGNI      $25.40      45       $25.67        $23.09       61.9        65.2         63.0        
+  MLAB      $127.51     22       $132.55       $126.40      59.3        67.9         60.1        
+  MSFT      $535.07     17       $516.17       $487.23      63.3        61.0         59.2        
+  MSM       $129.51     24       $124.55       $119.07      59.1        66.1         72.3        
+  MTRN      $280.45     22       $264.96       $234.87      60.2        56.5         64.4        
+  MU        $1029.00    36       $1088.00      $1011.42     59.7        64.7         74.2        
+  NET       $360.93     58       $360.93       $337.00      61.7        69.4         79.3        
+  NNBR      $3.95       40       $3.86         $3.19        61.3        55.1         62.1        
+  NTCT      $40.69      34       $40.18        $37.91       60.5        56.5         70.6        
+  NVGS      $23.93      24       $24.49        $22.53       63.9        59.4         67.0        
+  ODC       $85.98      21       $92.60        $84.34       59.6        55.6         70.2        
+  OGN       $13.81      24       $13.73        $13.63       60.3        70.7         56.1        
+  OMER      $19.83      32       $19.83        $18.02       59.7        63.9         65.6        
+  ONC       $354.47     15       $365.67       $336.95      59.1        58.1         66.1        
+  PANL      $8.32       21       $8.41         $7.89        59.1        55.5         59.5        
+  PANW      $418.78     31       $392.09       $356.00      59.8        64.8         77.1        
+  PAYC      $232.22     27       $229.90       $212.40      59.4        67.6         56.6        
+  PAYO      $7.14       21       $7.17         $7.10        59.7        64.7         58.4        
+  PAYS      $15.37      42       $13.48        $11.72       60.5        67.7         77.7        
+  PBT       $34.86      42       $34.85        $30.72       60.5        59.1         73.8        
+  PBYI      $10.29      37       $9.82         $8.93        60.4        67.2         72.5        
+  PEB       $19.12      33       $18.98        $18.23       59.4        68.7         70.5        Checking RSI reversal:  70%|██████▉   | 3748/5355 [00:13<00:05, 288.24stk/s]Checking RSI reversal:  71%|███████   | 3779/5355 [00:13<00:05, 292.65stk/s]Checking RSI reversal:  71%|███████   | 3810/5355 [00:13<00:05, 295.85stk/s]Checking RSI reversal:  72%|███████▏  | 3842/5355 [00:13<00:05, 301.62stk/s]Checking RSI reversal:  72%|███████▏  | 3873/5355 [00:13<00:05, 286.28stk/s]Checking RSI reversal:  73%|███████▎  | 3907/5355 [00:13<00:04, 299.22stk/s]Checking RSI reversal:  74%|███████▎  | 3938/5355 [00:13<00:05, 281.72stk/s]Checking RSI reversal:  74%|███████▍  | 3972/5355 [00:13<00:04, 296.01stk/s]Checking RSI reversal:  75%|███████▍  | 4003/5355 [00:13<00:04, 298.88stk/s]Checking RSI reversal:  75%|███████▌  | 4042/5355 [00:13<00:04, 322.45stk/s]Checking RSI reversal:  76%|███████▌  | 4075/5355 [00:14<00:04, 312.57stk/s]Checking RSI reversal:  77%|███████▋  | 4107/5355 [00:14<00:04, 308.57stk/s]Checking RSI reversal:  77%|███████▋  | 4139/5355 [00:14<00:03, 308.84stk/s]Checking RSI reversal:  78%|███████▊  | 4170/5355 [00:14<00:04, 293.72stk/s]Checking RSI reversal:  78%|███████▊  | 4200/5355 [00:14<00:04, 276.95stk/s]Checking RSI reversal:  79%|███████▉  | 4230/5355 [00:14<00:03, 282.11stk/s]Checking RSI reversal:  80%|███████▉  | 4262/5355 [00:14<00:03, 291.14stk/s]Checking RSI reversal:  80%|████████  | 4297/5355 [00:14<00:03, 304.06stk/s]Checking RSI reversal:  81%|████████  | 4328/5355 [00:14<00:03, 284.35stk/s]Checking RSI reversal:  81%|████████▏ | 4359/5355 [00:15<00:03, 290.36stk/s]Checking RSI reversal:  82%|████████▏ | 4389/5355 [00:15<00:03, 291.52stk/s]Checking RSI reversal:  83%|████████▎ | 4421/5355 [00:15<00:03, 298.45stk/s]Checking RSI reversal:  83%|████████▎ | 4454/5355 [00:15<00:02, 307.25stk/s]Checking RSI reversal:  84%|████████▍ | 4486/5355 [00:15<00:02, 310.39stk/s]Checking RSI reversal:  84%|████████▍ | 4521/5355 [00:15<00:02, 321.12stk/s]Checking RSI reversal:  85%|████████▌ | 4554/5355 [00:15<00:02, 296.84stk/s]Checking RSI reversal:  86%|████████▌ | 4586/5355 [00:15<00:02, 302.04stk/s]Checking RSI reversal:  86%|████████▌ | 4617/5355 [00:15<00:02, 296.54stk/s]Checking RSI reversal:  87%|████████▋ | 4649/5355 [00:16<00:02, 299.74stk/s]Checking RSI reversal:  87%|████████▋ | 4681/5355 [00:16<00:02, 301.33stk/s]Checking RSI reversal:  88%|████████▊ | 4712/5355 [00:16<00:02, 275.90stk/s]Checking RSI reversal:  89%|████████▊ | 4741/5355 [00:16<00:02, 269.01stk/s]Checking RSI reversal:  89%|████████▉ | 4771/5355 [00:16<00:02, 273.48stk/s]Checking RSI reversal:  90%|████████▉ | 4799/5355 [00:16<00:02, 270.75stk/s]Checking RSI reversal:  90%|█████████ | 4827/5355 [00:16<00:01, 265.92stk/s]Checking RSI reversal:  91%|█████████ | 4861/5355 [00:16<00:01, 284.03stk/s]Checking RSI reversal:  91%|█████████▏| 4891/5355 [00:16<00:01, 287.53stk/s]Checking RSI reversal:  92%|█████████▏| 4920/5355 [00:17<00:01, 283.54stk/s]Checking RSI reversal:  92%|█████████▏| 4949/5355 [00:17<00:01, 280.76stk/s]Checking RSI reversal:  93%|█████████▎| 4980/5355 [00:17<00:01, 287.66stk/s]Checking RSI reversal:  94%|█████████▎| 5009/5355 [00:17<00:01, 270.20stk/s]Checking RSI reversal:  94%|█████████▍| 5040/5355 [00:17<00:01, 280.82stk/s]Checking RSI reversal:  95%|█████████▍| 5070/5355 [00:17<00:00, 285.33stk/s]Checking RSI reversal:  95%|█████████▌| 5100/5355 [00:17<00:00, 288.27stk/s]Checking RSI reversal:  96%|█████████▌| 5129/5355 [00:17<00:00, 285.72stk/s]Checking RSI reversal:  96%|█████████▋| 5160/5355 [00:17<00:00, 291.93stk/s]Checking RSI reversal:  97%|█████████▋| 5191/5355 [00:17<00:00, 295.83stk/s]Checking RSI reversal:  97%|█████████▋| 5221/5355 [00:18<00:00, 283.04stk/s]Checking RSI reversal:  98%|█████████▊| 5253/5355 [00:18<00:00, 292.48stk/s]Checking RSI reversal:  99%|█████████▊| 5283/5355 [00:18<00:00, 293.92stk/s]Checking RSI reversal:  99%|█████████▉| 5328/5355 [00:18<00:00, 337.23stk/s]Checking RSI reversal: 100%|██████████| 5355/5355 [00:18<00:00, 289.64stk/s]
+
+  PENG      $76.28      18       $61.36        $51.31       63.8        56.2         62.7        
+  PK        $15.17      33       $15.47        $14.39       60.2        67.5         73.3        
+  PLSE      $53.81      44       $53.81        $47.31       59.3        66.4         84.5        
+  PLUS      $93.30      23       $92.89        $87.87       59.4        58.1         60.7        
+  PLX       $2.78       25       $2.78         $2.60        59.1        62.1         59.7        
+  PRCH      $17.56      25       $17.31        $15.91       59.5        61.1         65.8        
+  PSX       $278.18     44       $264.23       $248.51      62.7        70.8         82.5        
+  PVLA      $138.77     17       $158.13       $145.91      59.5        58.6         69.2        
+  QQQX      $31.10      49       $30.96        $30.01       61.2        63.6         75.1        
+  RBKB      $12.86      38       $13.15        $12.65       60.4        65.0         72.4        
+  RDVT      $79.78      44       $79.86        $76.49       60.1        71.7         74.8        
+  RDWR      $30.98      31       $30.98        $28.50       59.5        58.5         61.0        
+  RGEN      $173.88     22       $189.50       $177.12      59.1        62.7         61.8        
+  RZC       $25.03      29       $25.26        $24.86       59.4        57.6         75.5        
+  SAIC      $134.66     46       $134.66       $121.00      61.3        59.6         63.6        
+  SB        $8.53       29       $8.94         $7.99        59.5        58.1         77.9        
+  SCL       $61.03      27       $64.38        $59.97       62.5        60.2         57.3        
+  SCSC      $60.93      40       $60.93        $57.06       59.7        74.1         68.7        
+  SGHT      $8.89       27       $8.92         $8.35        59.2        67.0         65.2        
+  SHO       $11.31      46       $11.35        $10.95       61.7        61.0         65.9        
+  SIBN      $19.37      43       $19.81        $17.95       62.2        55.5         57.0        
+  SPXX      $18.94      42       $18.94        $18.25       59.9        67.0         70.7        
+  TEL       $218.29     20       $217.76       $204.44      59.5        55.4         62.2        
+  TEN       $51.40      47       $48.98        $45.50       61.3        62.2         78.1        
+  TEO       $12.37      10       $14.09        $12.78       59.6        56.0         58.2        
+  TGB       $8.85       35       $9.36         $7.55        61.9        58.8         73.0        
+  TWLO      $289.47     41       $289.47       $265.40      59.3        73.3         80.6        
+  TX        $58.18      46       $58.18        $53.22       60.5        67.2         71.6        
+  TXNM      $58.61      32       $58.52        $57.61       60.6        58.8         71.3        
+  UFPT      $288.97     29       $298.48       $273.00      60.8        55.8         61.4        
+  VEEV      $296.13     36       $270.75       $257.87      61.3        65.4         62.5        
+  VIR       $11.70      29       $11.70        $10.33       59.5        63.7         60.1        
+  VSXY      $82.87      38       $88.29        $72.47       60.9        57.6         73.5        
+  WABC      $58.66      32       $60.67        $58.84       60.4        66.1         71.0        
+  WAT       $433.77     46       $440.12       $418.00      61.6        64.5         64.0        
+  WCC       $365.69     32       $371.28       $336.41      60.0        60.1         72.9        
+  WKC       $36.41      23       $36.43        $34.55       59.2        64.1         63.5        
+  WSM       $241.78     33       $238.70       $225.22      60.4        57.3         66.9        
+  WST       $366.00     30       $376.76       $363.12      62.9        62.5         62.6        
+  XERS      $10.48      34       $8.80         $7.40        61.7        56.3         65.3        
+  XOM       $168.94     29       $168.50       $159.27      63.5        59.8         70.4        
+  ZBRA      $387.18     17       $361.61       $336.40      59.4        64.9         62.4        
+  ZETA      $33.09      47       $31.57        $28.03       60.8        65.1         70.4        
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6323
+  Daily data      : 5355
+  ✅ Matches       : 117
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                       Daily RSI Pop + Weekly/Monthly Confirm   2026-10-11   117 matches                     ║
+  ╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬──────────┬───────┬─────────────┬───────────┬───────────┬────────────────┬────────────┬─────────────┐
+  │ Ticker │  Price   │ Score │ Entry_Price │ Stop_Loss │ Daily_RSI │ Daily_RSI_Prev │ Weekly_RSI │ Monthly_RSI │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  NET   │ $360.93  │   58  │   $360.93   │  $337.00  │    61.7   │      54.2      │    69.4    │     79.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  QQQX  │  $31.10  │   49  │    $30.96   │   $30.01  │    61.2   │      54.8      │    63.6    │     75.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  BST   │  $50.54  │   48  │    $49.94   │   $46.82  │    61.9   │      50.5      │    69.5    │     71.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CORT  │ $121.19  │   48  │   $122.03   │  $111.68  │    61.8   │      54.1      │    70.6    │     66.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CMBT  │  $20.60  │   47  │    $19.61   │   $18.69  │    61.9   │      52.0      │    67.4    │     70.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  TEN   │  $51.40  │   47  │    $48.98   │   $45.50  │    61.3   │      55.0      │    62.2    │     78.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ZETA  │  $33.09  │   47  │    $31.57   │   $28.03  │    60.8   │      46.5      │    65.1    │     70.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  IOSP  │  $95.65  │   46  │    $97.41   │   $92.30  │    61.5   │      53.8      │    71.3    │     58.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  SAIC  │ $134.66  │   46  │   $134.66   │  $121.00  │    61.3   │      53.4      │    59.6    │     63.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  SHO   │  $11.31  │   46  │    $11.35   │   $10.95  │    61.7   │      54.7      │    61.0    │     65.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │   TX   │  $58.18  │   46  │    $58.18   │   $53.22  │    60.5   │      53.3      │    67.2    │     71.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  WAT   │ $433.77  │   46  │   $440.12   │  $418.00  │    61.6   │      53.1      │    64.5    │     64.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ADX   │  $26.17  │   45  │    $26.29   │   $25.55  │    60.3   │      51.5      │    62.3    │     81.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CRL   │ $301.79  │   45  │   $294.44   │  $267.27  │    61.2   │      50.0      │    68.6    │     69.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  MGNI  │  $25.40  │   45  │    $25.67   │   $23.09  │    61.9   │      46.3      │    65.2    │     63.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PLSE  │  $53.81  │   44  │    $53.81   │   $47.31  │    59.3   │      50.1      │    66.4    │     84.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PSX   │ $278.18  │   44  │   $264.23   │  $248.51  │    62.7   │      54.4      │    70.8    │     82.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  RDVT  │  $79.78  │   44  │    $79.86   │   $76.49  │    60.1   │      54.9      │    71.7    │     74.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  SIBN  │  $19.37  │   43  │    $19.81   │   $17.95  │    62.2   │      42.4      │    55.5    │     57.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PAYS  │  $15.37  │   42  │    $13.48   │   $11.72  │    60.5   │      53.9      │    67.7    │     77.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PBT   │  $34.86  │   42  │    $34.85   │   $30.72  │    60.5   │      53.1      │    59.1    │     73.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  SPXX  │  $18.94  │   42  │    $18.94   │   $18.25  │    59.9   │      50.8      │    67.0    │     70.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  TWLO  │ $289.47  │   41  │   $289.47   │  $265.40  │    59.3   │      54.2      │    73.3    │     80.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  NNBR  │  $3.95   │   40  │    $3.86    │   $3.19   │    61.3   │      45.3      │    55.1    │     62.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  SCSC  │  $60.93  │   40  │    $60.93   │   $57.06  │    59.7   │      53.4      │    74.1    │     68.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  APA   │  $45.88  │   39  │    $45.47   │   $41.23  │    60.2   │      53.4      │    64.3    │     67.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ASC   │  $19.28  │   38  │    $19.47   │   $17.52  │    62.9   │      52.7      │    64.0    │     66.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  EIG   │  $49.40  │   38  │    $50.07   │   $46.84  │    62.2   │      54.9      │    58.2    │     62.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  RBKB  │  $12.86  │   38  │    $13.15   │   $12.65  │    60.4   │      54.3      │    65.0    │     72.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  VSXY  │  $82.87  │   38  │    $88.29   │   $72.47  │    60.9   │      52.9      │    57.6    │     73.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CBRL  │  $57.46  │   37  │    $55.76   │   $44.17  │    61.1   │      51.8      │    57.8    │     57.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  FLXS  │  $85.17  │   37  │    $83.92   │   $77.34  │    62.3   │      54.4      │    70.7    │     72.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PBYI  │  $10.29  │   37  │    $9.82    │   $8.93   │    60.4   │      51.4      │    67.2    │     72.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  KYMR  │ $112.40  │   36  │   $122.06   │  $110.29  │    60.8   │      52.9      │    64.2    │     74.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │   MU   │ $1029.00 │   36  │   $1088.00  │  $1011.42 │    59.7   │      53.9      │    64.7    │     74.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  VEEV  │ $296.13  │   36  │   $270.75   │  $257.87  │    61.3   │      54.1      │    65.4    │     62.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  AMN   │  $36.52  │   35  │    $36.52   │   $34.00  │    60.0   │      53.2      │    67.3    │     58.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  HURN  │ $167.05  │   35  │   $165.31   │  $155.41  │    60.1   │      50.1      │    63.0    │     58.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  IEX   │ $234.29  │   35  │   $232.99   │  $220.07  │    60.7   │      54.6      │    61.2    │     62.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  MASS  │  $12.05  │   35  │    $12.05   │   $11.11  │    59.5   │      54.3      │    71.7    │     66.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  TGB   │  $8.85   │   35  │    $9.36    │   $7.55   │    61.9   │      54.0      │    58.8    │     73.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  EHC   │ $123.33  │   34  │   $124.69   │  $118.39  │    60.1   │      49.5      │    58.7    │     62.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  GILD  │ $151.17  │   34  │   $151.17   │  $142.60  │    59.4   │      50.8      │    57.4    │     73.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │   HG   │  $34.52  │   34  │    $35.10   │   $32.70  │    59.9   │      50.7      │    56.1    │     66.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  NTCT  │  $40.69  │   34  │    $40.18   │   $37.91  │    60.5   │      52.0      │    56.5    │     70.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  XERS  │  $10.48  │   34  │    $8.80    │   $7.40   │    61.7   │      51.0      │    56.3    │     65.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  BIIB  │ $225.71  │   33  │   $225.36   │  $208.93  │    61.4   │      54.9      │    61.8    │     62.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PEB   │  $19.12  │   33  │    $18.98   │   $18.23  │    59.4   │      54.7      │    68.7    │     70.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │   PK   │  $15.17  │   33  │    $15.47   │   $14.39  │    60.2   │      55.0      │    67.5    │     73.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  WSM   │ $241.78  │   33  │   $238.70   │  $225.22  │    60.4   │      53.6      │    57.3    │     66.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  BRKR  │  $58.84  │   32  │    $64.00   │   $51.50  │    61.3   │      53.2      │    58.8    │     57.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  OMER  │  $19.83  │   32  │    $19.83   │   $18.02  │    59.7   │      54.9      │    63.9    │     65.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  TXNM  │  $58.61  │   32  │    $58.52   │   $57.61  │    60.6   │      54.1      │    58.8    │     71.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  WABC  │  $58.66  │   32  │    $60.67   │   $58.84  │    60.4   │      54.9      │    66.1    │     71.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  WCC   │ $365.69  │   32  │   $371.28   │  $336.41  │    60.0   │      54.3      │    60.1    │     72.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CLOV  │  $4.79   │   31  │    $4.79    │   $4.11   │    60.2   │      53.9      │    55.2    │     59.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CVX   │ $211.98  │   31  │   $211.55   │  $201.96  │    59.2   │      48.7      │    60.1    │     67.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  DHX   │  $5.10   │   31  │    $4.88    │   $4.54   │    60.0   │      52.8      │    67.4    │     67.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  DRH   │  $12.62  │   31  │    $12.60   │   $12.15  │    59.0   │      51.0      │    62.7    │     72.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  GNK   │  $26.50  │   31  │    $27.81   │   $25.68  │    59.1   │      53.2      │    61.3    │     77.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  LGND  │ $301.81  │   31  │   $298.50   │  $270.77  │    60.5   │      53.9      │    60.7    │     75.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  LQDT  │  $43.13  │   31  │    $43.64   │   $42.10  │    59.4   │      53.5      │    68.6    │     74.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PANW  │ $418.78  │   31  │   $392.09   │  $356.00  │    59.8   │      54.4      │    64.8    │     77.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  RDWR  │  $30.98  │   31  │    $30.98   │   $28.50  │    59.5   │      48.8      │    58.5    │     61.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  AAMI  │  $93.71  │   30  │    $94.11   │   $85.60  │    59.0   │      50.8      │    70.5    │     88.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  FRNM  │  $15.78  │   30  │    $16.32   │   $15.28  │    59.4   │      53.9      │    64.9    │     75.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  WST   │ $366.00  │   30  │   $376.76   │  $363.12  │    62.9   │      54.2      │    62.5    │     62.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  FSLY  │  $29.30  │   29  │    $29.30   │   $24.14  │    63.6   │      51.3      │    58.3    │     64.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  RZC   │  $25.03  │   29  │    $25.26   │   $24.86  │    59.4   │      50.8      │    57.6    │     75.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │   SB   │  $8.53   │   29  │    $8.94    │   $7.99   │    59.5   │      52.5      │    58.1    │     77.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  UFPT  │ $288.97  │   29  │   $298.48   │  $273.00  │    60.8   │      51.6      │    55.8    │     61.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  VIR   │  $11.70  │   29  │    $11.70   │   $10.33  │    59.5   │      52.8      │    63.7    │     60.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  XOM   │ $168.94  │   29  │   $168.50   │  $159.27  │    63.5   │      54.9      │    59.8    │     70.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ABM   │  $49.63  │   28  │    $49.89   │   $47.62  │    59.6   │      52.0      │    63.0    │     57.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │   BE   │ $280.50  │   28  │   $291.25   │  $251.30  │    60.3   │      52.7      │    60.2    │     62.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ETN   │ $429.65  │   28  │   $445.09   │  $423.00  │    59.9   │      54.2      │    59.1    │     63.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  IHD   │  $7.48   │   28  │    $7.69    │   $7.34   │    59.8   │      48.7      │    58.7    │     76.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ANF   │ $142.58  │   27  │   $141.40   │  $130.81  │    59.6   │      53.4      │    66.2    │     60.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  DDD   │  $3.38   │   27  │    $3.78    │   $3.35   │    62.5   │      55.0      │    58.2    │     55.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  HSTM  │  $33.13  │   27  │    $29.74   │   $28.55  │    59.9   │      52.3      │    64.7    │     60.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PAYC  │ $232.22  │   27  │   $229.90   │  $212.40  │    59.4   │      53.2      │    67.6    │     56.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  SCL   │  $61.03  │   27  │    $64.38   │   $59.97  │    62.5   │      48.9      │    60.2    │     57.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  SGHT  │  $8.89   │   27  │    $8.92    │   $8.35   │    59.2   │      52.4      │    67.0    │     65.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  FDUS  │  $19.06  │   26  │    $19.53   │   $18.91  │    59.5   │      47.8      │    56.0    │     66.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  EQH   │  $52.92  │   25  │    $54.00   │   $49.83  │    59.4   │      53.0      │    62.3    │     62.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PLX   │  $2.78   │   25  │    $2.78    │   $2.60   │    59.1   │      52.8      │    62.1    │     59.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PRCH  │  $17.56  │   25  │    $17.31   │   $15.91  │    59.5   │      53.3      │    61.1    │     65.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CGON  │  $63.82  │   24  │    $78.25   │   $70.00  │    59.4   │      50.7      │    58.4    │     81.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  MSM   │ $129.51  │   24  │   $124.55   │  $119.07  │    59.1   │      53.4      │    66.1    │     72.3    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  NVGS  │  $23.93  │   24  │    $24.49   │   $22.53  │    63.9   │      54.6      │    59.4    │     67.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  OGN   │  $13.81  │   24  │    $13.73   │   $13.63  │    60.3   │      54.8      │    70.7    │     56.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PLUS  │  $93.30  │   23  │    $92.89   │   $87.87  │    59.4   │      49.6      │    58.1    │     60.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  WKC   │  $36.41  │   23  │    $36.43   │   $34.55  │    59.2   │      53.6      │    64.1    │     63.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CNK   │  $36.40  │   22  │    $36.98   │   $33.70  │    59.9   │      52.8      │    59.8    │     63.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CRBG  │  $34.09  │   22  │    $34.84   │   $32.28  │    59.1   │      53.0      │    62.7    │     62.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  FRHC  │ $169.65  │   22  │   $174.13   │  $160.63  │    62.7   │      52.5      │    56.8    │     63.6    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  LIND  │  $35.82  │   22  │    $29.64   │   $25.72  │    59.5   │      53.4      │    57.2    │     70.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  MLAB  │ $127.51  │   22  │   $132.55   │  $126.40  │    59.3   │      54.7      │    67.9    │     60.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  MTRN  │ $280.45  │   22  │   $264.96   │  $234.87  │    60.2   │      54.9      │    56.5    │     64.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  RGEN  │ $173.88  │   22  │   $189.50   │  $177.12  │    59.1   │      53.0      │    62.7    │     61.8    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ODC   │  $85.98  │   21  │    $92.60   │   $84.34  │    59.6   │      51.7      │    55.6    │     70.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PANL  │  $8.32   │   21  │    $8.41    │   $7.89   │    59.1   │      46.8      │    55.5    │     59.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PAYO  │  $7.14   │   21  │    $7.17    │   $7.10   │    59.7   │      52.8      │    64.7    │     58.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  BMEZ  │  $16.52  │   20  │    $16.75   │   $15.93  │    59.1   │      53.6      │    66.8    │     76.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  HMC   │  $32.70  │   20  │    $32.93   │   $31.97  │    59.7   │      53.2      │    63.6    │     58.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  HVT   │  $27.26  │   20  │    $28.27   │   $26.98  │    60.2   │      54.0      │    59.2    │     61.9    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  TEL   │ $218.29  │   20  │   $217.76   │  $204.44  │    59.5   │      52.4      │    55.4    │     62.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  AVIR  │  $5.15   │   19  │    $5.64    │   $5.12   │    60.1   │      54.2      │    55.5    │     65.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PENG  │  $76.28  │   18  │    $61.36   │   $51.31  │    63.8   │      53.5      │    56.2    │     62.7    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  MSFT  │ $535.07  │   17  │   $516.17   │  $487.23  │    63.3   │      54.5      │    61.0    │     59.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  PVLA  │ $138.77  │   17  │   $158.13   │  $145.91  │    59.5   │      53.8      │    58.6    │     69.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ZBRA  │ $387.18  │   17  │   $361.61   │  $336.40  │    59.4   │      53.1      │    64.9    │     62.4    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  AMPL  │  $15.67  │   15  │    $13.76   │   $12.00  │    59.1   │      53.6      │    64.0    │     64.0    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  IAG   │  $18.80  │   15  │    $20.89   │   $19.15  │    59.5   │      54.3      │    58.7    │     65.5    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  ONC   │ $354.47  │   15  │   $365.67   │  $336.95  │    59.1   │      49.3      │    58.1    │     66.1    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  TEO   │  $12.37  │   10  │    $14.09   │   $12.78  │    59.6   │      54.0      │    56.0    │     58.2    │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼───────────┼────────────────┼────────────┼─────────────┤
+  │  CRCT  │  $6.39   │   9   │    $5.81    │   $5.32   │    59.0   │      53.6      │    64.0    │     56.9    │
+  └────────┴──────────┴───────┴─────────────┴───────────┴───────────┴────────────────┴────────────┴─────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Score           0-100 (RSI strength on all 3 timeframes + risk:reward)
+  Entry_Price     high of the signal day's green candle (breakout trigger)
+  Stop_Loss       low of that same green candle
+  Daily_RSI_Prev  yesterday's daily RSI (must have been < daily_rsi_prev_max)
+  Daily_RSI       today's daily RSI (must land in the 59-64 band)
+  Days_Since_Signal  how many trading days ago the RSI transition fired
+                     (0 = today; checked over the last daily_cross_
+                     lookback_days trading days, not just today)
+  ──────────────────────────────────────────────────────
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/rsi_daily_pop_weekly_monthly_confirm_20261011_0435.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_rsi_daily_pop_weekly_monthly_confirm_20261011_0435.txt
+
+  📋 Tickers (comma-separated):
+  NET, QQQX, BST, CORT, CMBT, TEN, ZETA, IOSP, SAIC, SHO, TX, WAT, ADX, CRL, MGNI, PLSE, PSX, RDVT, SIBN, PAYS, PBT, SPXX, TWLO, NNBR, SCSC, APA, ASC, EIG, RBKB, VSXY, CBRL, FLXS, PBYI, KYMR, MU, VEEV, AMN, HURN, IEX, MASS, TGB, EHC, GILD, HG, NTCT, XERS, BIIB, PEB, PK, WSM, BRKR, OMER, TXNM, WABC, WCC, CLOV, CVX, DHX, DRH, GNK, LGND, LQDT, PANW, RDWR, AAMI, FRNM, WST, FSLY, RZC, SB, UFPT, VIR, XOM, ABM, BE, ETN, IHD, ANF, DDD, HSTM, PAYC, SCL, SGHT, FDUS, EQH, PLX, PRCH, CGON, MSM, NVGS, OGN, PLUS, WKC, CNK, CRBG, FRHC, LIND, MLAB, MTRN, RGEN, ODC, PANL, PAYO, BMEZ, HMC, HVT, TEL, AVIR, PENG, MSFT, PVLA, ZBRA, AMPL, IAG, ONC, TEO, CRCT
+[Email] Sending to vikramaga24@gmail.com  (117 results)...
+[Email] 📎 Attached: rsi_daily_pop_weekly_monthly_confirm_20261011_0435.csv (14,895 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 Daily RSI Pop + Weekly/Monthly Confirm — 117 signals — 2026-10-11
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/rsi_daily_pop_weekly_monthly_confirm_chart_20261011_0435.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required — scanned over the last
+  signal_lookback_days trading days, 15d ≈ 3 weeks,
+  not just today)
+
+  1) DAILY RSI TRANSITION: yesterday's RSI(14) was BELOW
+     daily_rsi_prev_max (55), AND today's RSI(14) is
+     now between daily_rsi_now_min and daily_rsi_now_max
+     (59–64, inclusive) — a fresh pop into
+     that specific zone.
+  2) WEEKLY: RSI(14) currently ABOVE weekly_rsi_min
+     (55) — level only, no freshness requirement.
+  3) MONTHLY: RSI(14) currently ABOVE monthly_rsi_min
+     (55) — level only, no freshness requirement.
+
+  If the transition fired more than once in the window, the MOST
+  RECENT occurrence is used for Entry/Stop/scoring.
+
+  📋 DATA SOURCING
+  Only 1 download per ticker: daily bars (~6 years, for stable
+  monthly RSI). Weekly and Monthly RSI are both computed from the
+  SAME daily data via resampling ('W' and 'ME'), then forward-filled
+  onto the daily index — no separate network calls needed.
+
+  📋 OUTPUT (reasonable defaults — not explicitly requested)
+  Entry_Price = the signal day's CLOSE
+  Stop_Loss   = the lowest LOW in the 10 trading days up to and
+                including the signal day
+  Signal_Date = the exact calendar date the transition fired
+  Days_Since_Signal = how many trading days ago (0 = today)
+  Recent_Signals    = every date the transition fired within the window
+
+  📋 SCORE (0-100)
+  Daily RSI centered in the 59-64 band (0-25) + how far below 55
+  yesterday's RSI was (0-20) + weekly RSI strength above 55 (0-20) +
+  monthly RSI strength above 55 (0-20) + freshness (0-15)
+
+  💡 BEST SETUPS
+  Score > 70                strong alignment across all 3 timeframes
+  Daily_RSI near 61.5           dead center of the 59-64 band
+  Weekly_RSI / Monthly_RSI high    well above 55, confirms real strength
+  Days_Since_Signal = 0-3              freshest transition
+
+  ⚙️  TUNE IF 0 RESULTS
+  daily_rsi_prev_max          55.0 → 58.0
+  daily_rsi_now_min/max        59-64 → 57-66  (widen the target band)
+  weekly_rsi_min               55.0 → 50.0
+  monthly_rsi_min              55.0 → 50.0
+  signal_lookback_days           15 → 25    (search further back)
+  min_price                        2 → 1
+  min_avg_volume               80000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

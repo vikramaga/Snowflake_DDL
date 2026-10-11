@@ -1,0 +1,165 @@
+
+1 Failed download:
+['IREN']: OperationalError('database is locked')
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ NVDA: $229.28  EMA20=$228.66  SMA50=$221.94  SMA150=$207.25  Stack:✅  MACD>0:✅  2026-10-09
+  ✅ AAPL: $336.64  EMA20=$333.29  SMA50=$322.36  SMA150=$299.31  Stack:✅  MACD>0:✅  2026-10-09
+  ✅ IREN: $35.19  EMA20=$41.01  SMA50=$41.72  SMA150=$45.35  Stack:❌  MACD>0:❌  2026-10-09
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  DIAGNOSTIC (IREN + 9 samples)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Downloaded 10/10
+
+  SYM            P   STACK   COMP    VOL×    MACD    DIST%  SCORE  RESULT
+  ────────────────────────────────────────────────────────────────────
+  IREN    $  35.19       ❌      —       —       ❌   -14.2%      —  ❌  !stack
+  NVDA    $ 229.28       ✅      —       —       ✅    +0.3%      —  ❌  !vol
+  AMD     $ 608.10       ✅      —       —       ✅    +1.8%      —  ❌  !vol
+  PLTR    $ 209.05       ✅      —       —       ✅   +10.9%      —  ❌  !vol
+  MARA    $   9.65       ❌      —       —       ❌   -14.3%      —  ❌  !stack
+  COIN    $ 179.39       ❌      —       —       ✅    -2.4%      —  ❌  !stack
+  HOOD    $ 109.02       ✅      —       —       ✅    -3.2%      —  ❌  !vol
+  CRWD    $ 275.04       ✅      —       —       ✅    +7.4%      —  ❌  !vol
+  AVGO    $ 361.54       ❌      —       —       ❌    +0.4%      —  ❌  !stack
+  MU      $1029.00       ✅      —       —       ✅    -1.0%      —  ❌  !vol
+
+  Pattern (IREN chart):
+    🟢 Green = EMA20  🔵 Blue = SMA50  🔴 Pink = SMA150
+    Orange horizontal = Monthly Camarilla H4 levels
+
+    P1  Compression  : EMA20,SMA50,SMA150 bunched within 8.0%
+                       for at least 10 bars, all flat
+    P2  MA Stack     : EMA20 > SMA50 > SMA150 (full bull stack)
+                       EMA20 rising >= 0.5% in last 5 bars
+    P3  Volume surge : >= 1.8× avg in last 20 bars
+    P4  MACD         : MACD > 0 AND histogram > 0
+
+  Entry zone: price within 3.0%–20.0% above EMA20
+  (catches both: fresh breakout AND pullback to EMA20)
+
+  Tune if mostly ❌:
+    compression_min_bars  10 → 5
+    compression_band_pct   8 → 12
+    vol_surge_mult        1.8 → 1.3
+    pullback_upper_pct    20 → 35
+    min_ema20_slope_pct  0.5 → 0.1
+    slope_flat_pct         3 → 6
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2273 → 5432
+  ✅ NASDAQ API        : + 882 → 6314
+  ✅ Static fallback   : +   2 → 6316
+
+  🎯 Total: 6316 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 4  SCANNING 6316 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scanning:   0%|          | 0/6316 [00:00<?, ?stk/s]Scanning:   0%|          | 1/6316 [00:04<7:30:56,  4.28s/stk]Scanning:   1%|          | 51/6316 [00:08<15:52,  6.58stk/s] Scanning:   2%|▏         | 101/6316 [00:14<13:37,  7.60stk/s]Scanning:   2%|▏         | 151/6316 [00:20<12:55,  7.95stk/s]Scanning:   3%|▎         | 201/6316 [00:27<13:05,  7.79stk/s]Scanning:   4%|▍         | 251/6316 [00:33<12:53,  7.84stk/s]Scanning:   5%|▍         | 301/6316 [00:40<13:00,  7.70stk/s]Scanning:   6%|▌         | 351/6316 [00:45<12:14,  8.13stk/s]Scanning:   6%|▋         | 401/6316 [00:52<12:23,  7.96stk/s]Scanning:   7%|▋         | 451/6316 [00:58<11:58,  8.16stk/s]Scanning:   8%|▊         | 501/6316 [01:04<12:07,  7.99stk/s]Scanning:   9%|▊         | 551/6316 [01:11<12:03,  7.96stk/s]Scanning:  10%|▉         | 601/6316 [01:17<11:51,  8.04stk/s]Scanning:  10%|█         | 651/6316 [01:23<11:46,  8.02stk/s]Scanning:  11%|█         | 701/6316 [01:29<11:37,  8.05stk/s]Scanning:  12%|█▏        | 751/6316 [01:35<11:29,  8.07stk/s]Scanning:  13%|█▎        | 800/6316 [01:35<08:03, 11.40stk/s]Scanning:  13%|█▎        | 816/6316 [01:42<11:21,  8.06stk/s]Scanning:  13%|█▎        | 851/6316 [01:47<12:21,  7.37stk/s]Scanning:  14%|█▍        | 901/6316 [01:54<12:06,  7.45stk/s]Scanning:  15%|█▌        | 951/6316 [01:59<11:09,  8.02stk/s]Scanning:  16%|█▌        | 1001/6316 [02:06<11:04,  8.00stk/s]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBO"}}}
+$CBO: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBX"}}}
+$CBX: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Scanning:  17%|█▋        | 1051/6316 [02:12<11:14,  7.81stk/s]Scanning:  17%|█▋        | 1101/6316 [02:18<10:47,  8.06stk/s]Scanning:  18%|█▊        | 1151/6316 [02:25<10:53,  7.91stk/s]Scanning:  19%|█▉        | 1201/6316 [02:31<10:35,  8.05stk/s]Scanning:  20%|█▉        | 1251/6316 [02:37<10:23,  8.12stk/s]Scanning:  21%|██        | 1301/6316 [02:42<09:57,  8.39stk/s]Scanning:  21%|██▏       | 1351/6316 [02:49<10:04,  8.21stk/s]Scanning:  22%|██▏       | 1401/6316 [02:54<09:48,  8.35stk/s]$CTEST: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+Scanning:  23%|██▎       | 1451/6316 [03:00<09:44,  8.32stk/s]Scanning:  24%|██▍       | 1501/6316 [03:06<09:27,  8.49stk/s]Scanning:  25%|██▍       | 1551/6316 [03:13<09:41,  8.19stk/s]Scanning:  25%|██▌       | 1601/6316 [03:19<09:37,  8.17stk/s]Scanning:  26%|██▌       | 1651/6316 [03:24<09:01,  8.61stk/s]Scanning:  27%|██▋       | 1701/6316 [03:30<09:08,  8.41stk/s]Scanning:  28%|██▊       | 1751/6316 [03:35<08:42,  8.74stk/s]Scanning:  29%|██▊       | 1801/6316 [03:40<08:20,  9.03stk/s]Scanning:  29%|██▉       | 1851/6316 [03:47<08:37,  8.63stk/s]Scanning:  30%|███       | 1901/6316 [03:52<08:27,  8.70stk/s]Scanning:  31%|███       | 1951/6316 [03:58<08:24,  8.65stk/s]Scanning:  32%|███▏      | 2001/6316 [04:05<08:43,  8.24stk/s]Scanning:  32%|███▏      | 2051/6316 [04:11<08:29,  8.37stk/s]Scanning:  33%|███▎      | 2101/6316 [04:17<08:36,  8.16stk/s]Scanning:  34%|███▍      | 2151/6316 [04:23<08:12,  8.46stk/s]Scanning:  35%|███▍      | 2201/6316 [04:29<08:17,  8.27stk/s]Scanning:  36%|███▌      | 2251/6316 [04:35<08:19,  8.14stk/s]Scanning:  36%|███▋      | 2301/6316 [04:41<08:05,  8.27stk/s]Scanning:  37%|███▋      | 2351/6316 [04:47<07:49,  8.45stk/s]Scanning:  38%|███▊      | 2401/6316 [04:52<07:22,  8.84stk/s]Scanning:  39%|███▉      | 2451/6316 [04:58<07:18,  8.81stk/s]Scanning:  40%|███▉      | 2501/6316 [05:03<07:15,  8.76stk/s]Scanning:  40%|████      | 2551/6316 [05:10<07:27,  8.41stk/s]Scanning:  41%|████      | 2601/6316 [05:15<07:09,  8.64stk/s]Scanning:  42%|████▏     | 2651/6316 [05:21<07:06,  8.59stk/s]Scanning:  43%|████▎     | 2701/6316 [05:28<07:16,  8.28stk/s]Scanning:  44%|████▎     | 2751/6316 [05:34<07:11,  8.26stk/s]Scanning:  44%|████▍     | 2801/6316 [05:40<07:09,  8.18stk/s]Scanning:  45%|████▌     | 2851/6316 [05:46<07:09,  8.06stk/s]Scanning:  46%|████▌     | 2901/6316 [05:52<06:51,  8.30stk/s]Scanning:  47%|████▋     | 2951/6316 [06:00<07:30,  7.47stk/s]Scanning:  48%|████▊     | 3001/6316 [06:05<06:51,  8.05stk/s]Scanning:  48%|████▊     | 3051/6316 [06:11<06:41,  8.13stk/s]Scanning:  49%|████▉     | 3101/6316 [06:18<06:45,  7.94stk/s]Scanning:  50%|████▉     | 3151/6316 [06:24<06:22,  8.27stk/s]Scanning:  51%|█████     | 3201/6316 [06:29<06:07,  8.48stk/s]Scanning:  51%|█████▏    | 3251/6316 [06:36<06:14,  8.19stk/s]Scanning:  52%|█████▏    | 3301/6316 [06:41<05:54,  8.49stk/s]Scanning:  53%|█████▎    | 3351/6316 [06:47<05:54,  8.37stk/s]Scanning:  54%|█████▍    | 3401/6316 [06:54<05:53,  8.24stk/s]Scanning:  55%|█████▍    | 3451/6316 [06:59<05:35,  8.55stk/s]Scanning:  55%|█████▌    | 3501/6316 [07:05<05:38,  8.33stk/s]Scanning:  56%|█████▌    | 3551/6316 [07:11<05:21,  8.60stk/s]Scanning:  57%|█████▋    | 3601/6316 [07:17<05:22,  8.42stk/s]Scanning:  58%|█████▊    | 3651/6316 [07:23<05:19,  8.34stk/s]Scanning:  59%|█████▊    | 3701/6316 [07:29<05:21,  8.14stk/s]Scanning:  59%|█████▉    | 3751/6316 [07:36<05:19,  8.04stk/s]Scanning:  60%|██████    | 3801/6316 [07:42<05:09,  8.12stk/s]Scanning:  61%|██████    | 3851/6316 [07:48<04:58,  8.26stk/s]Scanning:  62%|██████▏   | 3901/6316 [07:54<04:54,  8.19stk/s]Scanning:  63%|██████▎   | 3951/6316 [07:59<04:39,  8.47stk/s]Scanning:  63%|██████▎   | 4001/6316 [08:05<04:28,  8.64stk/s]Scanning:  64%|██████▍   | 4051/6316 [08:10<04:17,  8.81stk/s]Scanning:  65%|██████▍   | 4101/6316 [08:17<04:24,  8.37stk/s]Scanning:  66%|██████▌   | 4151/6316 [08:23<04:14,  8.50stk/s]Scanning:  67%|██████▋   | 4201/6316 [08:28<04:07,  8.53stk/s]Scanning:  67%|██████▋   | 4251/6316 [08:35<04:09,  8.27stk/s]Scanning:  68%|██████▊   | 4301/6316 [08:41<04:01,  8.33stk/s]Scanning:  69%|██████▉   | 4351/6316 [08:47<03:56,  8.31stk/s]Scanning:  70%|██████▉   | 4401/6316 [08:53<03:47,  8.41stk/s]Scanning:  70%|███████   | 4432/6316 [08:53<02:58, 10.56stk/s]Scanning:  70%|███████   | 4451/6316 [08:59<03:58,  7.83stk/s]Scanning:  71%|███████▏  | 4501/6316 [09:04<03:44,  8.10stk/s]Scanning:  72%|███████▏  | 4551/6316 [09:10<03:35,  8.18stk/s]Scanning:  73%|███████▎  | 4601/6316 [09:17<03:33,  8.02stk/s]Scanning:  74%|███████▎  | 4651/6316 [09:24<03:34,  7.75stk/s]Scanning:  74%|███████▍  | 4701/6316 [09:28<03:10,  8.49stk/s]Scanning:  75%|███████▌  | 4751/6316 [09:34<03:01,  8.61stk/s]Scanning:  76%|███████▌  | 4801/6316 [09:40<02:56,  8.60stk/s]Scanning:  77%|███████▋  | 4851/6316 [09:46<02:55,  8.34stk/s]Scanning:  78%|███████▊  | 4901/6316 [09:53<02:52,  8.21stk/s]Scanning:  78%|███████▊  | 4951/6316 [09:59<02:50,  7.99stk/s]Scanning:  79%|███████▉  | 5001/6316 [10:06<02:46,  7.91stk/s]Scanning:  80%|███████▉  | 5051/6316 [10:11<02:30,  8.40stk/s]Scanning:  81%|████████  | 5101/6316 [10:17<02:23,  8.45stk/s]Scanning:  82%|████████▏ | 5151/6316 [10:22<02:16,  8.50stk/s]Scanning:  82%|████████▏ | 5201/6316 [10:28<02:09,  8.62stk/s]Scanning:  83%|████████▎ | 5251/6316 [10:34<02:05,  8.48stk/s]Scanning:  84%|████████▍ | 5301/6316 [10:41<02:03,  8.24stk/s]Scanning:  85%|████████▍ | 5351/6316 [10:46<01:55,  8.37stk/s]Scanning:  86%|████████▌ | 5401/6316 [10:54<01:56,  7.84stk/s]Scanning:  86%|████████▋ | 5451/6316 [10:59<01:44,  8.29stk/s]Scanning:  87%|████████▋ | 5501/6316 [11:05<01:36,  8.47stk/s]Scanning:  88%|████████▊ | 5545/6316 [11:05<01:06, 11.59stk/s]Scanning:  88%|████████▊ | 5559/6316 [11:11<01:37,  7.75stk/s]Scanning:  89%|████████▊ | 5601/6316 [11:17<01:34,  7.59stk/s]Scanning:  89%|████████▉ | 5651/6316 [11:23<01:23,  7.98stk/s]Scanning:  90%|█████████ | 5700/6316 [11:23<00:52, 11.83stk/s]Scanning:  91%|█████████ | 5719/6316 [11:29<01:14,  7.98stk/s]Scanning:  91%|█████████ | 5751/6316 [11:34<01:13,  7.66stk/s]Scanning:  92%|█████████▏| 5801/6316 [11:40<01:05,  7.87stk/s]Scanning:  93%|█████████▎| 5851/6316 [11:46<00:56,  8.25stk/s]Scanning:  93%|█████████▎| 5901/6316 [11:51<00:49,  8.33stk/s]Scanning:  94%|█████████▍| 5951/6316 [11:57<00:41,  8.79stk/s]Scanning:  95%|█████████▌| 6001/6316 [12:02<00:34,  9.07stk/s]Scanning:  96%|█████████▌| 6051/6316 [12:07<00:29,  8.95stk/s]Scanning:  97%|█████████▋| 6101/6316 [12:13<00:23,  9.08stk/s]Scanning:  97%|█████████▋| 6151/6316 [12:18<00:18,  8.94stk/s]Scanning:  98%|█████████▊| 6201/6316 [12:25<00:13,  8.67stk/s]$ZIEXT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+
+6 Failed downloads:
+['ZIEXT', 'ZCZZT', 'ZBZX', 'ZEXIT', 'ZBZZT', 'ZTEST']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+Scanning:  99%|█████████▉| 6251/6316 [12:31<00:07,  8.57stk/s]$ZVV: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+
+2 Failed downloads:
+['ZVV']: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+['ZXIET']: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$ZVV: possibly delisted; no price data found  (1d 2025-09-06 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Scanning: 100%|█████████▉| 6301/6316 [12:35<00:01,  9.56stk/s]Scanning: 100%|██████████| 6316/6316 [12:36<00:00,  8.35stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  MA Compression Breakout  (IREN Pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    EMA20_Cross   Prev_Close   Prev_EMA20   Cross_Dist_%  EMA20      SMA50      SMA150     EMA20_Slope_%  EMA20_vs_SMA150_%  Comp_Bars   Best_Vol_x   Surge_Bars_Ago  MACD       MACD_Hist   RSI     Cam_Near 
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  RDWR      $30.98      81       ✅ Today       $29.39       $29.70       +3.88%        $29.82     $28.90     $28.12     +1.166%        +6.05%             24          4.03×        15              0.4306     0.0267      59.5    ✅        
+  RXRX      $4.36       68       ✅ Today       $3.95        $3.95        +9.18%        $3.99      $3.56      $3.39      +6.501%        +17.71%            28          3.39×        3               0.2397     0.0223      58.3    —        
+  TBCH      $13.24      79       ✅ Today       $12.73       $12.95       +2.05%        $12.97     $12.76     $12.27     +1.450%        +5.75%             58          3.11×        5               0.1786     0.0244      54.6    ✅        
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE | 6316 tickers | 5645 (89%) | ✅ 3 matches
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                                   MA Compression Breakout (IREN)  2026-10-11  3 matches                                                 ║
+  ╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬────────┬───────┬─────────────┬──────────────┬────────────┬───────────────┬───────────┬────────────┬────────────────┬────────┬───────────┬──────┐
+  │ Ticker │ Price  │ Score │ EMA20_Cross │ Cross_Dist_% │ Prev_Close │ EMA20_Slope_% │ Comp_Bars │ Best_Vol_x │ Surge_Bars_Ago │  MACD  │ MACD_Hist │ RSI  │
+  ├────────┼────────┼───────┼─────────────┼──────────────┼────────────┼───────────────┼───────────┼────────────┼────────────────┼────────┼───────────┼──────┤
+  │  RDWR  │ $30.98 │   81  │   ✅ Today   │    +3.88%    │   $29.39   │    +1.166%    │     24    │   4.03×    │      15d       │ 0.4306 │   0.0267  │ 59.5 │
+  ├────────┼────────┼───────┼─────────────┼──────────────┼────────────┼───────────────┼───────────┼────────────┼────────────────┼────────┼───────────┼──────┤
+  │  TBCH  │ $13.24 │   79  │   ✅ Today   │    +2.05%    │   $12.73   │    +1.450%    │     58    │   3.11×    │       5d       │ 0.1786 │   0.0244  │ 54.6 │
+  ├────────┼────────┼───────┼─────────────┼──────────────┼────────────┼───────────────┼───────────┼────────────┼────────────────┼────────┼───────────┼──────┤
+  │  RXRX  │ $4.36  │   68  │   ✅ Today   │    +9.18%    │   $3.95    │    +6.501%    │     28    │   3.39×    │       3d       │ 0.2397 │   0.0223  │ 58.3 │
+  └────────┴────────┴───────┴─────────────┴──────────────┴────────────┴───────────────┴───────────┴────────────┴────────────────┴────────┴───────────┴──────┘
+
+  COLUMN KEY
+  ───────────────────────────────────────────────────────
+  Score           composite signal strength 0-100
+  Dist_EMA20_%    % above EMA20 (0% = right at green line)
+  EMA20_Slope_%   EMA20 rising speed (higher = faster)
+  Comp_Bars       how many bars MAs were bunched
+  Best_Vol_x      peak volume vs 50d avg
+  MACD / Hist     MACD line and histogram values
+  ───────────────────────────────────────────────────────
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/ma_compression_breakout_20261011_0420.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_ma_compression_20261011_0420.txt
+Traceback (most recent call last):
+  File "/home/runner/work/Snowflake_DDL/Snowflake_DDL/crossema20.py", line 917, in <module>
+    _send_email(results, fpath)
+  File "/home/runner/work/Snowflake_DDL/Snowflake_DDL/crossema20.py", line 898, in _send_email
+    msg   = MIMEMultipart("mixed"); msg["Subject"]=subj; msg["From"]=gu; msg["To"]=", ".join(eto)
+            ^^^^^^^^^^^^^
+NameError: name 'MIMEMultipart' is not defined

@@ -1,0 +1,561 @@
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ NVDA: 206 bars  $229.28  SMA50=$221.94  SMA150=$207.25  2026-10-09
+  ✅ AAPL: 206 bars  $336.64  SMA50=$322.36  SMA150=$299.31  2026-10-09
+  ✅ MSFT: 206 bars  $535.07  SMA50=$500.19  SMA150=$431.87  2026-10-09
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  DIAGNOSTIC (10 sample stocks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Downloaded 10/10
+
+  SYM        PRICE   STACK    SHAKEOUT  RESULT
+  ────────────────────────────────────────────────
+  NVDA    $ 229.28       ❌           —  ❌
+  AAPL    $ 336.64       ❌           —  ❌
+  MSFT    $ 535.07       ❌           —  ❌
+  AMD     $ 608.10       ❌           —  ❌
+  PLTR    $ 209.05       ❌           —  ❌
+  META    $ 718.67       ❌           —  ❌
+  CRWD    $ 275.04       ❌           —  ❌
+  AVGO    $ 361.54       ❌           —  ❌
+  MU      $1029.00       ❌           —  ❌
+  AXON    $ 422.89       ❌           —  ❌
+
+  Pattern:
+    C1  Bull Stack  : JMA > EMA8 > SMA20 > SMA50 > SMA150
+                      Fast MAs (JMA/EMA8/SMA20/SMA50) rising,
+                      SMA150 just needs to be below SMA50
+    C2  Red Shakeout: 1 red candle closed below SMA50 or SMA150
+                      within last 20 bars (up to 8.0% below)
+    C3  Green Recovery (next bar):
+        • Green candle (close > open)
+        • Closed above violated SMA
+        • Volume >= 0.5x red bar volume
+        • Recovery within last 10 bars of today
+
+  Tune if still ❌:
+    max_bars_since_recovery  10 → 20
+    red_lookback             20 → 30
+    vol_mult_vs_red         0.5 → 0.3
+    min_slope_pct          -0.05 → -0.2  (flat MAs allowed)
+    require_close_above_sma True → False
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2273 → 5432
+  ✅ NASDAQ API        : + 882 → 6314
+  ✅ Static fallback   : +   2 → 6316
+
+  🎯 Total: 6316 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 4  SCANNING 6316 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scanning:   0%|          | 0/6316 [00:00<?, ?stk/s]Scanning:   0%|          | 1/6316 [00:03<5:24:50,  3.09s/stk]Scanning:   1%|          | 48/6316 [00:03<04:57, 21.10stk/s] Scanning:   1%|          | 76/6316 [00:07<09:23, 11.08stk/s]Scanning:   2%|▏         | 101/6316 [00:11<11:51,  8.73stk/s]Scanning:   2%|▏         | 151/6316 [00:15<09:54, 10.37stk/s]Scanning:   3%|▎         | 201/6316 [00:19<09:25, 10.82stk/s]Scanning:   4%|▍         | 251/6316 [00:24<09:22, 10.79stk/s]Scanning:   5%|▍         | 300/6316 [00:24<06:09, 16.28stk/s]Scanning:   5%|▌         | 318/6316 [00:28<09:04, 11.01stk/s]Scanning:   6%|▌         | 351/6316 [00:33<10:17,  9.66stk/s]Scanning:   6%|▌         | 392/6316 [00:33<06:51, 14.40stk/s]Scanning:   7%|▋         | 411/6316 [00:37<09:55,  9.92stk/s]Scanning:   7%|▋         | 451/6316 [00:42<10:12,  9.57stk/s]Scanning:   8%|▊         | 494/6316 [00:42<06:38, 14.60stk/s]Scanning:   8%|▊         | 514/6316 [00:47<09:54,  9.77stk/s]Scanning:   9%|▊         | 551/6316 [00:51<10:09,  9.46stk/s]Scanning:   9%|▉         | 592/6316 [00:51<06:40, 14.29stk/s]Scanning:  10%|▉         | 612/6316 [00:56<09:41,  9.81stk/s]Scanning:  10%|█         | 651/6316 [01:01<10:36,  8.90stk/s]Scanning:  11%|█         | 701/6316 [01:06<10:02,  9.31stk/s]Scanning:  12%|█▏        | 751/6316 [01:11<09:47,  9.48stk/s]Scanning:  13%|█▎        | 801/6316 [01:15<09:13,  9.96stk/s]Scanning:  13%|█▎        | 851/6316 [01:20<09:07,  9.98stk/s]Scanning:  14%|█▍        | 901/6316 [01:26<09:22,  9.63stk/s]Scanning:  15%|█▌        | 951/6316 [01:31<09:04,  9.85stk/s]Scanning:  16%|█▌        | 996/6316 [01:31<06:29, 13.68stk/s]Scanning:  16%|█▌        | 1011/6316 [01:36<08:59,  9.84stk/s]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBX"}}}
+$CBX: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CBO"}}}
+$CBO: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Scanning:  17%|█▋        | 1051/6316 [01:41<09:35,  9.15stk/s]Scanning:  17%|█▋        | 1097/6316 [01:41<06:20, 13.72stk/s]Scanning:  18%|█▊        | 1116/6316 [01:45<08:44,  9.92stk/s]Scanning:  18%|█▊        | 1151/6316 [01:50<09:33,  9.01stk/s]Scanning:  19%|█▉        | 1201/6316 [01:55<09:00,  9.46stk/s]Scanning:  20%|█▉        | 1248/6316 [01:55<05:57, 14.19stk/s]Scanning:  20%|██        | 1267/6316 [01:59<08:01, 10.48stk/s]Scanning:  21%|██        | 1301/6316 [02:03<08:27,  9.89stk/s]Scanning:  21%|██▏       | 1349/6316 [02:03<05:18, 15.59stk/s]Scanning:  22%|██▏       | 1370/6316 [02:07<07:00, 11.76stk/s]Scanning:  22%|██▏       | 1401/6316 [02:11<07:44, 10.58stk/s]Scanning:  23%|██▎       | 1448/6316 [02:11<04:48, 16.88stk/s]$CTEST: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$CTEST: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+Scanning:  23%|██▎       | 1470/6316 [02:15<06:50, 11.81stk/s]Scanning:  24%|██▍       | 1501/6316 [02:19<08:23,  9.56stk/s]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  Bull Stack + Red Shakeout + Green Recovery
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Tier_Label                              Violated_SMA   Below_Depth_%   Red_Date      Green_Date    Vol_Ratio_G_vs_R    Low_Held    Bars_Since_Recovery   RSI   
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ABM       $49.63      46       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.48%           2026-09-30    2026-10-01    0.73×               ❌           6d                    57.4  
+  ABSI      $10.16      68       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.95%           2026-10-08    2026-10-09    0.91×               ✅           0d                    53.2  
+  ACCO      $4.49       55       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.74%           2026-09-30    2026-10-01    1.23×               ❌           6d                    64.4  
+  ACOG      $9.04       68       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.35%           2026-10-01    2026-10-02    2.20×               ✅           5d                    52.8  
+  ADX       $26.17      83       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.43%           2026-10-08    2026-10-09    0.97×               ✅           0d                    55.9  
+  AFRM      $80.70      48       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          3.46%           2026-10-02    2026-10-05    1.69×               ❌           4d                    66.5  
+  AIRT      $30.55      62       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.86%           2026-10-02    2026-10-05    1.07×               ✅           4d                    52.9  
+  ALRM      $55.65      64       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.36%           2026-10-02    2026-10-05    1.47×               ✅           4d                    55.3  
+  AMGN      $414.87     82       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.76%           2026-10-08    2026-10-09    1.07×               ✅           0d                    54.9  
+  AMZN      $262.43     77       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.74%           2026-10-08    2026-10-09    0.90×               ✅           0d                    59.0  
+  ANL       $15.62      71       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.47%           2026-10-07    2026-10-08    10.36×              ❌           1d                    54.6  
+  APT       $5.84       72       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.12%           2026-10-02    2026-10-05    37.71×              ✅           4d                    62.9  
+  ASAN      $10.07      43       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          5.17%           2026-10-02    2026-10-05    0.86×               ✅           4d                    60.2  
+  AVPT      $14.63      52       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.35%           2026-09-25    2026-09-28    1.25×               ❌           9d                    64.3  
+  BDX       $183.75     76       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.28%           2026-10-07    2026-10-08    0.79×               ✅           1d                    56.0  
+  BJ        $98.58      59       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.81%           2026-09-30    2026-10-01    1.12×               ✅           6d                    60.8  
+  BLCO      $17.30      81       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.05%           2026-10-08    2026-10-09    0.65×               ✅           0d                    53.6  
+  BRZE      $29.06      60       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          4.62%           2026-10-06    2026-10-07    2.37×               ❌           2d                    60.8  
+  BSM       $14.81      82       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.19%           2026-10-07    2026-10-08    1.26×               ✅           1d                    55.7  
+  BTE       $4.81       73       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.11%           2026-10-07    2026-10-08    0.73×               ✅           1d                    56.8  
+  CAH       $237.57     84       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.09%           2026-10-07    2026-10-08    1.40×               ✅           1d                    59.9  
+  CART      $47.76      56       🥈 TIER 2 — SMA150 Shakeout & Recovery   SMA150         0.72%           2026-09-30    2026-10-01    1.34×               ❌           6d                    58.9  
+  CBRL      $57.46      54       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          3.72%           2026-10-01    2026-10-02    1.38×               ✅           5d                    63.4  
+  CII       $24.33      81       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.73%           2026-10-08    2026-10-09    0.81×               ✅           0d                    54.5  
+  CLF       $12.98      53       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          4.93%           2026-10-02    2026-10-05    1.74×               ✅           4d                    60.8  
+  CLH       $316.93     75       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.07%           2026-10-07    2026-10-08    0.56×               ✅           1d                    52.0  
+  CNC       $65.36      81       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.42%           2026-10-08    2026-10-09    0.72×               ✅           0d                    54.5  
+  COKE      $196.24     74       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.49%           2026-10-07    2026-10-08    0.97×               ✅           1d                    55.6  
+  CSQ       $20.67      81       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.72%           2026-10-08    2026-10-09    1.32×               ✅           0d                    53.2  
+  CTVA      $13.24      58       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.57%           2026-10-02    2026-10-05    2.32×               ❌           4d                    56.3  
+  CVSA      $129.38     75       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.77%           2026-10-07    2026-10-08    0.85×               ✅           1d                    56.9  Scanning:  24%|██▍       | 1537/6316 [02:20<05:41, 13.98stk/s]Scanning:  25%|██▍       | 1556/6316 [02:24<08:26,  9.40stk/s]Scanning:  25%|██▌       | 1601/6316 [02:30<08:49,  8.90stk/s]Scanning:  26%|██▌       | 1649/6316 [02:30<05:29, 14.16stk/s]Scanning:  26%|██▋       | 1670/6316 [02:35<08:06,  9.55stk/s]Scanning:  27%|██▋       | 1701/6316 [02:40<08:53,  8.65stk/s]Scanning:  28%|██▊       | 1751/6316 [02:44<07:43,  9.85stk/s]Scanning:  28%|██▊       | 1798/6316 [02:44<05:02, 14.96stk/s]Scanning:  29%|██▉       | 1818/6316 [02:47<06:28, 11.58stk/s]Scanning:  29%|██▉       | 1851/6316 [02:51<07:09, 10.39stk/s]Scanning:  30%|███       | 1901/6316 [02:55<06:28, 11.35stk/s]Scanning:  31%|███       | 1939/6316 [02:55<04:34, 15.92stk/s]Scanning:  31%|███       | 1956/6316 [02:59<06:27, 11.27stk/s]Scanning:  32%|███▏      | 2001/6316 [03:03<06:24, 11.23stk/s]Scanning:  32%|███▏      | 2042/6316 [03:03<04:19, 16.49stk/s]Scanning:  33%|███▎      | 2061/6316 [03:07<06:02, 11.74stk/s]Scanning:  33%|███▎      | 2101/6316 [03:11<06:23, 10.98stk/s]Scanning:  34%|███▍      | 2151/6316 [03:14<05:47, 11.98stk/s]Scanning:  35%|███▍      | 2200/6316 [03:15<03:46, 18.19stk/s]Scanning:  35%|███▌      | 2220/6316 [03:18<05:20, 12.78stk/s]Scanning:  36%|███▌      | 2251/6316 [03:22<06:15, 10.82stk/s]Scanning:  36%|███▋      | 2301/6316 [03:27<06:21, 10.52stk/s]Scanning:  37%|███▋      | 2351/6316 [03:32<06:19, 10.44stk/s]Scanning:  38%|███▊      | 2401/6316 [03:37<06:20, 10.28stk/s]Scanning:  39%|███▉      | 2451/6316 [03:41<05:58, 10.79stk/s]Scanning:  40%|███▉      | 2501/6316 [03:45<05:34, 11.42stk/s]Scanning:  40%|████      | 2551/6316 [03:50<05:41, 11.02stk/s]Scanning:  41%|████      | 2601/6316 [03:55<05:37, 11.01stk/s]Scanning:  42%|████▏     | 2650/6316 [03:55<03:54, 15.61stk/s]Scanning:  42%|████▏     | 2666/6316 [04:00<05:42, 10.65stk/s]Scanning:  43%|████▎     | 2701/6316 [04:04<06:24,  9.41stk/s]Scanning:  44%|████▎     | 2748/6316 [04:05<04:09, 14.27stk/s]Scanning:  44%|████▍     | 2768/6316 [04:09<05:52, 10.06stk/s]Scanning:  44%|████▍     | 2801/6316 [04:14<06:46,  8.65stk/s]Scanning:  45%|████▌     | 2846/6316 [04:15<04:18, 13.41stk/s]Scanning:  45%|████▌     | 2867/6316 [04:19<05:48,  9.89stk/s]Scanning:  46%|████▌     | 2901/6316 [04:23<06:08,  9.27stk/s]Scanning:  47%|████▋     | 2950/6316 [04:23<03:44, 15.02stk/s]Scanning:  47%|████▋     | 2972/6316 [04:28<05:22, 10.36stk/s]Scanning:  48%|████▊     | 3001/6316 [04:33<06:14,  8.85stk/s]Scanning:  48%|████▊     | 3050/6316 [04:33<03:45, 14.51stk/s]Scanning:  49%|████▊     | 3073/6316 [04:37<05:17, 10.20stk/s]Scanning:  49%|████▉     | 3101/6316 [04:42<05:57,  8.99stk/s]Scanning:  50%|████▉     | 3151/6316 [04:46<05:10, 10.19stk/s]
+  DGII      $75.63      57       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.86%           2026-10-06    2026-10-07    0.59×               ❌           2d                    54.2  
+  DMLP      $29.75      57       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.12%           2026-09-30    2026-10-01    1.28×               ❌           6d                    60.8  
+  DOCN      $134.82     72       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.56%           2026-10-08    2026-10-09    0.81×               ✅           0d                    53.1  
+  DSP       $13.13      62       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          4.67%           2026-10-06    2026-10-07    3.23×               ❌           2d                    56.3  
+  DUOL      $149.92     43       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          4.70%           2026-09-28    2026-09-29    0.66×               ✅           8d                    54.2  
+  DVN       $48.26      48       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.21%           2026-09-30    2026-10-01    0.78×               ❌           6d                    53.0  
+  ECL       $281.83     68       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.20%           2026-10-07    2026-10-08    0.85×               ❌           1d                    57.1  
+  EFT       $10.65      68       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.61%           2026-10-05    2026-10-06    1.05×               ✅           3d                    54.6  
+  EGBN      $28.22      47       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.65%           2026-09-30    2026-10-01    0.99×               ❌           6d                    52.1  
+  EGY       $6.01       83       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.08%           2026-10-07    2026-10-08    1.36×               ✅           1d                    55.7  
+  EL        $98.05      65       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.75%           2026-10-06    2026-10-07    1.39×               ❌           2d                    56.8  
+  EOG       $148.16     83       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.18%           2026-10-07    2026-10-08    1.37×               ✅           1d                    58.8  
+  ETB       $15.62      67       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.19%           2026-10-05    2026-10-06    0.75×               ✅           3d                    60.2  
+  ETV       $15.17      76       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.29%           2026-10-08    2026-10-09    0.79×               ✅           0d                    55.0  
+  ETY       $14.32      84       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.31%           2026-10-08    2026-10-09    1.07×               ✅           0d                    58.2  
+  EXFY      $2.40       68       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.92%           2026-10-02    2026-10-05    1.62×               ✅           4d                    55.8  
+  EXLS      $36.79      65       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.57%           2026-09-30    2026-10-01    1.65×               ✅           6d                    59.2  
+  EXPD      $193.24     61       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.07%           2026-09-24    2026-09-25    0.67×               ✅           10d                   57.3  
+  EXPO      $69.81      56       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.12%           2026-10-02    2026-10-05    1.11×               ❌           4d                    58.9  
+  FAST      $50.75      69       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.45%           2026-10-07    2026-10-08    1.03×               ❌           1d                    55.9  
+  FDS       $287.18     74       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          3.43%           2026-10-07    2026-10-08    1.76×               ✅           1d                    55.5  
+  FLYW      $18.76      59       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.25%           2026-10-02    2026-10-05    0.95×               ✅           4d                    64.7  
+  GDYN      $7.95       70       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.08%           2026-10-07    2026-10-08    1.94×               ❌           1d                    52.9  
+  GENC      $18.05      50       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.94%           2026-09-30    2026-10-01    0.87×               ❌           6d                    55.4  
+  GFL       $42.78      57       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.78%           2026-10-01    2026-10-02    1.35×               ✅           5d                    54.6  
+  GGB       $5.12       53       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.16%           2026-09-24    2026-09-25    0.83×               ❌           10d                   57.2  
+  GGT       $4.01       52       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.19%           2026-10-02    2026-10-05    0.71×               ❌           4d                    54.6  
+  GLBE      $40.39      63       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.48%           2026-10-02    2026-10-05    1.00×               ✅           4d                    55.6  
+  GSM       $4.24       51       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.41%           2026-09-30    2026-10-01    1.15×               ❌           6d                    52.3  
+  GWRE      $167.32     83       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.65%           2026-10-08    2026-10-09    1.00×               ✅           0d                    58.0  
+  HIMS      $30.92      68       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          4.47%           2026-10-08    2026-10-09    1.06×               ✅           0d                    57.1  
+  HMC       $32.70      59       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.90%           2026-10-02    2026-10-05    1.21×               ✅           4d                    57.9  
+  HPK       $9.55       51       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.16%           2026-09-28    2026-09-29    1.44×               ❌           8d                    70.9  
+  HUM       $431.87     57       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.51%           2026-10-01    2026-10-02    0.86×               ✅           5d                    66.2  
+  ICE       $156.19     76       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.67%           2026-10-07    2026-10-08    1.24×               ✅           1d                    54.9  
+  IEX       $234.29     52       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.65%           2026-09-30    2026-10-01    0.94×               ❌           6d                    59.2  
+  IFF       $84.55      63       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.02%           2026-10-06    2026-10-07    1.31×               ❌           2d                    52.3  
+  IHS       $8.43       66       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.44%           2026-10-02    2026-10-05    1.28×               ✅           4d                    54.1  
+  KDP       $31.76      83       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.77%           2026-10-07    2026-10-08    2.06×               ✅           1d                    55.2  
+  KMTS      $26.98      72       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.21%           2026-10-08    2026-10-09    0.65×               ✅           0d                    53.3  
+  KOF       $109.86     51       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.67%           2026-09-24    2026-09-25    0.90×               ❌           10d                   54.9  Scanning:  51%|█████     | 3199/6316 [04:46<03:18, 15.68stk/s]Scanning:  51%|█████     | 3219/6316 [04:49<04:22, 11.79stk/s]Scanning:  51%|█████▏    | 3251/6316 [04:53<04:55, 10.37stk/s]Scanning:  52%|█████▏    | 3301/6316 [04:57<04:27, 11.25stk/s]Scanning:  53%|█████▎    | 3351/6316 [05:01<04:16, 11.58stk/s]Scanning:  54%|█████▍    | 3401/6316 [05:05<04:05, 11.88stk/s]Scanning:  55%|█████▍    | 3451/6316 [05:09<03:48, 12.52stk/s]Scanning:  55%|█████▌    | 3501/6316 [05:13<03:40, 12.75stk/s]Scanning:  56%|█████▌    | 3550/6316 [05:13<02:32, 18.19stk/s]Scanning:  56%|█████▋    | 3566/6316 [05:16<03:33, 12.91stk/s]Scanning:  57%|█████▋    | 3601/6316 [05:20<03:59, 11.33stk/s]Scanning:  58%|█████▊    | 3651/6316 [05:24<03:43, 11.92stk/s]Scanning:  59%|█████▊    | 3701/6316 [05:28<03:34, 12.20stk/s]Scanning:  59%|█████▉    | 3746/6316 [05:28<02:27, 17.37stk/s]Scanning:  60%|█████▉    | 3763/6316 [05:32<03:32, 12.03stk/s]Scanning:  60%|██████    | 3801/6316 [05:36<03:48, 10.99stk/s]Scanning:  61%|██████    | 3850/6316 [05:37<02:24, 17.08stk/s]Scanning:  61%|██████▏   | 3871/6316 [05:40<03:14, 12.54stk/s]Scanning:  62%|██████▏   | 3901/6316 [05:44<03:48, 10.56stk/s]Scanning:  63%|██████▎   | 3951/6316 [05:48<03:22, 11.68stk/s]Scanning:  63%|██████▎   | 4000/6316 [05:48<02:09, 17.86stk/s]Scanning:  64%|██████▎   | 4020/6316 [05:52<03:09, 12.10stk/s]Scanning:  64%|██████▍   | 4051/6316 [05:56<03:36, 10.47stk/s]Scanning:  65%|██████▍   | 4095/6316 [05:56<02:18, 16.09stk/s]Scanning:  65%|██████▌   | 4115/6316 [06:01<03:24, 10.79stk/s]Scanning:  66%|██████▌   | 4151/6316 [06:06<03:50,  9.40stk/s]Scanning:  66%|██████▋   | 4200/6316 [06:06<02:19, 15.18stk/s]Scanning:  67%|██████▋   | 4222/6316 [06:11<03:21, 10.38stk/s]Scanning:  67%|██████▋   | 4251/6316 [06:16<04:02,  8.50stk/s]Scanning:  68%|██████▊   | 4301/6316 [06:20<03:33,  9.43stk/s]Scanning:  69%|██████▉   | 4351/6316 [06:24<03:14, 10.12stk/s]Scanning:  70%|██████▉   | 4394/6316 [06:24<02:12, 14.50stk/s]Scanning:  70%|██████▉   | 4411/6316 [06:29<03:07, 10.15stk/s]Scanning:  70%|███████   | 4451/6316 [06:34<03:18,  9.39stk/s]Scanning:  71%|███████   | 4499/6316 [06:34<02:04, 14.58stk/s]Scanning:  72%|███████▏  | 4520/6316 [06:39<03:02,  9.85stk/s]Scanning:  72%|███████▏  | 4551/6316 [06:44<03:21,  8.77stk/s]Scanning:  73%|███████▎  | 4597/6316 [06:44<02:04, 13.83stk/s]Scanning:  73%|███████▎  | 4618/6316 [06:48<02:49, 10.04stk/s]Scanning:  74%|███████▎  | 4651/6316 [06:52<02:59,  9.27stk/s]Scanning:  74%|███████▍  | 4701/6316 [06:56<02:30, 10.76stk/s]Scanning:  75%|███████▌  | 4748/6316 [06:56<01:36, 16.30stk/s]Scanning:  75%|███████▌  | 4768/6316 [07:00<02:11, 11.75stk/s]Scanning:  76%|███████▌  | 4801/6316 [07:04<02:19, 10.88stk/s]Scanning:  77%|███████▋  | 4851/6316 [07:08<02:07, 11.51stk/s]Scanning:  78%|███████▊  | 4899/6316 [07:08<01:21, 17.39stk/s]Scanning:  78%|███████▊  | 4919/6316 [07:12<01:57, 11.86stk/s]Scanning:  78%|███████▊  | 4951/6316 [07:16<02:14, 10.17stk/s]Scanning:  79%|███████▉  | 5001/6316 [07:21<02:07, 10.33stk/s]Scanning:  80%|███████▉  | 5051/6316 [07:25<01:54, 11.07stk/s]Scanning:  81%|████████  | 5101/6316 [07:29<01:44, 11.62stk/s]Scanning:  82%|████████▏ | 5150/6316 [07:29<01:08, 16.90stk/s]Scanning:  82%|████████▏ | 5168/6316 [07:32<01:31, 12.61stk/s]Scanning:  82%|████████▏ | 5201/6316 [07:36<01:35, 11.69stk/s]Scanning:  83%|████████▎ | 5250/6316 [07:36<00:58, 18.22stk/s]Scanning:  83%|████████▎ | 5271/6316 [07:40<01:20, 12.94stk/s]Scanning:  84%|████████▍ | 5301/6316 [07:44<01:38, 10.30stk/s]Scanning:  85%|████████▍ | 5351/6316 [07:48<01:26, 11.10stk/s]Scanning:  85%|████████▌ | 5391/6316 [07:48<00:58, 15.89stk/s]$SVA: possibly delisted; no timezone found
+
+1 Failed download:
+['SVA']: possibly delisted; no timezone found
+Scanning:  86%|████████▌ | 5409/6316 [07:52<01:19, 11.36stk/s]Scanning:  86%|████████▋ | 5451/6316 [07:56<01:17, 11.20stk/s]Scanning:  87%|████████▋ | 5501/6316 [07:59<01:07, 12.12stk/s]Scanning:  88%|████████▊ | 5536/6316 [08:00<00:47, 16.48stk/s]Scanning:  88%|████████▊ | 5552/6316 [08:03<01:07, 11.28stk/s]Scanning:  89%|████████▊ | 5598/6316 [08:04<00:39, 18.04stk/s]Scanning:  89%|████████▉ | 5619/6316 [08:07<00:56, 12.27stk/s]Scanning:  89%|████████▉ | 5651/6316 [08:11<00:59, 11.17stk/s]Scanning:  90%|█████████ | 5693/6316 [08:11<00:36, 17.26stk/s]Scanning:  90%|█████████ | 5713/6316 [08:15<00:49, 12.19stk/s]Scanning:  91%|█████████ | 5751/6316 [08:18<00:49, 11.44stk/s]Scanning:  92%|█████████▏| 5798/6316 [08:18<00:28, 18.23stk/s]Scanning:  92%|█████████▏| 5820/6316 [08:22<00:38, 12.78stk/s]Scanning:  93%|█████████▎| 5851/6316 [08:26<00:42, 10.95stk/s]
+  KROS      $11.95      63       🥈 TIER 2 — SMA150 Shakeout & Recovery   SMA150         0.58%           2026-10-06    2026-10-07    1.06×               ❌           2d                    60.2  
+  LFST      $12.42      52       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.70%           2026-10-02    2026-10-05    0.86×               ✅           4d                    54.9  
+  LNG       $278.18     79       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.25%           2026-10-07    2026-10-08    1.02×               ✅           1d                    55.4  
+  LSPD      $10.64      63       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.41%           2026-10-06    2026-10-07    0.95×               ❌           2d                    64.7  
+  MCK       $938.84     63       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.34%           2026-09-30    2026-10-01    1.75×               ✅           6d                    64.2  
+  MELI      $1889.85    85       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.30%           2026-10-08    2026-10-09    1.17×               ✅           0d                    57.7  
+  MET       $98.33      77       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.68%           2026-10-07    2026-10-08    0.95×               ✅           1d                    57.8  
+  MWYN      $1.37       63       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.21%           2026-09-25    2026-09-28    0.85×               ✅           9d                    59.9  
+  NTCT      $40.69      77       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.05%           2026-09-29    2026-09-30    2.25×               ✅           7d                    58.1  
+  NWE       $74.15      86       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.12%           2026-10-06    2026-10-07    4.00×               ✅           2d                    67.2  
+  OVV       $63.88      72       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.85%           2026-10-07    2026-10-08    1.00×               ✅           1d                    58.6  
+  OXY       $60.11      85       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.32%           2026-10-07    2026-10-08    1.66×               ✅           1d                    57.8  
+  PCRX      $36.31      74       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.79%           2026-10-06    2026-10-07    1.63×               ✅           2d                    84.6  
+  PCTY      $153.96     73       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.73%           2026-10-06    2026-10-07    1.09×               ✅           2d                    64.1  
+  PERF      $1.92       69       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.91%           2026-09-29    2026-09-30    2.21×               ✅           7d                    54.0  
+  PG        $151.23     52       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.18%           2026-09-24    2026-09-25    0.78×               ❌           10d                   62.2  
+  PLUS      $93.30      67       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.24%           2026-09-28    2026-09-29    1.27×               ✅           8d                    57.3  
+  PRAA      $20.03      43       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.51%           2026-10-02    2026-10-05    0.90×               ❌           4d                    53.7  
+  QGEN      $45.38      64       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.23%           2026-10-01    2026-10-02    1.74×               ✅           5d                    56.5  
+  RLGT      $9.21       56       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.27%           2026-09-25    2026-09-28    1.22×               ❌           9d                    57.0  
+  RMD       $230.05     71       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.46%           2026-10-06    2026-10-07    1.16×               ✅           2d                    60.5  
+  RRGB      $8.61       79       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.62%           2026-10-07    2026-10-08    1.54×               ✅           1d                    60.1  
+  RXO       $29.08      39       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          4.53%           2026-09-30    2026-10-01    1.20×               ❌           6d                    81.0  
+  SAIC      $134.66     64       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          3.84%           2026-10-07    2026-10-08    1.41×               ✅           1d                    61.3  
+  SIBN      $19.37      54       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          3.01%           2026-10-02    2026-10-05    1.15×               ✅           4d                    56.0  
+  SLDE      $25.14      64       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.66%           2026-09-30    2026-10-01    2.66×               ❌           6d                    60.4  
+  SNX       $273.37     68       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.33%           2026-09-30    2026-10-01    1.49×               ✅           6d                    54.6  
+  SONY      $24.12      56       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.28%           2026-09-24    2026-09-25    0.63×               ✅           10d                   56.4  
+  SORA      $2.40       49       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          4.19%           2026-09-28    2026-09-29    1.01×               ✅           8d                    57.0  
+  SOTK      $7.08       76       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.24%           2026-09-29    2026-09-30    13.27×              ✅           7d                    79.1  
+  SSRM      $35.51      45       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.43%           2026-10-02    2026-10-05    1.00×               ❌           4d                    53.6  
+  STLN      $6.63       82       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.69%           2026-10-08    2026-10-09    1.48×               ✅           0d                    54.5  
+  TBCH      $13.24      80       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.06%           2026-10-08    2026-10-09    0.58×               ✅           0d                    54.6  
+  TECK      $68.05      78       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.46%           2026-10-08    2026-10-09    1.20×               ✅           0d                    54.7  
+  TGB       $8.85       53       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.80%           2026-10-01    2026-10-02    0.65×               ✅           5d                    52.9  
+  TGTX      $55.37      47       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.21%           2026-10-01    2026-10-02    0.78×               ❌           5d                    52.5  
+  THC       $263.78     50       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.93%           2026-09-24    2026-09-25    1.28×               ❌           10d                   55.7  
+  TX        $58.18      65       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.93%           2026-09-29    2026-09-30    1.35×               ✅           7d                    60.5  
+  UFCS      $55.14      44       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.61%           2026-09-30    2026-10-01    0.58×               ❌           6d                    55.9  
+  UGI       $37.12      73       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.17%           2026-10-07    2026-10-08    1.32×               ❌           1d                    52.3  
+  VCTR      $112.44     58       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          1.81%           2026-09-24    2026-09-25    1.10×               ✅           10d                   55.4  Scanning:  93%|█████████▎| 5899/6316 [08:26<00:23, 17.72stk/s]Scanning:  94%|█████████▎| 5921/6316 [08:30<00:31, 12.62stk/s]Scanning:  94%|█████████▍| 5951/6316 [08:33<00:32, 11.24stk/s]Scanning:  95%|█████████▍| 5993/6316 [08:33<00:18, 17.36stk/s]Scanning:  95%|█████████▌| 6014/6316 [08:37<00:24, 12.15stk/s]Scanning:  96%|█████████▌| 6051/6316 [08:41<00:24, 10.63stk/s]Scanning:  97%|█████████▋| 6101/6316 [08:45<00:18, 11.38stk/s]Scanning:  97%|█████████▋| 6151/6316 [08:49<00:14, 11.76stk/s]Scanning:  98%|█████████▊| 6201/6316 [08:53<00:09, 11.99stk/s]$ZBZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+
+6 Failed downloads:
+['ZBZZT', 'ZIEXT', 'ZCZZT', 'ZBZX', 'ZEXIT', 'ZTEST']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+Scanning:  99%|█████████▉| 6251/6316 [08:58<00:05, 11.51stk/s]$ZVV: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+
+2 Failed downloads:
+['ZVV']: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+['ZXIET']: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$ZVV: possibly delisted; no price data found  (1d 2025-12-15 -> 2026-10-11)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Scanning: 100%|█████████▉| 6301/6316 [09:01<00:01, 12.96stk/s]Scanning: 100%|██████████| 6316/6316 [09:02<00:00, 11.64stk/s]
+
+  WEST      $8.18       63       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.42%           2026-10-01    2026-10-02    0.97×               ✅           5d                    55.0  
+  WFF       $12.29      80       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          2.53%           2026-10-08    2026-10-09    2704.36×            ❌           0d                    93.2  
+  WK        $73.25      74       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.60%           2026-10-06    2026-10-07    1.10×               ✅           2d                    55.1  
+  WSM       $241.78     65       🏆 TIER 1 — SMA50 Shakeout & Recovery    SMA50          0.58%           2026-10-02    2026-10-05    1.27×               ✅           4d                    61.5  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE | 6316 tickers | 5644 (89%) | ✅ 117 matches
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  📊 DEBUG BREAKDOWN:
+  Total processed     : 5654
+  Passed vol/price    : 4170
+  Failed stack (C1)   : 3586
+  Failed rising (C1b) : 65
+  Failed shakeout (C2): 402
+  ✅ Passed all        : 117
+
+
+  🏆  TIER 1 — SMA50 Shakeout & Recovery  (115 stocks)
+
+  ┌────────┬──────────┬───────┬──────────────┬───────────────┬──────────────────┬──────────┬─────────────────────┬──────┐
+  │ Ticker │  Price   │ Score │ Violated_SMA │ Below_Depth_% │ Vol_Ratio_G_vs_R │ Low_Held │ Bars_Since_Recovery │ RSI  │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  NWE   │  $74.15  │   86  │    SMA50     │     1.12%     │      4.00×       │    ✅     │          2d         │ 67.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  MELI  │ $1889.85 │   85  │    SMA50     │     0.30%     │      1.17×       │    ✅     │          0d         │ 57.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  OXY   │  $60.11  │   85  │    SMA50     │     0.32%     │      1.66×       │    ✅     │          1d         │ 57.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CAH   │ $237.57  │   84  │    SMA50     │     0.09%     │      1.40×       │    ✅     │          1d         │ 59.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ETY   │  $14.32  │   84  │    SMA50     │     0.31%     │      1.07×       │    ✅     │          0d         │ 58.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ADX   │  $26.17  │   83  │    SMA50     │     0.43%     │      0.97×       │    ✅     │          0d         │ 55.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EGY   │  $6.01   │   83  │    SMA50     │     0.08%     │      1.36×       │    ✅     │          1d         │ 55.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EOG   │ $148.16  │   83  │    SMA50     │     0.18%     │      1.37×       │    ✅     │          1d         │ 58.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GWRE  │ $167.32  │   83  │    SMA50     │     0.65%     │      1.00×       │    ✅     │          0d         │ 58.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  KDP   │  $31.76  │   83  │    SMA50     │     1.77%     │      2.06×       │    ✅     │          1d         │ 55.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  AMGN  │ $414.87  │   82  │    SMA50     │     0.76%     │      1.07×       │    ✅     │          0d         │ 54.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  BSM   │  $14.81  │   82  │    SMA50     │     0.19%     │      1.26×       │    ✅     │          1d         │ 55.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  STLN  │  $6.63   │   82  │    SMA50     │     0.69%     │      1.48×       │    ✅     │          0d         │ 54.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  BLCO  │  $17.30  │   81  │    SMA50     │     0.05%     │      0.65×       │    ✅     │          0d         │ 53.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CII   │  $24.33  │   81  │    SMA50     │     0.73%     │      0.81×       │    ✅     │          0d         │ 54.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CNC   │  $65.36  │   81  │    SMA50     │     0.42%     │      0.72×       │    ✅     │          0d         │ 54.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CSQ   │  $20.67  │   81  │    SMA50     │     0.72%     │      1.32×       │    ✅     │          0d         │ 53.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  TBCH  │  $13.24  │   80  │    SMA50     │     0.06%     │      0.58×       │    ✅     │          0d         │ 54.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  WFF   │  $12.29  │   80  │    SMA50     │     2.53%     │     2704.36×     │    ❌     │          0d         │ 93.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  LNG   │ $278.18  │   79  │    SMA50     │     0.25%     │      1.02×       │    ✅     │          1d         │ 55.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  RRGB  │  $8.61   │   79  │    SMA50     │     1.62%     │      1.54×       │    ✅     │          1d         │ 60.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  TECK  │  $68.05  │   78  │    SMA50     │     2.46%     │      1.20×       │    ✅     │          0d         │ 54.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  AMZN  │ $262.43  │   77  │    SMA50     │     1.74%     │      0.90×       │    ✅     │          0d         │ 59.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  MET   │  $98.33  │   77  │    SMA50     │     0.68%     │      0.95×       │    ✅     │          1d         │ 57.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  NTCT  │  $40.69  │   77  │    SMA50     │     0.05%     │      2.25×       │    ✅     │          7d         │ 58.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  BDX   │ $183.75  │   76  │    SMA50     │     0.28%     │      0.79×       │    ✅     │          1d         │ 56.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ETV   │  $15.17  │   76  │    SMA50     │     0.29%     │      0.79×       │    ✅     │          0d         │ 55.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ICE   │ $156.19  │   76  │    SMA50     │     1.67%     │      1.24×       │    ✅     │          1d         │ 54.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SOTK  │  $7.08   │   76  │    SMA50     │     1.24%     │      13.27×      │    ✅     │          7d         │ 79.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CLH   │ $316.93  │   75  │    SMA50     │     0.07%     │      0.56×       │    ✅     │          1d         │ 52.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CVSA  │ $129.38  │   75  │    SMA50     │     0.77%     │      0.85×       │    ✅     │          1d         │ 56.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  COKE  │ $196.24  │   74  │    SMA50     │     1.49%     │      0.97×       │    ✅     │          1d         │ 55.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  FDS   │ $287.18  │   74  │    SMA50     │     3.43%     │      1.76×       │    ✅     │          1d         │ 55.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  PCRX  │  $36.31  │   74  │    SMA50     │     1.79%     │      1.63×       │    ✅     │          2d         │ 84.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │   WK   │  $73.25  │   74  │    SMA50     │     0.60%     │      1.10×       │    ✅     │          2d         │ 55.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  BTE   │  $4.81   │   73  │    SMA50     │     1.11%     │      0.73×       │    ✅     │          1d         │ 56.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  PCTY  │ $153.96  │   73  │    SMA50     │     0.73%     │      1.09×       │    ✅     │          2d         │ 64.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  UGI   │  $37.12  │   73  │    SMA50     │     0.17%     │      1.32×       │    ❌     │          1d         │ 52.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  APT   │  $5.84   │   72  │    SMA50     │     2.12%     │      37.71×      │    ✅     │          4d         │ 62.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  DOCN  │ $134.82  │   72  │    SMA50     │     1.56%     │      0.81×       │    ✅     │          0d         │ 53.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  KMTS  │  $26.98  │   72  │    SMA50     │     1.21%     │      0.65×       │    ✅     │          0d         │ 53.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  OVV   │  $63.88  │   72  │    SMA50     │     1.85%     │      1.00×       │    ✅     │          1d         │ 58.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ANL   │  $15.62  │   71  │    SMA50     │     2.47%     │      10.36×      │    ❌     │          1d         │ 54.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  RMD   │ $230.05  │   71  │    SMA50     │     1.46%     │      1.16×       │    ✅     │          2d         │ 60.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GDYN  │  $7.95   │   70  │    SMA50     │     1.08%     │      1.94×       │    ❌     │          1d         │ 52.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  FAST  │  $50.75  │   69  │    SMA50     │     0.45%     │      1.03×       │    ❌     │          1d         │ 55.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  PERF  │  $1.92   │   69  │    SMA50     │     0.91%     │      2.21×       │    ✅     │          7d         │ 54.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ABSI  │  $10.16  │   68  │    SMA50     │     2.95%     │      0.91×       │    ✅     │          0d         │ 53.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ACOG  │  $9.04   │   68  │    SMA50     │     2.35%     │      2.20×       │    ✅     │          5d         │ 52.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ECL   │ $281.83  │   68  │    SMA50     │     0.20%     │      0.85×       │    ❌     │          1d         │ 57.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EFT   │  $10.65  │   68  │    SMA50     │     0.61%     │      1.05×       │    ✅     │          3d         │ 54.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EXFY  │  $2.40   │   68  │    SMA50     │     0.92%     │      1.62×       │    ✅     │          4d         │ 55.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  HIMS  │  $30.92  │   68  │    SMA50     │     4.47%     │      1.06×       │    ✅     │          0d         │ 57.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SNX   │ $273.37  │   68  │    SMA50     │     0.33%     │      1.49×       │    ✅     │          6d         │ 54.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ETB   │  $15.62  │   67  │    SMA50     │     0.19%     │      0.75×       │    ✅     │          3d         │ 60.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  PLUS  │  $93.30  │   67  │    SMA50     │     0.24%     │      1.27×       │    ✅     │          8d         │ 57.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  IHS   │  $8.43   │   66  │    SMA50     │     0.44%     │      1.28×       │    ✅     │          4d         │ 54.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │   EL   │  $98.05  │   65  │    SMA50     │     0.75%     │      1.39×       │    ❌     │          2d         │ 56.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EXLS  │  $36.79  │   65  │    SMA50     │     1.57%     │      1.65×       │    ✅     │          6d         │ 59.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │   TX   │  $58.18  │   65  │    SMA50     │     0.93%     │      1.35×       │    ✅     │          7d         │ 60.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  WSM   │ $241.78  │   65  │    SMA50     │     0.58%     │      1.27×       │    ✅     │          4d         │ 61.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ALRM  │  $55.65  │   64  │    SMA50     │     1.36%     │      1.47×       │    ✅     │          4d         │ 55.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  QGEN  │  $45.38  │   64  │    SMA50     │     2.23%     │      1.74×       │    ✅     │          5d         │ 56.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SAIC  │ $134.66  │   64  │    SMA50     │     3.84%     │      1.41×       │    ✅     │          1d         │ 61.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SLDE  │  $25.14  │   64  │    SMA50     │     1.66%     │      2.66×       │    ❌     │          6d         │ 60.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GLBE  │  $40.39  │   63  │    SMA50     │     0.48%     │      1.00×       │    ✅     │          4d         │ 55.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  IFF   │  $84.55  │   63  │    SMA50     │     0.02%     │      1.31×       │    ❌     │          2d         │ 52.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  LSPD  │  $10.64  │   63  │    SMA50     │     0.41%     │      0.95×       │    ❌     │          2d         │ 64.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  MCK   │ $938.84  │   63  │    SMA50     │     2.34%     │      1.75×       │    ✅     │          6d         │ 64.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  MWYN  │  $1.37   │   63  │    SMA50     │     0.21%     │      0.85×       │    ✅     │          9d         │ 59.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  WEST  │  $8.18   │   63  │    SMA50     │     0.42%     │      0.97×       │    ✅     │          5d         │ 55.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  AIRT  │  $30.55  │   62  │    SMA50     │     0.86%     │      1.07×       │    ✅     │          4d         │ 52.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  DSP   │  $13.13  │   62  │    SMA50     │     4.67%     │      3.23×       │    ❌     │          2d         │ 56.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EXPD  │ $193.24  │   61  │    SMA50     │     0.07%     │      0.67×       │    ✅     │         10d         │ 57.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  BRZE  │  $29.06  │   60  │    SMA50     │     4.62%     │      2.37×       │    ❌     │          2d         │ 60.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │   BJ   │  $98.58  │   59  │    SMA50     │     1.81%     │      1.12×       │    ✅     │          6d         │ 60.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  FLYW  │  $18.76  │   59  │    SMA50     │     1.25%     │      0.95×       │    ✅     │          4d         │ 64.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  HMC   │  $32.70  │   59  │    SMA50     │     0.90%     │      1.21×       │    ✅     │          4d         │ 57.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CTVA  │  $13.24  │   58  │    SMA50     │     2.57%     │      2.32×       │    ❌     │          4d         │ 56.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  VCTR  │ $112.44  │   58  │    SMA50     │     1.81%     │      1.10×       │    ✅     │         10d         │ 55.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  DGII  │  $75.63  │   57  │    SMA50     │     0.86%     │      0.59×       │    ❌     │          2d         │ 54.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  DMLP  │  $29.75  │   57  │    SMA50     │     0.12%     │      1.28×       │    ❌     │          6d         │ 60.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GFL   │  $42.78  │   57  │    SMA50     │     2.78%     │      1.35×       │    ✅     │          5d         │ 54.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  HUM   │ $431.87  │   57  │    SMA50     │     1.51%     │      0.86×       │    ✅     │          5d         │ 66.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EXPO  │  $69.81  │   56  │    SMA50     │     0.12%     │      1.11×       │    ❌     │          4d         │ 58.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  RLGT  │  $9.21   │   56  │    SMA50     │     0.27%     │      1.22×       │    ❌     │          9d         │ 57.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SONY  │  $24.12  │   56  │    SMA50     │     1.28%     │      0.63×       │    ✅     │         10d         │ 56.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ACCO  │  $4.49   │   55  │    SMA50     │     0.74%     │      1.23×       │    ❌     │          6d         │ 64.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CBRL  │  $57.46  │   54  │    SMA50     │     3.72%     │      1.38×       │    ✅     │          5d         │ 63.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SIBN  │  $19.37  │   54  │    SMA50     │     3.01%     │      1.15×       │    ✅     │          4d         │ 56.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CLF   │  $12.98  │   53  │    SMA50     │     4.93%     │      1.74×       │    ✅     │          4d         │ 60.8 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GGB   │  $5.12   │   53  │    SMA50     │     0.16%     │      0.83×       │    ❌     │         10d         │ 57.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  TGB   │  $8.85   │   53  │    SMA50     │     0.80%     │      0.65×       │    ✅     │          5d         │ 52.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  AVPT  │  $14.63  │   52  │    SMA50     │     1.35%     │      1.25×       │    ❌     │          9d         │ 64.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GGT   │  $4.01   │   52  │    SMA50     │     0.19%     │      0.71×       │    ❌     │          4d         │ 54.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  IEX   │ $234.29  │   52  │    SMA50     │     0.65%     │      0.94×       │    ❌     │          6d         │ 59.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  LFST  │  $12.42  │   52  │    SMA50     │     1.70%     │      0.86×       │    ✅     │          4d         │ 54.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │   PG   │ $151.23  │   52  │    SMA50     │     0.18%     │      0.78×       │    ❌     │         10d         │ 62.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GSM   │  $4.24   │   51  │    SMA50     │     1.41%     │      1.15×       │    ❌     │          6d         │ 52.3 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  HPK   │  $9.55   │   51  │    SMA50     │     2.16%     │      1.44×       │    ❌     │          8d         │ 70.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  KOF   │ $109.86  │   51  │    SMA50     │     0.67%     │      0.90×       │    ❌     │         10d         │ 54.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  GENC  │  $18.05  │   50  │    SMA50     │     0.94%     │      0.87×       │    ❌     │          6d         │ 55.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  THC   │ $263.78  │   50  │    SMA50     │     1.93%     │      1.28×       │    ❌     │         10d         │ 55.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SORA  │  $2.40   │   49  │    SMA50     │     4.19%     │      1.01×       │    ✅     │          8d         │ 57.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  AFRM  │  $80.70  │   48  │    SMA50     │     3.46%     │      1.69×       │    ❌     │          4d         │ 66.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  DVN   │  $48.26  │   48  │    SMA50     │     1.21%     │      0.78×       │    ❌     │          6d         │ 53.0 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  EGBN  │  $28.22  │   47  │    SMA50     │     0.65%     │      0.99×       │    ❌     │          6d         │ 52.1 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  TGTX  │  $55.37  │   47  │    SMA50     │     0.21%     │      0.78×       │    ❌     │          5d         │ 52.5 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ABM   │  $49.63  │   46  │    SMA50     │     0.48%     │      0.73×       │    ❌     │          6d         │ 57.4 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  SSRM  │  $35.51  │   45  │    SMA50     │     1.43%     │      1.00×       │    ❌     │          4d         │ 53.6 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  UFCS  │  $55.14  │   44  │    SMA50     │     1.61%     │      0.58×       │    ❌     │          6d         │ 55.9 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  ASAN  │  $10.07  │   43  │    SMA50     │     5.17%     │      0.86×       │    ✅     │          4d         │ 60.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  DUOL  │ $149.92  │   43  │    SMA50     │     4.70%     │      0.66×       │    ✅     │          8d         │ 54.2 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  PRAA  │  $20.03  │   43  │    SMA50     │     1.51%     │      0.90×       │    ❌     │          4d         │ 53.7 │
+  ├────────┼──────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  RXO   │  $29.08  │   39  │    SMA50     │     4.53%     │      1.20×       │    ❌     │          6d         │ 81.0 │
+  └────────┴──────────┴───────┴──────────────┴───────────────┴──────────────────┴──────────┴─────────────────────┴──────┘
+
+  🥈  TIER 2 — SMA150 Shakeout & Recovery  (2 stocks)
+
+  ┌────────┬────────┬───────┬──────────────┬───────────────┬──────────────────┬──────────┬─────────────────────┬──────┐
+  │ Ticker │ Price  │ Score │ Violated_SMA │ Below_Depth_% │ Vol_Ratio_G_vs_R │ Low_Held │ Bars_Since_Recovery │ RSI  │
+  ├────────┼────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  KROS  │ $11.95 │   63  │    SMA150    │     0.58%     │      1.06×       │    ❌     │          2d         │ 60.2 │
+  ├────────┼────────┼───────┼──────────────┼───────────────┼──────────────────┼──────────┼─────────────────────┼──────┤
+  │  CART  │ $47.76 │   56  │    SMA150    │     0.72%     │      1.34×       │    ❌     │          6d         │ 58.9 │
+  └────────┴────────┴───────┴──────────────┴───────────────┴──────────────────┴──────────┴─────────────────────┴──────┘
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/bull_stack_shakeout_20261011_0431.csv
+  📋 TradingView watchlist → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_bull_stack_shakeout_20261011_0431.txt
+       (Import: TradingView → Watchlist → ⋮ → Import Watchlist)
+[Email] Sending to vikramaga24@gmail.com  (117 results)...
+[Email] 📎 Attached: bull_stack_shakeout_20261011_0431.csv
+[Email] 📎 Attached: tv_bull_stack_shakeout_20261011_0431.txt
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent to: vikramaga24@gmail.com
+[Email]    Subject: 📊 Bull Stack Shakeout — 117 signals  (🏆115 🥈2) — 2026-10-11
+  (CI: files in workspace, email + both attachments sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/bull_stack_shakeout_chart_20261011_0431.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 PATTERN EXPLAINED
+
+  C1  FULL BULL MA STACK  (all aligned + all rising)
+      JMA > EMA8 > SMA20 > SMA50 > SMA150
+      Every MA above the one below it AND every MA has a
+      positive slope over the last 5 bars
+      = Perfect multi-timeframe trend alignment
+
+  C2  1 RED SHAKEOUT CANDLE  (dipped below SMA50 or SMA150)
+      A single red candle closed below SMA50 (Tier 1)
+      or SMA150 (Tier 2) within the last 10 bars
+      = Weak hands flushed out; quick violation of support
+
+  C3  GREEN RECOVERY CANDLE  (the very next bar):
+      ✅ Green (close > open)
+      ✅ Closed back above the violated SMA
+      ✅ Volume >= 1× the red bar's volume (stronger buying)
+      ✅ Low >= red bar's low (no lower low = no real breakdown)
+      = Institutional recovery absorbed the shakeout
+
+  TIERS:
+      🏆 Tier 1  Shakeout below SMA50  (shallower dip = bullish)
+      🥈 Tier 2  Shakeout below SMA150 (deeper dip, bigger bounce)
+
+  💡 BEST SETUPS
+  Bars_Since_Recovery = 0     green recovery happened today
+  Vol_Ratio_G_vs_R >= 2×     strong institutional buying
+  Below_Depth_% < 1%         barely violated — clean shakeout
+  Low_Held = ✅               green bar higher low confirmed
+  All MAs rising steeply      strong underlying trend
+
+  ⚙️  TUNE IF 0 RESULTS
+  max_bars_since_recovery   10 → 20
+  red_lookback              20 → 30
+  vol_mult_vs_red          0.5 → 0.3
+  min_slope_pct           -0.05 → -0.2
+  require_close_above_sma  True → False
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

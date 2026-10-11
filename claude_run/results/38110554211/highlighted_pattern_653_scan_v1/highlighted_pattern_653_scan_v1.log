@@ -1,0 +1,126 @@
+
+1 Failed download:
+['MSFT']: OperationalError('database is locked')
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌  No data.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FIXED TICKER UNIVERSE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Using the fixed 653-ticker list from the Master
+  Technical Scanner's 2026-09-10 05:37 UTC run (no full-universe fetch)
+
+  🎯 Total: 653 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 653 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (single download per ticker)
+  A stock only matches if all 3 candles and the structure gate
+  fire together within the lookback window
+
+Daily fetch:   0%|          | 0/653 [00:00<?]Daily fetch:   8%|▊         | 50/653 [00:09<01:49]Daily fetch:  15%|█▌        | 100/653 [00:19<01:51]Daily fetch:  23%|██▎       | 150/653 [00:30<01:44]Daily fetch:  31%|███       | 200/653 [00:41<01:35]Daily fetch:  38%|███▊      | 250/653 [00:52<01:25]Daily fetch:  46%|████▌     | 300/653 [01:02<01:14]Daily fetch:  54%|█████▎    | 350/653 [01:13<01:05]Daily fetch:  61%|██████▏   | 400/653 [01:24<00:53]Daily fetch:  69%|██████▉   | 450/653 [01:35<00:43]Daily fetch:  77%|███████▋  | 500/653 [01:46<00:33]Daily fetch:  84%|████████▍ | 550/653 [01:56<00:22]Daily fetch:  92%|█████████▏| 600/653 [02:07<00:11]Daily fetch: 100%|█████████▉| 650/653 [02:18<00:00]Daily fetch: 100%|██████████| 653/653 [02:20<00:00]Daily fetch: 100%|██████████| 653/653 [02:21<00:00]
+
+  Daily data : 0/653 tickers
+
+Checking 3-candle pattern: 0stk [00:00, ?stk/s]Checking 3-candle pattern: 0stk [00:00, ?stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 653
+  Daily data      : 0
+  ✅ Matches       : 0
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔍 FUNNEL — where ticker-days were filtered out
+  (tallied across every liquid ticker's last 15 trading days)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker-days checked                       : 0
+  Step 1 — structure (SMA50 > SMA150)        : 0
+  Step 2 — + cluster average near SMA50      : 0
+  Step 3 — + red test day, green reclaim day : 0
+  Step 4 — + volume higher on reclaim day    : 0  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  No matches. Try relaxing (see the FUNNEL above to see which
+  step is actually the bottleneck before guessing):
+   near_sma50_pct               3.0 → 5.0   (allow a looser SMA50 test)
+   signal_lookback_days           15 → 25    (search further back)
+   min_price                        2 → 1
+   min_avg_volume               80000 → 50000
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/highlighted_pattern_653_scan_20261011_0410.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_highlighted_pattern_653_scan_20261011_0410.txt
+[Email] Sending to vikramaga24@gmail.com  (0 results)...
+[Email] 📎 Attached: highlighted_pattern_653_scan_20261011_0410.csv (167 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 Highlighted Pattern (653 tickers) — 0 matches — 2026-10-11
+  (CI: files in workspace, email sent)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required — scanned over the last
+  signal_lookback_days trading days, 15d ≈ 3 weeks,
+  not just today)
+
+  1) STRUCTURE (on the test day): SMA50 > SMA150.
+  2) CLUSTER NEAR SMA50: the average of the fast-MA cluster
+     (EMA8, JMA, SMA21) sits within near_sma50_pct% of SMA50 on
+     the test day — the fast group is pulling back to actually
+     touch/test the medium-term average, matching the highlighted
+     chart's compression zone.
+  3) TEST + RECLAIM: the test day is RED and closed BELOW the
+     cluster average; the next day is GREEN and closed ABOVE the
+     cluster average — a clean one-day reclaim of the tested zone.
+  4) VOLUME: the reclaim day's volume is higher than the test day's.
+
+  If the pattern fired more than once in the window, the MOST
+  RECENT occurrence is used for Entry/Stop/scoring.
+
+  📋 UNIVERSE
+  Restricted to EXACTLY the 653 tickers from the Master Technical
+  Scanner's 2026-09-10 05:37 UTC run (hardcoded list, no full-
+  universe fetch) — per the request to check "those 653 tickers."
+
+  📋 DATA SOURCING
+  Only 1 download per ticker: daily bars (~400 days).
+
+  📋 OUTPUT (reasonable defaults — not explicitly requested)
+  Entry_Price = the reclaim day's HIGH
+  Stop_Loss   = the test day's LOW
+  Signal_Date = the exact calendar date the pattern fired
+  Days_Since_Signal = how many trading days ago (0 = today)
+  Recent_Signals    = every date the pattern fired within the window
+
+  📋 SCORE (0-100)
+  Tightness of the SMA50 test (0-40) + volume increase strength
+  (0-35) + freshness (0-15) + base points for clearing every gate (10)
+
+  💡 BEST SETUPS
+  Score > 70                tight test, strong volume, fresh
+  Near_SMA50_% < 1%             the cluster barely touched SMA50
+  Vol_Ratio > 1.5                  well above the test day's volume
+  Days_Since_Signal = 0-3             freshest signal
+
+  ⚙️  TUNE IF 0 RESULTS
+  near_sma50_pct                3.0 → 5.0   (allow a looser SMA50 test)
+  signal_lookback_days            15 → 25    (search further back)
+  min_price                         2 → 1
+  min_avg_volume                80000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
