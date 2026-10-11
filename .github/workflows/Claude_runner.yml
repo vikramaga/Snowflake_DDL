@@ -1,9 +1,14 @@
-# ClaudeRunner — lets Claude run any scanner by committing a plain file.
+# ClaudeRunner (parallel) — lets Claude run any scanner by committing a plain file.
 #
-# On demand : Claude edits claude_run/run.txt (one script per line) → push triggers this.
-# Scheduled : 06:00 IST daily, runs every script listed in claude_run/schedule.txt.
-# Results : logs + CSV/PNG/TradingView files are committed to claude_run/results/<run_id>/
-# and a summary to claude_run/results/latest.md, so Claude can read them back.
+# On demand : Claude edits claude_run/run.txt → push triggers this.
+# One script per line, or the single word ALL to run every script
+# that any workflow in .github/workflows runs.
+# Scheduled : 06:00 IST daily, runs the scripts listed in claude_run/schedule.txt.
+# Parallel : each script gets its own job (up to 20 at once).
+# Results : logs, CSVs and TradingView lists are committed to
+# claude_run/results/<run_id>/<script>/ and a summary to
+# claude_run/results/latest.md. Charts (PNG) stay in the run's
+# artifacts only, to keep the repo small.
 
 name: ClaudeRunner
 
@@ -18,18 +23,61 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: claude-runner
-  cancel-in-progress: false
-
 jobs:
-  run:
+  plan:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    outputs:
+      scripts: ${{ steps.pick.outputs.scripts }}
+      count:   ${{ steps.pick.outputs.count }}
+      list:    ${{ steps.pick.outputs.list }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pick scripts
+        id: pick
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then LIST=claude_run/schedule.txt; else LIST=claude_run/run.txt; fi
+          echo "list=$LIST" >> "$GITHUB_OUTPUT"
+          : > picked.txt
+          if [ -f "$LIST" ]; then
+            if grep -qE '^[[:space:]]*ALL[[:space:]]*$' "$LIST"; then
+              grep -hoE 'python3? +[A-Za-z0-9_./-]+\.py' .github/workflows/*.yml \
+                | awk '{print $2}' | sort -u > picked.txt
+            else
+              grep -vE '^[[:space:]]*(#|$)' "$LIST" | sed 's/[[:space:]]*$//' \
+                | grep -E '^[A-Za-z0-9_./-]+\.py$' | grep -v '\.\.' | sort -u > picked.txt || true
+            fi
+          fi
+          : > scripts.txt
+          while read -r s; do
+            if [ -f "$s" ]; then echo "$s" >> scripts.txt; else echo "::warning::missing script $s"; fi
+          done < picked.txt
+          echo "Scripts to run:"; cat scripts.txt
+          echo "scripts=$(jq -R -s -c 'split("\n") | map(select(length > 0))' scripts.txt)" >> "$GITHUB_OUTPUT"
+          echo "count=$(wc -l < scripts.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+  run:
+    needs: plan
+    if: needs.plan.outputs.count != '0'
+    name: ${{ matrix.script }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        script: ${{ fromJSON(needs.plan.outputs.scripts) }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Name
+        id: meta
+        env:
+          SCRIPT: ${{ matrix.script }}
+        run: echo "name=$(basename "$SCRIPT" .py)" >> "$GITHUB_OUTPUT"
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -45,83 +93,107 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade yfinance pandas numpy requests tqdm matplotlib openpyxl
+          pip install --upgrade yfinance pandas numpy requests tqdm matplotlib openpyxl anthropic
           if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
 
-      - name: Pick scripts
-        id: pick
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then LIST=claude_run/schedule.txt; else LIST=claude_run/run.txt; fi
-          echo "list=$LIST" >> "$GITHUB_OUTPUT"
-          touch scripts.txt
-          if [ -f "$LIST" ]; then
-            grep -vE '^\s*(#|$)' "$LIST" | sed 's/[[:space:]]*$//' \
-              | grep -E '^[A-Za-z0-9_./-]+\.py$' | grep -v '\.\.' > scripts.txt || true
-          fi
-          echo "Scripts to run:"; cat scripts.txt
-
-      - name: Run scripts
+      - name: Run script
         env:
-          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
-          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
-          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
-          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          SCRIPT: ${{ matrix.script }}
+          NAME:   ${{ steps.meta.outputs.name }}
+          GMAIL_USER:        ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS:        ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:          ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM:        ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD:    ${{ secrets.EMAIL_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FALLBACK_TICKERS:  "HOOD,CRDO,ALAB"
+        run: |
+          mkdir -p out
+          touch .start_marker
+          set +e
+          python "$SCRIPT" > "out/$NAME.log" 2>&1
+          code=$?
+          set -e
+          echo "$code" > "out/$NAME.exit"
+          tail -n 80 "out/$NAME.log"
+          find . -maxdepth 1 -type f -newer .start_marker \
+            \( -name '*.csv' -o -name '*.png' -o -name 'tv_*.txt' -o -name '*.xlsx' -o -name '*.html' \) \
+            -exec mv {} out/ \;
+          ls -la out
+
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: part-${{ steps.meta.outputs.name }}
+          path: out/
+          retention-days: 14
+
+  collect:
+    needs: [plan, run]
+    if: always() && needs.plan.outputs.count != '0'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: part-*
+          path: parts
+
+      - name: Build summary
+        env:
+          SCRIPTS: ${{ needs.plan.outputs.scripts }}
+          LIST:    ${{ needs.plan.outputs.list }}
         run: |
           OUT="claude_run/results/${{ github.run_id }}"
           mkdir -p "$OUT"
-          SUMMARY="claude_run/results/latest.md"
+          if [ -d parts ]; then
+            for d in parts/part-*; do
+              [ -d "$d" ] || continue
+              n="${d#parts/part-}"
+              mkdir -p "$OUT/$n"
+              find "$d" -maxdepth 1 -type f ! -name '*.png' -exec cp {} "$OUT/$n/" \;
+            done
+          fi
+          SUMMARY=claude_run/results/latest.md
+          ok=0; bad=0; none=0
+          rows=""
+          while read -r s; do
+            [ -z "$s" ] && continue
+            n=$(basename "$s" .py)
+            if [ -f "$OUT/$n/$n.exit" ]; then
+              code=$(cat "$OUT/$n/$n.exit")
+              if [ "$code" = "0" ]; then ok=$((ok+1)); else bad=$((bad+1)); fi
+            else
+              code="no result (timeout/cancelled)"; none=$((none+1))
+            fi
+            rows="$rows| $s | $code | $OUT/$n/ |"$'\n'
+          done < <(echo "$SCRIPTS" | jq -r '.[]')
           {
             echo "# ClaudeRunner run ${{ github.run_id }}"
             echo ""
-            echo "- Trigger: ${{ github.event_name }} (${{ steps.pick.outputs.list }})"
-            echo "- Started: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo "- Trigger: ${{ github.event_name }} ($LIST)"
+            echo "- Finished: $(date -u '+%Y-%m-%d %H:%M UTC')"
             echo "- Run page: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "- Scripts: $((ok+bad+none)) — ok $ok, failed $bad, no result $none"
             echo ""
-            echo "| Script | Exit | Log |"
+            echo "| Script | Exit | Results folder |"
             echo "|---|---|---|"
+            printf '%s' "$rows"
           } > "$SUMMARY"
-          while read -r s; do
-            [ -z "$s" ] && continue
-            name=$(basename "$s" .py)
-            if [ ! -f "$s" ]; then
-              echo "| $s | missing | — |" >> "$SUMMARY"; continue
-            fi
-            echo "::group::$s"
-            touch .start_marker
-            set +e
-            python "$s" > "$OUT/$name.log" 2>&1
-            code=$?
-            set -e
-            tail -n 60 "$OUT/$name.log"
-            echo "::endgroup::"
-            # move any new output files from this script into the results folder
-            find . -maxdepth 1 -type f -newer .start_marker \
-              \( -name '*.csv' -o -name '*.png' -o -name 'tv_*.txt' -o -name '*.xlsx' \) \
-              -exec mv {} "$OUT/" \;
-            echo "| $s | $code | $OUT/$name.log |" >> "$SUMMARY"
-          done < scripts.txt
-          echo "" >> "$SUMMARY"
-          echo "- Finished: $(date -u '+%Y-%m-%d %H:%M UTC')" >> "$SUMMARY"
           cat "$SUMMARY"
 
       - name: Commit results back
-        if: always()
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898+github-actions[bot]@users.noreply.github.com"
           git add claude_run/results || true
           if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
           git commit -m "ClaudeRunner results ${{ github.run_id }}"
-          for i in 1 2 3; do
+          for i in 1 2 3 4 5; do
             git pull --rebase origin master && git push origin HEAD:master && break
-            sleep 5
+            sleep 7
           done
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: claude-runner-${{ github.run_id }}
-          path: claude_run/results/${{ github.run_id }}
-          retention-days: 30
