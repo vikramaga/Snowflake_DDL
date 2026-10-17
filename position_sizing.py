@@ -54,6 +54,61 @@ def size_position(entry, stop, max_loss):
     return qty, round(qty * entry, 2)
 
 
+# ── Default stop for scanners that don't compute one ─────────────
+# Stop_Loss = lowest daily Low of the last DEFAULT_STOP_LOOKBACK daily
+# bars (today included), fetched for the result tickers only.
+DEFAULT_STOP_LOOKBACK = int(os.environ.get("DEFAULT_STOP_LOOKBACK", "10"))
+
+
+def _recent_lows(tickers, lookback):
+    """{ticker: lowest daily Low of the last `lookback` bars} via yfinance."""
+    import pandas as pd
+    import yfinance as yf
+    tickers = [t for t in dict.fromkeys(tickers) if isinstance(t, str) and t]
+    if not tickers:
+        return {}
+    data = yf.download(tickers, period="2mo", interval="1d", progress=False,
+                       group_by="ticker", threads=True)
+    out = {}
+    for t in tickers:
+        try:
+            if isinstance(data.columns, pd.MultiIndex):
+                lows = data[t]["Low"] if t in data.columns.get_level_values(0) else data["Low"][t]
+            else:
+                lows = data["Low"]
+            lows = lows.dropna().tail(lookback)
+            if len(lows):
+                out[t] = float(lows.min())
+        except Exception:
+            pass
+    return out
+
+
+def add_default_stop(df, lookback=None, ticker_col="Ticker", entry_col="Price",
+                     stop_col="Stop_Loss", fetch=None):
+    """Add a Stop_Loss column (N-day low) after entry_col when df has none."""
+    out = df.copy()
+    if stop_col in out.columns:
+        return out
+    lookback = DEFAULT_STOP_LOOKBACK if lookback is None else int(lookback)
+    if ticker_col not in out.columns or entry_col not in out.columns:
+        print(f"  ⚠️  Default stop skipped: need '{ticker_col}' and '{entry_col}' columns")
+        return out
+    lows = (fetch or _recent_lows)(list(out[ticker_col]), lookback) if len(out) else {}
+    stops = []
+    for t, px in zip(out[ticker_col], out[entry_col]):
+        lo = lows.get(t)
+        try:
+            ok = lo is not None and math.isfinite(lo) and 0 < lo < float(px)
+        except (TypeError, ValueError):
+            ok = False
+        stops.append(round(lo, 2) if ok else float("nan"))
+    out.insert(list(out.columns).index(entry_col) + 1, stop_col, stops)
+    n_ok = sum(1 for s in stops if s == s)
+    print(f"  🛑 Default stop: {lookback}-day low — {n_ok}/{len(out)} tickers")
+    return out
+
+
 def add_position_size(df, max_loss_usd=None, currency="USD",
                       entry_col=None, stop_col="Stop_Loss"):
     """Return a copy of df with Quantity and Total_Amount added after the stop column."""
