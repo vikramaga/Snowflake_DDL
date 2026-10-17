@@ -1,0 +1,36 @@
+[master ab97f24] Add daily MA support scanner (EMA21 / SMA50) and schedule it at 06:00 IST
+ 2 files changed, 1045 insertions(+)
+ create mode 100644 daily_ma_support_ema21_sma50_v1.py
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   ed0678c..ab97f24  HEAD -> master
+sha256 132a7bef8b7f708404e717da1dab16011cd5e51c2616b72810602eb5e70b6d3b
+✅ daily_ma_support_ema21_sma50_v1.py identical to the tested file and compiles
+✅ added to claude_run/schedule.txt
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add daily_ma_support_ema21_sma50_v1.py claude_run/schedule.txt
++ git commit -m Add daily MA support scanner (EMA21 / SMA50) and schedule it at 06:00 IST
+
+Signal on the latest daily candle, over the last 42 trading days:
+1. Support MA (EMA21 or SMA50, whichever has more bounces) has >= 3 bounces
+   (low within 1.5% above / below the MA, close held within 1%, then a close
+   2%+ above the MA within 5 days; touches within 3 bars = one event)
+2. Closes held on that MA (no more than 1% below) on >= 80% of the days
+3. That MA is rising (higher than 10 days ago)
+4. Today's close is 1% below to 3% above that same MA
+
+Template: daily_rsi_high_breakout_v1.py. Defaults (not requested): Entry = close,
+Stop = 2% below the support MA, Quantity/Total_Amount for a $40 max loss.
+
+Verified: positive synthetic case fires with independent re-check of held %,
+distance and slope; negative controls fail at step 1 (runaway trend, choppy),
+step 2 (held 76%), step 3 (falling MA) and step 4 (7% above MA); full script
+run with mocked data/SMTP for 6 matches and 0 matches (CSV sizing <= $40,
+chart, TradingView list, decoded email); py_compile; no template leftovers.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+✅ pushed
