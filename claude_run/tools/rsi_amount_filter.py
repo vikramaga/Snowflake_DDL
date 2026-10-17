@@ -10,6 +10,8 @@
 #      RSI_MIN=58 RSI_MAX=64 MAX_AMOUNT=550
 #      GMAIL_USER / GMAIL_PASS / EMAIL_TO (or EMAIL_FROM / EMAIL_PASSWORD) for --email
 # Run daily by .github/workflows/rsi_digest.yml after the 06:00 IST ClaudeRunner run.
+# NSE tickers (.NS/.BO) are priced in rupees: their limit is MAX_AMOUNT converted
+# at the live USD/INR rate, and Amount_USD shows the dollar equivalent.
 import glob, os, re, sys
 from datetime import datetime, timezone
 import pandas as pd
@@ -94,12 +96,27 @@ def fund_flags(tickers):
     return out
 
 
+def usd_inr():
+    try:
+        sys.path.insert(0, os.getcwd())
+        from position_sizing import _usd_to
+        return _usd_to("INR")[0]
+    except Exception:
+        return 88.0
+
+
+def _money(r):
+    if r.Currency == "INR":
+        return f"₹{r.Total_Amount:,.0f} (≈${r.Amount_USD:,.0f})"
+    return f"${r.Total_Amount:,.0f}"
+
+
 def build_email(hit, by_tkr, run, files, asof):
     date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     n = len(by_tkr)
     subj = f"📊 RSI {_fmt(RSI_MIN)}-{_fmt(RSI_MAX)} · under ${MAX_AMOUNT:,.0f} — {n} stocks — {date}"
     crit = (f"RSI(14) {_fmt(RSI_MIN)}–{_fmt(RSI_MAX)} (daily, as of {asof}), Total_Amount under "
-            f"${MAX_AMOUNT:,.0f}, Quantity &gt; 0 (max loss $40 per trade)")
+            f"${MAX_AMOUNT:,.0f} (India: ₹ equivalent), Quantity &gt; 0 (max loss $40 per trade)")
     src = ", ".join(f"{b.rsplit('_2026', 1)[0]} ({k})" for b, k in files)
     th = "padding:6px 10px;background:#1f2937;color:#fff;text-align:left;font-size:12px"
     td = "padding:5px 10px;border-bottom:1px solid #e5e7eb;font-size:12px"
@@ -111,7 +128,7 @@ def build_email(hit, by_tkr, run, files, asof):
             f"<tr><td style='{td}'><b>{r.Ticker}</b>{flag}</td><td style='{td}'>{score}</td>"
             f"<td style='{td}'>{r.RSI:.1f}</td><td style='{td}'>{r.Entry:,.2f}</td>"
             f"<td style='{td}'>{r.Stop_Loss:,.2f}</td><td style='{td}'>{int(r.Quantity)}</td>"
-            f"<td style='{td}'>${r.Total_Amount:,.0f}</td><td style='{td}'>{r.Screeners}</td></tr>")
+            f"<td style='{td}'>{_money(r)}</td><td style='{td}'>{r.Screeners}</td></tr>")
     table = ("<table style='border-collapse:collapse;font-family:Arial'>"
              f"<tr><th style='{th}'>Ticker</th><th style='{th}'>Score</th><th style='{th}'>RSI</th>"
              f"<th style='{th}'>Entry</th><th style='{th}'>Stop</th><th style='{th}'>Qty</th>"
@@ -129,7 +146,7 @@ def build_email(hit, by_tkr, run, files, asof):
     plain = [f"RSI {_fmt(RSI_MIN)}-{_fmt(RSI_MAX)} under ${MAX_AMOUNT:,.0f} - {n} stocks ({date})", ""]
     for _, r in by_tkr.iterrows():
         plain.append(f"{r.Ticker:6s} RSI {r.RSI:4.1f}  {r.Entry:,.2f} -> {r.Stop_Loss:,.2f}  "
-                     f"qty {int(r.Quantity)}  ${r.Total_Amount:,.0f}  [{r.Screeners}]"
+                     f"qty {int(r.Quantity)}  {_money(r)}  [{r.Screeners}]"
                      + (f"  ! {r.Flags}" if r.Flags else ""))
     plain += ["", "TradingView: " + tv]
     return subj, html, "\n".join(plain)
@@ -178,7 +195,8 @@ def main():
         print("No screener results found"); return
     print(f"Results run: {run}   filter: RSI {_fmt(RSI_MIN)}-{_fmt(RSI_MAX)}, Total_Amount < ${MAX_AMOUNT:,.0f}")
     allr, files = load_results(run)
-    cols = ["Scanner", "Ticker", "Score", "Entry", "Stop_Loss", "Quantity", "Total_Amount", "RSI", "Flags"]
+    cols = ["Scanner", "Ticker", "Score", "Entry", "Stop_Loss", "Quantity", "Total_Amount",
+            "Currency", "Amount_USD", "RSI", "Flags"]
     if allr.empty:
         hit, asof = pd.DataFrame(columns=cols), "n/a"
     else:
@@ -194,11 +212,17 @@ def main():
             allr = allr.drop(columns="Scanner_RSI")
         if "Score" not in allr:
             allr["Score"] = float("nan")
+        inr = allr.Ticker.astype(str).str.upper().str.endswith((".NS", ".BO"))
+        rate = usd_inr() if inr.any() else 1.0
+        if inr.any():
+            print(f"NSE rows: {int(inr.sum())} — limit ₹{MAX_AMOUNT * rate:,.0f} at USD/INR {rate:.2f}")
+        allr["Currency"] = ["INR" if x else "USD" for x in inr]
+        allr["Amount_USD"] = (allr.Total_Amount / [rate if x else 1.0 for x in inr]).round(2)
         hit = allr[(allr.RSI >= RSI_MIN) & (allr.RSI <= RSI_MAX)
-                   & (allr.Quantity > 0) & (allr.Total_Amount < MAX_AMOUNT)].copy()
+                   & (allr.Quantity > 0) & (allr.Amount_USD < MAX_AMOUNT)].copy()
         kinds = fund_flags(sorted(hit.Ticker.unique())) if len(hit) else {}
-        hit["Flags"] = [", ".join(f for f in (kinds.get(t, ""), f"under ${LOW_PRICE:.0f}" if e < LOW_PRICE else "") if f)
-                        for t, e in zip(hit.Ticker, hit.Entry)]
+        hit["Flags"] = [", ".join(f for f in (kinds.get(t, ""), f"under ${LOW_PRICE:.0f}" if (e < LOW_PRICE and c == "USD") else "") if f)
+                        for t, e, c in zip(hit.Ticker, hit.Entry, hit.Currency)]
         hit = hit[cols].sort_values(["Ticker", "Scanner"])
 
     out_csv = f"rsi_{int(RSI_MIN)}_{int(RSI_MAX)}_under_{int(MAX_AMOUNT)}.csv"
