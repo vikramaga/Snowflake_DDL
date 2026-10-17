@@ -538,6 +538,12 @@ if results:
     if len(df_out) > 40: print(f"  ... {len(df_out)-40} more in CSV")
 
 fpath = os.path.join(out_dir, f"daily_price_jma_ema21_sma50_volume_{ts}.csv")
+# ── Position sizing: Quantity / Total_Amount for a fixed max loss (see position_sizing.py)
+try:
+    from position_sizing import add_position_size
+    df_out = add_position_size(df_out)
+except Exception as _ps_err:
+    print(f"  ⚠️  Position sizing skipped: {_ps_err}")
 df_out.to_csv(fpath, index=False)
 print(f"\n  💾 CSV → {fpath}")
 tv = os.path.join(out_dir, f"tv_daily_price_jma_ema21_sma50_volume_{ts}.txt")

@@ -762,6 +762,12 @@ elif results:
 
 # Save
 fpath = os.path.join(out_dir, f"monthly_3candle_reclaim_jma_ema8_{ts}.csv")
+# ── Position sizing: Quantity / Total_Amount for a fixed max loss (see position_sizing.py)
+try:
+    from position_sizing import add_position_size
+    df_out = add_position_size(df_out)
+except Exception as _ps_err:
+    print(f"  ⚠️  Position sizing skipped: {_ps_err}")
 df_out.to_csv(fpath, index=False)
 print(f"\n  💾 CSV → {fpath}")
 tv = os.path.join(out_dir, f"tv_monthly_3candle_reclaim_jma_ema8_{ts}.txt")
