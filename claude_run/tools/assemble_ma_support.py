@@ -5,7 +5,7 @@
 # adds it to the 06:00 schedule and commits.
 import hashlib, py_compile, subprocess, sys
 
-EXPECTED = "7d67299e76f5d72dc5cf0965751bf9288c6286314ff02b378d757c2fe522843e"
+EXPECTED = "132a7bef8b7f708404e717da1dab16011cd5e51c2616b72810602eb5e70b6d3b"
 OUT = "daily_ma_support_ema21_sma50_v1.py"
 B = "claude_run/build/ma_support/"
 
