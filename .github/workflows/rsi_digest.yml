@@ -1,0 +1,49 @@
+# RSI Digest — runs automatically when the scheduled (06:00 IST) ClaudeRunner
+# run finishes. Filters that run's screener CSVs to RSI 58–64 and
+# Total_Amount < $550, emails the list with the CSV attached, and saves the
+# CSV to claude_run/results/digest/<date>/.
+# Change the filter with the RSI_MIN / RSI_MAX / MAX_AMOUNT values below.
+
+name: RSI Digest
+
+on:
+  workflow_run:
+    workflows: [ClaudeRunner]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  digest:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout (latest master, includes the run's committed results)
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install --upgrade yfinance pandas numpy
+
+      - name: Filter and email
+        env:
+          RESULTS_RUN:    ${{ github.event.workflow_run.id }}
+          RSI_MIN:        "58"
+          RSI_MAX:        "64"
+          MAX_AMOUNT:     "550"
+          GMAIL_USER:     ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS:     ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
+        run: python claude_run/tools/rsi_amount_filter.py --email | tee rsi_digest.log
+
+      - name: Save CSV to repo
+        run: | D="claude_run/results/digest/$(date -u +%Y-%m-%d)" mkdir -p "$D" mv rsi_*_under_*.csv rsi_digest.log "$D/" 2>/dev/null || true git config user.name "github-actions[bot]" git config user.email "41898+github-actions[bot]@users.noreply.github.com" git add claude_run/results/digest || true if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi git commit -m "RSI digest $(date -u +%Y-%m-%d)" for i in 1 2 3 4 5; do git pull --rebase origin master && git push origin HEAD:master && break sleep 7 done
