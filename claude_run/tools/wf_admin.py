@@ -16,6 +16,7 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "vikramaga/Snowflake_DDL")
 TOKEN = os.environ.get("WORKFLOW_TOKEN", "").strip()
 API = f"https://api.github.com/repos/{REPO}"
 KEEP = {"Claude_runner.yml", "rsi_digest.yml"}
+QUOTES = ("'", '"')
 fail = 0
 
 
@@ -50,6 +51,10 @@ def wf_scripts(fname):
 
 def cmd_check():
     global fail
+    raw = os.environ.get("WORKFLOW_TOKEN", "")
+    print(f"Token shape: length {len(raw)}, starts with {raw.strip()[:4]!r}, "
+          f"surrounding whitespace {raw != raw.strip()}, quotes {raw.strip()[:1] in QUOTES}, "
+          f"inner spaces {' ' in raw.strip()}")
     st, d = api("GET", "")
     if st != 200:
         print(f"❌ Token check failed: HTTP {st} {d.get('message','')}"); fail += 1; return
