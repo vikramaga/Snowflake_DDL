@@ -919,6 +919,13 @@ elif results:
 # Save
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 fpath   = os.path.join(out_dir, f"sma_retest_ema20_cross_{ts}.csv")
+# ── Default stop (10-day low) + Quantity / Total_Amount for a fixed max loss (see position_sizing.py)
+try:
+    from position_sizing import add_default_stop, add_position_size
+    df_out = add_default_stop(df_out)
+    df_out = add_position_size(df_out)
+except Exception as _ps_err:
+    print(f"  ⚠️  Position sizing skipped: {_ps_err}")
 df_out.to_csv(fpath, index=False)
 print(f"\n  💾 CSV → {fpath}")
 tv = os.path.join(out_dir, f"tv_sma_retest_{ts}.txt")
