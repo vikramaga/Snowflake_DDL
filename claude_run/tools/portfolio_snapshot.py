@@ -13,16 +13,33 @@ tickers = [t.strip().upper() for t in open(os.path.join(here, "snapshot_tickers.
            if t.strip() and not t.startswith("#")]
 bench = ["SPY", "QQQ"]
 
-def calc_jma(series, period=13, phase=40):
-    vals = series.values.astype(float); n = len(vals); out = np.full(n, np.nan)
-    a = 2.0 / (period + 1.0); b = a * (phase / 100.0 + 1.5)
-    e0 = e1 = e2 = vals[0]; out[0] = e0
-    for i in range(1, n):
-        v = vals[i]
-        e0 = (1 - a) * e0 + a * v
-        e1 = (v - e0) * (1 - b) + b * e1
-        e2 = (1 - a) * e2 + a * (e0 + e1)
-        out[i] = e2
+def calc_jma(series, period=13, phase=40, power=2):
+    """
+    Jurik Moving Average — same formula as TradingView's "Jurik Moving
+    Average" indicator, so values match the chart:
+        beta       = 0.45*(L-1) / (0.45*(L-1) + 2)
+        alpha      = beta ** power
+        phaseRatio = phase/100 + 1.5   (0.5 if phase < -100, 2.5 if > 100)
+        e0  = (1-alpha)*src + alpha*e0[1]
+        e1  = (src - e0)*(1-beta) + beta*e1[1]
+        e2  = (e0 + phaseRatio*e1 - jma[1])*(1-alpha)^2 + alpha^2*e2[1]
+        jma = e2 + jma[1]
+    period = Length, phase = Phase, power = Power (TradingView inputs).
+    """
+    phase_ratio = 0.5 if phase < -100 else (2.5 if phase > 100 else phase / 100.0 + 1.5)
+    beta  = 0.45 * (period - 1) / (0.45 * (period - 1) + 2)
+    alpha = beta ** power
+    vals  = np.asarray(series.values, dtype=float)
+    out   = np.full(len(vals), np.nan)
+    e0 = e1 = e2 = jma = 0.0
+    for i, v in enumerate(vals):
+        if np.isnan(v):
+            continue
+        e0  = (1 - alpha) * v + alpha * e0
+        e1  = (v - e0) * (1 - beta) + beta * e1
+        e2  = (e0 + phase_ratio * e1 - jma) * (1 - alpha) ** 2 + alpha ** 2 * e2
+        jma = e2 + jma
+        out[i] = jma
     return pd.Series(out, index=series.index)
 
 raw = yf.download(tickers + bench, period="400d", group_by="ticker",

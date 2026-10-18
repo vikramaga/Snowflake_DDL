@@ -400,27 +400,33 @@ def get_fundamentals(sym):
 
 # ── Technical signal: EMA8/SMA21/SMA50/SMA150 retest + 2-candle reclaim ──
 def calc_jma(series, period=13, phase=40, power=2):
-    """JMA approximation — adaptive EMA with corrected steady-state gain."""
-    n      = len(series)
-    vals   = series.values.astype(float)
-    result = np.full(n, np.nan)
-    phase_ratio = phase / 100.0 + 1.5
-    alpha = 2.0 / (period + 1.0)
-    beta  = alpha * phase_ratio
-    first_valid = 0
-    for i in range(n):
-        if not np.isnan(vals[i]):
-            first_valid = i
-            break
-    e0 = e1 = e2 = vals[first_valid]
-    result[first_valid] = e0
-    for i in range(first_valid + 1, n):
-        v   = vals[i]
-        e0  = (1 - alpha) * e0 + alpha * v
+    """
+    Jurik Moving Average — same formula as TradingView's "Jurik Moving
+    Average" indicator, so values match the chart:
+        beta       = 0.45*(L-1) / (0.45*(L-1) + 2)
+        alpha      = beta ** power
+        phaseRatio = phase/100 + 1.5   (0.5 if phase < -100, 2.5 if > 100)
+        e0  = (1-alpha)*src + alpha*e0[1]
+        e1  = (src - e0)*(1-beta) + beta*e1[1]
+        e2  = (e0 + phaseRatio*e1 - jma[1])*(1-alpha)^2 + alpha^2*e2[1]
+        jma = e2 + jma[1]
+    period = Length, phase = Phase, power = Power (TradingView inputs).
+    """
+    phase_ratio = 0.5 if phase < -100 else (2.5 if phase > 100 else phase / 100.0 + 1.5)
+    beta  = 0.45 * (period - 1) / (0.45 * (period - 1) + 2)
+    alpha = beta ** power
+    vals  = np.asarray(series.values, dtype=float)
+    out   = np.full(len(vals), np.nan)
+    e0 = e1 = e2 = jma = 0.0
+    for i, v in enumerate(vals):
+        if np.isnan(v):
+            continue
+        e0  = (1 - alpha) * v + alpha * e0
         e1  = (v - e0) * (1 - beta) + beta * e1
-        e2  = (1 - alpha) * e2 + alpha * (e0 + e1)
-        result[i] = e2
-    return pd.Series(result, index=series.index)
+        e2  = (e0 + phase_ratio * e1 - jma) * (1 - alpha) ** 2 + alpha ** 2 * e2
+        jma = e2 + jma
+        out[i] = jma
+    return pd.Series(out, index=series.index)
 
 def calc_rsi(close, period=14):
     """Standard Wilder-smoothed RSI."""
