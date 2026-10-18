@@ -1,0 +1,290 @@
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 378 bars ($343.46, 2026-10-16)
+  ✅ MSFT: daily 378 bars ($529.05, 2026-10-16)
+  ✅ NVDA: daily 378 bars ($214.13, 2026-10-16)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3163 → 3163
+  ✅ otherlisted       : +2271 → 5434
+  ✅ NASDAQ API        : + 882 → 6316
+  ✅ Static fallback   : +   9 → 6325
+
+  🎯 Total: 6325 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6325 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (single download per ticker)
+  Signal: JMA < Close <= JMA+8%, JMA > EMA21, JMA > SMA50, Vol > prior day & > 1.5x 20d avg, risk <= 12%
+
+Daily fetch:   0%|          | 0/6325 [00:00<?]Daily fetch:   1%|          | 50/6325 [00:03<07:06]Daily fetch:   2%|▏         | 100/6325 [00:07<07:59]Daily fetch:   2%|▏         | 150/6325 [00:11<08:14]Daily fetch:   3%|▎         | 200/6325 [00:15<08:18]Daily fetch:   4%|▍         | 250/6325 [00:21<09:02]Daily fetch:   5%|▍         | 300/6325 [00:25<08:58]Daily fetch:   6%|▌         | 350/6325 [00:29<08:36]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▋         | 400/6325 [00:34<08:58]Daily fetch:   7%|▋         | 450/6325 [00:39<08:56]Daily fetch:   8%|▊         | 500/6325 [00:43<08:37]Daily fetch:   9%|▊         | 550/6325 [00:47<08:28]Daily fetch:   9%|▉         | 600/6325 [00:51<08:14]Daily fetch:  10%|█         | 650/6325 [00:55<07:59]Daily fetch:  11%|█         | 700/6325 [00:59<07:49]Daily fetch:  12%|█▏        | 750/6325 [01:04<07:51]Daily fetch:  13%|█▎        | 800/6325 [01:08<07:53]Daily fetch:  13%|█▎        | 850/6325 [01:13<08:08]Daily fetch:  14%|█▍        | 900/6325 [01:17<08:01]Daily fetch:  15%|█▌        | 950/6325 [01:22<08:11]Daily fetch:  16%|█▌        | 1000/6325 [01:27<08:17]Daily fetch:  17%|█▋        | 1050/6325 [01:32<08:01]$CBX: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Daily fetch:  17%|█▋        | 1100/6325 [01:36<07:57]Daily fetch:  18%|█▊        | 1150/6325 [01:40<07:45]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1200/6325 [01:45<07:40]Daily fetch:  20%|█▉        | 1250/6325 [01:49<07:33]Daily fetch:  21%|██        | 1300/6325 [01:53<07:17]Daily fetch:  21%|██▏       | 1350/6325 [01:58<07:08]Daily fetch:  22%|██▏       | 1400/6325 [02:02<07:02]Daily fetch:  23%|██▎       | 1450/6325 [02:06<07:06]$CTEST: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+Daily fetch:  24%|██▎       | 1500/6325 [02:11<07:01]Daily fetch:  25%|██▍       | 1550/6325 [02:15<06:48]Daily fetch:  25%|██▌       | 1600/6325 [02:20<07:07]Daily fetch:  26%|██▌       | 1650/6325 [02:24<07:01]Daily fetch:  27%|██▋       | 1700/6325 [02:29<06:47]Daily fetch:  28%|██▊       | 1750/6325 [02:33<06:55]Daily fetch:  28%|██▊       | 1800/6325 [02:37<06:36]Daily fetch:  29%|██▉       | 1850/6325 [02:41<06:17]Daily fetch:  30%|███       | 1900/6325 [02:46<06:17]Daily fetch:  31%|███       | 1950/6325 [02:50<06:12]Daily fetch:  32%|███▏      | 2000/6325 [02:54<06:07]$EXAS: possibly delisted; no timezone found
+
+1 Failed download:
+['EXAS']: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+Daily fetch:  32%|███▏      | 2050/6325 [02:59<06:18]Daily fetch:  33%|███▎      | 2100/6325 [03:03<06:15]Daily fetch:  34%|███▍      | 2150/6325 [03:08<06:04]Daily fetch:  35%|███▍      | 2200/6325 [03:12<05:49]Daily fetch:  36%|███▌      | 2250/6325 [03:16<05:46]Daily fetch:  36%|███▋      | 2300/6325 [03:20<05:46]Daily fetch:  37%|███▋      | 2350/6325 [03:25<05:49]Daily fetch:  38%|███▊      | 2400/6325 [03:29<05:38]Daily fetch:  39%|███▊      | 2450/6325 [03:34<05:42]Daily fetch:  40%|███▉      | 2500/6325 [03:38<05:43]Daily fetch:  40%|████      | 2550/6325 [03:43<05:33]Daily fetch:  41%|████      | 2600/6325 [03:47<05:36]Daily fetch:  42%|████▏     | 2650/6325 [03:52<05:33]Daily fetch:  43%|████▎     | 2700/6325 [03:56<05:19]Daily fetch:  43%|████▎     | 2750/6325 [04:00<05:08]Daily fetch:  44%|████▍     | 2800/6325 [04:05<05:10]Daily fetch:  45%|████▌     | 2850/6325 [04:09<05:04]Daily fetch:  46%|████▌     | 2900/6325 [04:13<04:54]Daily fetch:  47%|████▋     | 2950/6325 [04:17<04:39]Daily fetch:  47%|████▋     | 3000/6325 [04:22<04:45]Daily fetch:  48%|████▊     | 3050/6325 [04:26<04:49]Daily fetch:  49%|████▉     | 3100/6325 [04:31<04:46]Daily fetch:  50%|████▉     | 3150/6325 [04:35<04:38]Daily fetch:  51%|█████     | 3200/6325 [04:40<04:38]Daily fetch:  51%|█████▏    | 3250/6325 [04:44<04:25]Daily fetch:  52%|█████▏    | 3300/6325 [04:48<04:24]Daily fetch:  53%|█████▎    | 3350/6325 [04:52<04:11]Daily fetch:  54%|█████▍    | 3400/6325 [04:56<04:10]Daily fetch:  55%|█████▍    | 3450/6325 [05:01<04:03]Daily fetch:  55%|█████▌    | 3500/6325 [05:05<03:59]Daily fetch:  56%|█████▌    | 3550/6325 [05:10<04:03]Daily fetch:  57%|█████▋    | 3600/6325 [05:14<03:58]Daily fetch:  58%|█████▊    | 3650/6325 [05:18<03:56]Daily fetch:  58%|█████▊    | 3700/6325 [05:23<03:50]Daily fetch:  59%|█████▉    | 3750/6325 [05:27<03:41]Daily fetch:  60%|██████    | 3800/6325 [05:32<03:42]Daily fetch:  61%|██████    | 3850/6325 [05:36<03:34]Daily fetch:  62%|██████▏   | 3900/6325 [05:40<03:28]Daily fetch:  62%|██████▏   | 3950/6325 [05:44<03:25]Daily fetch:  63%|██████▎   | 4000/6325 [05:48<03:16]Daily fetch:  64%|██████▍   | 4050/6325 [05:52<03:10]Daily fetch:  65%|██████▍   | 4100/6325 [05:57<03:13]Daily fetch:  66%|██████▌   | 4150/6325 [06:01<03:10]Daily fetch:  66%|██████▋   | 4200/6325 [06:06<03:07]Daily fetch:  67%|██████▋   | 4250/6325 [06:10<03:02]Daily fetch:  68%|██████▊   | 4300/6325 [06:14<02:53]Daily fetch:  69%|██████▉   | 4350/6325 [06:19<02:55]Daily fetch:  70%|██████▉   | 4400/6325 [06:23<02:48]Daily fetch:  70%|███████   | 4450/6325 [06:28<02:42]Daily fetch:  71%|███████   | 4500/6325 [06:32<02:38]Daily fetch:  72%|███████▏  | 4550/6325 [06:36<02:32]Daily fetch:  73%|███████▎  | 4600/6325 [06:40<02:23]$PSTG: possibly delisted; no timezone found
+
+1 Failed download:
+['PSTG']: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+Daily fetch:  74%|███████▎  | 4650/6325 [06:45<02:28]Daily fetch:  74%|███████▍  | 4700/6325 [06:49<02:23]Daily fetch:  75%|███████▌  | 4750/6325 [06:54<02:16]Daily fetch:  76%|███████▌  | 4800/6325 [06:58<02:09]Daily fetch:  77%|███████▋  | 4850/6325 [07:01<02:01]Daily fetch:  77%|███████▋  | 4900/6325 [07:06<02:01]Daily fetch:  78%|███████▊  | 4950/6325 [07:11<02:00]Daily fetch:  79%|███████▉  | 5000/6325 [07:16<02:01]Daily fetch:  80%|███████▉  | 5050/6325 [07:21<02:02]Daily fetch:  81%|████████  | 5100/6325 [07:25<01:52]Daily fetch:  81%|████████▏ | 5150/6325 [07:29<01:45]Daily fetch:  82%|████████▏ | 5200/6325 [07:34<01:39]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5250/6325 [07:38<01:33]Daily fetch:  84%|████████▍ | 5300/6325 [07:42<01:29]Daily fetch:  85%|████████▍ | 5350/6325 [07:47<01:24]Daily fetch:  85%|████████▌ | 5400/6325 [07:50<01:18]Daily fetch:  86%|████████▌ | 5450/6325 [07:55<01:16]Daily fetch:  87%|████████▋ | 5500/6325 [07:59<01:09]Daily fetch:  88%|████████▊ | 5550/6325 [08:03<01:04]Daily fetch:  89%|████████▊ | 5600/6325 [08:07<00:58]Daily fetch:  89%|████████▉ | 5650/6325 [08:11<00:55]Daily fetch:  90%|█████████ | 5700/6325 [08:15<00:51]Daily fetch:  91%|█████████ | 5750/6325 [08:20<00:49]Daily fetch:  92%|█████████▏| 5800/6325 [08:24<00:43]Daily fetch:  92%|█████████▏| 5850/6325 [08:28<00:38]Daily fetch:  93%|█████████▎| 5900/6325 [08:32<00:34]Daily fetch:  94%|█████████▍| 5950/6325 [08:36<00:31]Daily fetch:  95%|█████████▍| 6000/6325 [08:40<00:27]Daily fetch:  96%|█████████▌| 6050/6325 [08:44<00:22]Daily fetch:  96%|█████████▋| 6100/6325 [08:49<00:19]Daily fetch:  97%|█████████▋| 6150/6325 [08:53<00:15]Daily fetch:  98%|█████████▊| 6200/6325 [08:58<00:10]Daily fetch:  99%|█████████▉| 6250/6325 [09:03<00:06]$ZEXIT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+
+5 Failed downloads:
+['ZEXIT', 'ZBZZT', 'ZIEXT', 'ZCZZT', 'ZBZX']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Daily fetch: 100%|█████████▉| 6300/6325 [09:08<00:02]$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+$ZTEST: possibly delisted; no timezone found
+
+3 Failed downloads:
+['ZXIET', 'ZTEST']: possibly delisted; no timezone found
+['ZVV']: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+$ZVV: possibly delisted; no price data found  (1d 2025-04-16 -> 2026-10-18)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6325/6325 [09:11<00:00]Daily fetch: 100%|██████████| 6325/6325 [09:13<00:00]
+
+  Daily data : 5508/6325 tickers
+
+Checking pattern:   0%|          | 0/5508 [00:00<?, ?stk/s]Checking pattern:   0%|          | 23/5508 [00:00<00:24, 222.82stk/s]Checking pattern:   1%|          | 58/5508 [00:00<00:18, 292.24stk/s]Checking pattern:   2%|▏         | 102/5508 [00:00<00:15, 351.68stk/s]Checking pattern:   3%|▎         | 139/5508 [00:00<00:15, 357.48stk/s]Checking pattern:   3%|▎         | 182/5508 [00:00<00:14, 379.88stk/s]Checking pattern:   4%|▍         | 228/5508 [00:00<00:13, 401.72stk/s]Checking pattern:   5%|▍         | 269/5508 [00:00<00:14, 362.48stk/s]Checking pattern:   6%|▌         | 306/5508 [00:00<00:16, 313.71stk/s]Checking pattern:   6%|▌         | 339/5508 [00:01<00:17, 289.29stk/s]Checking pattern:   7%|▋         | 381/5508 [00:01<00:16, 318.40stk/s]Checking pattern:   8%|▊         | 415/5508 [00:01<00:15, 322.19stk/s]Checking pattern:   8%|▊         | 455/5508 [00:01<00:14, 340.04stk/s]Checking pattern:   9%|▉         | 490/5508 [00:01<00:15, 328.66stk/s]Checking pattern:  10%|▉         | 524/5508 [00:01<00:16, 306.32stk/s]Checking pattern:  10%|█         | 557/5508 [00:01<00:15, 309.55stk/s]Checking pattern:  11%|█         | 589/5508 [00:01<00:17, 284.11stk/s]Checking pattern:  11%|█▏        | 629/5508 [00:01<00:15, 311.52stk/s]Checking pattern:  12%|█▏        | 670/5508 [00:02<00:14, 333.37stk/s]Checking pattern:  13%|█▎        | 705/5508 [00:02<00:14, 324.31stk/s]Checking pattern:  14%|█▎        | 744/5508 [00:02<00:14, 336.44stk/s]Checking pattern:  14%|█▍        | 793/5508 [00:02<00:12, 374.54stk/s]Checking pattern:  15%|█▌        | 837/5508 [00:02<00:12, 387.39stk/s]Checking pattern:  16%|█▌        | 877/5508 [00:02<00:12, 367.08stk/s]Checking pattern:  17%|█▋        | 915/5508 [00:02<00:14, 326.74stk/s]Checking pattern:  17%|█▋        | 949/5508 [00:02<00:14, 317.89stk/s]Checking pattern:  18%|█▊        | 984/5508 [00:02<00:13, 323.70stk/s]Checking pattern:  19%|█▊        | 1021/5508 [00:03<00:13, 333.58stk/s]Checking pattern:  19%|█▉        | 1055/5508 [00:03<00:13, 332.08stk/s]Checking pattern:  20%|█▉        | 1090/5508 [00:03<00:13, 336.76stk/s]Checking pattern:  20%|██        | 1124/5508 [00:03<00:14, 312.55stk/s]Checking pattern:  21%|██        | 1156/5508 [00:03<00:14, 296.87stk/s]Checking pattern:  22%|██▏       | 1187/5508 [00:03<00:14, 293.58stk/s]Checking pattern:  22%|██▏       | 1217/5508 [00:03<00:14, 293.68stk/s]Checking pattern:  23%|██▎       | 1248/5508 [00:03<00:14, 296.60stk/s]Checking pattern:  23%|██▎       | 1278/5508 [00:03<00:15, 281.06stk/s]Checking pattern:  24%|██▍       | 1311/5508 [00:04<00:14, 292.87stk/s]Checking pattern:  24%|██▍       | 1341/5508 [00:04<00:14, 288.54stk/s]Checking pattern:  25%|██▍       | 1375/5508 [00:04<00:13, 301.25stk/s]Checking pattern:  26%|██▌       | 1406/5508 [00:04<00:13, 297.12stk/s]Checking pattern:  26%|██▌       | 1436/5508 [00:04<00:13, 296.07stk/s]Checking pattern:  27%|██▋       | 1468/5508 [00:04<00:13, 301.38stk/s]Checking pattern:  27%|██▋       | 1499/5508 [00:04<00:13, 290.60stk/s]Checking pattern:  28%|██▊       | 1539/5508 [00:04<00:12, 316.68stk/s]Checking pattern:  29%|██▊       | 1572/5508 [00:04<00:12, 317.77stk/s]Checking pattern:  29%|██▉       | 1614/5508 [00:05<00:11, 344.24stk/s]Checking pattern:  30%|███       | 1656/5508 [00:05<00:10, 363.42stk/s]Checking pattern:  31%|███       | 1693/5508 [00:05<00:11, 343.44stk/s]Checking pattern:  31%|███▏      | 1728/5508 [00:05<00:11, 320.05stk/s]Checking pattern:  32%|███▏      | 1770/5508 [00:05<00:10, 344.42stk/s]Checking pattern:  33%|███▎      | 1806/5508 [00:05<00:10, 345.58stk/s]Checking pattern:  33%|███▎      | 1841/5508 [00:05<00:11, 326.76stk/s]Checking pattern:  34%|███▍      | 1875/5508 [00:05<00:11, 317.42stk/s]Checking pattern:  35%|███▍      | 1908/5508 [00:05<00:11, 318.56stk/s]Checking pattern:  35%|███▌      | 1945/5508 [00:06<00:10, 330.59stk/s]Checking pattern:  36%|███▌      | 1979/5508 [00:06<00:11, 303.46stk/s]Checking pattern:  37%|███▋      | 2014/5508 [00:06<00:11, 314.19stk/s]Checking pattern:  37%|███▋      | 2059/5508 [00:06<00:09, 349.00stk/s]Checking pattern:  38%|███▊      | 2095/5508 [00:06<00:09, 349.65stk/s]Checking pattern:  39%|███▊      | 2131/5508 [00:06<00:09, 350.45stk/s]Checking pattern:  39%|███▉      | 2168/5508 [00:06<00:09, 353.76stk/s]Checking pattern:  40%|████      | 2209/5508 [00:06<00:08, 366.67stk/s]Checking pattern:  41%|████      | 2251/5508 [00:06<00:08, 378.57stk/s]Checking pattern:  42%|████▏     | 2289/5508 [00:06<00:08, 361.62stk/s]Checking pattern:  42%|████▏     | 2326/5508 [00:07<00:09, 347.86stk/s]Checking pattern:  43%|████▎     | 2362/5508 [00:07<00:09, 325.84stk/s]Checking pattern:  43%|████▎     | 2395/5508 [00:07<00:11, 276.54stk/s]Checking pattern:  44%|████▍     | 2435/5508 [00:07<00:10, 305.07stk/s]Checking pattern:  45%|████▍     | 2467/5508 [00:07<00:10, 302.44stk/s]Checking pattern:  45%|████▌     | 2504/5508 [00:07<00:09, 318.09stk/s]Checking pattern:  46%|████▋     | 2553/5508 [00:07<00:08, 360.97stk/s]Checking pattern:  47%|████▋     | 2590/5508 [00:07<00:08, 348.98stk/s]Checking pattern:  48%|████▊     | 2626/5508 [00:08<00:08, 349.64stk/s]Checking pattern:  48%|████▊     | 2662/5508 [00:08<00:08, 330.80stk/s]Checking pattern:  49%|████▉     | 2708/5508 [00:08<00:07, 365.59stk/s]Checking pattern:  50%|████▉     | 2746/5508 [00:08<00:07, 353.63stk/s]Checking pattern:  51%|█████     | 2782/5508 [00:08<00:08, 340.74stk/s]Checking pattern:  51%|█████     | 2817/5508 [00:08<00:08, 324.37stk/s]Checking pattern:  52%|█████▏    | 2862/5508 [00:08<00:07, 355.40stk/s]Checking pattern:  53%|█████▎    | 2903/5508 [00:08<00:07, 366.94stk/s]Checking pattern:  53%|█████▎    | 2941/5508 [00:08<00:07, 325.96stk/s]Checking pattern:  54%|█████▍    | 2975/5508 [00:09<00:07, 326.43stk/s]Checking pattern:  55%|█████▍    | 3014/5508 [00:09<00:07, 341.20stk/s]Checking pattern:  55%|█████▌    | 3049/5508 [00:09<00:07, 330.31stk/s]Checking pattern:  56%|█████▌    | 3083/5508 [00:09<00:07, 325.60stk/s]Checking pattern:  57%|█████▋    | 3116/5508 [00:09<00:07, 325.58stk/s]Checking pattern:  57%|█████▋    | 3156/5508 [00:09<00:06, 345.46stk/s]Checking pattern:  58%|█████▊    | 3191/5508 [00:09<00:06, 345.91stk/s]Checking pattern:  59%|█████▊    | 3226/5508 [00:09<00:06, 339.90stk/s]Checking pattern:  59%|█████▉    | 3261/5508 [00:09<00:07, 311.87stk/s]Checking pattern:  60%|█████▉    | 3293/5508 [00:10<00:07, 297.80stk/s]Checking pattern:  61%|██████    | 3343/5508 [00:10<00:06, 350.07stk/s]Checking pattern:  61%|██████▏   | 3379/5508 [00:10<00:06, 339.50stk/s]Checking pattern:  62%|██████▏   | 3414/5508 [00:10<00:06, 340.34stk/s]Checking pattern:  63%|██████▎   | 3453/5508 [00:10<00:05, 351.85stk/s]Checking pattern:  63%|██████▎   | 3491/5508 [00:10<00:05, 357.13stk/s]Checking pattern:  64%|██████▍   | 3527/5508 [00:10<00:05, 348.16stk/s]Checking pattern:  65%|██████▍   | 3563/5508 [00:10<00:06, 320.34stk/s]Checking pattern:  65%|██████▌   | 3600/5508 [00:10<00:05, 331.75stk/s]Checking pattern:  66%|██████▌   | 3639/5508 [00:11<00:05, 343.04stk/s]Checking pattern:  67%|██████▋   | 3674/5508 [00:11<00:05, 343.06stk/s]Checking pattern:  67%|██████▋   | 3713/5508 [00:11<00:05, 353.58stk/s]Checking pattern:  68%|██████▊   | 3760/5508 [00:11<00:04, 382.99stk/s]Checking pattern:  69%|██████▉   | 3799/5508 [00:11<00:05, 333.18stk/s]Checking pattern:  70%|██████▉   | 3836/5508 [00:11<00:04, 340.54stk/s]Checking pattern:  70%|███████   | 3872/5508 [00:11<00:04, 337.72stk/s]Checking pattern:  71%|███████   | 3907/5508 [00:11<00:05, 310.41stk/s]Checking pattern:  72%|███████▏  | 3958/5508 [00:11<00:04, 359.16stk/s]Checking pattern:  73%|███████▎  | 3995/5508 [00:12<00:04, 322.94stk/s]Checking pattern:  73%|███████▎  | 4035/5508 [00:12<00:04, 340.70stk/s]Checking pattern:  74%|███████▍  | 4071/5508 [00:12<00:04, 332.00stk/s]Checking pattern:  75%|███████▍  | 4117/5508 [00:12<00:03, 363.24stk/s]Checking pattern:  75%|███████▌  | 4157/5508 [00:12<00:03, 371.07stk/s]Checking pattern:  76%|███████▌  | 4195/5508 [00:12<00:03, 357.43stk/s]Checking pattern:  77%|███████▋  | 4235/5508 [00:12<00:03, 366.75stk/s]Checking pattern:  78%|███████▊  | 4273/5508 [00:12<00:03, 349.34stk/s]Checking pattern:  78%|███████▊  | 4309/5508 [00:12<00:03, 350.44stk/s]Checking pattern:  79%|███████▉  | 4345/5508 [00:13<00:03, 337.91stk/s]Checking pattern:  80%|███████▉  | 4380/5508 [00:13<00:03, 338.89stk/s]Checking pattern:  80%|████████  | 4427/5508 [00:13<00:02, 371.33stk/s]Checking pattern:  81%|████████  | 4465/5508 [00:13<00:03, 345.64stk/s]Checking pattern:  82%|████████▏ | 4501/5508 [00:13<00:03, 330.61stk/s]Checking pattern:  82%|████████▏ | 4539/5508 [00:13<00:02, 342.17stk/s]Checking pattern:  83%|████████▎ | 4574/5508 [00:13<00:02, 336.19stk/s]Checking pattern:  84%|████████▎ | 4610/5508 [00:13<00:02, 341.46stk/s]Checking pattern:  84%|████████▍ | 4649/5508 [00:13<00:02, 352.98stk/s]Checking pattern:  85%|████████▌ | 4685/5508 [00:14<00:02, 352.35stk/s]Checking pattern:  86%|████████▌ | 4721/5508 [00:14<00:02, 353.11stk/s]Checking pattern:  86%|████████▋ | 4757/5508 [00:14<00:02, 314.79stk/s]Checking pattern:  87%|████████▋ | 4793/5508 [00:14<00:02, 325.74stk/s]Checking pattern:  88%|████████▊ | 4827/5508 [00:14<00:02, 297.02stk/s]Checking pattern:  88%|████████▊ | 4858/5508 [00:14<00:02, 285.35stk/s]Checking pattern:  89%|████████▉ | 4899/5508 [00:14<00:01, 315.35stk/s]Checking pattern:  90%|████████▉ | 4933/5508 [00:14<00:01, 319.79stk/s]Checking pattern:  90%|█████████ | 4966/5508 [00:14<00:01, 304.40stk/s]Checking pattern:  91%|█████████ | 5000/5508 [00:15<00:01, 312.35stk/s]Checking pattern:  91%|█████████▏| 5032/5508 [00:15<00:01, 303.15stk/s]Checking pattern:  92%|█████████▏| 5063/5508 [00:15<00:01, 288.46stk/s]Checking pattern:  93%|█████████▎| 5097/5508 [00:15<00:01, 301.63stk/s]Checking pattern:  93%|█████████▎| 5129/5508 [00:15<00:01, 305.09stk/s]Checking pattern:  94%|█████████▎| 5160/5508 [00:15<00:01, 299.67stk/s]Checking pattern:  94%|█████████▍| 5201/5508 [00:15<00:00, 329.19stk/s]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 7 conditions
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Entry_Price   Stop_Loss    Above_JMA_%   Vol_Ratio   Signal_Date  
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  AAPL      $343.46     48       $343.46       $330.61      0.3           1.51        2026-10-16   
+  ABBV      $285.42     58       $283.40       $256.30      1.6           1.35        2026-10-15   
+  AMGN      $432.49     45       $434.03       $396.01      3.2           1.5         2026-10-15   
+  AOUT      $18.06      87       $18.06        $15.90       4.0           2.15        2026-10-16   
+  APPN      $41.17      68       $41.17        $36.42       1.4           1.43        2026-10-16   
+  BIIB      $232.65     48       $232.83       $215.73      2.5           1.86        2026-10-14   
+  BSM       $15.03      45       $15.03        $14.45       1.0           2.03        2026-10-16   
+  BTI       $60.00      53       $58.00        $52.06       3.1           1.98        2026-10-15   
+  CEPO      $10.77      30       $10.77        $10.75       0.0           1.24        2026-10-16   
+  CHKP      $137.87     47       $137.87       $128.50      1.1           1.9         2026-10-16   
+  CL        $94.11      46       $92.67        $83.99       1.9           1.52        2026-10-15   
+  CLH       $320.06     32       $319.78       $308.32      0.3           1.4         2026-10-15   
+  CON       $38.54      66       $37.46        $34.05       0.1           2.85        2026-10-14   
+  CRBG      $34.43      30       $34.43        $32.28       0.2           1.22        2026-10-15   
+  DRH       $13.42      60       $13.42        $12.20       2.3           1.52        2026-10-16   
+  DSGX      $87.05      68       $88.64        $78.36       4.2           1.48        2026-10-15   
+  E         $59.10      50       $57.44        $53.65       0.5           1.59        2026-10-15   
+  EC        $17.90      48       $17.90        $16.05       1.3           1.65        2026-10-16   
+  ECL       $288.89     54       $288.89       $271.00      0.3           1.75        2026-10-16   
+  ESTC      $91.74      76       $97.24        $90.20       1.9           2.63        2026-10-15   
+  EXLS      $39.52      62       $39.52        $35.21       3.6           1.18        2026-10-16   
+  FAST      $51.02      58       $52.00        $49.11       1.5           2.53        2026-10-14   
+  FMX       $126.46     61       $126.46       $111.63      4.3           1.57        2026-10-16   
+  FTRE      $22.49      74       $21.34        $19.05       1.6           3.84        2026-10-14   
+  GFS       $46.68      51       $48.94        $46.22       1.5           2.78        2026-10-14   
+  HDB       $23.84      41       $23.84        $21.71       3.6           1.39        2026-10-16   
+  HST       $23.97      54       $23.97        $22.12       2.6           1.39        2026-10-16   
+  ICE       $161.56     31       $158.41       $147.50      1.1           1.16        2026-10-15   
+  IHG       $167.77     48       $167.77       $157.63      2.9           1.05        2026-10-16   
+  IMO       $133.92     42       $133.92       $119.10      3.8           1.23        2026-10-16   
+  KDP       $34.62      64       $34.18        $30.20       4.0           1.93        2026-10-15   
+  KNSA      $78.59      56       $79.94        $73.14       0.7           2.58        2026-10-15   
+  KOF       $118.95     66       $115.67       $103.37      0.9           2.91        2026-10-15   
+  LLY       $1257.03    45       $1251.61      $1131.21     4.6           1.19        2026-10-15   
+  LOGI      $104.41     38       $104.41       $97.76       2.0           1.12        2026-10-16   
+  LTC       $43.68      44       $43.34        $41.38       1.0           1.96        2026-10-15   
+  MD        $27.38      46       $27.06        $25.40       1.4           2.51        2026-10-14   
+  MDT       $94.75      45       $95.45        $85.22       3.1           1.01        2026-10-15   
+  MEDP      $618.47     35       $628.60       $587.39      2.1           1.26        2026-10-15   
+  MSCI      $569.08     40       $569.08       $535.35      0.1           1.52        2026-10-16   
+  MSGS      $396.10     32       $404.10       $381.38      0.0           1.7         2026-10-14   
+  NGG       $81.22      48       $81.22        $75.05       3.0           1.59        2026-10-16   
+  NI        $42.68      47       $42.68        $39.27       2.5           1.54        2026-10-16   
+  NOMD      $11.76      44       $11.49        $10.25       0.9           1.78        2026-10-15   
+  PAGP      $27.45      36       $27.45        $25.62       1.2           1.22        2026-10-16   
+  PEGA      $34.54      39       $35.95        $32.93       3.0           1.14        2026-10-15   
+  PG        $159.35     56       $157.08       $143.40      1.7           1.54        2026-10-15   
+  PK        $15.91      44       $15.91        $14.88       2.7           1.28        2026-10-16   
+  PSO       $18.24      69       $18.24        $16.07       3.3           1.14        2026-10-16   
+  RAC       $10.55      47       $10.58        $10.54       0.1           5.14        2026-10-14   
+  RGA       $266.75     45       $261.05       $243.64      1.0           1.27        2026-10-14   
+  RMD       $238.97     65       $238.97       $218.03      0.5           2.3         2026-10-16   
+  SDRL      $47.25      28       $46.98        $43.64       0.0           1.19        2026-10-14   
+  SHO       $11.83      66       $11.83        $11.09       1.4           1.77        2026-10-16   
+  SOMN      $48.10      63       $48.10        $44.99       2.3           5.43        2026-10-16   
+  TACH      $10.54      49       $10.54        $10.52       0.0           23.22       2026-10-15   
+  TACO      $10.48      51       $10.48        $10.45       0.1           7.97        2026-10-16   
+  TAK       $19.67      40       $19.01        $17.75       2.0           1.6         2026-10-14   
+  TALO      $17.77      57       $17.77        $16.39       2.8           2.0         2026-10-16   
+  TMO       $690.00     55       $696.49       $635.32      4.1           1.59        2026-10-15   
+  TRC       $16.34      37       $16.56        $16.04       1.1           1.72        2026-10-15   
+  TRI       $109.01     56       $107.89       $95.14       2.5           1.82        2026-10-15   
+  TRV       $389.54     56       $389.54       $357.09      2.6           1.54        2026-10-16   
+  TTE       $91.34      30       $88.49        $83.15       0.3           1.37        2026-10-15   
+  TVA       $10.58      45       $10.60        $10.57       0.0           2.24        2026-10-14   
+  UL        $66.16      56       $64.65        $59.22       2.3           2.88        2026-10-15   
+  UNH       $401.43     44       $406.67       $362.60      5.1           1.31        2026-10-15   
+  USPH      $85.71      57       $85.98        $82.26       0.9           2.54        2026-10-15   
+  VAC       $110.93     49       $112.30       $101.51      4.5           1.56        2026-10-15   
+  VAL       $85.32      44       $84.73        $77.60       0.0           2.5         2026-10-14   
+  VEON      $83.20      71       $82.81        $73.66       2.4           1.45        2026-10-15   
+  VRNS      $48.72      64       $48.72        $45.65       1.7           13.48       2026-10-16   Checking pattern:  95%|█████████▌| 5235/5508 [00:15<00:00, 307.51stk/s]Checking pattern:  96%|█████████▌| 5267/5508 [00:15<00:00, 310.02stk/s]Checking pattern:  96%|█████████▌| 5299/5508 [00:16<00:00, 300.39stk/s]Checking pattern:  97%|█████████▋| 5330/5508 [00:16<00:00, 293.24stk/s]Checking pattern:  97%|█████████▋| 5360/5508 [00:16<00:00, 287.81stk/s]Checking pattern:  98%|█████████▊| 5394/5508 [00:16<00:00, 301.86stk/s]Checking pattern:  99%|█████████▊| 5433/5508 [00:16<00:00, 326.41stk/s]Checking pattern: 100%|█████████▉| 5481/5508 [00:16<00:00, 368.28stk/s]Checking pattern: 100%|██████████| 5508/5508 [00:16<00:00, 330.48stk/s]
+
+  WAY       $27.36      61       $26.87        $24.63       0.9           2.77        2026-10-14   
+  WENN      $10.42      32       $10.43        $10.42       0.0           0.0         2026-10-14   
+  WSM       $250.16     52       $250.16       $230.51      2.0           1.08        2026-10-16   
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6325
+  Daily data      : 5508
+  ✅ Matches       : 75
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔍 FUNNEL — ticker-days (last 3 bars per liquid ticker)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker-days checked                  : 7305
+  Step 1 — Close > JMA                 : 3776
+  Step 2 — + not > 8% above JMA     : 3741
+  Step 3 — + JMA > EMA21               : 1713
+  Step 4 — + JMA > SMA50               : 1186
+  Step 5 — + Volume > prior day        : 651
+  Step 6 — + Volume > 1.5x 20d avg     : 123
+  Step 7 — + Risk <= 12%              : 83  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ticker  Price  Score  Entry_Price  Stop_Loss  Above_JMA_%  JMA_vs_SMA50_%  Vol_Ratio Signal_Date
+  AOUT  18.06     87        18.06      15.90          4.0            21.2       2.15  2026-10-16
+  ESTC  91.74     76        97.24      90.20          1.9             8.4       2.63  2026-10-15
+  FTRE  22.49     74        21.34      19.05          1.6            10.2       3.84  2026-10-14
+  VEON  83.20     71        82.81      73.66          2.4            20.7       1.45  2026-10-15
+   PSO  18.24     69        18.24      16.07          3.3             8.3       1.14  2026-10-16
+  APPN  41.17     68        41.17      36.42          1.4             7.5       1.43  2026-10-16
+  DSGX  87.05     68        88.64      78.36          4.2             7.3       1.48  2026-10-15
+   CON  38.54     66        37.46      34.05          0.1             7.1       2.85  2026-10-14
+   KOF 118.95     66       115.67     103.37          0.9             4.2       2.91  2026-10-15
+   SHO  11.83     66        11.83      11.09          1.4             5.2       1.77  2026-10-16
+   RMD 238.97     65       238.97     218.03          0.5             4.8       2.30  2026-10-16
+   KDP  34.62     64        34.18      30.20          4.0             5.0       1.93  2026-10-15
+  VRNS  48.72     64        48.72      45.65          1.7             4.7      13.48  2026-10-16
+  SOMN  48.10     63        48.10      44.99          2.3             0.9       5.43  2026-10-16
+  EXLS  39.52     62        39.52      35.21          3.6             5.5       1.18  2026-10-16
+   FMX 126.46     61       126.46     111.63          4.3             2.8       1.57  2026-10-16
+   WAY  27.36     61        26.87      24.63          0.9             5.7       2.77  2026-10-14
+   DRH  13.42     60        13.42      12.20          2.3             5.9       1.52  2026-10-16
+  ABBV 285.42     58       283.40     256.30          1.6             7.2       1.35  2026-10-15
+  FAST  51.02     58        52.00      49.11          1.5             1.7       2.53  2026-10-14
+  TALO  17.77     57        17.77      16.39          2.8             2.9       2.00  2026-10-16
+  USPH  85.71     57        85.98      82.26          0.9             4.9       2.54  2026-10-15
+  KNSA  78.59     56        79.94      73.14          0.7             2.0       2.58  2026-10-15
+    PG 159.35     56       157.08     143.40          1.7             5.4       1.54  2026-10-15
+   TRI 109.01     56       107.89      95.14          2.5             3.5       1.82  2026-10-15
+   TRV 389.54     56       389.54     357.09          2.6             3.0       1.54  2026-10-16
+    UL  66.16     56        64.65      59.22          2.3             0.7       2.88  2026-10-15
+   TMO 690.00     55       696.49     635.32          4.1             5.5       1.59  2026-10-15
+   ECL 288.89     54       288.89     271.00          0.3             3.2       1.75  2026-10-16
+   HST  23.97     54        23.97      22.12          2.6             4.4       1.39  2026-10-16
+   BTI  60.00     53        58.00      52.06          3.1             2.0       1.98  2026-10-15
+   WSM 250.16     52       250.16     230.51          2.0             4.9       1.08  2026-10-16
+   GFS  46.68     51        48.94      46.22          1.5             1.1       2.78  2026-10-14
+  TACO  10.48     51        10.48      10.45          0.1             0.0       7.97  2026-10-16
+     E  59.10     50        57.44      53.65          0.5             4.3       1.59  2026-10-15
+  TACH  10.54     49        10.54      10.52          0.0             0.3      23.22  2026-10-15
+   VAC 110.93     49       112.30     101.51          4.5             0.2       1.56  2026-10-15
+  AAPL 343.46     48       343.46     330.61          0.3             5.1       1.51  2026-10-16
+  BIIB 232.65     48       232.83     215.73          2.5             3.9       1.86  2026-10-14
+    EC  17.90     48        17.90      16.05          1.3             2.9       1.65  2026-10-16
+  ... 35 more in CSV
+  💰 Position sizing: max loss $40 per trade — 71 sized, 4 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_price_jma_ema21_sma50_volume_20261018_0509.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_daily_price_jma_ema21_sma50_volume_20261018_0509.txt
+[Email] Sending to vikramaga24@gmail.com  (75 results)...
+[Email] 📎 Attached: daily_price_jma_ema21_sma50_volume_20261018_0509.csv (14,838 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📈 Daily Price>JMA>EMA21/SMA50 + Vol — 75 signals — 2026-10-18
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_price_jma_ema21_sma50_volume_chart_20261018_0509.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required, same daily bar)
+  1) Close > JMA(13, phase 40)
+  2) Close no more than 8% above JMA (not extended)
+  3) JMA > EMA(21)
+  4) JMA > SMA(50)
+  5) Volume > previous day's volume
+  6) Volume > 1.5 x 20-day average volume
+  7) Risk to stop (prior 10-bar low) <= 12%
+  Universe: price >= $10, 20d avg volume >= 100k
+  Last signal_lookback_days bars are checked; most recent hit reported.
+
+  📋 SCORE (0-100): base 15 + JMA/EMA21 gap + JMA/SMA50 gap + price
+  above JMA + volume vs prior day + volume vs 20d avg + low risk + freshness
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
