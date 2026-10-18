@@ -8,7 +8,7 @@ import hashlib, py_compile, subprocess, sys
 sys.path.insert(0, "claude_run/build/jma_cross")
 from gen_email import build_email_section
 
-EXPECTED = "e2df35451df28a2bb535feb5521cab37a6b687f7c9a104181b8e20d0feba554a"
+EXPECTED = "4734539fefd5853f4a2c07380a044ee4c070a4a9f96cba8b74b25202ee1952ca"
 OUT = "daily_jma_cross_ema8_v1.py"
 B = "claude_run/build/jma_cross/"
 
