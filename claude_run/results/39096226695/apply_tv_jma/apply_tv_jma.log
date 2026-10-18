@@ -1,0 +1,41 @@
+[master 517dcc2] Switch calc_jma to TradingView's Jurik Moving Average formula (17 files)
+ 17 files changed, 438 insertions(+), 392 deletions(-)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   32ab666..517dcc2  HEAD -> master
+patched  allmacross.py
+patched  basebreakouth4.py
+patched  cluster_reclaim_rsi_v1.py
+patched  daily_3candle_jma_reclaim_v1.py
+patched  daily_jma_cross_ema8_v1.py
+patched  daily_price_jma_ema21_sma50_volume_v1.py
+patched  fundamental_v2.py
+patched  highlighted_pattern_653_scan_v1.py
+patched  jma_ema8_convergence_breakout_v1.py
+patched  jma_stack_cross_v1.py
+patched  macompress.py
+patched  master_technical_scanner_v1.py
+patched  monthly_3candle_reclaim_jma_ema8_v1.py
+patched  nasdaq_h4_pullback_recovery.py
+patched  sma8withh4.py
+patched  smasupport.py
+patched  claude_run/tools/portfolio_snapshot.py
+17 files patched
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add allmacross.py basebreakouth4.py cluster_reclaim_rsi_v1.py daily_3candle_jma_reclaim_v1.py daily_jma_cross_ema8_v1.py daily_price_jma_ema21_sma50_volume_v1.py fundamental_v2.py highlighted_pattern_653_scan_v1.py jma_ema8_convergence_breakout_v1.py jma_stack_cross_v1.py macompress.py master_technical_scanner_v1.py monthly_3candle_reclaim_jma_ema8_v1.py nasdaq_h4_pullback_recovery.py sma8withh4.py smasupport.py claude_run/tools/portfolio_snapshot.py
++ git commit -m Switch calc_jma to TradingView's Jurik Moving Average formula (17 files)
+
+Every scanner now computes JMA exactly like TradingView's "Jurik Moving
+Average" indicator, so signals match the charts. Each script keeps its own
+settings (Length / Phase / Power, normally 13 / 40 / 2).
+
+Verified: each patched calc_jma matches the reference TradingView formula to
+1e-12 on random series; the reference reproduces MG's chart JMA (~20.73 on
+2026-10-14); all files compile.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+✅ pushed
