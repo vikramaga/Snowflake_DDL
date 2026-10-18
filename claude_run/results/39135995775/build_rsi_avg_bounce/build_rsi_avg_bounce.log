@@ -1,0 +1,34 @@
+✅ wrote daily_rsi_avg_bounce_v1.py (1024 lines) — compiles
+[master e37c8af] Add daily RSI bounce-off-average scanner and schedule it at 06:00 IST
+ 2 files changed, 1025 insertions(+)
+ create mode 100644 daily_rsi_avg_bounce_v1.py
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   92fb8e8..e37c8af  HEAD -> master
+sha256 2a9b3aa4a7c0432c8df13a6d4254d6e769d6ba5789b903b4f000c186ae82c4d3
+✅ added to claude_run/schedule.txt
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add daily_rsi_avg_bounce_v1.py claude_run/schedule.txt
++ git commit -m Add daily RSI bounce-off-average scanner and schedule it at 06:00 IST
+
+Signal (latest daily candle; Wilder RSI(14), RSI average = 9-day SMA of RSI):
+1. RSI crossed above its average 3-10 trading days ago
+2. RSI then rose at least 3 points above its average
+3. RSI pulled back to within 1.5 points of its average (never > 2 below since the cross)
+4. That touch was in the last 2 days and today RSI is rising, above and moving away from its average
+Defaults (not requested): Entry = close, Stop = lowest low of the pullback,
+Quantity/Total_Amount for a $40 max loss.
+
+Generated from daily_rsi_high_breakout_v1.py by claude_run/tools/gen_rsi_avg_bounce.py.
+
+Verified: 2 positive and 7 negative RSI paths (each negative fails at the
+intended step); 434 signals on random price paths independently re-verified
+condition by condition; full run with mocked data/SMTP for 6 and 0 matches
+(sizing <= $40, chart, decoded email); py_compile; no template leftovers.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+✅ pushed
