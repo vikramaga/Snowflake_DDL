@@ -136,6 +136,10 @@ def main():
                 r = analyze(t, df.iloc[:k+1])
             except Exception:
                 r = None
+            if isinstance(r, tuple):                 # ("match"|"armed", row) style
+                kind, r = r
+                if kind != "match":
+                    continue
             if not r:
                 continue
             sig = r.get("Signal_Date") or str(df.index[k].date())
