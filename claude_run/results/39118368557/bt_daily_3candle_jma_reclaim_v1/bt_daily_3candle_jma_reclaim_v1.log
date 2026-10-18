@@ -1,0 +1,20 @@
+daily_3candle_jma_reclaim_v1: analyze_jma_breakout()  lookbacks -> 1: ['trigger_lookback_days']
+  ✅ nasdaqlisted      : +3163 → 3163
+  ✅ otherlisted       : +2271 → 5434
+  ✅ NASDAQ API        : + 882 → 6316
+  ✅ Static fallback   : +   9 → 6325
+
+  🎯 Total: 6325 tickers
+tickers sampled 600, with data 519, history 950 days
+Traceback (most recent call last):
+  File "/home/runner/work/Snowflake_DDL/Snowflake_DDL/claude_run/backtest/bt_daily_3candle_jma_reclaim_v1.py", line 3, in <module>
+    runpy.run_path("claude_run/tools/backtest_winrate.py", run_name="bt",
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "claude_run/tools/backtest_winrate.py", line 190, in <module>
+    main()
+  File "claude_run/tools/backtest_winrate.py", line 141, in main
+    sig = r.get("Signal_Date") or str(df.index[k].date())
+          ^^^^^
+AttributeError: 'tuple' object has no attribute 'get'
