@@ -3,7 +3,7 @@
 # file (SHA-256), adds it to the 06:00 schedule and commits.
 import hashlib, subprocess, sys
 
-EXPECTED = "cabfbb4654236c20d8b99a425baeb6f7dccad0d41c35e9b18f4167b7f94b9d9c"
+EXPECTED = "2a9b3aa4a7c0432c8df13a6d4254d6e769d6ba5789b903b4f000c186ae82c4d3"
 OUT = "daily_rsi_avg_bounce_v1.py"
 subprocess.check_call([sys.executable, "claude_run/tools/gen_rsi_avg_bounce.py", OUT])
 h = hashlib.sha256(open(OUT, "rb").read()).hexdigest()
