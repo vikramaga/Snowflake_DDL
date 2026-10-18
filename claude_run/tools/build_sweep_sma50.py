@@ -1,0 +1,47 @@
+# One-off build run by ClaudeRunner: generates daily_sweep_sma50_strategy_v1.py
+# with gen_sweep_sma50.py, checks it is byte-identical to the locally tested
+# file (SHA-256), adds it to the 06:00 schedule and commits.
+import hashlib, subprocess, sys
+
+EXPECTED = "e78711b16915b3a77d127f83fd7856ccc18b59756b6b43be7f455c7e068adfca"
+OUT = "daily_sweep_sma50_strategy_v1.py"
+subprocess.check_call([sys.executable, "claude_run/tools/gen_sweep_sma50.py", OUT])
+h = hashlib.sha256(open(OUT, "rb").read()).hexdigest()
+print("sha256", h)
+if h != EXPECTED:
+    sys.exit("❌ generated file differs from the tested one — nothing committed")
+sched = open("claude_run/schedule.txt").read()
+if OUT not in sched:
+    open("claude_run/schedule.txt", "w").write(sched.rstrip("\n") + "\n" + OUT + "\n")
+    print("✅ added to claude_run/schedule.txt")
+
+def git(*a):
+    print("+ git", " ".join(a)); subprocess.check_call(["git", *a])
+git("config", "user.name", "Scanner Bot")
+git("config", "user.email", "vikram-scanner-bot@users.noreply.github.com")
+git("add", OUT, "claude_run/schedule.txt")
+git("commit", "-m", """Add Sweep + Rising SMA50 strategy scanner (0.75R target) and schedule it at 06:00 IST
+
+Signal (latest daily candle): liquidity sweep breakout (A green; B swept A's
+high, closed below A's close; C closed above B's high, green) + SMA50 above its
+level 20 trading days ago + stop (lower of B/C lows) at least 1% below entry.
+Trade plan: entry = C close, target = entry + 0.75R, stop, max hold 20 days.
+2-year research backtest (600-stock sample): year 1 62.2% wins +0.14R/trade,
+year 2 (unseen) 61.8% wins +0.11R/trade.
+
+Generated from daily_liquidity_sweep_breakout_v1.py by
+claude_run/tools/gen_sweep_sma50.py.
+
+Verified: identical decisions to the research rule on 28,800 random test days;
+positive case fires; negatives fail at step 6 (falling SMA50) and step 7 (stop
+< 1%); full run with mocked data/SMTP for 6 and 0 matches (sizing <= $40,
+target = entry + 0.75R, chart, decoded email); py_compile.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57""")
+for i in range(5):
+    if subprocess.call(["git", "pull", "--rebase", "origin", "master"]) == 0 and \
+       subprocess.call(["git", "push", "origin", "HEAD:master"]) == 0:
+        print("✅ pushed"); break
+else:
+    sys.exit("❌ push failed")
