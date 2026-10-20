@@ -1,0 +1,106 @@
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CFLT"}}}
+$CFLT: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CFLT', 'CBO']: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+
+1 Failed download:
+['EXAS']: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+
+2 Failed downloads:
+['ZBZZT', 'ZBZX']: possibly delisted; no timezone found
+  ✅ nasdaqlisted      : +3160 → 3160
+  ✅ otherlisted       : +2273 → 5433
+  ✅ NASDAQ API        : + 850 → 6283
+  ✅ Static fallback   : +   9 → 6292
+
+  🎯 Total: 6292 tickers
+tickers 1731 of 2000 | download 2.9 min
+signals 117941 | 2024-01-17 .. 2026-10-01 | train < 2025-05-25 | sim 3.1 min
+  baseline T_rsi2_lt10              open/close>sma5/10d/nostop  n=58885 win=63.5% avg=+0.48%
+  baseline T_rsi2_lt5               open/close>sma5/10d/nostop  n=30923 win=63.9% avg=+0.56%
+  baseline T_3down                  open/close>sma5/10d/nostop  n=53114 win=62.9% avg=+0.35%
+  baseline T_bb_lower               open/close>sma5/10d/nostop  n=21936 win=63.4% avg=+0.68%
+  baseline T_ibs_lt15_below_sma5    open/close>sma5/10d/nostop  n=62916 win=62.9% avg=+0.23%
+  baseline T_cumrsi2_lt20           open/close>sma5/10d/nostop  n=38550 win=63.5% avg=+0.49%
+  baseline T_drop_3atr_5d           open/close>sma5/10d/nostop  n=17033 win=62.2% avg=+0.51%
+train-passing candidates: 6335 | search 3.2 min
+       Trigger                                 Filters   Entry           Exit  MaxHold  StopATR  Train_n  Train_WR  Train_Avg%  Test_n  Test_WR  Test_Avg%  Test_PF  Test_Worst%  TestH1_WR  TestH2_WR  Robust
+T_drop_3atr_5d    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0      551      75.9       1.614     351     78.6      1.252     2.07        -45.1       79.2       78.1   False
+T_drop_3atr_5d    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5      551      75.5       1.689     351     78.6      1.264     2.09        -28.2       79.2       78.1   False
+T_drop_3atr_5d                      atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0      940      74.8       1.662     672     76.0      1.286     1.91        -45.1       76.9       75.4   False
+T_drop_3atr_5d                      atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5      940      74.3       1.634     672     75.7      1.306     1.94        -28.2       76.5       75.2   False
+T_drop_3atr_5d                      atr_ge3 & rsi2_lt3 limit05 first_up_close       10      0.0      940      74.8       1.648     672     76.0      1.261     1.88        -57.2       76.9       75.4   False
+T_drop_3atr_5d    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      0.0      551      75.9       1.589     351     78.6      1.180     1.95        -57.2       79.2       78.1   False
+T_drop_3atr_5d      sma200_rising & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5      568      75.5       1.603     367     77.7      1.186     1.96        -28.2       78.7       77.0   False
+T_drop_3atr_5d         liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0      631      76.4       1.906     496     75.8      1.163     1.86        -33.5       74.4       76.8   False
+T_drop_3atr_5d      sma200_rising & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0      568      75.7       1.576     367     77.7      1.161     1.92        -45.1       78.7       77.0   False
+T_drop_3atr_5d above_sma50 & mkt_above_sma50 & atr_lt3 limit05      rsi2_gt70       10      0.0      168      73.2       1.400     132     72.7      1.311     2.37        -10.8       67.4       83.7   False
+T_drop_3atr_5d         liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5      631      75.8       1.910     496     75.4      1.175     1.88        -24.5       73.9       76.4   False
+T_drop_3atr_5d         liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      0.0      631      76.4       1.867     496     75.8      1.154     1.84        -39.4       74.4       76.8   False
+T_drop_3atr_5d above_sma50 & mkt_above_sma50 & atr_lt3 limit05      rsi2_gt70       10      4.0      168      73.2       1.396     132     72.7      1.281     2.30        -11.8       67.4       83.7   False
+T_drop_3atr_5d      sma200_rising & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      0.0      568      75.7       1.552     367     77.7      1.104     1.84        -57.2       78.7       77.0   False
+T_drop_3atr_5d                      atr_ge3 & rsi2_lt3 limit05 first_up_close        5      2.5      940      71.9       1.599     672     71.9      1.274     1.94        -28.2       71.8       71.9   False
+T_drop_3atr_5d                      atr_ge3 & rsi2_lt3 limit05 first_up_close        5      4.0      940      71.9       1.660     672     71.9      1.255     1.92        -45.1       71.8       71.9   False
+    T_rsi2_lt5  sma50_gt_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      4.0     1128      74.7       1.187    1309     74.2      1.139     1.94        -24.9       76.0       73.2   False
+T_drop_3atr_5d   sma200_rising & above_sma50 & atr_lt3 limit05      rsi2_gt70       10      0.0      186      75.8       1.347     137     75.2      1.057     2.00        -10.8       73.0       77.8   False
+T_drop_3atr_5d     above_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      2.5      451      75.4       1.193     431     75.2      1.055     1.55        -62.3       77.4       73.4   False
+T_drop_3atr_5d    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close        5      2.5      551      72.8       1.658     351     74.9      1.172     1.98        -28.2       74.8       75.0   False
+T_cumrsi2_lt20    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0     1010      74.8       1.109    1035     75.0      1.069     1.87        -45.1       76.8       73.9   False
+    T_bb_lower    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0      610      76.4       1.460     478     73.6      1.128     2.00        -22.4       73.4       73.8   False
+    T_rsi2_lt5  sma50_gt_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      0.0     1128      74.7       1.224    1309     74.2      1.087     1.86        -49.1       76.0       73.2   False
+    T_bb_lower         liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0      694      77.4       1.821     648     73.9      1.101     1.89        -24.5       71.6       75.2   False
+T_drop_3atr_5d                      atr_ge3 & rsi2_lt3 limit05 first_up_close        5      0.0      940      71.9       1.679     672     71.9      1.193     1.83        -58.8       71.8       71.9   False
+   T_rsi2_lt10  sma50_gt_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      0.0     2141      74.2       1.175    2652     74.2      1.075     1.83        -49.1       76.0       73.3   False
+   T_rsi2_lt10  sma50_gt_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      4.0     2141      74.2       1.153    2652     74.1      1.079     1.84        -32.5       75.9       73.2   False
+T_cumrsi2_lt20    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5     1010      74.4       1.164    1035     74.8      1.063     1.86        -28.2       76.5       73.8   False
+    T_bb_lower                      atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0     1077      75.3       1.662     896     73.3      1.116     1.85        -30.4       71.8       74.2   False
+    T_bb_lower         liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5      694      77.1       1.902     648     73.5      1.100     1.90        -24.5       71.2       74.8   False
+   T_rsi2_lt10    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0     1063      74.7       1.052    1072     74.5      1.049     1.84        -45.1       75.5       74.0   False
+    T_rsi2_lt5    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0     1063      74.7       1.052    1072     74.5      1.049     1.84        -45.1       75.5       74.0   False
+T_drop_3atr_5d   sma200_rising & above_sma50 & atr_lt3 limit05      rsi2_gt70       10      4.0      186      75.8       1.352     137     75.2      1.010     1.92        -11.8       73.0       77.8   False
+T_drop_3atr_5d         liquid_20m & atr_ge3 & rsi2_lt3    open first_up_close       10      0.0     1577      76.0       1.254    1545     72.4      1.142     1.80        -40.6       69.9       73.9   False
+    T_bb_lower     above_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      4.0      525      74.1       1.071     607     74.0      1.061     1.86        -31.8       77.5       72.5   False
+    T_bb_lower    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5      610      76.4       1.628     478     73.4      1.091     1.95        -19.6       73.4       73.4   False
+T_drop_3atr_5d         liquid_20m & atr_ge3 & rsi2_lt3    open first_up_close       10      4.0     1577      76.0       1.277    1545     72.4      1.138     1.79        -35.1       69.9       73.9   False
+T_drop_3atr_5d         liquid_20m & atr_ge3 & rsi2_lt3    open first_up_close       10      2.5     1577      75.3       1.272    1545     72.0      1.155     1.82        -33.8       69.4       73.6   False
+   T_rsi2_lt10    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5     1063      74.3       1.118    1072     74.3      1.035     1.83        -28.2       75.3       73.8   False
+    T_rsi2_lt5    sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5     1063      74.3       1.118    1072     74.3      1.035     1.83        -28.2       75.3       73.8   False
+
+NON-OVERLAPPING re-check (one trade per ticker at a time):
+       Trigger                                Filters   Entry           Exit  MaxHold  StopATR  NO_Train_n  NO_Train_WR  NO_Train_Avg%  NO_Test_n  NO_Test_WR  NO_Test_Avg%  NO_Test_PF  NO_All_Worst%  AvgWin%  AvgLoss%  Months_WR_lt70  Trades_per_month                                 Years_WR
+T_drop_3atr_5d   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         395         74.9          1.436        284        78.5         1.241        2.04          -45.1     3.38     -5.23               9              20.6   2024:74%/197 2025:77%/310 2026:79%/172
+T_drop_3atr_5d   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5         397         74.8          1.501        284        78.5         1.316        2.18          -28.2     3.38     -4.90               9              20.6   2024:73%/198 2025:77%/311 2026:79%/172
+T_drop_3atr_5d     sma200_rising & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         406         74.9          1.387        288        77.8         1.014        1.74          -45.1     3.32     -5.41               9              21.7   2024:74%/202 2025:77%/308 2026:77%/184
+T_drop_3atr_5d     sma200_rising & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5         408         74.8          1.384        288        77.8         1.142        1.92          -28.2     3.32     -5.16               9              21.8   2024:73%/203 2025:77%/309 2026:77%/184
+T_drop_3atr_5d    above_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      2.5         338         75.4          1.002        347        77.8         1.604        1.96          -56.4     3.90     -7.19               6              20.8   2024:82%/196 2025:74%/268 2026:76%/221
+T_drop_3atr_5d   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close        5      2.5         397         71.8          1.416        284        75.4         1.151        1.92          -28.2     3.45     -4.58              12              20.6   2024:68%/198 2025:75%/311 2026:77%/172
+    T_bb_lower    above_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      4.0         370         75.1          0.746        459        75.4         1.247        2.08          -31.8     3.07     -5.21               9              25.1   2024:83%/198 2025:70%/280 2026:75%/351
+T_drop_3atr_5d                     atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         664         73.8          1.435        517        75.0         1.267        1.86          -45.1     3.70     -5.43              13              34.7   2024:73%/329 2025:74%/521 2026:76%/331
+T_drop_3atr_5d                     atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5         666         73.4          1.392        519        74.8         1.330        1.95          -33.5     3.70     -5.29              12              34.9   2024:72%/330 2025:75%/523 2026:75%/332
+T_drop_3atr_5d        liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         445         75.5          1.700        389        74.6         1.174        1.85          -33.5     3.61     -5.03              12              24.5   2024:75%/201 2025:74%/376 2026:77%/257
+    T_bb_lower        liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         471         78.1          1.704        483        74.5         1.271        2.05          -29.8     3.52     -5.09               7              28.1   2024:77%/212 2025:76%/397 2026:76%/345
+T_drop_3atr_5d        atr_ge3 & price_ge20 & rsi2_lt3 limit05 first_up_close       10      4.0         465         74.6          1.644        393        74.3         0.921        1.57          -45.1     3.63     -5.46              12              25.2   2024:72%/218 2025:76%/382 2026:74%/258
+T_cumrsi2_lt20   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         685         74.7          1.082        721        74.3         1.088        1.87          -45.1     3.19     -5.08              10              41.4   2024:73%/385 2025:76%/534 2026:74%/487
+T_cumrsi2_lt20   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      0.0         683         75.0          1.171        720        74.3         1.011        1.76          -57.2     3.20     -5.11              10              41.3   2024:74%/385 2025:76%/531 2026:74%/487
+T_drop_3atr_5d        liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5         447         75.2          1.703        391        74.2         1.204        1.90          -28.9     3.60     -4.83              11              24.6   2024:74%/202 2025:74%/378 2026:76%/258
+    T_bb_lower        liquid_20m & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5         474         78.1          1.823        487        74.1         1.265        2.05          -28.9     3.53     -4.77               7              28.3   2024:77%/213 2025:76%/401 2026:76%/347
+T_cumrsi2_lt20   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5         690         74.3          1.102        725        74.1         1.091        1.88          -28.2     3.20     -4.97              11              41.6   2024:73%/388 2025:76%/536 2026:73%/491
+T_drop_3atr_5d        atr_ge3 & price_ge20 & rsi2_lt3 limit05 first_up_close       10      2.5         467         74.5          1.673        394        73.9         0.984        1.64          -33.5     3.63     -5.18              12              25.3   2024:71%/219 2025:76%/383 2026:74%/259
+   T_rsi2_lt10   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         715         74.5          1.000        749        73.8         1.055        1.82          -45.1     3.15     -5.06              12              43.1   2024:74%/407 2025:75%/551 2026:74%/506
+   T_rsi2_lt10 sma50_gt_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      0.0        1317         73.8          0.863       1754        73.7         0.963        1.73          -39.4     3.18     -5.43               9              90.3 2024:75%/713 2025:75%/1132 2026:72%/1226
+T_drop_3atr_5d     sma200_rising & atr_ge3 & rsi2_lt3 limit05 first_up_close        5      2.5         408         72.3          1.348        289        73.7         1.017        1.78          -28.2     3.37     -4.59              15              21.8   2024:69%/203 2025:75%/309 2026:74%/185
+    T_bb_lower   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         421         76.2          1.419        364        73.6         1.237        2.13          -29.8     3.38     -4.82              10              23.8   2024:75%/209 2025:76%/322 2026:74%/254
+    T_bb_lower                     atr_ge3 & rsi2_lt3 limit05 first_up_close       10      4.0         740         75.1          1.580        658        73.6         1.197        1.90          -30.4     3.63     -5.08              12              41.1   2024:74%/356 2025:75%/585 2026:75%/457
+   T_rsi2_lt10 sma50_gt_sma200 & liquid_20m & atr_ge3 limit05 first_up_close       10      4.0        1332         73.9          0.851       1759        73.6         0.937        1.70          -36.6     3.19     -5.51               9              90.9 2024:75%/717 2025:75%/1144 2026:72%/1230
+   T_rsi2_lt10   sma50_gt_sma200 & atr_ge3 & rsi2_lt3 limit05 first_up_close       10      2.5         720         74.2          1.043        753        73.6         1.046        1.82          -28.2     3.16     -4.93              12              43.3   2024:73%/410 2025:75%/553 2026:74%/510
+done in 3.2 min
