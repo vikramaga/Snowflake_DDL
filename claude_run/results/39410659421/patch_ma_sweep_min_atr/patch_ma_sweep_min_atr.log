@@ -1,0 +1,26 @@
+wrote _regen.py (907 lines)
+[master 76ef0f4] MA sweep + 4x scanner: skip stocks whose ATR14 is under 1% of price
+ 2 files changed, 8 insertions(+)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   2d5772c..76ef0f4  HEAD -> master
+✅ patched daily_ma_sweep_4x_v1.py
+✅ patched claude_run/tools/gen_ma_sweep_4x.py
+✅ generator output == patched scanner
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add daily_ma_sweep_4x_v1.py claude_run/tools/gen_ma_sweep_4x.py
++ git commit -m MA sweep + 4x scanner: skip stocks whose ATR14 is under 1% of price
+
+First live run (2026-10-20) matched TACO, which barely moves (range ~0.2%,
+typical of a pending takeover): its previous body was ~0 so any green candle
+was ">4x", and the stop was 2 cents away, so $40 sizing asked for 2,000 shares
+($20,960). New CFG min_atr_pct = 1.0 filters these out before the pattern
+check. Scanner and generator patched identically; regenerated output verified
+byte-identical.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+✅ pushed
