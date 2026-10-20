@@ -60,7 +60,9 @@ for t, df in data.items():
                 if h[j] >= tgt: px, xb, why = tgt, j, "target"; break
         if px is None:
             busy = n; continue                      # still open at the end of the data
-        trades.append({"Ticker": t, "Signal": df.index[k], "Exit": df.index[xb], "Why": why,
+        trades.append({"Ticker": t, "Signal": df.index[k], "Fill_Date": df.index[f], "Exit": df.index[xb],
+                       "Why": why, "Fill": round(float(fill), 4), "Exit_Px": round(float(px), 4),
+                       "Stop_Offset": r["Stop_Offset"], "Score": r["Score"], "RSI2": r["RSI2"],
                        "Ret_%": (px / fill - 1) * 100 - COST, "Risk_%": r["Risk_%"]})
         busy = xb
 
