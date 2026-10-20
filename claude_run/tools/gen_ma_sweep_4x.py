@@ -32,6 +32,7 @@ HEADER = '''# ============================================================
 # OUTPUT: Entry_Price and Stop_Loss are reasonable defaults, not
 # explicitly requested (Entry = today's close; Stop = the sweep-day low).
 # Quantity / Total_Amount come from position_sizing.py (max loss $40).
+# Stocks whose ATR14 is under 1% of price are skipped (min_atr_pct).
 #
 # SINGLE PASS — 1 daily download per ticker, purely technical.
 #
@@ -58,6 +59,7 @@ CFG = {
     # ── Universe ───────────────────────────────────────────────────
     "min_avg_volume"         : 100_000,
     "min_price"              : 10.0,
+    "min_atr_pct"            : 1.0,   # skip stocks moving < 1% a day (e.g. pinned by a takeover)
 
     "batch_size"             : 50,
     "batch_sleep"            : 1.5,
@@ -177,6 +179,8 @@ def analyze_ma_sweep_4x(sym, df_daily):
     sma = close.rolling(CFG["sma_period"]).mean()
     ema = close.ewm(span=CFG["ema_period"], adjust=False).mean()
     atr = calc_atr(h, l, c, CFG["atr_period"])
+    if not np.isfinite(atr[-1]) or atr[-1] / price * 100 < CFG["min_atr_pct"]:
+        return None
 
     hits = find_ma_sweep_signals(o, h, l, c, sma.values, ema.values, atr, CFG)
     if not hits:
