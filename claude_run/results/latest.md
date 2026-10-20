@@ -1,10 +1,10 @@
-# ClaudeRunner run 39382391377
+# ClaudeRunner run 39405752968
 
 - Trigger: push (claude_run/run.txt)
-- Finished: 2026-10-20 07:36 UTC
-- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/39382391377
+- Finished: 2026-10-20 10:08 UTC
+- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/39405752968
 - Scripts: 1 — ok 1, failed 0, no result 0
 
 | Script | Exit | Results folder |
 |---|---|---|
-| claude_run/backtest/bt_rsi2_snapback_full.py | 0 | claude_run/results/39382391377/bt_rsi2_snapback_full/ |
+| claude_run/tools/build_ma_sweep_4x.py | 0 | claude_run/results/39405752968/build_ma_sweep_4x/ |
