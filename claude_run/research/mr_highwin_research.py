@@ -44,7 +44,8 @@ FILTERS = ["above_sma200", "sma50_gt_sma200", "sma200_rising", "above_sma50", "m
            "mkt_above_sma50", "liquid_20m", "atr_lt3", "atr_ge3", "price_ge20", "ret5_gt_m10",
            "rsi2_lt3"]
 ENTRIES = ["open", "limit05"]                    # next open / limit at close - 0.5 ATR10 (next day only)
-EXITS = ["close_gt_sma5", "rsi2_gt70", "close_gt_prev_high", "first_up_close", "close_gt_sma10"]
+EXITS = ["close_gt_sma5", "rsi2_gt70", "close_gt_prev_high", "first_up_close", "close_gt_sma10",
+         "tgt_0.3atr", "tgt_0.5atr", "tgt_0.75atr", "tgt_1atr"]   # tgt_* = resting limit sell at fill + x*ATR10
 HOLDS = [5, 10]
 STOPS = [0.0, 2.5, 4.0]                          # ATR10 multiples below the fill (0 = no stop)
 VARIANTS = list(itertools.product(ENTRIES, EXITS, HOLDS, STOPS))
@@ -146,6 +147,9 @@ def simulate(ind, ks):
         for v, (en, ex, hold, sm) in enumerate(VARIANTS):
             if en != entry:
                 continue
+            if ex.startswith("tgt_"):
+                ret[:, v], xday[:, v] = target_exit(fill, filled, atr[ks], float(ex[4:-3]), hold, sm, O, Hh, L, C, f)
+                continue
             cond = conds[ex][:, :hold].copy()
             if sm > 0:
                 stop = fill - sm * atr[ks]
@@ -166,6 +170,31 @@ def simulate(ind, ks):
             ret[:, v] = np.where(filled, r, np.nan)
             xday[:, v] = np.where(is_stop, f + j, f + np.where(has, j + 1, hold))
     return ret, xday
+
+
+def target_exit(fill, filled, atr_k, x, hold, sm, O, Hh, L, C, f):
+    """Limit sell at fill + x*ATR resting from the fill. Conservative intraday order:
+    gap through stop/target at the open fills at the open; a day touching both
+    counts as the stop; on the fill day itself the target counts only if the
+    close is at/above it (the high may have come before the fill)."""
+    N = len(fill)
+    tgt = fill + x * atr_k
+    stop = fill - sm * atr_k if sm > 0 else np.full(N, -np.inf)
+    Oh, Lh, Hh_, Ch = O[:, :hold], L[:, :hold], Hh[:, :hold], C[:, :hold]
+    gs = Oh <= stop[:, None]; gt = Oh >= tgt[:, None]
+    sh = Lh <= stop[:, None]; th = Hh_ >= tgt[:, None]
+    gs[:, 0] = False; gt[:, 0] = False
+    th[:, 0] = Ch[:, 0] >= tgt
+    ev = gs | gt | sh | th
+    has = ev.any(axis=1)
+    j = np.where(has, ev.argmax(axis=1), hold)
+    rows = np.arange(N); jj = np.minimum(j, hold - 1)
+    px = np.where(gs[rows, jj], Oh[rows, jj],
+         np.where(gt[rows, jj], Oh[rows, jj],
+         np.where(sh[rows, jj], stop, tgt)))
+    px = np.where(has, px, O[rows, hold])
+    r = (px / fill - 1) * 100 - COST
+    return np.where(filled, r, np.nan), f + j
 
 
 def stats(r):
