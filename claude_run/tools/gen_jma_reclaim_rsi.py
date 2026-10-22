@@ -31,6 +31,7 @@ HEADER = '''# ============================================================
 # explicitly requested (Entry = today's close; Stop = the lowest low of
 # the pullback, from its first close below SMA21 to today).
 # Quantity / Total_Amount come from position_sizing.py (max loss $40).
+# Stocks whose ATR14 is under 1% of price are skipped (min_atr_pct).
 #
 # SINGLE PASS — 1 daily download per ticker, purely technical.
 #
@@ -61,6 +62,7 @@ CFG = {
     # ── Universe ───────────────────────────────────────────────────
     "min_avg_volume"         : 100_000,
     "min_price"              : 10.0,
+    "min_atr_pct"            : 1.0,   # skip stocks moving < 1% a day (e.g. pinned by a takeover)
 
     "batch_size"             : 50,
     "batch_sleep"            : 1.5,
@@ -200,6 +202,12 @@ def analyze_jma_reclaim_rsi(sym, df_daily):
     sma21 = close.rolling(CFG["sma_mid_period"]).mean()
     sma50 = close.rolling(CFG["sma_period"]).mean()
     rsi   = calc_rsi(close, CFG["rsi_period"])
+    h  = df_daily["High"].values.astype(float)
+    pc = np.concatenate([[np.nan], c[:-1]])
+    tr = np.nanmax(np.vstack([h - l, np.abs(h - pc), np.abs(l - pc)]), axis=0)
+    atr14 = pd.Series(tr).rolling(14).mean().values[-1]
+    if not np.isfinite(atr14) or atr14 / price * 100 < CFG["min_atr_pct"]:
+        return None
 
     hits = find_reclaim_signals(c, l, jma.values, ema.values, sma21.values, sma50.values,
                                 rsi.values, CFG)
