@@ -1,0 +1,26 @@
+wrote _regen.py (937 lines)
+[master 53f78cb] Reclaim + RSI scanner: skip stocks whose ATR14 is under 1% of price
+ 2 files changed, 16 insertions(+)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   63f9c00..53f78cb  HEAD -> master
+✅ patched daily_jma_reclaim_rsi_v1.py
+✅ patched claude_run/tools/gen_jma_reclaim_rsi.py
+✅ generator output == patched scanner
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add daily_jma_reclaim_rsi_v1.py claude_run/tools/gen_jma_reclaim_rsi.py
++ git commit -m Reclaim + RSI scanner: skip stocks whose ATR14 is under 1% of price
+
+First live run (2026-10-22) matched KOYN, BWIN and STRC, which barely move
+(stops 0.2-1.7% away, typical of a pending takeover or a preferred-like
+instrument), so $40 sizing asked for up to 2,000 shares ($20,520). New CFG
+min_atr_pct = 1.0 filters these out before the pattern check (same fix as the
+MA sweep scanner). Scanner and generator patched identically; regenerated
+output verified byte-identical.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+✅ pushed
