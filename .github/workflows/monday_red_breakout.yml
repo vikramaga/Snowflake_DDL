@@ -1,0 +1,67 @@
+# Monday intraday — 5-min close above a quiet red daily candle.
+# Every 30 min on Mondays (UTC 13:00-21:30 covers the US session in both
+# EDT and EST; the script itself exits outside 09:30-16:05 New York time).
+# Watchlist = latest MA screener results; see monday_red_candle_breakout_v1.py.
+# Run by hand from the Actions tab with force = true to test on any day.
+
+name: Monday Red-Candle Breakout
+
+on:
+  schedule:
+    - cron: '0,30 13-21 * * 1'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run outside Monday market hours (uses the latest session)"
+        default: "false"
+      test:
+        description: "Mark email [TEST] and don't save state"
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monday-red-breakout
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout (latest master, includes the latest screener results)
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install --upgrade yfinance pandas numpy
+
+      - name: Scan and email
+        env:
+          GMAIL_USER: ${{ secrets.EMAIL_FROM }}
+          GMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO:   ${{ secrets.EMAIL_TO }}
+          FORCE:      ${{ github.event.inputs.force == 'true' && '1' || '' }}
+          TEST:       ${{ github.event.inputs.test == 'true' && '1' || '' }}
+        run: python monday_red_candle_breakout_v1.py | tee monday_red_breakout.log
+
+      - name: Save state and CSV
+        run: |
+          mkdir -p claude_run/intraday_state
+          mv monday_red_breakout_*.csv claude_run/intraday_state/ 2>/dev/null || true
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add claude_run/intraday_state || true
+          if git diff --cached --quiet; then echo "Nothing to save"; exit 0; fi
+          git commit -m "Monday red-candle breakout state $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin master && git push origin HEAD:master && break
+            sleep 7
+          done
