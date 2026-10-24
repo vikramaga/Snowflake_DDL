@@ -24,6 +24,11 @@ SAMPLE = int(os.environ.get("UP_SAMPLE", "2000"))
 YEARS = float(os.environ.get("UP_YEARS", "3.6"))
 UP, DN, H = 0.15, 0.07, 20          # +15% before -7% within 20 sessions
 ALT_UP = 0.10                       # second label: close after 20 sessions >= +10%
+# UP_MODE=atr: volatility-normalised target instead: +3 x ATR14 before -1.5 x ATR14
+# (a 2:1 trade, breakeven hit rate 33.3%); R per trade is also reported.
+ATR_MODE = os.environ.get("UP_MODE", "") == "atr"
+UPA, DNA = 3.0, 1.5
+TAG = "_atr" if ATR_MODE else ""
 SEED = 11
 
 
@@ -45,22 +50,33 @@ def rsi14(c):
     return r
 
 
-def outcome(o, h, l, c):
-    """GOOD[k]: entry = open[k+1]; high >= +15% within H sessions before low <= -7%.
-    ALT[k]: close[k+H] >= open[k+1] * 1.10. NaN where the window is incomplete."""
-    n = len(c); good = np.full(n, np.nan); alt = np.full(n, np.nan)
+def outcome(o, h, l, c, atr=None):
+    """GOOD[k]: entry = open[k+1]; high >= target within H sessions before low <= stop
+    (target/stop = +15%/-7%, or +3/-1.5 x ATR14 of day k in ATR mode).
+    ALT[k]: close[k+H] >= open[k+1] * 1.10. RR[k]: result in R (risk = entry - stop):
+    target = +UP/DN R, stop = -1 R, otherwise the close after H sessions (capped).
+    NaN where the window is incomplete."""
+    n = len(c); good = np.full(n, np.nan); alt = np.full(n, np.nan); rr = np.full(n, np.nan)
     for k in range(n - H - 1):
         e = o[k + 1]
         if not np.isfinite(e) or e <= 0:
             continue
-        up, dn = e * (1 + UP), e * (1 - DN)
-        res = 0.0
+        if ATR_MODE:
+            if atr is None or not np.isfinite(atr[k]) or atr[k] <= 0:
+                continue
+            up, dn = e + UPA * atr[k], e - DNA * atr[k]
+        else:
+            up, dn = e * (1 + UP), e * (1 - DN)
+        risk = e - dn
+        res, r = 0.0, None
         for j in range(k + 1, k + 1 + H):
-            if l[j] <= dn: res = 0.0; break
-            if h[j] >= up: res = 1.0; break
-        good[k] = res
+            if l[j] <= dn: res, r = 0.0, -1.0; break
+            if h[j] >= up: res, r = 1.0, (up - e) / risk; break
+        if r is None:
+            r = max(-1.0, min((up - e) / risk, (c[k + H] - e) / risk))
+        good[k] = res; rr[k] = r
         alt[k] = float(c[k + H] >= e * (1 + ALT_UP))
-    return good, alt
+    return good, alt, rr
 
 
 def features(df, spy):
@@ -136,7 +152,7 @@ def features(df, spy):
         }
     F = {k: np.nan_to_num(val, nan=0).astype(bool) for k, val in F.items()}
     valid = np.isfinite(s200) & np.isfinite(hi252) & (np.arange(n) >= 252) & (c >= 2) & (sma(c * v, 20) >= 2e6)
-    return F, valid
+    return F, valid, atr14
 
 
 def main():
@@ -151,10 +167,10 @@ def main():
     spy = base["download"](["SPY"], days + 400)["SPY"]
     print(f"tickers {len(data)} | download {(time.time()-t0)/60:.1f} min", flush=True)
 
-    names = None; cols = {}; prevs = {}; Y, Y2, D, T = [], [], [], []
+    names = None; cols = {}; prevs = {}; Y, Y2, D, T, RR = [], [], [], [], []
     for t, df in data.items():
-        F, valid = features(df, spy)
-        g, a = outcome(*(df[x].values.astype(float) for x in ("Open", "High", "Low", "Close")))
+        F, valid, atr14 = features(df, spy)
+        g, a, rr = outcome(*(df[x].values.astype(float) for x in ("Open", "High", "Low", "Close")), atr=atr14)
         keep = valid & np.isfinite(g)
         if keep.sum() == 0:
             continue
@@ -164,10 +180,11 @@ def main():
             cols[k].append(F[k][keep])
             prevs[k].append(np.r_[False, F[k][:-1]][keep])     # same condition the day before
         Y.append(g[keep]); Y2.append(a[keep]); D.append(df.index[keep].values); T.append(np.full(keep.sum(), t))
+        RR.append(rr[keep])
     C = {k: np.concatenate(cols[k]) for k in names}
     P = {k: np.concatenate(prevs[k]) for k in names}
     y = np.concatenate(Y).astype(bool); y2 = np.concatenate(Y2).astype(bool)
-    dates = pd.to_datetime(np.concatenate(D)); tick = np.concatenate(T)
+    dates = pd.to_datetime(np.concatenate(D)); tick = np.concatenate(T); RRa = np.concatenate(RR)
     N = len(y)
     d0, d1 = dates.min(), dates.max(); cut = d0 + (d1 - d0) / 2; q3 = cut + (d1 - cut) / 2
     tr_m, te1, te2 = np.asarray(dates < cut), np.asarray((dates >= cut) & (dates < q3)), np.asarray(dates >= q3)
@@ -216,7 +233,7 @@ def main():
     print(f"combos scored: {len(R):,} | {(time.time()-t0)/60:.1f} min", flush=True)
     R["MinP"] = R[["Train_P%", "Test_P%", "TestH1_P%", "TestH2_P%"]].min(axis=1)
     R = R.sort_values("MinP", ascending=False)
-    R.head(5000).to_csv("up_conditions_all.csv", index=False)
+    R.head(5000).to_csv(f"up_conditions_all{TAG}.csv", index=False)
 
     # months check + signal list for the most robust rules
     best = []
@@ -229,17 +246,24 @@ def main():
         mo = pd.Series(y[fresh]).groupby(month[fresh]).agg(["size", "mean"])
         out = dict(rw); out["Months"] = len(mo); out["Months_P_lt_base"] = int((mo["mean"] < base_te).sum())
         out["Signals_per_month"] = round(fresh.sum() / len(mo), 1)
+        out["AvgR_train"] = round(float(np.mean(RRa[fresh & tr_m])), 3)
+        out["AvgR_test"] = round(float(np.mean(RRa[fresh & ~tr_m])), 3)
         best.append(out)
     B = pd.DataFrame(best)
     B = B[B.Months >= 10].sort_values(["MinP", "Test_P%"], ascending=False)
-    B.to_csv("up_conditions_best.csv", index=False)
+    B.to_csv(f"up_conditions_best{TAG}.csv", index=False)
     pd.set_option("display.width", 250); pd.set_option("display.max_colwidth", 80)
-    print(f"\nBASE RATE (any stock-day): train {base_tr*100:.1f}%  test {base_te*100:.1f}%")
+    print(f"\nMODE: {'+3 / -1.5 x ATR14 (breakeven 33.3%)' if ATR_MODE else '+15% / -7%'} within {H} sessions")
+    print(f"BASE RATE (any stock-day): train {base_tr*100:.1f}%  test {base_te*100:.1f}%  | avg R all days "
+          f"train {np.mean(RRa[tr_m]):+.3f} test {np.mean(RRa[~tr_m]):+.3f}")
     print("\nSINGLE CONDITIONS (fresh signals):")
     print(R[R.k == 1].sort_values("Test_P%", ascending=False)[["Conditions", "Train_n", "Train_P%", "Test_n", "Test_P%", "Lift_test"]].to_string(index=False))
     print("\nMOST ROBUST COMBINATIONS (min of train / test / test halves):")
     print(B.head(30)[["Conditions", "Train_n", "Train_P%", "Test_n", "Test_P%", "TestH1_P%", "TestH2_P%", "Lift_test",
-                       "Close20_+10%_P%", "Months", "Signals_per_month"]].to_string(index=False))
+                       "AvgR_train", "AvgR_test", "Months", "Signals_per_month"]].to_string(index=False))
+    print("\nBEST BY AVERAGE R (both halves positive):")
+    print(B[(B.AvgR_train > 0) & (B.AvgR_test > 0)].sort_values("AvgR_test", ascending=False).head(15)[
+        ["Conditions", "Train_n", "Train_P%", "AvgR_train", "Test_n", "Test_P%", "AvgR_test", "Signals_per_month"]].to_string(index=False))
     if len(B):
         cb = B.iloc[0].Conditions.split(" & ")
         cur = np.ones(N, bool); prv = np.ones(N, bool)
@@ -247,7 +271,7 @@ def main():
             cur &= C[k]; prv &= P[k]
         fresh = cur & ~prv
         pd.DataFrame({"Ticker": tick[fresh], "Date": dates[fresh], "GOOD": y[fresh], "Close20_+10%": y2[fresh]}) \
-            .to_csv("up_signals_best.csv", index=False)
+            .to_csv(f"up_signals_best{TAG}.csv", index=False)
     print(f"done in {(time.time()-t0)/60:.1f} min")
 
 
