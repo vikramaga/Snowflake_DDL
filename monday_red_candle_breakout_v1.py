@@ -2,8 +2,10 @@
 # NASDAQ — Monday intraday: 5-min close above a quiet red candle (v1)
 # ============================================================
 #
-# Runs every 30 minutes on Mondays during the US session
-# (.github/workflows/monday_red_breakout.yml). Each run:
+# Runs every 30 minutes on Mondays from 18:30 IST (13:00 UTC, before the US
+# open) to the close (.github/workflows/monday_red_breakout.yml). The 18:30
+# IST run emails the watchlist with trigger prices before the open, so a late
+# GitHub start never misses the setup. Each run:
 #
 #   1. WATCHLIST: every ticker in the latest results of the MA screeners
 #      (MA support, MA sweep + 4x, MA reclaim + RSI, and the penny MA
@@ -28,8 +30,9 @@
 # Data: Yahoo 5-min bars are delayed ~15 min, and GitHub schedules can
 # start late, so alerts are for awareness, not exact fills.
 #
-# Env: FORCE=1 runs outside Monday market hours (uses the latest session as
-# "today"); TEST=1 also marks the email [TEST] and does not save state.
+# Env: FORCE=1 runs outside Monday hours (uses the latest session as
+# "today"); TEST=1 also marks the email [TEST] and does not save state;
+# NOW_ET (ISO time, tests only) overrides the clock.
 # ============================================================
 import os, sys, json, glob, time, warnings
 from datetime import datetime, timedelta
@@ -152,14 +155,18 @@ def download(tickers, **kw):
 
 
 def main():
-    now_et = datetime.now(ET)
+    now_et = datetime.fromisoformat(os.environ["NOW_ET"]).replace(tzinfo=ET) if os.environ.get("NOW_ET") \
+        else datetime.now(ET)
     print("━" * 65)
     print(f"  Monday red-candle 5-min breakout   {now_et:%Y-%m-%d %H:%M} ET / {now_et.astimezone(IST):%H:%M} IST"
           + ("   [FORCE]" if FORCE else ""))
     print("━" * 65)
-    open_t, close_t = now_et.replace(hour=9, minute=30, second=0, microsecond=0), now_et.replace(hour=16, minute=5, second=0, microsecond=0)
-    if not FORCE and (now_et.weekday() != 0 or not (open_t <= now_et <= close_t)):
-        print("  Not Monday regular hours (ET) — nothing to do."); return
+    # window: from 07:30 ET (18:30 IST is 08:00 EST / 09:00 EDT, before the 09:30 open) to 16:05 ET
+    start_t, close_t = now_et.replace(hour=7, minute=30, second=0, microsecond=0), now_et.replace(hour=16, minute=5, second=0, microsecond=0)
+    if not FORCE and (now_et.weekday() != 0 or not (start_t <= now_et <= close_t)):
+        print("  Not Monday 07:30-16:05 ET — nothing to do."); return
+    if not FORCE and now_et < now_et.replace(hour=9, minute=30, second=0, microsecond=0):
+        print("  Pre-market run: building the watchlist (no 5-min candles yet).")
 
     print("\n  STEP 1  WATCHLIST (latest MA screener results)")
     wl = load_watchlist()
@@ -173,9 +180,9 @@ def main():
     daily = download(tickers, period="3mo", interval="1d")
     # "today" = the latest session in the 5-min data (live: today; FORCE: last session)
     sess = sorted({ix.astimezone(ET).date() for df in m5_all.values() for ix in df.index})
-    if not sess:
+    if FORCE and not sess:
         print("  ❌ no 5-min data"); return
-    today = now_et.date() if (not FORCE and now_et.date() in sess) else sess[-1]
+    today = sess[-1] if FORCE else now_et.date()          # live: always the real date (pre-market: no bars yet)
     if FORCE:
         now_et = datetime.combine(today, datetime.min.time(), ET).replace(hour=16, minute=5)
     print(f"  Session checked: {today}  (5-min bars up to {now_et:%H:%M} ET)")
@@ -305,6 +312,7 @@ def send_email(df, hits, new, first, funnel, today, now_et, csv_path):
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">Session {today} · checked {now_et:%H:%M} ET ({now_et.astimezone(IST):%H:%M} IST) ·
 watchlist {funnel['watchlist']} → red {funnel['red']} → small body {funnel['small_body']} → low volume {funnel['low_volume']}</p></div>
 <div style="padding:16px 20px">
+{'<p style="margin:0 0 12px;font-size:12px;color:#b45309"><b>Pre-market watchlist</b> — the US market opens at 09:30 ET (' + now_et.replace(hour=9, minute=30).astimezone(IST).strftime('%H:%M') + ' IST). Breakouts will be emailed as they happen.</p>' if now_et < now_et.replace(hour=9, minute=30, second=0, microsecond=0) else ''}
 <h3 style="margin:0 0 8px;font-size:14px">Breakouts ({len(hits)}{', ' + str(len(new)) + ' new' if new else ''})</h3>
 <table style="border-collapse:collapse;width:100%"><tr>{th(['Ticker','From email','5-min candle','Red high','5-min close','Above','Last','Stop (red low)','Qty','Amount'])}</tr>
 {hrows or '<tr><td colspan="10" style="padding:12px;color:#94a3b8;font-size:12px">No breakout yet</td></tr>'}</table>
