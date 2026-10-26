@@ -23,8 +23,10 @@
 #
 # EMAIL: the first run of the day sends the watchlist with trigger prices
 # (plus any breakouts already). Later runs email only when there are NEW
-# breakouts (state kept in claude_run/intraday_state/<date>.json, committed
-# by the workflow). Entry / Stop are defaults: Entry = the breakout 5-min
+# breakouts. "Already emailed" is rebuilt from today's earlier outputs:
+# claude_run/results/*/monday_red_candle_breakout_v1/monday_red_breakout_<date>_*.csv
+# (runs via ClaudeRunner, started every 30 min on Mondays by a scheduled task)
+# plus claude_run/intraday_state/ (runs via the GitHub workflow). Entry / Stop are defaults: Entry = the breakout 5-min
 # close, Stop = the red candle's low; Quantity sized for a $40 max loss.
 #
 # Data: Yahoo 5-min bars are delayed ~15 min, and GitHub schedules can
@@ -245,9 +247,25 @@ def main():
     os.makedirs(CFG["state_dir"], exist_ok=True)
     spath = os.path.join(CFG["state_dir"], f"red_breakout_{today}.json")
     state = {"watchlist_sent": False, "alerted": []}
-    if os.path.exists(spath) and not TEST:
-        try: state = json.load(open(spath))
-        except Exception: pass
+    if not TEST:
+        if os.path.exists(spath):
+            try: state = json.load(open(spath))
+            except Exception: pass
+        # earlier runs today (ClaudeRunner results or workflow state folder)
+        day = today.strftime("%Y%m%d")
+        prev = glob.glob(os.path.join(CFG["results_dir"], "*", "monday_red_candle_breakout_v1", f"monday_red_breakout_{day}_*.csv")) \
+            + glob.glob(os.path.join(CFG["state_dir"], f"monday_red_breakout_{day}_*.csv"))
+        for f in prev:
+            try:
+                p = pd.read_csv(f)
+            except Exception:
+                continue
+            state["watchlist_sent"] = True
+            if "Broke_Out" in p.columns:
+                done = p[p["Broke_Out"].astype(str).str.lower() == "true"]["Ticker"].astype(str).tolist()
+                state["alerted"] = sorted(set(state["alerted"]) | set(done))
+        if prev:
+            print(f"  Earlier runs today: {len(prev)} — already emailed: {', '.join(state['alerted']) or 'none'}")
     new = [t for t in hits["Ticker"] if t not in state["alerted"]] if len(hits) else []
     first = not state["watchlist_sent"]
     ts = now_et.strftime("%Y%m%d_%H%M")
