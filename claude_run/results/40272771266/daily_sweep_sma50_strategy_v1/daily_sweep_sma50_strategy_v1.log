@@ -1,0 +1,293 @@
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 378 bars ($347.73, 2026-10-23)
+  ✅ MSFT: daily 378 bars ($524.51, 2026-10-23)
+  ✅ NVDA: daily 378 bars ($210.96, 2026-10-23)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3164 → 3164
+  ✅ otherlisted       : +2271 → 5435
+  ✅ NASDAQ API        : + 864 → 6299
+  ✅ Static fallback   : +   9 → 6308
+
+  🎯 Total: 6308 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6308 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (single download per ticker)
+  Pattern: A green → B sweeps above A's high but closes below A's close
+  → C closes above B's high and is green
+
+Daily fetch:   0%|          | 0/6308 [00:00<?]Daily fetch:   1%|          | 50/6308 [00:05<10:40]Daily fetch:   2%|▏         | 100/6308 [00:11<11:59]Daily fetch:   2%|▏         | 150/6308 [00:17<11:48]Daily fetch:   3%|▎         | 200/6308 [00:23<12:02]Daily fetch:   4%|▍         | 250/6308 [00:29<12:30]Daily fetch:   5%|▍         | 300/6308 [00:35<11:49]Daily fetch:   6%|▌         | 350/6308 [00:41<11:47]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▋         | 400/6308 [00:48<12:15]Daily fetch:   7%|▋         | 450/6308 [00:53<11:43]Daily fetch:   8%|▊         | 500/6308 [00:59<11:42]Daily fetch:   9%|▊         | 550/6308 [01:05<11:15]Daily fetch:  10%|▉         | 600/6308 [01:10<10:46]Daily fetch:  10%|█         | 650/6308 [01:16<10:39]Daily fetch:  11%|█         | 700/6308 [01:21<10:20]Daily fetch:  12%|█▏        | 750/6308 [01:27<10:28]Daily fetch:  13%|█▎        | 800/6308 [01:32<10:07]Daily fetch:  13%|█▎        | 850/6308 [01:38<10:22]Daily fetch:  14%|█▍        | 900/6308 [01:44<10:12]Daily fetch:  15%|█▌        | 950/6308 [01:49<10:00]Daily fetch:  16%|█▌        | 1000/6308 [01:54<09:46]Daily fetch:  17%|█▋        | 1050/6308 [02:00<09:34]$CBX: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Daily fetch:  17%|█▋        | 1100/6308 [02:07<10:26]Daily fetch:  18%|█▊        | 1150/6308 [02:12<10:01]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1200/6308 [02:18<09:49]Daily fetch:  20%|█▉        | 1250/6308 [02:23<09:25]Daily fetch:  21%|██        | 1300/6308 [02:28<08:59]Daily fetch:  21%|██▏       | 1350/6308 [02:33<08:50]Daily fetch:  22%|██▏       | 1400/6308 [02:39<08:42]Daily fetch:  23%|██▎       | 1450/6308 [02:44<08:47]$CTEST: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+Daily fetch:  24%|██▍       | 1500/6308 [02:50<08:40]Daily fetch:  25%|██▍       | 1550/6308 [02:55<08:23]Daily fetch:  25%|██▌       | 1600/6308 [03:00<08:30]Daily fetch:  26%|██▌       | 1650/6308 [03:06<08:19]Daily fetch:  27%|██▋       | 1700/6308 [03:11<08:13]Daily fetch:  28%|██▊       | 1750/6308 [03:16<08:09]Daily fetch:  29%|██▊       | 1800/6308 [03:21<07:46]Daily fetch:  29%|██▉       | 1850/6308 [03:27<08:05]Daily fetch:  30%|███       | 1900/6308 [03:34<08:22]Daily fetch:  31%|███       | 1950/6308 [03:39<08:04]Daily fetch:  32%|███▏      | 2000/6308 [03:44<07:51]$EXAS: possibly delisted; no timezone found
+
+1 Failed download:
+['EXAS']: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+Daily fetch:  32%|███▏      | 2050/6308 [03:50<07:57]Daily fetch:  33%|███▎      | 2100/6308 [03:55<07:46]Daily fetch:  34%|███▍      | 2150/6308 [04:00<07:25]Daily fetch:  35%|███▍      | 2200/6308 [04:06<07:18]Daily fetch:  36%|███▌      | 2250/6308 [04:11<07:06]Daily fetch:  36%|███▋      | 2300/6308 [04:16<07:13]Daily fetch:  37%|███▋      | 2350/6308 [04:22<07:00]Daily fetch:  38%|███▊      | 2400/6308 [04:27<07:06]Daily fetch:  39%|███▉      | 2450/6308 [04:32<06:50]Daily fetch:  40%|███▉      | 2500/6308 [04:38<06:43]Daily fetch:  40%|████      | 2550/6308 [04:43<06:31]Daily fetch:  41%|████      | 2600/6308 [04:48<06:35]Daily fetch:  42%|████▏     | 2650/6308 [04:54<06:32]Daily fetch:  43%|████▎     | 2700/6308 [04:59<06:31]Daily fetch:  44%|████▎     | 2750/6308 [05:05<06:34]Daily fetch:  44%|████▍     | 2800/6308 [05:10<06:12]Daily fetch:  45%|████▌     | 2850/6308 [05:15<06:00]Daily fetch:  46%|████▌     | 2900/6308 [05:20<05:55]Daily fetch:  47%|████▋     | 2950/6308 [05:25<05:37]Daily fetch:  48%|████▊     | 3000/6308 [05:30<05:47]Daily fetch:  48%|████▊     | 3050/6308 [05:35<05:39]Daily fetch:  49%|████▉     | 3100/6308 [05:41<05:43]Daily fetch:  50%|████▉     | 3150/6308 [05:47<05:39]Daily fetch:  51%|█████     | 3200/6308 [05:52<05:29]Daily fetch:  52%|█████▏    | 3250/6308 [05:57<05:23]Daily fetch:  52%|█████▏    | 3300/6308 [06:02<05:16]Daily fetch:  53%|█████▎    | 3350/6308 [06:07<05:09]Daily fetch:  54%|█████▍    | 3400/6308 [06:13<05:05]Daily fetch:  55%|█████▍    | 3450/6308 [06:18<05:10]Daily fetch:  55%|█████▌    | 3500/6308 [06:24<05:01]Daily fetch:  56%|█████▋    | 3550/6308 [06:29<04:51]Daily fetch:  57%|█████▋    | 3600/6308 [06:34<04:44]Daily fetch:  58%|█████▊    | 3650/6308 [06:39<04:40]Daily fetch:  59%|█████▊    | 3700/6308 [06:44<04:30]Daily fetch:  59%|█████▉    | 3750/6308 [06:49<04:24]Daily fetch:  60%|██████    | 3800/6308 [06:55<04:25]Daily fetch:  61%|██████    | 3850/6308 [07:00<04:17]Daily fetch:  62%|██████▏   | 3900/6308 [07:05<04:11]Daily fetch:  63%|██████▎   | 3950/6308 [07:11<04:07]Daily fetch:  63%|██████▎   | 4000/6308 [07:16<03:58]Daily fetch:  64%|██████▍   | 4050/6308 [07:21<03:54]Daily fetch:  65%|██████▍   | 4100/6308 [07:26<03:48]Daily fetch:  66%|██████▌   | 4150/6308 [07:32<03:48]Daily fetch:  67%|██████▋   | 4200/6308 [07:37<03:39]Daily fetch:  67%|██████▋   | 4250/6308 [07:42<03:35]Daily fetch:  68%|██████▊   | 4300/6308 [07:47<03:27]Daily fetch:  69%|██████▉   | 4350/6308 [07:52<03:22]Daily fetch:  70%|██████▉   | 4400/6308 [07:57<03:17]Daily fetch:  71%|███████   | 4450/6308 [08:03<03:17]Daily fetch:  71%|███████▏  | 4500/6308 [08:08<03:08]Daily fetch:  72%|███████▏  | 4550/6308 [08:13<03:05]$PSTG: possibly delisted; no timezone found
+
+1 Failed download:
+['PSTG']: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+Daily fetch:  73%|███████▎  | 4600/6308 [08:18<03:00]Daily fetch:  74%|███████▎  | 4650/6308 [08:24<02:54]Daily fetch:  75%|███████▍  | 4700/6308 [08:29<02:52]Daily fetch:  75%|███████▌  | 4750/6308 [08:34<02:43]Daily fetch:  76%|███████▌  | 4800/6308 [08:40<02:41]Daily fetch:  77%|███████▋  | 4850/6308 [08:45<02:35]Daily fetch:  78%|███████▊  | 4900/6308 [08:51<02:34]Daily fetch:  78%|███████▊  | 4950/6308 [08:56<02:28]Daily fetch:  79%|███████▉  | 5000/6308 [09:02<02:26]Daily fetch:  80%|████████  | 5050/6308 [09:08<02:18]Daily fetch:  81%|████████  | 5100/6308 [09:13<02:13]Daily fetch:  82%|████████▏ | 5150/6308 [09:18<02:04]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  82%|████████▏ | 5200/6308 [09:24<02:03]Daily fetch:  83%|████████▎ | 5250/6308 [09:29<01:53]Daily fetch:  84%|████████▍ | 5300/6308 [09:35<01:49]Daily fetch:  85%|████████▍ | 5350/6308 [09:40<01:42]Daily fetch:  86%|████████▌ | 5400/6308 [09:45<01:34]Daily fetch:  86%|████████▋ | 5450/6308 [09:51<01:34]Daily fetch:  87%|████████▋ | 5500/6308 [09:56<01:27]Daily fetch:  88%|████████▊ | 5550/6308 [10:01<01:20]Daily fetch:  89%|████████▉ | 5600/6308 [10:07<01:16]Daily fetch:  90%|████████▉ | 5650/6308 [10:12<01:11]Daily fetch:  90%|█████████ | 5700/6308 [10:18<01:05]Daily fetch:  91%|█████████ | 5750/6308 [10:23<01:00]Daily fetch:  92%|█████████▏| 5800/6308 [10:29<00:54]Daily fetch:  93%|█████████▎| 5850/6308 [10:33<00:47]Daily fetch:  94%|█████████▎| 5900/6308 [10:39<00:43]Daily fetch:  94%|█████████▍| 5950/6308 [10:44<00:37]Daily fetch:  95%|█████████▌| 6000/6308 [10:49<00:31]Daily fetch:  96%|█████████▌| 6050/6308 [10:54<00:26]Daily fetch:  97%|█████████▋| 6100/6308 [11:00<00:21]Daily fetch:  97%|█████████▋| 6150/6308 [11:05<00:16]Daily fetch:  98%|█████████▊| 6200/6308 [11:11<00:11]Daily fetch:  99%|█████████▉| 6250/6308 [11:16<00:06]$ZIEXT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+$ZBZX: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+
+7 Failed downloads:
+['ZIEXT', 'ZCZZT', 'ZBZX', 'ZTEST', 'ZEXIT', 'ZBZZT']: possibly delisted; no timezone found
+['ZVV']: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+$ZVV: possibly delisted; no price data found  (1d 2025-04-24 -> 2026-10-26)
+Daily fetch: 100%|█████████▉| 6300/6308 [11:22<00:00]$ZXIET: possibly delisted; no timezone found
+
+1 Failed download:
+['ZXIET']: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6308/6308 [11:24<00:00]Daily fetch: 100%|██████████| 6308/6308 [11:26<00:00]
+
+  Daily data : 5520/6308 tickers
+
+Checking sweep breakout:   0%|          | 0/5520 [00:00<?, ?stk/s]Checking sweep breakout:  13%|█▎        | 721/5520 [00:00<00:00, 7207.50stk/s]Checking sweep breakout:  26%|██▋       | 1455/5520 [00:00<00:00, 7278.52stk/s]Checking sweep breakout:  40%|████      | 2218/5520 [00:00<00:00, 7435.99stk/s]Checking sweep breakout:  54%|█████▍    | 2980/5520 [00:00<00:00, 7507.36stk/s]Checking sweep breakout:  68%|██████▊   | 3750/5520 [00:00<00:00, 7576.65stk/s]Checking sweep breakout:  82%|████████▏ | 4508/5520 [00:00<00:00, 7573.08stk/s]Checking sweep breakout:  95%|█████████▌| 5266/5520 [00:00<00:00, 4485.77stk/s]Checking sweep breakout: 100%|██████████| 5520/5520 [00:00<00:00, 5844.53stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 7 steps
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Entry_Price   Stop_Loss    Target_Price   Risk_%    Exit_By     
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  ASC       $20.03      71       $20.03        $18.85       $20.92         5.9%      2026-11-20  
+  CERT      $10.33      60       $10.33        $9.84        $10.70         4.8%      2026-11-20  
+  CRGY      $13.83      64       $13.83        $13.12       $14.36         5.1%      2026-11-20  
+  CRWD      $257.57     86       $257.57       $234.79      $274.66        8.8%      2026-11-20  
+  CVX       $233.21     65       $233.21       $222.86      $240.97        4.4%      2026-11-20  
+  DHT       $24.60      52       $24.60        $23.22       $25.64         5.6%      2026-11-20  
+  ESTC      $102.43     80       $102.43       $96.94       $106.55        5.4%      2026-11-20  
+  ET        $20.45      44       $20.45        $19.80       $20.94         3.2%      2026-11-20  
+  FIVN      $37.61      83       $37.61        $34.94       $39.61         7.1%      2026-11-20  
+  FRO       $52.94      64       $52.94        $50.11       $55.06         5.3%      2026-11-20  
+  FTNT      $179.99     68       $179.99       $171.19      $186.59        4.9%      2026-11-20  
+  GKOS      $178.88     50       $178.88       $173.07      $183.23        3.2%      2026-11-20  
+  HAL       $34.92      80       $34.92        $32.35       $36.85         7.4%      2026-11-20  
+  KNTK      $55.70      63       $55.70        $52.69       $57.96         5.4%      2026-11-20  
+  NET       $325.73     69       $325.73       $299.27      $345.58        8.1%      2026-11-20  
+  NMM       $89.37      38       $89.37        $87.00       $91.15         2.7%      2026-11-20  
+  NOG       $28.26      69       $28.26        $26.72       $29.42         5.4%      2026-11-20  
+  NTNX      $70.58      50       $70.58        $68.08       $72.46         3.5%      2026-11-20  
+  RDVT      $80.80      73       $80.80        $77.45       $83.31         4.1%      2026-11-20  
+  S         $24.00      81       $24.00        $22.30       $25.28         7.1%      2026-11-20  
+  SD        $14.76      73       $14.76        $13.89       $15.41         5.9%      2026-11-20  
+  SMC       $31.21      66       $31.21        $29.18       $32.73         6.5%      2026-11-20  
+  TALO      $18.39      76       $18.39        $17.21       $19.27         6.4%      2026-11-20  
+  VET       $13.92      64       $13.92        $13.11       $14.53         5.8%      2026-11-20  
+  VIST      $74.84      87       $74.84        $69.09       $79.15         7.7%      2026-11-20  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6308
+  Daily data      : 5520
+  ✅ Matches       : 25
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔍 FUNNEL — where ticker-days were filtered out
+  (tallied across every liquid ticker's last 1 trading day(s))
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker-days checked                          : 2437
+  Step 1 — candle A green                      : 1037
+  Step 2 — + candle B high above A's high      : 621
+  Step 3 — + candle B closed below A's close   : 121
+  Step 4 — + candle C closed above B's high    : 28
+  Step 5 — + candle C green                    : 28
+  Step 6 — + SMA50 above its level 20d ago   : 25
+  Step 7 — + stop >= 1% below entry         : 25  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                 Liquidity Sweep + Rising SMA50   2026-10-26   25 matches                               ║
+  ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬─────────┬───────┬─────────────┬───────────┬──────────────┬────────┬────────────┬────────────────┬─────────────┐
+  │ Ticker │  Price  │ Score │ Entry_Price │ Stop_Loss │ Target_Price │ Risk_% │  Exit_By   │ Vol_vs_20d_Avg │ Signal_Date │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  VIST  │  $74.84 │   87  │    $74.84   │   $69.09  │    $79.15    │  7.7%  │ 2026-11-20 │     x1.47      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  CRWD  │ $257.57 │   86  │   $257.57   │  $234.79  │   $274.66    │  8.8%  │ 2026-11-20 │     x1.60      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  FIVN  │  $37.61 │   83  │    $37.61   │   $34.94  │    $39.61    │  7.1%  │ 2026-11-20 │     x1.37      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │   S    │  $24.00 │   81  │    $24.00   │   $22.30  │    $25.28    │  7.1%  │ 2026-11-20 │     x1.60      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  ESTC  │ $102.43 │   80  │   $102.43   │   $96.94  │   $106.55    │  5.4%  │ 2026-11-20 │     x1.15      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  HAL   │  $34.92 │   80  │    $34.92   │   $32.35  │    $36.85    │  7.4%  │ 2026-11-20 │     x1.24      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  TALO  │  $18.39 │   76  │    $18.39   │   $17.21  │    $19.27    │  6.4%  │ 2026-11-20 │     x1.77      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  RDVT  │  $80.80 │   73  │    $80.80   │   $77.45  │    $83.31    │  4.1%  │ 2026-11-20 │     x0.74      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │   SD   │  $14.76 │   73  │    $14.76   │   $13.89  │    $15.41    │  5.9%  │ 2026-11-20 │     x0.89      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  ASC   │  $20.03 │   71  │    $20.03   │   $18.85  │    $20.92    │  5.9%  │ 2026-11-20 │     x1.07      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  NET   │ $325.73 │   69  │   $325.73   │  $299.27  │   $345.58    │  8.1%  │ 2026-11-20 │     x1.41      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  NOG   │  $28.26 │   69  │    $28.26   │   $26.72  │    $29.42    │  5.4%  │ 2026-11-20 │     x1.09      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  FTNT  │ $179.99 │   68  │   $179.99   │  $171.19  │   $186.59    │  4.9%  │ 2026-11-20 │     x0.92      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  SMC   │  $31.21 │   66  │    $31.21   │   $29.18  │    $32.73    │  6.5%  │ 2026-11-20 │     x2.21      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  CVX   │ $233.21 │   65  │   $233.21   │  $222.86  │   $240.97    │  4.4%  │ 2026-11-20 │     x1.11      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  CRGY  │  $13.83 │   64  │    $13.83   │   $13.12  │    $14.36    │  5.1%  │ 2026-11-20 │     x0.76      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  FRO   │  $52.94 │   64  │    $52.94   │   $50.11  │    $55.06    │  5.3%  │ 2026-11-20 │     x0.61      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  VET   │  $13.92 │   64  │    $13.92   │   $13.11  │    $14.53    │  5.8%  │ 2026-11-20 │     x1.69      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  KNTK  │  $55.70 │   63  │    $55.70   │   $52.69  │    $57.96    │  5.4%  │ 2026-11-20 │     x0.96      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  CERT  │  $10.33 │   60  │    $10.33   │   $9.84   │    $10.70    │  4.8%  │ 2026-11-20 │     x0.72      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  DHT   │  $24.60 │   52  │    $24.60   │   $23.22  │    $25.64    │  5.6%  │ 2026-11-20 │     x0.73      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  GKOS  │ $178.88 │   50  │   $178.88   │  $173.07  │   $183.23    │  3.2%  │ 2026-11-20 │     x0.97      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  NTNX  │  $70.58 │   50  │    $70.58   │   $68.08  │    $72.46    │  3.5%  │ 2026-11-20 │     x0.60      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │   ET   │  $20.45 │   44  │    $20.45   │   $19.80  │    $20.94    │  3.2%  │ 2026-11-20 │     x0.75      │  2026-10-23 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼──────────────┼────────┼────────────┼────────────────┼─────────────┤
+  │  NMM   │  $89.37 │   38  │    $89.37   │   $87.00  │    $91.15    │  2.7%  │ 2026-11-20 │     x0.31      │  2026-10-23 │
+  └────────┴─────────┴───────┴─────────────┴───────────┴──────────────┴────────┴────────────┴────────────────┴─────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Score           0-100 (breakout above B's high + C's body + how
+                  hard B was rejected + volume + above SMA50 + freshness)
+  Entry_Price     candle C's close
+  Stop_Loss       lower of candle B's and C's lows (>= 1% below entry)
+  Target_Price    entry + 0.75 x (entry - stop)
+  Exit_By         sell at this day's close if neither stop nor target hit
+  A_High          candle A's high (the liquidity level B swept)
+  B_High          candle B's high (the level C had to close above)
+  Sweep_%         how far B's high went above A's high
+  B_Reject_%      how far B closed below A's close
+  Breakout_%      C's close vs B's high
+  Signal_Date     date of candle C
+  ──────────────────────────────────────────────────────
+  💰 Position sizing: max loss $40 per trade — 25 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_sweep_sma50_strategy_20261026_0522.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_daily_sweep_sma50_strategy_20261026_0522.txt
+
+  📋 Tickers (comma-separated):
+  VIST, CRWD, FIVN, S, ESTC, HAL, TALO, RDVT, SD, ASC, NET, NOG, FTNT, SMC, CVX, CRGY, FRO, VET, KNTK, CERT, DHT, GKOS, NTNX, ET, NMM
+[Email] Sending to vikramaga24@gmail.com  (25 results)...
+[Email] 📎 Attached: daily_sweep_sma50_strategy_20261026_0522.csv (5,255 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 🎯 Sweep + SMA50 Strategy (0.75R) — 25 signals — 2026-10-26
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_sweep_sma50_strategy_chart_20261026_0522.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required). The last 3 daily candles:
+  A (3rd day back), B, C (current).
+
+  1) CANDLE A: GREEN.
+  2) CANDLE B: HIGH goes ABOVE candle A's high (liquidity sweep)...
+  3) ...but B CLOSES BELOW candle A's close.
+  4) CANDLE C: CLOSES ABOVE candle B's high...
+  5) ...and is GREEN.
+  6) SMA50 today > SMA50 20 trading days ago.
+  7) Stop (lower of B/C lows) at least 1.0% below the entry.
+
+  signal_lookback_days = 1  (1 = C must be the latest candle)
+
+  📋 TRADE PLAN (from the 2-year research backtest)
+  Entry_Price  = candle C's CLOSE
+  Stop_Loss    = the lower of candle B's and C's LOWS
+  Target_Price = entry + 0.75 x (entry - stop)
+  Exit_By      = close of the 20th trading day if neither is hit
+  Backtest: ~62% wins, +0.11 to +0.14R per trade (before costs)
+  Universe    = price >= 10 USD, 20d avg volume >= 100k
+
+  📋 SCORE (0-100)
+  Base 20 + C's close above B's high (0-20) + C's body (0-15)
+  + how far B closed below A's close (0-10) + volume vs 20d avg
+  (0-15) + above SMA50 (10) + freshness (0-10); -10 if stop risk > 12%
+
+  ⚙️  TUNE IF 0 RESULTS
+  signal_lookback_days            1 → 3
+  min_price                      10 → 5
+  min_avg_volume             100000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
