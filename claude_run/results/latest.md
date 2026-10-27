@@ -1,10 +1,10 @@
-# ClaudeRunner run 40512598309
+# ClaudeRunner run 40550941869
 
 - Trigger: push (claude_run/run.txt)
-- Finished: 2026-10-27 13:46 UTC
-- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/40512598309
+- Finished: 2026-10-27 17:41 UTC
+- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/40550941869
 - Scripts: 1 — ok 1, failed 0, no result 0
 
 | Script | Exit | Results folder |
 |---|---|---|
-| monthly_rsi_weekly_green_reversal_v1.py | 0 | claude_run/results/40512598309/monthly_rsi_weekly_green_reversal_v1/ |
+| weekly_doji_jma_reclaim_v1.py | 0 | claude_run/results/40550941869/weekly_doji_jma_reclaim_v1/ |
