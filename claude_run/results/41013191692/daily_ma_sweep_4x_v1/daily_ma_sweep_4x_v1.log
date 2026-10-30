@@ -1,0 +1,195 @@
+✅  Dependencies installed
+✅  yfinance 1.7.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 380 bars ($348.91, 2026-10-29)
+  ✅ MSFT: daily 380 bars ($530.14, 2026-10-29)
+  ✅ NVDA: daily 380 bars ($213.66, 2026-10-29)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3162 → 3162
+  ✅ otherlisted       : +2268 → 5430
+  ✅ NASDAQ API        : + 872 → 6302
+  ✅ Static fallback   : +   9 → 6311
+
+  🎯 Total: 6311 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6311 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (single download per ticker)
+  Signal: yesterday a long lower wick (>= 0.75 ATR) touched SMA50 or EMA21 and closed above it; today a green candle with a body > 4x yesterday's
+
+Daily fetch:   0%|          | 0/6311 [00:00<?]Daily fetch:   1%|          | 50/6311 [00:02<05:59]Daily fetch:   2%|▏         | 100/6311 [00:06<07:16]Daily fetch:   2%|▏         | 150/6311 [00:10<07:38]Daily fetch:   3%|▎         | 200/6311 [00:14<07:45]Daily fetch:   4%|▍         | 250/6311 [00:18<07:50]Daily fetch:   5%|▍         | 300/6311 [00:22<07:42]Daily fetch:   6%|▌         | 350/6311 [00:26<07:46]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▋         | 400/6311 [00:30<08:01]Daily fetch:   7%|▋         | 450/6311 [00:35<07:56]Daily fetch:   8%|▊         | 500/6311 [00:39<08:02]Daily fetch:   9%|▊         | 550/6311 [00:43<08:01]Daily fetch:  10%|▉         | 600/6311 [00:47<07:41]Daily fetch:  10%|█         | 650/6311 [00:51<07:31]Daily fetch:  11%|█         | 700/6311 [00:55<07:32]Daily fetch:  12%|█▏        | 750/6311 [00:59<07:36]Daily fetch:  13%|█▎        | 800/6311 [01:03<07:30]Daily fetch:  13%|█▎        | 850/6311 [01:07<07:14]Daily fetch:  14%|█▍        | 900/6311 [01:11<07:08]Daily fetch:  15%|█▌        | 950/6311 [01:15<07:10]Daily fetch:  16%|█▌        | 1000/6311 [01:18<06:47]Daily fetch:  17%|█▋        | 1050/6311 [01:22<06:46]$CBX: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBO: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+$CBX: possibly delisted; no timezone found
+Daily fetch:  17%|█▋        | 1100/6311 [01:26<06:49]Daily fetch:  18%|█▊        | 1150/6311 [01:30<06:44]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1200/6311 [01:34<06:36]Daily fetch:  20%|█▉        | 1250/6311 [01:38<06:27]Daily fetch:  21%|██        | 1300/6311 [01:41<06:13]Daily fetch:  21%|██▏       | 1350/6311 [01:45<06:20]Daily fetch:  22%|██▏       | 1400/6311 [01:50<06:27]Daily fetch:  23%|██▎       | 1450/6311 [01:53<06:19]$CTEST: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+Daily fetch:  24%|██▍       | 1500/6311 [01:57<06:11]Daily fetch:  25%|██▍       | 1550/6311 [02:01<06:06]Daily fetch:  25%|██▌       | 1600/6311 [02:05<05:59]Daily fetch:  26%|██▌       | 1650/6311 [02:08<05:55]Daily fetch:  27%|██▋       | 1700/6311 [02:12<05:45]Daily fetch:  28%|██▊       | 1750/6311 [02:16<05:43]Daily fetch:  29%|██▊       | 1800/6311 [02:19<05:32]Daily fetch:  29%|██▉       | 1850/6311 [02:23<05:29]Daily fetch:  30%|███       | 1900/6311 [02:27<05:33]Daily fetch:  31%|███       | 1950/6311 [02:31<05:35]$EXAS: possibly delisted; no timezone found
+
+1 Failed download:
+['EXAS']: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+$EXAS: possibly delisted; no timezone found
+Daily fetch:  32%|███▏      | 2000/6311 [02:35<05:33]Daily fetch:  32%|███▏      | 2050/6311 [02:39<05:26]Daily fetch:  33%|███▎      | 2100/6311 [02:43<05:26]Daily fetch:  34%|███▍      | 2150/6311 [02:47<05:36]Daily fetch:  35%|███▍      | 2200/6311 [02:52<05:52]Daily fetch:  36%|███▌      | 2250/6311 [02:56<05:42]Daily fetch:  36%|███▋      | 2300/6311 [03:01<05:51]Daily fetch:  37%|███▋      | 2350/6311 [03:05<05:48]Daily fetch:  38%|███▊      | 2400/6311 [03:09<05:33]Daily fetch:  39%|███▉      | 2450/6311 [03:13<05:20]Daily fetch:  40%|███▉      | 2500/6311 [03:17<05:07]Daily fetch:  40%|████      | 2550/6311 [03:21<05:06]Daily fetch:  41%|████      | 2600/6311 [03:25<05:08]Daily fetch:  42%|████▏     | 2650/6311 [03:29<05:01]Daily fetch:  43%|████▎     | 2700/6311 [03:33<04:50]Daily fetch:  44%|████▎     | 2750/6311 [03:37<04:39]Daily fetch:  44%|████▍     | 2800/6311 [03:41<04:34]Daily fetch:  45%|████▌     | 2850/6311 [03:45<04:34]Daily fetch:  46%|████▌     | 2900/6311 [03:48<04:21]Daily fetch:  47%|████▋     | 2950/6311 [03:52<04:13]Daily fetch:  48%|████▊     | 3000/6311 [03:57<04:32]Daily fetch:  48%|████▊     | 3050/6311 [04:02<04:42]Daily fetch:  49%|████▉     | 3100/6311 [04:05<04:25]Daily fetch:  50%|████▉     | 3150/6311 [04:10<04:19]Daily fetch:  51%|█████     | 3200/6311 [04:13<04:08]Daily fetch:  51%|█████▏    | 3250/6311 [04:17<04:02]Daily fetch:  52%|█████▏    | 3300/6311 [04:21<04:01]Daily fetch:  53%|█████▎    | 3350/6311 [04:25<03:52]Daily fetch:  54%|█████▍    | 3400/6311 [04:29<03:45]Daily fetch:  55%|█████▍    | 3450/6311 [04:33<03:43]Daily fetch:  55%|█████▌    | 3500/6311 [04:37<03:44]Daily fetch:  56%|█████▋    | 3550/6311 [04:41<03:45]Daily fetch:  57%|█████▋    | 3600/6311 [04:46<03:48]Daily fetch:  58%|█████▊    | 3650/6311 [04:50<03:50]Daily fetch:  59%|█████▊    | 3700/6311 [04:55<03:44]Daily fetch:  59%|█████▉    | 3750/6311 [04:59<03:42]Daily fetch:  60%|██████    | 3800/6311 [05:03<03:31]Daily fetch:  61%|██████    | 3850/6311 [05:07<03:26]Daily fetch:  62%|██████▏   | 3900/6311 [05:11<03:16]Daily fetch:  63%|██████▎   | 3950/6311 [05:15<03:12]Daily fetch:  63%|██████▎   | 4000/6311 [05:19<03:01]Daily fetch:  64%|██████▍   | 4050/6311 [05:23<02:59]Daily fetch:  65%|██████▍   | 4100/6311 [05:27<03:03]Daily fetch:  66%|██████▌   | 4150/6311 [05:33<03:16]Daily fetch:  67%|██████▋   | 4200/6311 [05:37<03:06]Daily fetch:  67%|██████▋   | 4250/6311 [05:41<03:04]Daily fetch:  68%|██████▊   | 4300/6311 [05:46<02:59]Daily fetch:  69%|██████▉   | 4350/6311 [05:53<03:22]Daily fetch:  70%|██████▉   | 4400/6311 [05:57<03:03]Daily fetch:  71%|███████   | 4450/6311 [06:00<02:45]Daily fetch:  71%|███████▏  | 4500/6311 [06:04<02:38]Daily fetch:  72%|███████▏  | 4550/6311 [06:08<02:27]Daily fetch:  73%|███████▎  | 4600/6311 [06:12<02:17]$PSTG: possibly delisted; no timezone found
+
+1 Failed download:
+['PSTG']: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+$PSTG: possibly delisted; no timezone found
+Daily fetch:  74%|███████▎  | 4650/6311 [06:16<02:14]Daily fetch:  74%|███████▍  | 4700/6311 [06:20<02:13]Daily fetch:  75%|███████▌  | 4750/6311 [06:24<02:04]Daily fetch:  76%|███████▌  | 4800/6311 [06:28<01:59]Daily fetch:  77%|███████▋  | 4850/6311 [06:31<01:53]Daily fetch:  78%|███████▊  | 4900/6311 [06:35<01:50]Daily fetch:  78%|███████▊  | 4950/6311 [06:40<01:52]Daily fetch:  79%|███████▉  | 5000/6311 [06:45<01:52]Daily fetch:  80%|████████  | 5050/6311 [06:49<01:49]Daily fetch:  81%|████████  | 5100/6311 [06:53<01:42]Daily fetch:  82%|████████▏ | 5150/6311 [06:57<01:36]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  82%|████████▏ | 5200/6311 [07:01<01:29]Daily fetch:  83%|████████▎ | 5250/6311 [07:04<01:21]Daily fetch:  84%|████████▍ | 5300/6311 [07:08<01:18]Daily fetch:  85%|████████▍ | 5350/6311 [07:12<01:14]Daily fetch:  86%|████████▌ | 5400/6311 [07:16<01:11]Daily fetch:  86%|████████▋ | 5450/6311 [07:20<01:09]Daily fetch:  87%|████████▋ | 5500/6311 [07:25<01:06]Daily fetch:  88%|████████▊ | 5550/6311 [07:29<01:01]Daily fetch:  89%|████████▊ | 5600/6311 [07:32<00:56]Daily fetch:  90%|████████▉ | 5650/6311 [07:36<00:52]Daily fetch:  90%|█████████ | 5700/6311 [07:40<00:48]Daily fetch:  91%|█████████ | 5750/6311 [07:44<00:43]Daily fetch:  92%|█████████▏| 5800/6311 [07:48<00:40]Daily fetch:  93%|█████████▎| 5850/6311 [07:52<00:36]Daily fetch:  93%|█████████▎| 5900/6311 [07:57<00:33]Daily fetch:  94%|█████████▍| 5950/6311 [08:01<00:30]Daily fetch:  95%|█████████▌| 6000/6311 [08:05<00:25]Daily fetch:  96%|█████████▌| 6050/6311 [08:09<00:20]Daily fetch:  97%|█████████▋| 6100/6311 [08:13<00:16]Daily fetch:  97%|█████████▋| 6150/6311 [08:17<00:12]Daily fetch:  98%|█████████▊| 6200/6311 [08:21<00:09]Daily fetch:  99%|█████████▉| 6250/6311 [08:25<00:04]$ZBZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+
+7 Failed downloads:
+['ZBZZT', 'ZIEXT', 'ZEXIT', 'ZCZZT', 'ZTEST', 'ZAZZT', 'ZBZX']: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no timezone found
+Daily fetch: 100%|█████████▉| 6300/6311 [08:30<00:00]$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+
+2 Failed downloads:
+['ZXIET']: possibly delisted; no timezone found
+['ZVV']: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+$ZVV: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+$ZVV: possibly delisted; no price data found  (1d 2025-04-28 -> 2026-10-30)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6311/6311 [08:32<00:00]Daily fetch: 100%|██████████| 6311/6311 [08:34<00:00]
+
+  Daily data : 5526/6311 tickers
+
+Checking MA sweep + 4x candle:   0%|          | 0/5526 [00:00<?, ?stk/s]Checking MA sweep + 4x candle:   5%|▌         | 282/5526 [00:00<00:01, 2807.10stk/s]Checking MA sweep + 4x candle:  10%|█         | 563/5526 [00:00<00:01, 2696.33stk/s]Checking MA sweep + 4x candle:  16%|█▌        | 871/5526 [00:00<00:01, 2861.08stk/s]Checking MA sweep + 4x candle:  21%|██        | 1158/5526 [00:00<00:01, 2843.86stk/s]Checking MA sweep + 4x candle:  26%|██▌       | 1443/5526 [00:00<00:01, 2765.82stk/s]Checking MA sweep + 4x candle:  31%|███▏      | 1733/5526 [00:00<00:01, 2809.42stk/s]Checking MA sweep + 4x candle:  36%|███▋      | 2015/5526 [00:00<00:01, 2808.92stk/s]Checking MA sweep + 4x candle:  42%|████▏     | 2318/5526 [00:00<00:01, 2878.19stk/s]Checking MA sweep + 4x candle:  47%|████▋     | 2611/5526 [00:00<00:01, 2893.71stk/s]Checking MA sweep + 4x candle:  53%|█████▎    | 2911/5526 [00:01<00:00, 2922.36stk/s]Checking MA sweep + 4x candle:  58%|█████▊    | 3204/5526 [00:01<00:00, 2907.97stk/s]Checking MA sweep + 4x candle:  63%|██████▎   | 3495/5526 [00:01<00:01, 1826.51stk/s]Checking MA sweep + 4x candle:  69%|██████▊   | 3795/5526 [00:01<00:00, 2075.24stk/s]Checking MA sweep + 4x candle:  74%|███████▍  | 4081/5526 [00:01<00:00, 2257.86stk/s]Checking MA sweep + 4x candle:  79%|███████▉  | 4383/5526 [00:01<00:00, 2445.03stk/s]Checking MA sweep + 4x candle:  85%|████████▍ | 4687/5526 [00:01<00:00, 2600.58stk/s]Checking MA sweep + 4x candle:  90%|████████▉ | 4970/5526 [00:01<00:00, 2659.36stk/s]Checking MA sweep + 4x candle:  95%|█████████▌| 5253/5526 [00:02<00:00, 2675.89stk/s]Checking MA sweep + 4x candle: 100%|██████████| 5526/5526 [00:02<00:00, 2610.95stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 3 steps
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Entry_Price   Stop_Loss    MA_Swept       Body_Ratio   Sweep_Date  
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  APAM      $36.39      70       $36.39        $33.73       EMA21          x9.9         2026-10-28  
+  LTC       $44.32      69       $44.32        $41.76       SMA50          x7.8         2026-10-28  
+  SXC       $11.03      80       $11.03        $9.98        EMA21          x14.7        2026-10-28  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6311
+  Daily data      : 5526
+  ✅ Matches       : 3
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔍 FUNNEL — where ticker-days were filtered out
+  (tallied across every liquid ticker's last 1 trading day(s))
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker-days checked                          : 2403
+  Step 1 — sweep of SMA50/EMA21 yesterday       : 33
+  Step 2 — + green body > 4x yesterday's       : 3
+  Step 3 — + close still above the swept MA    : 3  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                   Daily MA Sweep + 4x Green Candle   2026-10-30   3 matches                                 ║
+  ╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬────────┬───────┬─────────────┬───────────┬────────┬──────────┬────────────┬──────────┬────────────┬────────────────┐
+  │ Ticker │ Price  │ Score │ Entry_Price │ Stop_Loss │ Risk_% │ MA_Swept │ Sweep_Date │ Wick_ATR │ Body_Ratio │ Vol_vs_20d_Avg │
+  ├────────┼────────┼───────┼─────────────┼───────────┼────────┼──────────┼────────────┼──────────┼────────────┼────────────────┤
+  │  SXC   │ $11.03 │   80  │    $11.03   │   $9.98   │  9.5%  │  EMA21   │ 2026-10-28 │   1.54   │   x14.7    │     x1.32      │
+  ├────────┼────────┼───────┼─────────────┼───────────┼────────┼──────────┼────────────┼──────────┼────────────┼────────────────┤
+  │  APAM  │ $36.39 │   70  │    $36.39   │   $33.73  │  7.3%  │  EMA21   │ 2026-10-28 │   0.78   │    x9.9    │     x1.18      │
+  ├────────┼────────┼───────┼─────────────┼───────────┼────────┼──────────┼────────────┼──────────┼────────────┼────────────────┤
+  │  LTC   │ $44.32 │   69  │    $44.32   │   $41.76  │  5.8%  │  SMA50   │ 2026-10-28 │   0.86   │    x7.8    │     x1.14      │
+  └────────┴────────┴───────┴─────────────┴───────────┴────────┴──────────┴────────────┴──────────┴────────────┴────────────────┘
+  💰 Position sizing: max loss $40 per trade — 3 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_ma_sweep_4x_20261030_0626.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_daily_ma_sweep_4x_20261030_0626.txt
+
+  📋 Tickers (comma-separated):
+  SXC, APAM, LTC
+[Email] Sending to vikramaga24@gmail.com  (3 results)...
+[Email] 📎 Attached: daily_ma_sweep_4x_20261030_0626.csv (686 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 MA Sweep + 4x Candle — 3 signals — 2026-10-30
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_ma_sweep_4x_chart_20261030_0626.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required; the green candle is the latest daily candle)
+  1) Sweep day (previous candle): lower wick at least 0.75 x ATR14, low
+     touching SMA50 or EMA21 (at/below it, or within 0.1 ATR above),
+     close ABOVE that same average.
+  2) Today: green candle whose body is MORE than 4x the sweep day's
+     body (and at least 0.5 x ATR, so a doji the day before is not enough).
+  3) Today's close is still above the swept average.
+
+  📋 OUTPUT (reasonable defaults — not explicitly requested)
+  Entry_Price = today's CLOSE
+  Stop_Loss   = sweep-day LOW
+  Universe    = price >= 10 USD, 20d avg volume >= 100k
+
+  📋 SCORE (0-100)
+  Base 40 + wick length (0-20) + body ratio (0-15) + both MAs swept (10)
+  + close near the high (0-10) + volume >= 1.5x avg (5); -10 if stop risk > 12%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
