@@ -1,0 +1,10 @@
+TargetR,StopATR,Trigger,Filters,Entry,MaxHold,Train_WR,Test_WR,MinWR,Test_Payoff,Test_ExpR,Test_n
+1.0,0.5,T_rsi2_lt10,liquid_20m & atr_ge3 & rs_pos_63d,limit_close-1.0ATR,10,55.8,53.5,48.7,1.1,0.061,512
+1.0,1.0,T_bb_lower,atr_ge3 & price_ge20 & rs_pos_63d,limit_close-1.0ATR,5,65.0,63.8,63.7,1.15,0.317,152
+1.0,1.5,T_rsi2_lt5,sma200_rising & price_ge20 & rs_pos_63d,limit_close-1.0ATR,10,61.8,62.7,60.5,1.08,0.225,354
+1.0,2.0,T_ibs_lt15_below_sma5,sma50_gt_sma200 & rs_pos_63d & rsi14_lt40,limit_close-1.0ATR,10,60.7,62.8,60.7,1.28,0.242,156
+1.0,3.0,T_ibs_lt15_below_sma5,sma50_gt_sma200 & rs_pos_63d & rsi14_lt40,limit_close-1.0ATR,10,65.0,63.2,60.0,1.28,0.188,155
+1.5,1.0,T_drop_3atr_5d,above_sma200 & sma50_gt_sma200 & atr_ge3,limit_close-1.0ATR,5,57.1,56.2,55.6,1.21,0.193,192
+1.5,1.5,T_drop_3atr_5d,above_sma200 & sma50_gt_sma200 & atr_ge3,limit_close-1.0ATR,5,59.2,58.3,58.3,1.09,0.148,192
+1.5,2.0,T_ibs_lt15_below_sma5,sma50_gt_sma200 & rs_pos_63d & rsi14_lt40,limit_close-1.0ATR,10,59.0,60.9,59.0,1.35,0.246,156
+1.5,3.0,T_ibs_lt15_below_sma5,sma50_gt_sma200 & rs_pos_63d & rsi14_lt40,limit_close-1.0ATR,10,64.5,63.2,60.0,1.34,0.205,155
