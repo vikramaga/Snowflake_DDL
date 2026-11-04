@@ -1,0 +1,36 @@
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CFLT"}}}
+$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CTEST: possibly delisted; no price data found  (1d 2023-03-31 -> 2026-11-04)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2023-03-31 -> 2026-11-04)
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ZEXIT"}}}
+$ZEXIT: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2023-03-31 -> 2026-11-04)
+$ZBZZT: possibly delisted; no price data found  (1d 2023-03-31 -> 2026-11-04)
+$ZXIET: possibly delisted; no timezone found
+
+4 Failed downloads:
+['ZEXIT', 'ZXIET']: possibly delisted; no timezone found
+['ZVV', 'ZBZZT']: possibly delisted; no price data found  (1d 2023-03-31 -> 2026-11-04)
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2266 → 5425
+  ✅ NASDAQ API        : + 895 → 6320
+  ✅ Static fallback   : +   9 → 6329
+
+  🎯 Total: 6329 tickers
+fresh tickers 1709 of 2000 (none used by the search) | 1.8 min
+signals 310474 | 2024-02-01 .. 2026-10-02
+T_rsi2_lt10            sma50_gt_sma200 & atr_ge3 & rs_pos_63d        stop 1.0ATR 1.0R 10d | n=1183 WR=59.8% payoff=1.03 expR=+0.195 worst=-34.9% | 2024:61%/290 2025:61%/448 2026:58%/445
+T_rsi2_lt10            sma200_rising & atr_ge3 & rs_pos_63d          stop 1.0ATR 1.0R 10d | n=1162 WR=59.9% payoff=0.98 expR=+0.193 worst=-34.9% | 2024:60%/287 2025:62%/443 2026:58%/432
+T_rsi2_lt10            atr_ge3 & rs_pos_63d & rsi14_lt40             stop 1.0ATR 1.0R 10d | n=561 WR=66.0% payoff=1.09 expR=+0.354 worst=-32.9% | 2024:61%/69 2025:72%/302 2026:59%/190
+T_rsi2_lt10            atr_ge3 & price_ge20 & rs_pos_63d             stop 1.0ATR 1.0R 10d | n=932 WR=60.8% payoff=1.08 expR=+0.223 worst=-51.7% | 2024:59%/191 2025:67%/363 2026:56%/378
+T_rsi2_lt5             sma200_rising & price_ge20 & rs_pos_63d       stop 1.5ATR 1.0R 10d | n=681 WR=59.2% payoff=1.06 expR=+0.188 worst=-22.1% | 2024:60%/194 2025:69%/260 2026:47%/227
+T_bb_lower             atr_ge3 & price_ge20 & rs_pos_63d             stop 1.0ATR 1.0R 10d | n=370 WR=61.6% payoff=1.14 expR=+0.281 worst=-26.0% | 2024:47%/36 2025:69%/193 2026:55%/141
+T_bb_lower             above_sma200 & atr_ge3 & price_ge20           stop 2.0ATR 1.0R 10d | n=361 WR=55.1% payoff=1.22 expR=+0.141 worst=-37.5% | 2024:63%/67 2025:56%/133 2026:51%/161
+T_ibs_lt15_below_sma5  sma50_gt_sma200 & rs_pos_63d & rsi14_lt40     stop 3.0ATR 1.0R 10d | n=436 WR=58.0% payoff=1.18 expR=+0.086 worst=-38.7% | 2024:67%/66 2025:59%/217 2026:53%/153
+T_drop_3atr_5d         price_ge20 & rs_pos_63d & rsi14_lt40          stop 1.0ATR 1.0R 20d | n=487 WR=57.7% payoff=1.13 expR=+0.181 worst=-17.7% | 2024:56%/95 2025:60%/272 2026:54%/120
+done in 2.2 min
