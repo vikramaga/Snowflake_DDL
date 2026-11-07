@@ -2,8 +2,8 @@
 # JMA reclaim" pattern (Vik's RVTY example) within the last 10 sessions.
 #
 # Pattern on signal day t (daily bars):
-#   1. Uptrend: SMA50 > SMA150 > SMA200, SMA50 and SMA200 higher than 20
-#      sessions ago, close > SMA150.
+#   1. Uptrend: SMA50 above both SMA150 and SMA200 (their own order does not
+#      matter), SMA50 and SMA200 higher than 20 sessions ago, close > SMA150.
 #   2. Pullback: swing high in the 3-15 sessions before t, then 2-10 sessions
 #      of pullback in which the JMA(13,40,2) falls on at least 2 days (the line
 #      turns red on the chart) and is still falling or flat the day before t.
@@ -66,7 +66,7 @@ def check_at(d, t):
     o, h, l, c = d["Open"].values, d["High"].values, d["Low"].values, d["Close"].values
     j, e21, s50, s150, s200, atr = (d[k].values for k in ("JMA", "EMA21", "SMA50", "SMA150", "SMA200", "ATR14"))
     # 1. uptrend
-    if not (s50[t] > s150[t] > s200[t] and s50[t] > s50[t - 20] and s200[t] > s200[t - 20] and c[t] > s150[t]):
+    if not (s50[t] > s150[t] and s50[t] > s200[t] and s50[t] > s50[t - 20] and s200[t] > s200[t - 20] and c[t] > s150[t]):
         return None
     # 4. reclaim day
     if not (c[t] > o[t] and (c[t] - o[t]) >= 0.6 * atr[t] and c[t] > j[t] and c[t] > e21[t] and c[t - 1] <= j[t - 1]):
@@ -151,7 +151,7 @@ def main():
     section, sec_of = None, {}
     for x in wl.get("symbols") or []:
         if str(x).startswith("###"):
-            section = x[3:]
+            section = x[3:].strip().strip("⁤⁣​")
         else:
             sec_of.setdefault(to_yahoo(x), section)
     tickers = list(dict.fromkeys(to_yahoo(x) for x in syms))
