@@ -5,6 +5,7 @@ set -u
 D="claude_run/results/digest/$(date -u +%Y-%m-%d)"
 mkdir -p "$D"
 mv rsi_*_under_*.csv rsi_digest.log "$D/" 2>/dev/null || true
+mv best10_all_scanners_*.csv "$D/" 2>/dev/null || true
 git config user.name  "github-actions[bot]"
 git config user.email "41898+github-actions[bot]@users.noreply.github.com"
 git add claude_run/results/digest || true
