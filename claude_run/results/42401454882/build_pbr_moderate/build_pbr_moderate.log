@@ -1,0 +1,203 @@
+[master 165849b] Pullback JMA reclaim: accept moderate reclaim candles, label Strong / Moderate
+ 1 file changed, 19 insertions(+), 13 deletions(-)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   3bbaac7..165849b  HEAD -> master
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 386 bars ($342.37, 2026-11-06)
+  ✅ MSFT: daily 386 bars ($530.61, 2026-11-06)
+  ✅ NVDA: daily 386 bars ($186.64, 2026-11-06)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2265 → 5424
+  ✅ NASDAQ API        : + 920 → 6344
+  ✅ Static fallback   : +   9 → 6353
+
+  🎯 Total: 6353 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6353 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Daily fetch:   0%|          | 0/6353 [00:00<?, ?stk/s]Daily fetch:   1%|          | 50/6353 [00:02<04:27, 23.58stk/s]Daily fetch:   2%|▏         | 100/6353 [00:05<05:43, 18.19stk/s]Daily fetch:   2%|▏         | 150/6353 [00:09<06:34, 15.72stk/s]Daily fetch:   3%|▎         | 200/6353 [00:12<06:22, 16.09stk/s]Daily fetch:   4%|▍         | 250/6353 [00:15<06:30, 15.62stk/s]Daily fetch:   5%|▍         | 300/6353 [00:18<06:31, 15.44stk/s]Daily fetch:   6%|▌         | 350/6353 [00:22<06:40, 15.00stk/s]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▋         | 400/6353 [00:25<06:43, 14.77stk/s]Daily fetch:   7%|▋         | 450/6353 [00:28<06:35, 14.92stk/s]Daily fetch:   8%|▊         | 500/6353 [00:32<06:37, 14.73stk/s]Daily fetch:   9%|▊         | 550/6353 [00:35<06:27, 14.96stk/s]Daily fetch:   9%|▉         | 600/6353 [00:38<06:19, 15.14stk/s]Daily fetch:  10%|█         | 650/6353 [00:42<06:25, 14.81stk/s]Daily fetch:  11%|█         | 700/6353 [00:46<06:39, 14.15stk/s]Daily fetch:  12%|█▏        | 750/6353 [00:49<06:29, 14.37stk/s]Daily fetch:  13%|█▎        | 800/6353 [00:53<06:24, 14.46stk/s]Daily fetch:  13%|█▎        | 850/6353 [00:56<06:18, 14.53stk/s]Daily fetch:  14%|█▍        | 900/6353 [00:59<06:10, 14.70stk/s]Daily fetch:  15%|█▍        | 950/6353 [01:03<06:30, 13.82stk/s]Daily fetch:  16%|█▌        | 1000/6353 [01:07<06:13, 14.31stk/s]Daily fetch:  17%|█▋        | 1050/6353 [01:10<06:09, 14.37stk/s]$CBO: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$CBX: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$CBO: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$CBO: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$CBX: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$CBX: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+Daily fetch:  17%|█▋        | 1100/6353 [01:14<06:10, 14.19stk/s]Daily fetch:  18%|█▊        | 1150/6353 [01:17<05:54, 14.68stk/s]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1200/6353 [01:20<05:56, 14.45stk/s]Daily fetch:  20%|█▉        | 1250/6353 [01:24<05:43, 14.87stk/s]Daily fetch:  20%|██        | 1300/6353 [01:27<05:36, 15.01stk/s]Daily fetch:  21%|██        | 1350/6353 [01:30<05:24, 15.43stk/s]Daily fetch:  22%|██▏       | 1400/6353 [01:33<05:16, 15.63stk/s]Daily fetch:  23%|██▎       | 1450/6353 [01:36<05:13, 15.63stk/s]$CTEST: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$CTEST: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+Daily fetch:  24%|██▎       | 1500/6353 [01:40<05:19, 15.19stk/s]Daily fetch:  24%|██▍       | 1550/6353 [01:43<05:13, 15.32stk/s]Daily fetch:  25%|██▌       | 1600/6353 [01:46<05:19, 14.89stk/s]Daily fetch:  26%|██▌       | 1650/6353 [01:50<05:16, 14.87stk/s]Daily fetch:  27%|██▋       | 1700/6353 [01:53<05:04, 15.27stk/s]Daily fetch:  28%|██▊       | 1750/6353 [01:56<05:01, 15.27stk/s]Daily fetch:  28%|██▊       | 1800/6353 [01:59<04:52, 15.57stk/s]Daily fetch:  29%|██▉       | 1850/6353 [02:02<04:49, 15.57stk/s]Daily fetch:  30%|██▉       | 1900/6353 [02:06<04:53, 15.15stk/s]Daily fetch:  31%|███       | 1950/6353 [02:09<04:48, 15.26stk/s]Daily fetch:  31%|███▏      | 2000/6353 [02:12<04:42, 15.39stk/s]$EXAS: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$EXAS: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$EXAS: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+Daily fetch:  32%|███▏      | 2050/6353 [02:16<04:50, 14.82stk/s]Daily fetch:  33%|███▎      | 2100/6353 [02:19<04:48, 14.72stk/s]Daily fetch:  34%|███▍      | 2150/6353 [02:23<04:43, 14.85stk/s]Daily fetch:  35%|███▍      | 2200/6353 [02:26<04:46, 14.48stk/s]Daily fetch:  35%|███▌      | 2250/6353 [02:30<04:44, 14.43stk/s]Daily fetch:  36%|███▌      | 2300/6353 [02:33<04:37, 14.61stk/s]Daily fetch:  37%|███▋      | 2350/6353 [02:37<04:40, 14.26stk/s]Daily fetch:  38%|███▊      | 2400/6353 [02:40<04:28, 14.72stk/s]Daily fetch:  39%|███▊      | 2450/6353 [02:43<04:24, 14.77stk/s]Daily fetch:  39%|███▉      | 2500/6353 [02:47<04:18, 14.89stk/s]Daily fetch:  40%|████      | 2550/6353 [02:50<04:14, 14.96stk/s]Daily fetch:  41%|████      | 2600/6353 [02:54<04:26, 14.09stk/s]Daily fetch:  42%|████▏     | 2650/6353 [02:57<04:13, 14.58stk/s]Daily fetch:  42%|████▏     | 2700/6353 [03:00<03:59, 15.24stk/s]Daily fetch:  43%|████▎     | 2750/6353 [03:03<03:57, 15.18stk/s]Daily fetch:  44%|████▍     | 2800/6353 [03:07<03:54, 15.13stk/s]Daily fetch:  45%|████▍     | 2850/6353 [03:11<04:12, 13.87stk/s]Daily fetch:  46%|████▌     | 2900/6353 [03:14<04:01, 14.31stk/s]Daily fetch:  46%|████▋     | 2950/6353 [03:18<03:51, 14.70stk/s]Daily fetch:  47%|████▋     | 3000/6353 [03:21<03:48, 14.65stk/s]Daily fetch:  48%|████▊     | 3050/6353 [03:24<03:43, 14.81stk/s]Daily fetch:  49%|████▉     | 3100/6353 [03:27<03:34, 15.16stk/s]Daily fetch:  50%|████▉     | 3150/6353 [03:31<03:30, 15.22stk/s]Daily fetch:  50%|█████     | 3200/6353 [03:34<03:30, 14.95stk/s]Daily fetch:  51%|█████     | 3250/6353 [03:37<03:26, 15.00stk/s]Daily fetch:  52%|█████▏    | 3300/6353 [03:41<03:23, 14.97stk/s]Daily fetch:  53%|█████▎    | 3350/6353 [03:44<03:21, 14.87stk/s]Daily fetch:  54%|█████▎    | 3400/6353 [03:47<03:15, 15.07stk/s]Daily fetch:  54%|█████▍    | 3450/6353 [03:51<03:09, 15.31stk/s]Daily fetch:  55%|█████▌    | 3500/6353 [03:54<03:04, 15.45stk/s]Daily fetch:  56%|█████▌    | 3550/6353 [03:57<03:07, 14.98stk/s]Daily fetch:  57%|█████▋    | 3600/6353 [04:01<03:04, 14.92stk/s]Daily fetch:  57%|█████▋    | 3650/6353 [04:04<02:58, 15.17stk/s]Daily fetch:  58%|█████▊    | 3700/6353 [04:07<02:55, 15.10stk/s]Daily fetch:  59%|█████▉    | 3750/6353 [04:11<02:53, 14.98stk/s]Daily fetch:  60%|█████▉    | 3800/6353 [04:14<02:53, 14.74stk/s]Daily fetch:  61%|██████    | 3850/6353 [04:17<02:49, 14.74stk/s]Daily fetch:  61%|██████▏   | 3900/6353 [04:21<02:42, 15.08stk/s]Daily fetch:  62%|██████▏   | 3950/6353 [04:24<02:41, 14.87stk/s]Daily fetch:  63%|██████▎   | 4000/6353 [04:27<02:35, 15.13stk/s]Daily fetch:  64%|██████▎   | 4050/6353 [04:31<02:32, 15.05stk/s]Daily fetch:  65%|██████▍   | 4100/6353 [04:34<02:28, 15.19stk/s]Daily fetch:  65%|██████▌   | 4150/6353 [04:37<02:27, 14.91stk/s]Daily fetch:  66%|██████▌   | 4200/6353 [04:41<02:28, 14.54stk/s]Daily fetch:  67%|██████▋   | 4250/6353 [04:44<02:20, 14.92stk/s]Daily fetch:  68%|██████▊   | 4300/6353 [04:47<02:15, 15.11stk/s]Daily fetch:  68%|██████▊   | 4350/6353 [04:51<02:13, 15.03stk/s]Daily fetch:  69%|██████▉   | 4400/6353 [04:54<02:14, 14.51stk/s]Daily fetch:  70%|███████   | 4450/6353 [04:58<02:08, 14.77stk/s]Daily fetch:  71%|███████   | 4500/6353 [05:01<02:05, 14.74stk/s]Daily fetch:  72%|███████▏  | 4550/6353 [05:04<02:00, 14.96stk/s]Daily fetch:  72%|███████▏  | 4600/6353 [05:08<01:55, 15.13stk/s]$PSTG: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$PSTG: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$PSTG: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+Daily fetch:  73%|███████▎  | 4650/6353 [05:11<01:52, 15.11stk/s]Daily fetch:  74%|███████▍  | 4700/6353 [05:14<01:51, 14.80stk/s]Daily fetch:  75%|███████▍  | 4750/6353 [05:18<01:46, 15.07stk/s]Daily fetch:  76%|███████▌  | 4800/6353 [05:21<01:44, 14.81stk/s]Daily fetch:  76%|███████▋  | 4850/6353 [05:25<01:42, 14.73stk/s]Daily fetch:  77%|███████▋  | 4900/6353 [05:28<01:38, 14.82stk/s]Daily fetch:  78%|███████▊  | 4950/6353 [05:31<01:34, 14.89stk/s]Daily fetch:  79%|███████▊  | 5000/6353 [05:35<01:32, 14.56stk/s]Daily fetch:  79%|███████▉  | 5050/6353 [05:39<01:35, 13.61stk/s]Daily fetch:  80%|████████  | 5100/6353 [05:43<01:30, 13.79stk/s]Daily fetch:  81%|████████  | 5150/6353 [05:46<01:24, 14.17stk/s]Daily fetch:  82%|████████▏ | 5200/6353 [05:49<01:18, 14.66stk/s]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5250/6353 [05:52<01:14, 14.84stk/s]Daily fetch:  83%|████████▎ | 5300/6353 [05:55<01:09, 15.04stk/s]Daily fetch:  84%|████████▍ | 5350/6353 [05:59<01:06, 15.12stk/s]Daily fetch:  85%|████████▍ | 5400/6353 [06:02<01:04, 14.85stk/s]Daily fetch:  86%|████████▌ | 5450/6353 [06:06<01:01, 14.71stk/s]Daily fetch:  87%|████████▋ | 5500/6353 [06:09<00:58, 14.67stk/s]Daily fetch:  87%|████████▋ | 5550/6353 [06:12<00:53, 14.87stk/s]Daily fetch:  88%|████████▊ | 5600/6353 [06:16<00:49, 15.10stk/s]Daily fetch:  89%|████████▉ | 5650/6353 [06:19<00:48, 14.52stk/s]Daily fetch:  90%|████████▉ | 5700/6353 [06:23<00:45, 14.49stk/s]Daily fetch:  91%|█████████ | 5750/6353 [06:26<00:41, 14.64stk/s]Daily fetch:  91%|█████████▏| 5800/6353 [06:30<00:38, 14.47stk/s]Daily fetch:  92%|█████████▏| 5850/6353 [06:33<00:33, 15.15stk/s]Daily fetch:  93%|█████████▎| 5900/6353 [06:36<00:29, 15.53stk/s]Daily fetch:  94%|█████████▎| 5950/6353 [06:39<00:26, 15.31stk/s]Daily fetch:  94%|█████████▍| 6000/6353 [06:42<00:23, 15.29stk/s]Daily fetch:  95%|█████████▌| 6050/6353 [06:45<00:19, 15.54stk/s]Daily fetch:  96%|█████████▌| 6100/6353 [06:49<00:16, 15.30stk/s]Daily fetch:  97%|█████████▋| 6150/6353 [06:52<00:13, 15.11stk/s]Daily fetch:  98%|█████████▊| 6200/6353 [06:55<00:10, 15.24stk/s]Daily fetch:  98%|█████████▊| 6250/6353 [06:59<00:07, 14.58stk/s]$ZAZZT: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+
+1 Failed download:
+['ZAZZT']: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+Daily fetch:  99%|█████████▉| 6300/6353 [07:02<00:03, 15.08stk/s]$ZIEXT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZTEST: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZCZZT: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZEXIT: possibly delisted; no timezone found
+
+8 Failed downloads:
+['ZIEXT', 'ZCZZT', 'ZXIET', 'ZEXIT']: possibly delisted; no timezone found
+['ZBZX', 'ZTEST', 'ZBZZT', 'ZVV']: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZBZX: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZBZX: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZTEST: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZVV: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZVV: possibly delisted; no price data found  (1d 2025-04-26 -> 2026-11-07)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|█████████▉| 6350/6353 [07:06<00:00, 14.00stk/s]Daily fetch: 100%|██████████| 6353/6353 [07:08<00:00, 11.91stk/s]Daily fetch: 100%|██████████| 6353/6353 [07:10<00:00, 14.77stk/s]
+
+  Daily data : 5700/6353 tickers
+
+Checking pattern:   0%|          | 0/5700 [00:00<?, ?stk/s]Checking pattern:   2%|▏         | 134/5700 [00:00<00:04, 1325.99stk/s]Checking pattern:   5%|▍         | 283/5700 [00:00<00:03, 1421.20stk/s]Checking pattern:   7%|▋         | 426/5700 [00:00<00:03, 1358.33stk/s]Checking pattern:  10%|▉         | 566/5700 [00:00<00:03, 1367.26stk/s]Checking pattern:  13%|█▎        | 716/5700 [00:00<00:03, 1412.03stk/s]Checking pattern:  16%|█▌        | 887/5700 [00:00<00:03, 1509.90stk/s]Checking pattern:  18%|█▊        | 1039/5700 [00:00<00:03, 1502.68stk/s]Checking pattern:  21%|██        | 1195/5700 [00:00<00:02, 1515.14stk/s]Checking pattern:  24%|██▎       | 1347/5700 [00:00<00:03, 1435.12stk/s]Checking pattern:  26%|██▌       | 1492/5700 [00:01<00:02, 1420.60stk/s]Checking pattern:  29%|██▊       | 1635/5700 [00:01<00:02, 1408.37stk/s]Checking pattern:  31%|███▏      | 1795/5700 [00:01<00:02, 1458.67stk/s]Checking pattern:  34%|███▍      | 1942/5700 [00:01<00:02, 1421.61stk/s]Checking pattern:  37%|███▋      | 2095/5700 [00:01<00:02, 1452.81stk/s]Checking pattern:  40%|███▉      | 2255/5700 [00:01<00:02, 1492.98stk/s]Checking pattern:  42%|████▏     | 2411/5700 [00:01<00:02, 1506.76stk/s]Checking pattern:  45%|████▍     | 2562/5700 [00:01<00:02, 1495.96stk/s]Checking pattern:  48%|████▊     | 2716/5700 [00:01<00:01, 1508.22stk/s]Checking pattern:  50%|█████     | 2867/5700 [00:01<00:01, 1480.11stk/s]Checking pattern:  53%|█████▎    | 3016/5700 [00:02<00:01, 1463.33stk/s]Checking pattern:  55%|█████▌    | 3163/5700 [00:02<00:01, 1453.86stk/s]Checking pattern:  58%|█████▊    | 3332/5700 [00:02<00:01, 1518.14stk/s]Checking pattern:  61%|██████    | 3484/5700 [00:02<00:01, 1497.57stk/s]Checking pattern:  64%|██████▍   | 3639/5700 [00:02<00:01, 1509.43stk/s]Checking pattern:  67%|██████▋   | 3791/5700 [00:02<00:01, 1458.53stk/s]Checking pattern:  69%|██████▉   | 3947/5700 [00:02<00:01, 1483.93stk/s]Checking pattern:  72%|███████▏  | 4097/5700 [00:02<00:01, 1482.73stk/s]Checking pattern:  74%|███████▍  | 4246/5700 [00:02<00:00, 1468.63stk/s]Checking pattern:  77%|███████▋  | 4409/5700 [00:02<00:00, 1514.69stk/s]Checking pattern:  80%|████████  | 4561/5700 [00:03<00:01, 989.65stk/s] Checking pattern:  82%|████████▏ | 4702/5700 [00:03<00:00, 1079.02stk/s]Checking pattern:  85%|████████▌ | 4861/5700 [00:03<00:00, 1195.67stk/s]Checking pattern:  88%|████████▊ | 4998/5700 [00:03<00:00, 1220.46stk/s]Checking pattern:  90%|█████████ | 5136/5700 [00:03<00:00, 1258.95stk/s]Checking pattern:  93%|█████████▎| 5278/5700 [00:03<00:00, 1298.42stk/s]Checking pattern:  95%|█████████▌| 5421/5700 [00:03<00:00, 1333.12stk/s]Checking pattern:  98%|█████████▊| 5560/5700 [00:03<00:00, 1335.97stk/s]Checking pattern: 100%|██████████| 5700/5700 [00:04<00:00, 1399.71stk/s]
+  ✅ AZTA   $39.16  Score 54  pullback 16.0% (+0.1% vs SMA50)  Strong body 0.83 ATR  2026-11-06
+  ✅ BIO    $381.57  Score 41  pullback 9.8% (-5.8% vs SMA50)  Strong body 1.26 ATR  2026-11-06
+  ✅ COKE   $207.89  Score 57  pullback 6.5% (+2.1% vs SMA50)  Strong body 0.74 ATR  2026-11-05
+  ✅ CRL    $337.52  Score 61  pullback 17.9% (+2.3% vs SMA50)  Strong body 1.07 ATR  2026-11-06
+  ✅ DNA    $11.29  Score 52  pullback 33.6% (-3.3% vs SMA50)  Strong body 0.8 ATR  2026-11-06
+  ✅ FNKO   $6.72  Score 69  pullback 14.5% (-1.1% vs SMA50)  Strong body 3.45 ATR  2026-11-06
+  ✅ FTRE   $21.96  Score 54  pullback 24.8% (-3.5% vs SMA50)  Strong body 1.0 ATR  2026-11-06
+  ✅ TMO    $694.76  Score 62  pullback 5.6% (+2.3% vs SMA50)  Strong body 1.15 ATR  2026-11-06
+  ✅ VIR    $12.21  Score 57  pullback 9.9% (-0.3% vs SMA50)  Strong body 1.29 ATR  2026-11-06
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE — 9 matches from 5700 tickers with data
+  🔍 FUNNEL (any of the last 2 sessions)
+  Tickers checked                          : 2530
+  Step 1 — uptrend (SMA50 over 150/200)     : 511
+  Step 2 — + pullback with JMA rolling over : 185
+  Step 3 — + low reached EMA21/SMA50 zone   : 168
+  Step 4 — + deep enough and held           : 112
+  Step 5 — + green reclaim of JMA and EMA21 : 9  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  💰 Position sizing: max loss $40 per trade — 9 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 9 qualified stocks (trend, catalyst, value) ...
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_daily_pullback_jma_reclaim_v1_20261107_1836.csv  (8s)
+     #1  FTRE        74  (trend 30, catalyst 24, value 20)  above SMA200, SMA50 rising, SMA200 rising, contract/order news, positive news, 2 net upgrades, beat last EPS, PEG <= 1.5
+     #2  AZTA        70  (trend 35, catalyst 22, value 13)  above SMA200, SMA50 rising, SMA200 turning up, contract/order news, positive news, beat last EPS, PEG <= 1.5
+     #3  VIR         67  (trend 30, catalyst 12, value 25)  above SMA200, SMA50 rising, SMA200 rising, contract/order news, beat last EPS, analysts Buy, target +72%
+     #4  COKE        66  (trend 35, catalyst 10, value 21)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, fair P/E
+     #5  TMO         62  (trend 30, catalyst 10, value 22)  above SMA200, SMA50 rising, SMA200 rising, positive news, beat last EPS, analysts Buy
+     #6  CRL         59  (trend 35, catalyst 10, value 14)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, PEG <= 1.5, analysts Buy
+     #7  FNKO        55  (trend 35, catalyst 0, value 20)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, fair P/E
+     #8  BIO         51  (trend 30, catalyst 6, value 15)  above SMA200, SMA50 rising, SMA200 rising, beat last EPS
+     #9  DNA         42  (trend 35, catalyst 0, value 7)  above SMA200, SMA50 rising, SMA200 turning up, beat last EPS
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_pullback_jma_reclaim_20261107_1836.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_daily_pullback_jma_reclaim_20261107_1836.txt
+
+  📋 Tickers: FNKO, TMO, CRL, COKE, VIR, AZTA, FTRE, DNA, BIO
+  🏅 Best 10 added to the email (html text)
+[Email] ✅  Sent to vikramaga24@gmail.com — 📊 Daily Pullback JMA Reclaim — 9 signals — 2026-11-07
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_pullback_jma_reclaim_chart_20261107_1836.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required; signal day = one of the last 2 sessions)
+  1) Uptrend: SMA50 above SMA150 and SMA200, SMA50 and SMA200 rising
+     (20 sessions), close above SMA150
+  2) Swing high 3-15 sessions back, then a 2-10 day pullback with
+     JMA(13,40,2) falling on >= 2 days and not rising the day before
+  3) Pullback low within 0.5% of the higher of EMA21 / SMA50 (or below)
+  4) Pullback >= 1.5 ATR14 deep; no close > 3% under SMA50, no low under SMA150
+  5) Signal day: green, body >= 0.4 ATR (Strong >= 0.6 ATR, else Moderate),
+     closes back above the JMA and EMA21
+  OUTPUT: Entry = signal day close, Stop = pullback low,
+          Target 1 = swing high, Target 2 = entry + 2R
+  ⚙️  If 0 results, check the FUNNEL: relax zone_tolerance_pct 0.5 → 1.5,
+     min_depth_atr 1.5 → 1.0, or signal_lookback_days 2 → 5
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OK  daily_pullback_jma_reclaim_v1.py 2860bac428b66bc9fa62f6b888474e5ab85bed55d2f88b4707dbfa414f144be5
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add daily_pullback_jma_reclaim_v1.py
++ git diff --cached --quiet
++ git commit -m Pullback JMA reclaim: accept moderate reclaim candles, label Strong / Moderate
+
+Step 5 now needs a green body >= 0.4 ATR14 (was 0.6). Matches with a body
+>= 0.6 ATR are labelled Strong, 0.4-0.6 ATR Moderate (new Reclaim_Strength
+column in the CSV and email, and in the flags).
+
+Verified: with the old 0.6 threshold the rule still equals the calibrated
+watchlist check (0 mismatches on 12,080 synthetic days); at 0.4 the signals
+are a superset (4 -> 20); a 0.5 ATR reclaim passes as Moderate, a 1.8 ATR one
+as Strong, a 0.3 ATR one is rejected; mocked full runs with and without matches.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
++ git pull --rebase origin master
++ git push origin HEAD:master
+✅ pushed
