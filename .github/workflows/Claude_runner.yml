@@ -108,6 +108,8 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FALLBACK_TICKERS:  "HOOD,CRDO,ALAB"
           WORKFLOW_TOKEN:    ${{ secrets.WORKFLOW_TOKEN }}
+          TV_SESSIONID:      ${{ secrets.TV_SESSIONID }}
+          TV_SESSIONID_SIGN: ${{ secrets.TV_SESSIONID_SIGN }}
         run: |
           mkdir -p out
           touch .start_marker
