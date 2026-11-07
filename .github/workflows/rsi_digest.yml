@@ -43,6 +43,8 @@ jobs:
           GMAIL_USER:     ${{ secrets.EMAIL_FROM }}
           GMAIL_PASS:     ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_TO:       ${{ secrets.EMAIL_TO }}
+          TV_SESSIONID:      ${{ secrets.TV_SESSIONID }}
+          TV_SESSIONID_SIGN: ${{ secrets.TV_SESSIONID_SIGN }}
         run: python claude_run/tools/rsi_amount_filter.py --email | tee rsi_digest.log
 
       - name: Save CSV to repo
