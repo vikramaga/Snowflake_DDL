@@ -16,6 +16,7 @@ from datetime import datetime
 
 import pandas as pd
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 ROOT = "claude_run/results"
 NAMES = {
     "daily_price_jma_ema21_sma50_volume_v1": "Daily price above JMA/EMA21/SMA50 + volume",
@@ -281,6 +282,13 @@ def main(argv):
         send(subj, body_html, plain, csv_path)
     else:
         open(csv_path.replace(".csv", ".html"), "w").write(body_html)
+    # TradingView watchlist (only when the session secrets are configured)
+    if os.environ.get("TV_SESSIONID") and "--no-tv" not in argv:
+        try:
+            import tv_watchlist_sync
+            tv_watchlist_sync.main([str(run)])
+        except Exception as err:
+            print(f"[TradingView] not synced: {err}")
     return 0
 
 
