@@ -29,8 +29,10 @@
 #       than 30% above SMA200 -> 7 (30-50% -> 3)
 #
 # News and analyst data come from Yahoo through yfinance and can be missing
-# or late; a stock with no data simply scores 0 on that part. Headlines are
-# matched by keywords, so read the headline before acting on it. Everything
+# or late; a stock with no data simply scores 0 on that part. A headline only
+# counts if it is about the stock (it is the story's first tagged ticker, or
+# the ticker / company name is in the title) and it is matched by keywords,
+# so read the headline before acting on it. Everything
 # is wrapped so a data problem never stops the scanner or its email.
 import os, re, sys, time
 from datetime import datetime, timedelta, timezone
@@ -40,7 +42,7 @@ import pandas as pd
 
 TOP_N = int(os.environ.get("BEST10_N", "10"))
 MAX_FUNDAMENTAL = int(os.environ.get("BEST10_MAX_CANDIDATES", "30"))   # deep look-ups for the 30 best by trend/entry
-TIME_BUDGET_S = float(os.environ.get("BEST10_TIME_BUDGET", "240"))
+TIME_BUDGET_S = float(os.environ.get("BEST10_TIME_BUDGET", "420"))
 NEWS_DAYS = 30
 ANALYST_DAYS = 60
 
@@ -49,8 +51,11 @@ POSITIVE_WORDS = (r"\b(upgrade|upgraded|upgrades|beat|beats|tops|record|surge|so
                   r"clearance|raises|raised|boosts|lifts|buyback|repurchase|outperform|strong demand|"
                   r"expands|expansion|launch|breakthrough|accelerat\w*|guidance raise|price target raised)\b")
 NEGATIVE_WORDS = (r"\b(downgrade|downgraded|downgrades|miss|misses|missed|cut|cuts|lowers|lowered|offering|dilution|"
-                  r"lawsuit|probe|investigation|recall|plunge|plunges|tumbles|slumps|warns|warning|delay|delayed|"
-                  r"halt|halted|bankruptcy|default|fraud|resigns|layoffs)\b")
+                  r"lawsuit|probe|investigation|recall|plunge|plunges|plummets|tumbles|slumps|sinks|sink|sank|falls|fell|"
+                  r"drops|dropped|slides|slid|overshadow\w*|disappoint\w*|weak|weaker|cautious|slashes|sell-off|selloff|"
+                  r"warns|warning|delay|delayed|halt|halted|bankruptcy|default|fraud|resigns|layoffs)\b")
+NAME_SUFFIXES = {"inc", "inc.", "corp", "corp.", "corporation", "co", "co.", "company", "ltd", "ltd.", "limited", "plc",
+                 "holdings", "holding", "group", "n.v.", "s.a.", "ag", "se", "incorporated", "the", "&"}
 
 LAST = None          # last result of rank_best (DataFrame) — used by attach_to_email
 LAST_CSV = None      # path of the saved best-10 CSV
@@ -112,18 +117,43 @@ def _news_items(tk):
                 when = None
             if when is not None and when.to_pydatetime() < cutoff:
                 continue
+            fin = c.get("finance") or {}
+            tags = [str(x.get("symbol", "")).upper() for x in (fin.get("stockTickers") or []) if isinstance(x, dict)]
             if title:
-                out.append((when, title.strip()))
+                out.append((when, title.strip(), tags))
         except Exception:
             continue
     return out
 
 
-def _catalyst(tk):
+def _name_key(name):
+    """Distinctive part of a company name, e.g. 'Marathon Petroleum Corporation' -> 'marathon petroleum'."""
+    words = [w for w in re.split(r"[\s,]+", str(name or "").lower()) if w and w not in NAME_SUFFIXES]
+    return " ".join(words[:2]) if words else ""
+
+
+def _about(ticker, name_key, title, tags):
+    """True if the headline is about this stock (not a story where it is only tagged in passing)."""
+    base = ticker.upper().split(".")[0]
+    if tags and tags[0].split(".")[0] == base:
+        return True
+    if re.search(rf"(?<![A-Za-z]){re.escape(base)}(?![A-Za-z])", title):
+        return True
+    if name_key:
+        first = name_key.split()[0]
+        if len(first) >= 4 and re.search(rf"\b{re.escape(first)}", title.lower()):
+            return True
+    return False
+
+
+def _catalyst(tk, ticker="", name=""):
     score, best_head, notes = 0, "", []
     news = _news_items(tk)
+    nk = _name_key(name)
     contract_hit, pos_pts = False, 0
-    for when, title in news:
+    for when, title, tags in news:
+        if ticker and not _about(ticker, nk, title, tags):
+            continue
         low = title.lower()
         neg = re.search(NEGATIVE_WORDS, low) is not None
         if neg:
@@ -159,18 +189,37 @@ def _catalyst(tk):
     return max(0, min(30, score)), best_head, notes
 
 
-def _fundamental(tk, price):
+def _get_info(tk):
+    """tk.info with a retry: after a scanner's thousands of price requests Yahoo
+    often throttles the first info call and returns an almost empty dict."""
+    info = {}
+    for attempt in range(3):
+        try:
+            info = tk.info or {}
+        except Exception:
+            info = {}
+        if info.get("targetMeanPrice") is not None or info.get("forwardPE") is not None or len(info) > 60:
+            break
+        time.sleep(2 + 3 * attempt)
+    return info
+
+
+def _fundamental(tk, price, info=None):
     pts, notes, up, fpe, peg, rec = 0, [], np.nan, np.nan, np.nan, np.nan
-    try:
-        info = tk.info or {}
-    except Exception:
-        info = {}
+    info = _get_info(tk) if info is None else info
     try:
         tgt = info.get("targetMeanPrice")
-        if tgt and price and price > 0 and (info.get("numberOfAnalystOpinions") or 0) >= 1:
+        if tgt is None:
+            try:
+                tgt = (tk.analyst_price_targets or {}).get("mean")
+            except Exception:
+                tgt = None
+        if tgt and price and price > 0:
             up = (float(tgt) / float(price) - 1) * 100
             pts += 10 if up >= 25 else 6 if up >= 10 else 3 if up > 0 else 0
         fpe = info.get("forwardPE")
+        if fpe is None and info.get("forwardEps") and price:
+            fpe = float(price) / float(info["forwardEps"]) if float(info["forwardEps"]) > 0 else None
         peg = info.get("trailingPegRatio") or info.get("pegRatio")
         fpe = float(fpe) if fpe not in (None, "Infinity") else np.nan
         peg = float(peg) if peg not in (None, "Infinity") else np.nan
@@ -247,8 +296,9 @@ def rank_best(df_out, n=None, csv_dir=None):
             cat, head, cnotes, fund, up, fpe, peg, rec, fnotes = 0, "", [], 0, np.nan, np.nan, np.nan, np.nan, []
             if t in deep and time.time() - t0 < TIME_BUDGET_S:
                 tk = yf.Ticker(t)
-                cat, head, cnotes = _catalyst(tk)
-                fund, up, fpe, peg, rec, fnotes = _fundamental(tk, r["Price_now"])
+                info = _get_info(tk)
+                fund, up, fpe, peg, rec, fnotes = _fundamental(tk, r["Price_now"], info)
+                cat, head, cnotes = _catalyst(tk, t, info.get("shortName") or info.get("longName") or "")
             trend = tr["trend"] if tr else 0
             value = fund + (tr["entry"] if tr else 0)
             why = []
