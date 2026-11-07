@@ -15,7 +15,8 @@
 #
 # Usage (ClaudeRunner, needs TV_SESSIONID / TV_SESSIONID_SIGN):
 #   python claude_run/tools/wl_pullback_reclaim_check.py
-# Env: TV_WATCHLIST (default "Best 10 - all scanners"), LOOKBACK (default 10)
+# Env: TV_WATCHLIST (default "Best 10 - all scanners"; "*" = every watchlist),
+#      LOOKBACK (default 10)
 # Writes wl_pullback_reclaim_<date>.csv and prints the matches.
 import os, sys
 from datetime import datetime, timedelta
@@ -128,8 +129,14 @@ def download(tickers):
     start = end - timedelta(days=560)
     for i in range(0, len(tickers), 50):
         b = tickers[i:i + 50]
-        raw = yf.download(b, start=start.strftime("%Y-%m-%d"), end=end.strftime("%Y-%m-%d"), group_by="ticker",
-                          auto_adjust=True, actions=False, threads=True, progress=False)
+        try:
+            raw = yf.download(b, start=start.strftime("%Y-%m-%d"), end=end.strftime("%Y-%m-%d"), group_by="ticker",
+                              auto_adjust=True, actions=False, threads=True, progress=False)
+        except Exception as err:
+            print(f"  batch {i // 50 + 1} failed: {err}")
+            continue
+        if raw is None or raw.empty:
+            continue
         for t in b:
             try:
                 x = (raw[t] if isinstance(raw.columns, pd.MultiIndex) else raw).dropna(subset=["Close"])
@@ -138,24 +145,38 @@ def download(tickers):
             except Exception:
                 pass
     return out
+KNOWN = ("NASDAQ", "NYSE", "AMEX", "NSE", "BSE", "OTC", "CBOE", "BATS", "NYSEARCA", "ARCA")
 
 
 def main():
     import tv_watchlist_sync as tv
     name = os.environ.get("TV_WATCHLIST", "Best 10 - all scanners")
     s = tv.session()
-    wl = next((x for x in tv.get_lists(s) if x.get("name") == name), None)
-    if wl is None:
+    lists = tv.get_lists(s)
+    chosen = lists if name == "*" else [x for x in lists if x.get("name") == name]
+    if not chosen:
         sys.exit(f"watchlist {name!r} not found")
-    syms = [x for x in wl.get("symbols") or [] if not str(x).startswith("###")]
-    section, sec_of = None, {}
-    for x in wl.get("symbols") or []:
-        if str(x).startswith("###"):
-            section = x[3:].strip().strip("⁤⁣​")
-        else:
-            sec_of.setdefault(to_yahoo(x), section)
-    tickers = list(dict.fromkeys(to_yahoo(x) for x in syms))
-    print(f"Watchlist {name!r}: {len(tickers)} stocks; checking the last {LOOKBACK} sessions")
+    in_lists, sec_of, skipped = {}, {}, set()
+    for wl in chosen:
+        section = None
+        for x in wl.get("symbols") or []:
+            x = str(x)
+            if x.startswith("###"):
+                section = x[3:].strip().strip("⁤⁣​")
+                continue
+            ex = x.partition(":")[0] if ":" in x else ""
+            if ex and ex not in KNOWN:          # indices, crypto, forex, futures ...
+                skipped.add(x)
+                continue
+            t = to_yahoo(x)
+            in_lists.setdefault(t, [])
+            if wl.get("name") not in in_lists[t]:
+                in_lists[t].append(wl.get("name"))
+            sec_of.setdefault(t, section)
+    tickers = list(in_lists)
+    label = f"all {len(chosen)} watchlists" if name == "*" else f"watchlist {name!r}"
+    print(f"{label}: {len(tickers)} stocks ({len(skipped)} non-stock symbols skipped); "
+          f"checking the last {LOOKBACK} sessions")
     data = download(tickers + [t for t in CONTROL if t not in tickers])
     print(f"price data for {len(data)} tickers")
 
@@ -169,17 +190,27 @@ def main():
     for t in tickers:
         if t not in data:
             continue
-        for h in scan(data[t], LOOKBACK):
-            rows.append({"Ticker": t, "Watchlist_Section": sec_of.get(t, ""), **h})
+        try:
+            hits = scan(data[t], LOOKBACK)
+        except Exception as err:
+            print(f"  {t}: skipped ({type(err).__name__})")
+            continue
+        for h in hits:
+            wls = in_lists.get(t, [])
+            extra = {"Watchlists": "; ".join(wls), "Watchlist_Count": len(wls)} if name == "*" \
+                else {"Watchlist_Section": sec_of.get(t, "")}
+            rows.append({"Ticker": t, **extra, **h})
     df = pd.DataFrame(rows)
-    out = f"wl_pullback_reclaim_{datetime.today():%Y%m%d}.csv"
+    tag = "all_watchlists" if name == "*" else "pullback_reclaim"
+    out = f"wl_{tag}_{datetime.today():%Y%m%d}.csv"
     if len(df):
         df = df.sort_values(["Sessions_Ago", "Reclaim_Body_ATR"], ascending=[True, False]).drop_duplicates("Ticker")
     df.to_csv(out, index=False)
     print(f"\n{len(df)} of {len(data)} stocks show the pattern in the last {LOOKBACK} sessions -> {out}")
     if len(df):
+        show = df.drop(columns=[c for c in ("Watchlists",) if c in df.columns])
         with pd.option_context("display.width", 250, "display.max_columns", 30):
-            print(df.to_string(index=False))
+            print(show.to_string(index=False))
 
 
 if __name__ == "__main__":
