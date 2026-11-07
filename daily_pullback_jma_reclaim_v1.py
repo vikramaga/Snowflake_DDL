@@ -23,8 +23,9 @@
 #   4. HELD: the pullback is at least 1.5 ATR(14) deep, no pullback close is
 #      more than 3% under the SMA50 and no low is under the SMA150.
 #
-#   5. RECLAIM CANDLE: green, body >= 0.6 ATR(14), closes back above the JMA
-#      (the day before closed at or below it) and above EMA21.
+#   5. RECLAIM CANDLE: green, body >= 0.4 ATR(14), closes back above the JMA
+#      (the day before closed at or below it) and above EMA21. Labelled
+#      "Strong" when the body is >= 0.6 ATR, "Moderate" when 0.4-0.6 ATR.
 #
 # OUTPUT: Entry_Price = signal day's close; Stop_Loss = pullback low;
 # Target_1 = the swing high (retest), Target_2 = entry + 2R. Stop and
@@ -143,7 +144,8 @@ CFG = {
     "min_depth_atr"           : 1.5,   # pullback at least 1.5 ATR deep
     "max_close_below_sma50_pct": 3.0,  # no pullback close > 3% under SMA50
     # ── Reclaim candle ──────────────────────────────────────────
-    "min_body_atr"            : 0.6,
+    "min_body_atr"            : 0.4,   # moderate reclaim accepted
+    "strong_body_atr"         : 0.6,   # body >= 0.6 ATR = "Strong"
 
     "target2_r"               : 2.0,   # Target 2 = entry + 2R
     "signal_lookback_days"    : 2,     # latest session + the one before
@@ -326,8 +328,9 @@ def analyze_daily_pullback_jma_reclaim(sym, df_daily):
     score += min(10, max(0, sig["sma50_slope"]) * 1.5)               # strength of the trend
     score = round(min(100, max(0, score)))
 
-    flags = [f"pullback {sig['pullback_days']}d to {sig['low_vs_sma50']:+.1f}% vs SMA50",
-             f"reclaim body {sig['body_atr']:.1f} ATR", f"vol {vol_x:.1f}x"]
+    strength = "Strong" if sig["body_atr"] >= CFG["strong_body_atr"] else "Moderate"
+    flags = [f"{strength} reclaim ({sig['body_atr']:.1f} ATR)",
+             f"pullback {sig['pullback_days']}d to {sig['low_vs_sma50']:+.1f}% vs SMA50", f"vol {vol_x:.1f}x"]
     if hit_t1: flags.append("Swing high already retested")
     if hit_sl: flags.append("Stop already hit")
 
@@ -341,6 +344,7 @@ def analyze_daily_pullback_jma_reclaim(sym, df_daily):
         "Pullback_%": round((sig["swing_high"] - stop) / sig["swing_high"] * 100, 1),
         "Pullback_Days": sig["pullback_days"], "JMA_Down_Days": sig["jma_down_days"],
         "Low_vs_SMA50_%": round(sig["low_vs_sma50"], 1), "Depth_ATR": round(sig["depth_atr"], 1),
+        "Reclaim_Strength": strength,
         "Reclaim_Body_ATR": round(sig["body_atr"], 2), "Reclaim_Volume_x": round(vol_x, 2),
         "JMA": round(sig["jma"], 2), "EMA21": round(sig["ema21"], 2), "SMA50": round(sig["sma50"], 2),
         "SMA50_Slope_%": round(sig["sma50_slope"], 1),
@@ -501,7 +505,7 @@ for sym in tqdm(list(daily_map.keys()), desc="Checking pattern", unit="stk"):
         r["Ticker"] = sym
         results.append(r)
         print(f"  ✅ {sym:<6} ${r['Price']:.2f}  Score {r['Score']}  pullback {r['Pullback_%']}% "
-              f"({r['Low_vs_SMA50_%']:+}% vs SMA50)  body {r['Reclaim_Body_ATR']} ATR  {r['Signal_Date']}")
+              f"({r['Low_vs_SMA50_%']:+}% vs SMA50)  {r['Reclaim_Strength']} body {r['Reclaim_Body_ATR']} ATR  {r['Signal_Date']}")
     except Exception: pass
 
 fc = FUNNEL_COUNTS
@@ -523,7 +527,7 @@ out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%",
         "Target_1_Swing_High","T1_R","T1_%","Target_2_2R",
         "Swing_High_Date","Pullback_Low_Date","Pullback_%","Pullback_Days","JMA_Down_Days",
-        "Low_vs_SMA50_%","Depth_ATR","Reclaim_Body_ATR","Reclaim_Volume_x",
+        "Low_vs_SMA50_%","Depth_ATR","Reclaim_Strength","Reclaim_Body_ATR","Reclaim_Volume_x",
         "JMA","EMA21","SMA50","SMA50_Slope_%","Signal_Date","Days_Since_Signal",
         "Recent_Signal_Count","Flags"]
 df_out = pd.DataFrame([{k: v for k, v in r.items() if not k.startswith("_")}
@@ -550,7 +554,7 @@ if results:
 
 # ── Email with CSV attached ───────────────────────────────────
 EMAIL_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%",
-              "Target_1_Swing_High","T1_R","Pullback_%","Low_vs_SMA50_%","Reclaim_Body_ATR",
+              "Target_1_Swing_High","T1_R","Pullback_%","Low_vs_SMA50_%","Reclaim_Strength","Reclaim_Body_ATR",
               "Reclaim_Volume_x","Signal_Date"]
 
 def _fmt_cell(col, v):
@@ -593,6 +597,7 @@ def _send_email(rl, csv_path):
                 if c == "Stop_Loss": sty = "color:#ef4444"
                 if c == "Entry_Price": sty = "color:#16a34a"
                 if c == "Target_1_Swing_High": sty = "color:#2563eb;font-weight:600"
+                if c == "Reclaim_Strength": sty = "font-weight:700;color:" + ("#16a34a" if r.get(c) == "Strong" else "#b45309")
                 tds += f'<td style="padding:6px 10px;font-size:12px;{sty}">{_fmt_cell(c, r.get(c))}</td>'
             rows += f'<tr style="background:{bg}">{tds}</tr>'
         if not rows:
@@ -606,7 +611,7 @@ def _send_email(rl, csv_path):
 <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:20px 26px">
 <h1 style="margin:0;color:#60a5fa;font-size:19px">📊 Daily Pullback to the 50 → JMA Reclaim</h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">{datetime.today().strftime('%Y-%m-%d %H:%M UTC')} · {cnt} match{'es' if cnt != 1 else ''}
- — uptrend, a {CFG['pullback_min_days']}-{CFG['pullback_max_days']} day pullback with the JMA rolling over into the EMA{CFG['ema_period']}/SMA{CFG['sma_fast']} zone, then a strong green candle back above the JMA (the RVTY 14 Sep pattern)</p>
+ — uptrend, a {CFG['pullback_min_days']}-{CFG['pullback_max_days']} day pullback with the JMA rolling over into the EMA{CFG['ema_period']}/SMA{CFG['sma_fast']} zone, then a green candle back above the JMA — Strong (body &ge; {CFG['strong_body_atr']} ATR) or Moderate (&ge; {CFG['min_body_atr']} ATR) (the RVTY 14 Sep pattern)</p>
 </td></tr>
 <tr><td style="padding:12px 26px;background:#0b1220"><p style="margin:0;color:#cbd5e1;font-size:12px">
 🔍 FUNNEL: {fc['tickers_checked']} checked → {fc['passed_step1_uptrend']} uptrend
@@ -631,7 +636,7 @@ Target 1 = the swing high before the pullback (R = reward ÷ risk), Target 2 = e
         for r in rl[:50]:
             plain.append(f"{r['Ticker']:<6} ${r['Price']:.2f}  Score:{r['Score']}  Entry:${r['Entry_Price']:.2f}  "
                          f"SL:${r['Stop_Loss']:.2f}  T1(swing high):${r['Target_1_Swing_High']:.2f} {r['T1_R']}R  "
-                         f"pullback {r['Pullback_%']}% ({r['Low_vs_SMA50_%']:+}% vs SMA50)  {r['Signal_Date']}")
+                         f"pullback {r['Pullback_%']}% ({r['Low_vs_SMA50_%']:+}% vs SMA50)  {r['Reclaim_Strength']}  {r['Signal_Date']}")
         if rl:
             plain += ["", "Tickers: " + ", ".join(r["Ticker"] for r in rl)]
         else:
@@ -722,10 +727,11 @@ print(f"""
      JMA({CFG['jma_period']},{CFG['jma_phase']},{CFG['jma_power']}) falling on >= {CFG['jma_min_down_days']} days and not rising the day before
   3) Pullback low within {CFG['zone_tolerance_pct']}% of the higher of EMA{CFG['ema_period']} / SMA{CFG['sma_fast']} (or below)
   4) Pullback >= {CFG['min_depth_atr']} ATR{CFG['atr_period']} deep; no close > {CFG['max_close_below_sma50_pct']:.0f}% under SMA{CFG['sma_fast']}, no low under SMA{CFG['sma_mid']}
-  5) Signal day: green, body >= {CFG['min_body_atr']} ATR, closes back above the JMA and EMA{CFG['ema_period']}
+  5) Signal day: green, body >= {CFG['min_body_atr']} ATR (Strong >= {CFG['strong_body_atr']} ATR, else Moderate),
+     closes back above the JMA and EMA{CFG['ema_period']}
   OUTPUT: Entry = signal day close, Stop = pullback low,
           Target 1 = swing high, Target 2 = entry + {CFG['target2_r']:.0f}R
-  ⚙️  If 0 results, check the FUNNEL: relax min_body_atr 0.6 → 0.4,
-     zone_tolerance_pct 0.5 → 1.5, or signal_lookback_days 2 → 5
+  ⚙️  If 0 results, check the FUNNEL: relax zone_tolerance_pct 0.5 → 1.5,
+     min_depth_atr 1.5 → 1.0, or signal_lookback_days 2 → 5
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
