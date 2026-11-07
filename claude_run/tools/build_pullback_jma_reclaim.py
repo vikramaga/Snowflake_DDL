@@ -7,7 +7,7 @@
 import hashlib, os, shutil, subprocess, sys
 
 OUT = "daily_pullback_jma_reclaim_v1.py"
-WANT = "9bb09a427f3c5142d6f96e442574685cb82f94f05f84eff4854aa3048a575b30"
+WANT = "e7f10c838ff2dd3a082e9e253b6e976da1ab0c5d983f4204d5a103a358f492b2"
 P = "claude_run/tools/parts_pbr/"
 t = open("daily_doji_hammer_jma_reclaim_v1.py").read()
 a, b = t.index("import subprocess, sys, os"), t.index("# ── CONFIG")
