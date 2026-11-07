@@ -1,0 +1,37 @@
+[master 4eb566f] Best 10 digest also replaces the TradingView watchlist
+ 1 file changed, 8 insertions(+)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   071186d..4eb566f  HEAD -> master
+Traceback (most recent call last):
+  File "/home/runner/work/Snowflake_DDL/Snowflake_DDL/claude_run/tools/best10_digest.py", line 296, in <module>
+    sys.exit(main(sys.argv[1:]))
+             ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Snowflake_DDL/Snowflake_DDL/claude_run/tools/best10_digest.py", line 272, in main
+    a, ran = load(run)
+             ^^^^^^^^^
+  File "/home/runner/work/Snowflake_DDL/Snowflake_DDL/claude_run/tools/best10_digest.py", line 91, in load
+    x.insert(0, "Scanner", s)
+  File "/opt/hostedtoolcache/Python/3.11.18/x64/lib/python3.11/site-packages/pandas/core/frame.py", line 6247, in insert
+    raise ValueError(f"cannot insert {column}, already exists")
+ValueError: cannot insert Scanner, already exists
+OK  claude_run/tools/best10_digest.py
+OK  claude_run/tools/tv_watchlist_sync.py
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add claude_run/tools/best10_digest.py
++ git diff --cached --quiet
++ git commit -m Best 10 digest also replaces the TradingView watchlist
+
+After the Best 10 email, best10_digest.py runs tv_watchlist_sync.py when the
+TV_SESSIONID secret is available: the watchlist "Best 10 - all scanners" is
+replaced with the day's picks (sections: found by 2+ scanners, top 20, then
+each scanner). A failed sync emails a short alert and affects nothing else.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
++ git pull --rebase origin master
++ git push origin HEAD:master
+✅ pushed
