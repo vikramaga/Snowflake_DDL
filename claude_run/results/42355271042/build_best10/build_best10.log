@@ -1,0 +1,97 @@
+patched          daily_price_jma_ema21_sma50_volume_v1.py
+patched          daily_3candle_jma_reclaim_v1.py
+patched          daily_liquidity_sweep_breakout_v1.py
+patched          daily_rsi_bullish_divergence_v1.py
+patched          daily_rsi_high_breakout_v1.py
+patched          daily_3candle_higherlow_above_sma50_v1.py
+patched          weekly_rsi_bullish_divergence_v1.py
+patched          weekly_reversal_2x_above_sma50_v1.py
+patched          monthly_reversal_2x_above_sma50_v1.py
+patched          monthly_rsi_cross_above_avg_v1.py
+patched          monthly_3candle_reclaim_jma_ema8_v1.py
+patched          india_weekly_reversal_2x_above_sma50_v1.py
+patched          daily_ma_support_ema21_sma50_v1.py
+patched          daily_jma_cross_ema8_v1.py
+patched          daily_sweep_sma50_strategy_v1.py
+patched          daily_rsi_avg_bounce_v1.py
+patched          daily_rsi2_snapback_v1.py
+patched          daily_ma_sweep_4x_v1.py
+patched          daily_jma_reclaim_rsi_v1.py
+patched          daily_penny_ma_support_ema21_sma50_v1.py
+patched          daily_penny_liquidity_sweep_breakout_v1.py
+patched          daily_penny_jma_reclaim_rsi_v1.py
+patched          monthly_rsi_weekly_green_reversal_v1.py
+patched          weekly_doji_jma_reclaim_v1.py
+patched          rsi_avg_turn_up_v1.py
+patched          daily_doji_hammer_jma_reclaim_v1.py
+patched          daily_sma50_150_squeeze_turn_v1.py
+patched          daily_rsi2_rs_1to1_v1.py
+patched claude_run/tools/rsi_amount_filter.py
+patched monday_red_candle_breakout_v1.py
+✅ done
+[master 9cfeedd] Add a Best 10 shortlist to every scheduled scanner's email
+ 30 files changed, 114 insertions(+), 2 deletions(-)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   04bcaf0..9cfeedd  HEAD -> master
+OK  daily_price_jma_ema21_sma50_volume_v1.py
+OK  daily_3candle_jma_reclaim_v1.py
+OK  daily_liquidity_sweep_breakout_v1.py
+OK  daily_rsi_bullish_divergence_v1.py
+OK  daily_rsi_high_breakout_v1.py
+OK  daily_3candle_higherlow_above_sma50_v1.py
+OK  weekly_rsi_bullish_divergence_v1.py
+OK  weekly_reversal_2x_above_sma50_v1.py
+OK  monthly_reversal_2x_above_sma50_v1.py
+OK  monthly_rsi_cross_above_avg_v1.py
+OK  monthly_3candle_reclaim_jma_ema8_v1.py
+OK  india_weekly_reversal_2x_above_sma50_v1.py
+OK  daily_ma_support_ema21_sma50_v1.py
+OK  daily_jma_cross_ema8_v1.py
+OK  daily_sweep_sma50_strategy_v1.py
+OK  daily_rsi_avg_bounce_v1.py
+OK  daily_rsi2_snapback_v1.py
+OK  daily_ma_sweep_4x_v1.py
+OK  daily_jma_reclaim_rsi_v1.py
+OK  daily_penny_ma_support_ema21_sma50_v1.py
+OK  daily_penny_liquidity_sweep_breakout_v1.py
+OK  daily_penny_jma_reclaim_rsi_v1.py
+OK  monthly_rsi_weekly_green_reversal_v1.py
+OK  weekly_doji_jma_reclaim_v1.py
+OK  rsi_avg_turn_up_v1.py
+OK  daily_doji_hammer_jma_reclaim_v1.py
+OK  daily_sma50_150_squeeze_turn_v1.py
+OK  daily_rsi2_rs_1to1_v1.py
+OK  claude_run/tools/rsi_amount_filter.py
+OK  monday_red_candle_breakout_v1.py
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add daily_price_jma_ema21_sma50_volume_v1.py daily_3candle_jma_reclaim_v1.py daily_liquidity_sweep_breakout_v1.py daily_rsi_bullish_divergence_v1.py daily_rsi_high_breakout_v1.py daily_3candle_higherlow_above_sma50_v1.py weekly_rsi_bullish_divergence_v1.py weekly_reversal_2x_above_sma50_v1.py monthly_reversal_2x_above_sma50_v1.py monthly_rsi_cross_above_avg_v1.py monthly_3candle_reclaim_jma_ema8_v1.py india_weekly_reversal_2x_above_sma50_v1.py daily_ma_support_ema21_sma50_v1.py daily_jma_cross_ema8_v1.py daily_sweep_sma50_strategy_v1.py daily_rsi_avg_bounce_v1.py daily_rsi2_snapback_v1.py daily_ma_sweep_4x_v1.py daily_jma_reclaim_rsi_v1.py daily_penny_ma_support_ema21_sma50_v1.py daily_penny_liquidity_sweep_breakout_v1.py daily_penny_jma_reclaim_rsi_v1.py monthly_rsi_weekly_green_reversal_v1.py weekly_doji_jma_reclaim_v1.py rsi_avg_turn_up_v1.py daily_doji_hammer_jma_reclaim_v1.py daily_sma50_150_squeeze_turn_v1.py daily_rsi2_rs_1to1_v1.py claude_run/tools/rsi_amount_filter.py monday_red_candle_breakout_v1.py
++ git commit -m Add a Best 10 shortlist to every scheduled scanner's email
+
+Each of the 28 scheduled scanners now calls best_picks.rank_best(df_out) after
+position sizing and best_picks.attach_to_email(msg) before sending. The email
+opens with a Best 10 table (full list unchanged below), the subject names the
+top 3, and best10_<scanner>_<ts>.csv is attached and saved with the results.
+
+Best score 0-100 = Trend 35 (above SMA200, SMA50 rising, SMA200 rising /
+turning up) + Catalyst 30 (contract/order and positive headlines in 30 days,
+net analyst upgrades in 60 days, last EPS beat; negative headlines subtract)
++ Value 35 (analyst target upside, forward P/E or PEG, Buy rating, entry not
+extended above SMA50/SMA200). Data from Yahoo via yfinance; every step is
+guarded so a data problem cannot stop a scanner or its email.
+
+The RSI digest and the Monday breakout scanner now ignore best10_*.csv.
+
+Applied by claude_run/tools/patch_best10.py (checked edits, idempotent).
+Verified: all 28 patched scanners run end to end on synthetic data with a
+mocked SMTP server, each sends one email with the Best 10 block in the HTML and
+text parts (CSV attached when there are matches); scoring re-checked by hand
+(contract/positive news, upgrades, EPS beat, stale news ignored, negative news,
+trend points); empty results and a Yahoo outage handled.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+✅ pushed
