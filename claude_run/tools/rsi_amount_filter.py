@@ -49,7 +49,7 @@ def load_results(run):
     frames, files = [], []
     for c in sorted(glob.glob(f"{ROOT}/{run}/*/*.csv")):
         b = os.path.basename(c)
-        if b.startswith("tv_"):
+        if b.startswith(("tv_", "best10_")):
             continue
         df = pd.read_csv(c)
         if not {"Ticker", "Quantity", "Total_Amount"} <= set(df.columns):

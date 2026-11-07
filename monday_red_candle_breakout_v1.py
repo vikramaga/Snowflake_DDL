@@ -71,7 +71,7 @@ def latest_csv(scanner):
     if not folders:
         return None, None
     d = max(folders, key=lambda p: int(os.path.basename(os.path.dirname(p))))
-    csvs = [f for f in glob.glob(os.path.join(d, "*.csv")) if not os.path.basename(f).startswith("tv_")]
+    csvs = [f for f in glob.glob(os.path.join(d, "*.csv")) if not os.path.basename(f).startswith(("tv_", "best10_"))]
     return (max(csvs) if csvs else None), d
 
 

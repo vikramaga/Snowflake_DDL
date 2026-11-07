@@ -689,6 +689,8 @@ fpath = os.path.join(out_dir, f"daily_jma_cross_ema8_{ts}.csv")
 try:
     from position_sizing import add_position_size
     df_out = add_position_size(df_out)
+    try: __import__("best_picks").rank_best(df_out)
+    except Exception as _bp_err: print(f"  ⚠️  Best 10 skipped: {_bp_err}")
 except Exception as _ps_err:
     print(f"  ⚠️  Position sizing skipped: {_ps_err}")
 df_out.to_csv(fpath, index=False)
@@ -893,6 +895,8 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] Connecting to smtp.gmail.com:465 ...")
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
             srv.login(gu, gp.replace(" ", ""))
+            try: __import__("best_picks").attach_to_email(msg)
+            except Exception as _bp_err: print(f"  ⚠️  Best 10 not added: {_bp_err}")
             srv.sendmail(gu, eto, msg.as_string())
         print(f"[Email] ✅  Sent successfully to: {', '.join(eto)}")
         print(f"[Email]    Subject: {subj}")

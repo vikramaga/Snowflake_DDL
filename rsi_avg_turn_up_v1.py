@@ -473,6 +473,8 @@ fpath = os.path.join(out_dir, f"rsi_avg_turn_up_{ts}.csv")
 try:
     from position_sizing import add_position_size
     df_out = add_position_size(df_out)
+    try: __import__("best_picks").rank_best(df_out)
+    except Exception as _bp_err: print(f"  ⚠️  Best 10 skipped: {_bp_err}")
 except Exception as _ps_err:
     print(f"  ⚠️  Position sizing skipped: {_ps_err}")
 df_out.to_csv(fpath, index=False)
@@ -594,6 +596,8 @@ of that timeframe (defaults). Bar_Complete = No means the week is still in progr
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
             srv.login(gu, gp.replace(" ", ""))
+            try: __import__("best_picks").attach_to_email(msg)
+            except Exception as _bp_err: print(f"  ⚠️  Best 10 not added: {_bp_err}")
             srv.sendmail(gu, eto, msg.as_string())
         print(f"[Email] ✅  Sent to {', '.join(eto)} — {subj}")
     except Exception as e:
