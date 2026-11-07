@@ -1,0 +1,235 @@
+# ── CONFIG ────────────────────────────────────────────────────
+CFG = {
+    # history_days vs bars needed: 560 calendar days -> ~400 business days
+    # (checked with pd.bdate_range); the pattern needs 240 (SMA200 + 20 + 20).
+    "history_days"            : 560,
+    "min_bars"                : 240,
+
+    # ── Moving averages ─────────────────────────────────────────
+    "jma_period"              : 13,
+    "jma_phase"               : 40,
+    "jma_power"               : 2,
+    "ema_period"              : 21,
+    "sma_fast"                : 50,
+    "sma_mid"                 : 150,
+    "sma_slow"                : 200,
+    "slope_lookback"          : 20,    # SMA50 / SMA200 higher than 20 sessions ago
+    "atr_period"              : 14,    # Wilder ATR
+
+    # ── Pullback ────────────────────────────────────────────────
+    "swing_min_ago"           : 3,     # swing high 3..15 sessions before the signal
+    "swing_max_ago"           : 15,
+    "pullback_min_days"       : 2,
+    "pullback_max_days"       : 10,
+    "jma_min_down_days"       : 2,     # JMA falls on at least 2 pullback days
+    "zone_tolerance_pct"      : 0.5,   # low within 0.5% of max(EMA21, SMA50)
+    "min_depth_atr"           : 1.5,   # pullback at least 1.5 ATR deep
+    "max_close_below_sma50_pct": 3.0,  # no pullback close > 3% under SMA50
+    # ── Reclaim candle ──────────────────────────────────────────
+    "min_body_atr"            : 0.6,
+
+    "target2_r"               : 2.0,   # Target 2 = entry + 2R
+    "signal_lookback_days"    : 2,     # latest session + the one before
+
+    # ── Filters ─────────────────────────────────────────────────
+    "min_avg_volume"          : 200_000,
+    "min_price"               : 5.0,
+
+    "batch_size"              : 50,
+    "batch_sleep"             : 1.5,
+}
+
+# ── Indicators ───────────────────────────────────────────────────────────────
+def calc_jma(series, period=13, phase=40, power=2):
+    """
+    Jurik Moving Average — same formula as TradingView's "Jurik Moving
+    Average" indicator, so values match the chart:
+        beta       = 0.45*(L-1) / (0.45*(L-1) + 2)
+        alpha      = beta ** power
+        phaseRatio = phase/100 + 1.5   (0.5 if phase < -100, 2.5 if > 100)
+        e0  = (1-alpha)*src + alpha*e0[1]
+        e1  = (src - e0)*(1-beta) + beta*e1[1]
+        e2  = (e0 + phaseRatio*e1 - jma[1])*(1-alpha)^2 + alpha^2*e2[1]
+        jma = e2 + jma[1]
+    period = Length, phase = Phase, power = Power (TradingView inputs).
+    """
+    phase_ratio = 0.5 if phase < -100 else (2.5 if phase > 100 else phase / 100.0 + 1.5)
+    beta  = 0.45 * (period - 1) / (0.45 * (period - 1) + 2)
+    alpha = beta ** power
+    vals  = np.asarray(series.values, dtype=float)
+    out   = np.full(len(vals), np.nan)
+    e0 = e1 = e2 = jma = 0.0
+    for i, v in enumerate(vals):
+        if np.isnan(v):
+            continue
+        e0  = (1 - alpha) * v + alpha * e0
+        e1  = (v - e0) * (1 - beta) + beta * e1
+        e2  = (e0 + phase_ratio * e1 - jma) * (1 - alpha) ** 2 + alpha ** 2 * e2
+        jma = e2 + jma
+        out[i] = jma
+    return pd.Series(out, index=series.index)
+
+def calc_atr(df, period):
+    """Wilder ATR (RMA of the true range)."""
+    h, l, c = df["High"], df["Low"], df["Close"]
+    pc = c.shift(1)
+    tr = pd.concat([h - l, (h - pc).abs(), (l - pc).abs()], axis=1).max(axis=1)
+    return tr.ewm(alpha=1 / period, adjust=False).mean()
+
+def calc_indicators(df, cfg):
+    c = df["Close"]
+    return {
+        "jma":  calc_jma(c, cfg["jma_period"], cfg["jma_phase"], cfg["jma_power"]).values,
+        "ema":  c.ewm(span=cfg["ema_period"], adjust=False).mean().values,
+        "s50":  c.rolling(cfg["sma_fast"]).mean().values,
+        "s150": c.rolling(cfg["sma_mid"]).mean().values,
+        "s200": c.rolling(cfg["sma_slow"]).mean().values,
+        "atr":  calc_atr(df, cfg["atr_period"]).values,
+    }
+
+def check_pattern_at(df, ind, i, cfg):
+    """
+    SINGLE SOURCE OF TRUTH. Checks signal day i. Computes EVERY step (no
+    short-circuit) so the funnel shows where tickers drop out.
+    Returns (passed, details); details is {} only if data is too short.
+    """
+    lb = cfg["slope_lookback"]
+    if i < max(cfg["sma_slow"] + lb, cfg["swing_max_ago"] + 2) or i >= len(df):
+        return False, {}
+    o, h, l, c = (df[k].values for k in ("Open", "High", "Low", "Close"))
+    j, e21, s50, s150, s200, atr = (ind[k] for k in ("jma", "ema", "s50", "s150", "s200", "atr"))
+    need = (j[i], j[i - 1], j[i - 2], e21[i], s50[i], s150[i], s200[i], s50[i - lb], s200[i - lb], atr[i])
+    if not all(np.isfinite(x) for x in need) or atr[i] <= 0:
+        return False, {}
+
+    # Step 1 — uptrend
+    step1 = bool(s50[i] > s150[i] and s50[i] > s200[i] and s50[i] > s50[i - lb]
+                 and s200[i] > s200[i - lb] and c[i] > s150[i])
+
+    # Step 2 — swing high, then a pullback with the JMA rolling over
+    hi = max(range(i - cfg["swing_max_ago"], i - cfg["swing_min_ago"] + 1), key=lambda k: h[k])
+    pb = list(range(hi + 1, i))
+    falls = sum(1 for k in pb if j[k] < j[k - 1])
+    step2 = bool(cfg["pullback_min_days"] <= len(pb) <= cfg["pullback_max_days"]
+                 and falls >= cfg["jma_min_down_days"] and j[i - 1] <= j[i - 2])
+
+    # Step 3 — the pullback reached the EMA21 / SMA50 zone
+    lo = min(pb, key=lambda k: l[k]) if pb else i - 1
+    zone = max(e21[lo], s50[lo])
+    step3 = bool(pb and l[lo] <= zone * (1 + cfg["zone_tolerance_pct"] / 100))
+
+    # Step 4 — deep enough, and held near the SMA50 / above the SMA150
+    depth_atr = (h[hi] - l[lo]) / atr[i]
+    held = all(c[k] >= s50[k] * (1 - cfg["max_close_below_sma50_pct"] / 100) and l[k] >= s150[k] for k in pb)
+    step4 = bool(pb and depth_atr >= cfg["min_depth_atr"] and held)
+
+    # Step 5 — strong green candle back above the JMA and EMA21
+    body_atr = (c[i] - o[i]) / atr[i]
+    step5 = bool(c[i] > o[i] and body_atr >= cfg["min_body_atr"] and c[i] > j[i]
+                 and c[i] > e21[i] and c[i - 1] <= j[i - 1])
+
+    passed = step1 and step2 and step3 and step4 and step5
+    return passed, {
+        "date": df.index[i], "i": i, "swing_date": df.index[hi], "swing_high": float(h[hi]),
+        "low_date": df.index[lo], "pullback_low": float(l[lo]), "pullback_days": len(pb),
+        "jma_down_days": falls, "depth_atr": float(depth_atr), "body_atr": float(body_atr),
+        "low_vs_sma50": float((l[lo] / s50[lo] - 1) * 100),
+        "open": float(o[i]), "close": float(c[i]), "jma": float(j[i]), "ema21": float(e21[i]),
+        "sma50": float(s50[i]), "sma150": float(s150[i]), "sma200": float(s200[i]),
+        "sma50_slope": float((s50[i] / s50[i - lb] - 1) * 100),
+        "step1": step1, "step2": step2, "step3": step3, "step4": step4, "step5": step5,
+    }
+
+# ── Diagnostic funnel (per ticker: did ANY of the lookback days pass
+#    steps 1..k cumulatively) ──────────────────────────────────────────
+FUNNEL_COUNTS = {
+    "tickers_checked": 0,
+    "passed_step1_uptrend": 0,
+    "passed_step2_jma_pullback": 0,
+    "passed_step3_reached_21_50_zone": 0,
+    "passed_step4_held": 0,
+    "passed_step5_reclaim_candle": 0,
+}
+_FUNNEL_KEYS = list(FUNNEL_COUNTS)[1:]
+
+def find_signals(df, ind, cfg):
+    hits, best = [], [False] * 5
+    n = len(df)
+    any_checked = False
+    for i in range(max(0, n - cfg["signal_lookback_days"]), n):
+        ok, d = check_pattern_at(df, ind, i, cfg)
+        if not d: continue
+        any_checked = True
+        cum = True
+        for k in range(5):
+            cum = cum and d[f"step{k+1}"]
+            best[k] |= cum
+        if ok: hits.append(d)
+    if any_checked:
+        FUNNEL_COUNTS["tickers_checked"] += 1
+        for k, key in enumerate(_FUNNEL_KEYS):
+            FUNNEL_COUNTS[key] += best[k]
+    return hits
+
+def analyze_daily_pullback_jma_reclaim(sym, df_daily):
+    if df_daily is None: return None
+    price   = float(df_daily["Close"].iloc[-1])
+    avg_vol = float(df_daily["Volume"].tail(20).mean())
+    if price   < CFG["min_price"]:      return None
+    if avg_vol < CFG["min_avg_volume"]: return None
+    if len(df_daily) < CFG["min_bars"]: return None
+
+    ind = calc_indicators(df_daily, CFG)
+    hits = find_signals(df_daily, ind, CFG)
+    if not hits: return None
+    sig = hits[-1]   # most recent hit wins
+
+    entry = sig["close"]
+    stop = sig["pullback_low"]
+    if entry <= stop: return None
+    risk = entry - stop
+    risk_pct = risk / entry * 100
+    t1 = sig["swing_high"]
+    t2 = entry + CFG["target2_r"] * risk
+    r1 = (t1 - entry) / risk
+    i = sig["i"]
+    vol = df_daily["Volume"].values
+    vol_x = float(vol[i] / np.mean(vol[i - 20:i])) if np.mean(vol[i - 20:i]) > 0 else 0.0
+    days_ago = len(df_daily) - 1 - i
+    after = df_daily.iloc[i + 1:]
+    hit_t1 = bool(len(after) and after["High"].max() >= t1)
+    hit_sl = bool(len(after) and after["Low"].min() <= stop)
+
+    score = 20
+    score += min(20, sig["body_atr"] * 10)                          # strong reclaim candle
+    score += max(0, 15 - abs(sig["low_vs_sma50"]) * 3)               # low close to the SMA50
+    score += max(0, 15 - risk_pct * 1.5)                             # tight stop
+    score += min(10, max(0, r1) * 5)                                 # room to the swing high
+    score += min(10, max(0, vol_x - 1) * 10)                         # volume on the reclaim
+    score += min(10, max(0, sig["sma50_slope"]) * 1.5)               # strength of the trend
+    score = round(min(100, max(0, score)))
+
+    flags = [f"pullback {sig['pullback_days']}d to {sig['low_vs_sma50']:+.1f}% vs SMA50",
+             f"reclaim body {sig['body_atr']:.1f} ATR", f"vol {vol_x:.1f}x"]
+    if hit_t1: flags.append("Swing high already retested")
+    if hit_sl: flags.append("Stop already hit")
+
+    return {
+        "Score": score, "Price": round(price, 2),
+        "Entry_Price": round(entry, 2), "Stop_Loss": round(stop, 2), "Risk_%": round(risk_pct, 1),
+        "Target_1_Swing_High": round(t1, 2), "T1_R": round(r1, 2), "T1_%": round((t1 - entry) / entry * 100, 1),
+        "Target_2_2R": round(t2, 2),
+        "Swing_High_Date": sig["swing_date"].strftime("%Y-%m-%d"),
+        "Pullback_Low_Date": sig["low_date"].strftime("%Y-%m-%d"),
+        "Pullback_%": round((sig["swing_high"] - stop) / sig["swing_high"] * 100, 1),
+        "Pullback_Days": sig["pullback_days"], "JMA_Down_Days": sig["jma_down_days"],
+        "Low_vs_SMA50_%": round(sig["low_vs_sma50"], 1), "Depth_ATR": round(sig["depth_atr"], 1),
+        "Reclaim_Body_ATR": round(sig["body_atr"], 2), "Reclaim_Volume_x": round(vol_x, 2),
+        "JMA": round(sig["jma"], 2), "EMA21": round(sig["ema21"], 2), "SMA50": round(sig["sma50"], 2),
+        "SMA50_Slope_%": round(sig["sma50_slope"], 1),
+        "Signal_Date": sig["date"].strftime("%Y-%m-%d"), "Days_Since_Signal": int(days_ago),
+        "Recent_Signal_Count": len(hits),
+        "Flags": " | ".join(flags),
+        "_df": df_daily, "_ind": ind,
+    }
+
