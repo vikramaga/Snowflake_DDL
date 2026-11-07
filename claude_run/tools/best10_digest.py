@@ -61,11 +61,16 @@ def schedule():
         return list(NAMES)
 
 
+def scanner_files(pattern):
+    """best10_<scanner>_*.csv files, leaving out the combined best10_all_scanners_*.csv."""
+    return sorted(f for f in glob.glob(pattern) if not os.path.basename(f).startswith("best10_all_scanners"))
+
+
 def pick_run(argv):
     want = next((a for a in argv if a.isdigit()), "") or os.environ.get("RESULTS_RUN", "").strip()
-    if want and glob.glob(f"{ROOT}/{want}/*/best10_*.csv"):
+    if want and scanner_files(f"{ROOT}/{want}/*/best10_*.csv"):
         return want
-    runs = [d for d in os.listdir(ROOT) if d.isdigit() and glob.glob(f"{ROOT}/{d}/*/best10_*.csv")] if os.path.isdir(ROOT) else []
+    runs = [d for d in os.listdir(ROOT) if d.isdigit() and scanner_files(f"{ROOT}/{d}/*/best10_*.csv")] if os.path.isdir(ROOT) else []
     return max(runs, key=int) if runs else None
 
 
@@ -74,14 +79,14 @@ def load(run):
     for d in sorted(glob.glob(f"{ROOT}/{run}/*/")):
         s = os.path.basename(d.rstrip("/"))
         ran.append(s)
-        fs = sorted(glob.glob(f"{d}best10_*.csv"))
+        fs = scanner_files(f"{d}best10_*.csv")
         if not fs:
             continue
         try:
             x = pd.read_csv(fs[-1])
         except Exception:
             continue
-        if not len(x):
+        if not len(x) or "Scanner" in x.columns:
             continue
         full = [c for c in glob.glob(f"{d}*.csv") if not os.path.basename(c).startswith(("best10_", "tv_"))]
         try:
