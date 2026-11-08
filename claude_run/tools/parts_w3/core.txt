@@ -1,0 +1,153 @@
+# -- CONFIG
+CFG = {
+    # history_days vs bars: 560 calendar days -> ~386 business days (pd.bdate_range);
+    # the pattern needs 4 weeks + a 10-week ATR, the context SMA200 needs 200 days.
+    "history_days"            : 560,
+    "min_bars"                : 210,
+
+    "atr_weeks"               : 10,
+    "doji_body_pct"           : 35.0,  # body <= 35% of the range ...
+    "doji_body_atr"           : 0.5,   # ... and <= 0.5 weekly ATR
+    "hammer_wick_x_body"      : 2.0,   # lower wick >= 2x body
+    "hammer_upper_wick_pct"   : 25.0,  # upper wick <= 25% of the range
+    "small_range_atr"         : 1.0,   # small = range <= 1 weekly ATR
+    "w1_low_vs_w2_body"       : 0.5,   # W-1 low above W-2 body's midpoint
+
+    "target1_r"               : 2.0,
+    "target2_r"               : 3.0,
+
+    "min_avg_volume"          : 200_000,
+    "min_price"               : 5.0,
+
+    "batch_size"              : 50,
+    "batch_sleep"             : 1.5,
+}
+
+# -- Indicators / candle shapes
+def weekly_bars(df):
+    """Mon-Fri weeks labelled by Friday; the last row is the current (maybe partial) week."""
+    agg = {"Open": "first", "High": "max", "Low": "min", "Close": "last", "Volume": "sum"}
+    w = df.resample("W-FRI").agg(agg).dropna(subset=["Open", "Close"])
+    pc = w["Close"].shift(1)
+    tr = pd.concat([w["High"] - w["Low"], (w["High"] - pc).abs(), (w["Low"] - pc).abs()], axis=1).max(axis=1)
+    w["ATR"] = tr.rolling(CFG["atr_weeks"]).mean()
+    return w
+
+def shape(o, h, l, c, atr, cfg):
+    rng = h - l
+    body = abs(c - o)
+    lower = min(o, c) - l
+    upper = h - max(o, c)
+    doji = rng > 0 and body <= rng * cfg["doji_body_pct"] / 100 and body <= cfg["doji_body_atr"] * atr
+    hammer = rng > 0 and lower >= cfg["hammer_wick_x_body"] * max(body, rng * 0.02) \
+        and upper <= rng * cfg["hammer_upper_wick_pct"] / 100
+    small = rng <= cfg["small_range_atr"] * atr
+    return {"doji": bool(doji), "hammer": bool(hammer), "small": bool(small),
+            "range": rng, "body": body, "lower": lower, "upper": upper}
+
+def check_pattern_at(df, wk, cfg):
+    """
+    SINGLE SOURCE OF TRUTH. Checks the latest week of `wk` (the current week)
+    against the three weeks before it, and the daily bars of the current week.
+    Computes EVERY step (no short-circuit) so the funnel shows where tickers
+    drop out. Returns (passed, details); details is {} if data is too short.
+    """
+    if len(wk) < cfg["atr_weeks"] + 5:
+        return False, {}
+    w0, w1, w2, w3 = (wk.iloc[-k] for k in (1, 2, 3, 4))
+    if not all(np.isfinite(x) for x in (w1.ATR, w2.ATR, w3.ATR)):
+        return False, {}
+    s3 = shape(w3.Open, w3.High, w3.Low, w3.Close, w3.ATR, cfg)
+    s1 = shape(w1.Open, w1.High, w1.Low, w1.Close, w1.ATR, cfg)
+
+    step1 = bool(w3.Close < w3.Open and (s3["doji"] or s3["hammer"]))
+    step2 = bool(w2.Close > w2.Open and w2.Low > w3.Low and w2.Volume > w3.Volume)
+    mid2 = w2.Open + (w2.Close - w2.Open) * cfg["w1_low_vs_w2_body"]
+    step3 = bool((s1["doji"] or (s1["hammer"] and s1["small"])) and w1.Low > mid2)
+
+    week_start = wk.index[-2] + pd.Timedelta(days=1)          # day after W-1's Friday
+    days = df[df.index >= week_start]
+    above = days[days["Close"] > w1.High]
+    step4 = bool(len(above) > 0)
+    sig_day = above.index[0] if step4 else None
+
+    passed = step1 and step2 and step3 and step4
+    return passed, {
+        "w3": w3, "w2": w2, "w1": w1, "w0": w0, "s3": s3, "s1": s1, "mid2": float(mid2),
+        "w3_type": "doji" if s3["doji"] else ("hammer" if s3["hammer"] else "-"),
+        "w1_type": "doji" if s1["doji"] else ("small hammer" if s1["hammer"] and s1["small"] else "-"),
+        "sig_day": sig_day, "sig_close": float(above["Close"].iloc[0]) if step4 else np.nan,
+        "step1": step1, "step2": step2, "step3": step3, "step4": step4,
+    }
+
+# -- Diagnostic funnel (per ticker, cumulative)
+FUNNEL_COUNTS = {
+    "tickers_checked": 0,
+    "passed_step1_w3_red_hammer_doji": 0,
+    "passed_step2_w2_green_higher_low_volume": 0,
+    "passed_step3_w1_doji_small_hammer": 0,
+    "passed_step4_daily_close_above_w1_high": 0,
+}
+_FUNNEL_KEYS = list(FUNNEL_COUNTS)[1:]
+
+def analyze_weekly_hdgd(sym, df_daily):
+    if df_daily is None: return None
+    price   = float(df_daily["Close"].iloc[-1])
+    avg_vol = float(df_daily["Volume"].tail(20).mean())
+    if price   < CFG["min_price"]:      return None
+    if avg_vol < CFG["min_avg_volume"]: return None
+    if len(df_daily) < CFG["min_bars"]: return None
+
+    wk = weekly_bars(df_daily)
+    ok, d = check_pattern_at(df_daily, wk, CFG)
+    if not d: return None
+    FUNNEL_COUNTS["tickers_checked"] += 1
+    cum = True
+    for k, key in enumerate(_FUNNEL_KEYS):
+        cum = cum and d[f"step{k+1}"]
+        FUNNEL_COUNTS[key] += cum
+    if not ok: return None
+
+    w3, w2, w1 = d["w3"], d["w2"], d["w1"]
+    entry = d["sig_close"]
+    stop = float(w1.Low)
+    if entry <= stop: return None
+    risk = entry - stop
+    risk_pct = risk / entry * 100
+    c = df_daily["Close"]
+    s50 = float(c.rolling(50).mean().iloc[-1]); s200 = float(c.rolling(200).mean().iloc[-1])
+    vol_ratio = float(w2.Volume / w3.Volume) if w3.Volume > 0 else np.nan
+    w1_tight = float(d["s1"]["range"] / w1.ATR) if w1.ATR > 0 else np.nan
+    brk = (entry / w1.High - 1) * 100
+    after = df_daily[df_daily.index > d["sig_day"]]
+    flags = [f"W-3 red {d['w3_type']}", f"W-2 vol {vol_ratio:.1f}x W-3", f"W-1 {d['w1_type']} ({w1_tight:.2f} ATR)"]
+    flags.append("above SMA50 & SMA200" if price > s50 and price > s200 else
+                 ("above SMA200" if price > s200 else "below SMA200"))
+    if len(after) and after["Low"].min() <= stop: flags.append("Stop already hit")
+    if price < w1.High: flags.append("Now back below W-1 high")
+
+    score = 30
+    score += min(15, max(0, (vol_ratio - 1) * 15))                 # stronger W-2 volume
+    score += max(0, 15 - w1_tight * 10)                            # tighter W-1
+    score += 10 if price > s50 else 0
+    score += 10 if price > s200 else 0
+    score += max(0, 10 - max(0, risk_pct - 4) * 2)                 # tighter stop
+    score += min(10, brk * 3)                                      # clean breakout
+    score = round(min(100, max(0, score)))
+
+    return {
+        "Score": score, "Price": round(price, 2),
+        "Entry_Price": round(entry, 2), "Stop_Loss": round(stop, 2), "Risk_%": round(risk_pct, 1),
+        "Target_1_2R": round(entry + CFG["target1_r"] * risk, 2), "Target_2_3R": round(entry + CFG["target2_r"] * risk, 2),
+        "W3_Week": (wk.index[-4] - pd.Timedelta(days=4)).strftime("%Y-%m-%d"), "W3_Type": d["w3_type"],
+        "W3_Low": round(float(w3.Low), 2),
+        "W2_Low": round(float(w2.Low), 2), "W2_Body_Mid": round(d["mid2"], 2), "W2_Vol_x_W3": round(vol_ratio, 2),
+        "W1_Type": d["w1_type"], "W1_High": round(float(w1.High), 2), "W1_Low": round(float(w1.Low), 2),
+        "W1_Range_ATR": round(w1_tight, 2), "Breakout_%": round(brk, 2),
+        "Above_SMA50": "Yes" if price > s50 else "No", "Above_SMA200": "Yes" if price > s200 else "No",
+        "Signal_Date": d["sig_day"].strftime("%Y-%m-%d"),
+        "Days_Since_Signal": int(len(after)),
+        "Flags": " | ".join(flags),
+        "_df": df_daily, "_wk": wk,
+    }
+
