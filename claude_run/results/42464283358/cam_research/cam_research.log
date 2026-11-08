@@ -1,0 +1,178 @@
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ZIEXT"}}}
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+
+3 Failed downloads:
+['ZAZZT', 'ZTEST']: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+['ZIEXT']: possibly delisted; no timezone found
+  ✅ nasdaqlisted      : +3159 → 3159
+  ✅ otherlisted       : +2265 → 5424
+  ✅ NASDAQ API        : + 920 → 6344
+  ✅ Static fallback   : +   9 → 6353
+
+  🎯 Total: 6353 tickers
+sample A: 1507 tickers, 244012 signal rows, 51 exits, 2023-07-18..2026-08-11, train < 2025-01-28 | 2.1 min
+
+BASELINE per trigger, no filter (stop 1.5 ATR / 2R / 20d   |   2 ATR stop + SMA50 exit):
+  T_wH4_break                n= 36456 win= 39.0% PF=1.04 expR=+0.040   |   win= 31.6% PF=1.09 expR=+0.079
+  T_wH4_retest               n= 21089 win= 38.7% PF=1.04 expR=+0.027   |   win= 31.4% PF=1.05 expR=+0.052
+  T_wH3_reclaim              n= 44684 win= 39.4% PF=1.06 expR=+0.044   |   win= 33.7% PF=1.11 expR=+0.066
+  T_wS3_sweep                n= 75700 win= 39.7% PF=1.08 expR=+0.056   |   win= 36.4% PF=1.10 expR=+0.054
+  T_wS3_reclaim              n= 23187 win= 39.8% PF=1.06 expR=+0.059   |   win= 35.3% PF=1.08 expR=+0.060
+  T_mH4_break                n= 14676 win= 37.5% PF=0.96 expR=+0.006   |   win= 28.3% PF=1.06 expR=+0.069
+  T_mH4_retest               n= 20450 win= 37.8% PF=0.96 expR=+0.006   |   win= 28.9% PF=1.09 expR=+0.054
+  T_mH3_reclaim              n= 21348 win= 39.3% PF=1.06 expR=+0.053   |   win= 30.2% PF=1.13 expR=+0.101
+  T_mS3_sweep                n= 33822 win= 40.1% PF=1.07 expR=+0.059   |   win= 36.9% PF=1.03 expR=+0.039
+  T_mS3_reclaim              n= 14938 win= 41.0% PF=1.11 expR=+0.086   |   win= 36.3% PF=1.04 expR=+0.051
+  T_wS3_sma50_confluence     n= 33280 win= 40.1% PF=1.08 expR=+0.069   |   win= 25.5% PF=1.15 expR=+0.063
+  T_wH3_hold                 n= 22054 win= 39.1% PF=1.04 expR=+0.040   |   win= 33.6% PF=1.10 expR=+0.066
+
+train candidates (expR >= 0.10, PF >= 1.15): 81364 | 3.7 min
+robust: 17017
+
+TOP ROBUST (sorted by the worst of train / test-half expectancy):
+      Trigger                                  Filters                                        Exit  Train_n  Train_WR  Train_PF  Train_ExpR  Test_n  Test_WR  Test_PF  Test_ExpR  H1_ExpR  H2_ExpR
+T_mS3_reclaim     above_sma50 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      259      41.7      1.34       0.310     251     41.0     1.57      0.323    0.321    0.325
+T_mS3_reclaim                   near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      464      41.2      1.35       0.309     456     41.2     1.61      0.316    0.313    0.320
+T_mS3_reclaim    near_sma50 & not_extended & vol_surge           stop 2.0ATR, target 3.0R, max 40d      464      41.2      1.35       0.309     456     41.2     1.61      0.316    0.313    0.320
+T_mS3_reclaim       near_sma50 & above_mS3 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      464      41.2      1.35       0.309     456     41.2     1.61      0.316    0.313    0.320
+T_mS3_reclaim    above_sma150 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      302      41.7      1.45       0.309     243     41.2     1.59      0.334    0.307    0.368
+T_mH3_reclaim  above_sma50 & vol_surge & wH3_above_mH3 stop 1.5ATR, sell on close < SMA50, max 60d      400      27.5      1.29       0.303     471     29.3     1.77      0.499    0.435    0.558
+T_mS3_reclaim sma50_gt_sma150 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      307      43.6      1.59       0.367     243     41.6     1.60      0.323    0.349    0.290
+T_wH3_reclaim   sma150_rising & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      359      39.6      1.47       0.319     329     41.0     1.66      0.300    0.314    0.286
+T_mS3_reclaim sma50_gt_sma150 & near_sma50 & vol_surge           stop 3.0ATR, target 2.0R, max 40d      307      52.8      1.63       0.319     243     52.7     2.01      0.325    0.281    0.383
+   T_wH3_hold     sma50_rising & above_mH3 & vol_surge stop 1.5ATR, sell on close < SMA50, max 60d      219      26.9      1.39       0.395     283     26.9     1.79      0.403    0.578    0.277
+T_mS3_reclaim sma150_rising & not_extended & vol_surge           stop 3.0ATR, target 3.0R, max 40d      559      50.8      1.52       0.334     542     53.5     1.79      0.287    0.276    0.300
+T_wH3_reclaim    above_sma150 & near_sma50 & vol_surge           stop 3.0ATR, target 3.0R, max 40d      363      47.9      1.75       0.310     330     48.8     1.69      0.293    0.273    0.312
+T_mS3_reclaim sma150_rising & not_extended & vol_surge           stop 2.0ATR, target 3.0R, max 40d      559      42.4      1.37       0.338     542     43.7     1.56      0.275    0.273    0.277
+T_mH3_reclaim        near_sma50 & m_narrow & vol_surge           stop 1.0ATR, target 3.0R, max 20d      248      34.3      1.54       0.346     253     34.8     1.51      0.288    0.271    0.305
+T_mS3_reclaim    sma150_rising & below_wH4 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      372      41.9      1.25       0.271     392     44.4     1.68      0.288    0.291    0.284
+T_mS3_reclaim sma50_gt_sma150 & near_sma50 & vol_surge           stop 3.0ATR, target 3.0R, max 40d      307      51.1      1.65       0.335     243     51.4     1.99      0.324    0.270    0.393
+T_wH3_reclaim   sma150_rising & near_sma50 & vol_surge           stop 1.5ATR, target 2.0R, max 40d      359      43.7      1.37       0.269     329     44.1     1.64      0.301    0.327    0.276
+T_mH3_reclaim        near_sma50 & m_narrow & vol_surge           stop 1.0ATR, target 3.0R, max 40d      248      32.7      1.49       0.331     253     32.4     1.49      0.285    0.269    0.302
+T_mH3_reclaim                vol_surge & wH3_above_mH3 stop 1.5ATR, sell on close < SMA50, max 60d      480      30.4      1.29       0.262     526     30.6     1.75      0.451    0.403    0.493
+T_mH3_reclaim    above_mH3 & vol_surge & wH3_above_mH3 stop 1.5ATR, sell on close < SMA50, max 60d      480      30.4      1.29       0.262     526     30.6     1.75      0.451    0.403    0.493
+T_mH3_reclaim    above_mS3 & vol_surge & wH3_above_mH3 stop 1.5ATR, sell on close < SMA50, max 60d      480      30.4      1.29       0.262     526     30.6     1.75      0.451    0.403    0.493
+T_mS3_reclaim sma50_gt_sma150 & near_sma50 & vol_surge           stop 2.0ATR, target 2.0R, max 40d      307      47.9      1.54       0.315     243     46.1     1.52      0.281    0.259    0.309
+T_mS3_reclaim                   near_sma50 & vol_surge           stop 1.5ATR, target 3.0R, max 40d      464      36.4      1.32       0.310     456     37.7     1.47      0.295    0.256    0.344
+T_mS3_reclaim    near_sma50 & not_extended & vol_surge           stop 1.5ATR, target 3.0R, max 40d      464      36.4      1.32       0.310     456     37.7     1.47      0.295    0.256    0.344
+T_mS3_reclaim       near_sma50 & above_mS3 & vol_surge           stop 1.5ATR, target 3.0R, max 40d      464      36.4      1.32       0.310     456     37.7     1.47      0.295    0.256    0.344
+  T_wH4_break       near_sma50 & above_mS3 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      628      39.0      1.30       0.281     673     40.0     1.54      0.282    0.253    0.310
+T_mS3_reclaim     above_sma50 & near_sma50 & vol_surge           stop 3.0ATR, target 3.0R, max 40d      259      50.6      1.62       0.315     251     47.8     1.74      0.260    0.267    0.252
+T_mH3_reclaim      above_sma150 & w_narrow & vol_surge stop 2.0ATR, sell on close < SMA50, max 60d      771      30.4      1.34       0.260     848     30.1     1.48      0.251    0.249    0.253
+T_mS3_reclaim near_sma50 & mkt_above_sma50 & vol_surge           stop 3.0ATR, target 2.0R, max 40d      356      51.7      1.43       0.279     336     49.7     1.66      0.263    0.274    0.249
+T_mS3_reclaim    above_sma150 & near_sma50 & vol_surge           stop 3.0ATR, target 3.0R, max 40d      302      49.0      1.54       0.295     243     50.2     1.97      0.329    0.248    0.432
+
+BEST ROBUST RULE PER TRIGGER:
+               Trigger                                 Filters                                        Exit  Train_n  Train_WR  Train_PF  Train_ExpR  Test_n  Test_WR  Test_PF  Test_ExpR  H1_ExpR  H2_ExpR
+         T_mS3_reclaim    above_sma50 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      259      41.7      1.34       0.310     251     41.0     1.57      0.323    0.321    0.325
+         T_mH3_reclaim above_sma50 & vol_surge & wH3_above_mH3 stop 1.5ATR, sell on close < SMA50, max 60d      400      27.5      1.29       0.303     471     29.3     1.77      0.499    0.435    0.558
+         T_wH3_reclaim  sma150_rising & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      359      39.6      1.47       0.319     329     41.0     1.66      0.300    0.314    0.286
+            T_wH3_hold    sma50_rising & above_mH3 & vol_surge stop 1.5ATR, sell on close < SMA50, max 60d      219      26.9      1.39       0.395     283     26.9     1.79      0.403    0.578    0.277
+           T_wH4_break      near_sma50 & above_mS3 & vol_surge           stop 2.0ATR, target 3.0R, max 40d      628      39.0      1.30       0.281     673     40.0     1.54      0.282    0.253    0.310
+         T_wS3_reclaim     sma50_rising & w_narrow & vol_surge           stop 3.0ATR, target 3.0R, max 40d      481      43.7      1.24       0.224     557     46.5     1.77      0.269    0.324    0.229
+          T_wH4_retest              near_sma50 & wH3_above_mH3           stop 3.0ATR, target 2.0R, max 40d      266      53.0      1.74       0.314     251     51.4     1.31      0.247    0.213    0.276
+           T_mS3_sweep sma50_rising & m_narrow & wH3_above_mH3           stop 3.0ATR, target 3.0R, max 40d      419      53.7      1.31       0.226     579     49.1     1.18      0.223    0.234    0.211
+T_wS3_sma50_confluence  sma50_gt_sma150 & above_mH3 & m_narrow           stop 1.5ATR, target 3.0R, max 40d     1121      34.1      1.18       0.187    1322     34.5     1.28      0.210    0.229    0.198
+           T_wS3_sweep   near_sma50 & w_narrow & wH3_above_mH3           stop 3.0ATR, target 3.0R, max 40d     1359      44.8      1.30       0.210    1898     46.9     1.45      0.197    0.208    0.186
+           T_mH4_break  sma50_gt_sma150 & w_narrow & vol_surge stop 3.0ATR, sell on close < SMA50, max 60d      638      36.8      1.24       0.178     702     34.0     1.43      0.168    0.171    0.166
+          T_mH4_retest  w_narrow & mkt_above_sma50 & vol_surge stop 3.0ATR, sell on close < SMA50, max 60d      457      34.6      1.32       0.125     616     33.1     1.25      0.151    0.155    0.147$CBX: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+
+1 Failed download:
+['CBX']: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CTEST: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+$PSTG: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+$ZBZX: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+$ZTEST: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+
+5 Failed downloads:
+['ZCZZT', 'ZEXIT']: possibly delisted; no timezone found
+['ZVV', 'ZBZX', 'ZTEST']: possibly delisted; no price data found  (1d 2022-11-09 -> 2026-11-08)
+
+
+sample B: 1436 different tickers, 232335 signal rows | 5.7 min
+
+ONE TRADE PER TICKER AT A TIME — sample A (train/test) and fresh sample B:
+               Trigger                                    Filters                                        Exit  A_Train_n  A_Train_ExpR  A_Test_n  A_Test_WR  A_Test_PF  A_Test_ExpR  B_All_n  B_All_WR  B_All_PF  B_All_ExpR  B_Benchmark_ExpR  B_SameFilters_ExpR  B_Edge_R  Score
+         T_mS3_reclaim   sma50_gt_sma150 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        292         0.351       233       41.2       1.58        0.309      487      40.0      1.32       0.273             0.105               0.131     0.142  0.273
+         T_mS3_reclaim   sma150_rising & not_extended & vol_surge           stop 2.0ATR, target 3.0R, max 40d        523         0.325       507       43.6       1.55        0.275     1005      40.6      1.38       0.263             0.105               0.180     0.083  0.263
+         T_mS3_reclaim         near_sma50 & above_mS3 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        442         0.300       438       41.3       1.63        0.317      817      39.9      1.38       0.259             0.105               0.137     0.122  0.259
+         T_mS3_reclaim                     near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        442         0.300       438       41.3       1.63        0.317      817      39.9      1.38       0.259             0.105               0.147     0.112  0.259
+         T_mS3_reclaim      near_sma50 & not_extended & vol_surge           stop 2.0ATR, target 3.0R, max 40d        442         0.300       438       41.3       1.63        0.317      817      39.9      1.38       0.259             0.105               0.147     0.112  0.259
+         T_mS3_reclaim   sma50_gt_sma150 & near_sma50 & vol_surge           stop 3.0ATR, target 2.0R, max 40d        283         0.309       228       52.2       1.99        0.316      482      51.7      1.44       0.257             0.098               0.103     0.154  0.257
+         T_mS3_reclaim      sma150_rising & below_wH4 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        349         0.244       368       44.6       1.65        0.292      721      40.8      1.25       0.254             0.105               0.158     0.096  0.244
+         T_mS3_reclaim   sma150_rising & not_extended & vol_surge           stop 3.0ATR, target 3.0R, max 40d        508         0.350       496       53.2       1.78        0.293      978      49.2      1.44       0.233             0.113               0.159     0.074  0.233
+         T_mS3_reclaim       above_sma50 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        250         0.309       246       41.1       1.57        0.310      442      38.5      1.28       0.213             0.105               0.083     0.130  0.213
+         T_mS3_reclaim      above_sma150 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        287         0.286       233       40.8       1.57        0.320      478      38.9      1.22       0.212             0.105               0.133     0.079  0.212
+           T_mS3_sweep sma50_gt_sma150 & m_narrow & wH3_above_mH3           stop 3.0ATR, target 3.0R, max 40d        322         0.291       384       49.5       1.37        0.237      698      48.4      1.43       0.210             0.113               0.135     0.075  0.210
+           T_wS3_sweep       w_narrow & vol_surge & wH3_above_mH3 stop 1.5ATR, sell on close < SMA50, max 60d        420         0.289       499       30.9       1.45        0.208      848      30.7      1.21       0.213             0.018               0.192     0.021  0.208
+           T_wH4_break         near_sma50 & above_mS3 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        608         0.278       650       40.0       1.52        0.273     1297      37.3      1.26       0.205             0.105               0.137     0.068  0.205
+           T_mS3_sweep    sma50_rising & m_narrow & wH3_above_mH3           stop 3.0ATR, target 3.0R, max 40d        311         0.265       431       49.0       1.23        0.221      707      48.7      1.46       0.205             0.113               0.137     0.068  0.205
+         T_mH3_reclaim    above_sma50 & vol_surge & wH3_above_mH3 stop 1.5ATR, sell on close < SMA50, max 60d        383         0.272       454       29.1       1.77        0.498      833      25.6      1.29       0.179             0.018               0.079     0.100  0.179
+           T_wS3_sweep      near_sma50 & w_narrow & wH3_above_mH3           stop 3.0ATR, target 3.0R, max 40d        812         0.267      1017       45.5       1.36        0.163     1654      45.5      1.26       0.163             0.113               0.114     0.049  0.163
+         T_wS3_reclaim        sma50_rising & w_narrow & vol_surge           stop 3.0ATR, target 3.0R, max 40d        454         0.185       517       47.2       1.85        0.290      845      44.1      1.32       0.155             0.113               0.090     0.065  0.155
+           T_wH4_break       above_sma50 & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        435         0.234       440       40.2       1.57        0.284      885      35.5      1.17       0.145             0.105               0.083     0.062  0.145
+         T_wS3_reclaim        sma50_rising & w_narrow & vol_surge           stop 3.0ATR, target 2.0R, max 40d        456         0.189       521       47.8       1.81        0.271      853      45.7      1.26       0.137             0.098               0.082     0.055  0.137
+          T_mH4_retest     w_narrow & mkt_above_sma50 & vol_surge stop 3.0ATR, sell on close < SMA50, max 60d        389         0.089       517       33.3       1.20        0.121      956      32.1      1.27       0.094             0.009               0.079     0.015  0.089
+           T_mH4_break     sma50_gt_sma150 & w_narrow & vol_surge stop 3.0ATR, sell on close < SMA50, max 60d        579         0.170       642       34.9       1.43        0.181     1192      31.9      1.09       0.061             0.009               0.057     0.004  0.061
+          T_wH4_retest  near_sma50 & not_extended & wH3_above_mH3           stop 3.0ATR, target 2.0R, max 40d        194         0.339       179       48.0       1.18        0.160      315      46.0      1.17       0.119             0.098               0.128    -0.009  0.119
+          T_wH4_retest                 near_sma50 & wH3_above_mH3           stop 3.0ATR, target 2.0R, max 40d        194         0.339       179       48.0       1.18        0.160      315      46.0      1.17       0.119             0.098               0.128    -0.009  0.119
+         T_wH3_reclaim      above_sma150 & near_sma50 & vol_surge           stop 3.0ATR, target 3.0R, max 40d        328         0.279       311       48.9       1.65        0.293      539      43.6      1.17       0.110             0.113               0.117    -0.007  0.110
+         T_wH3_reclaim     sma150_rising & near_sma50 & vol_surge           stop 2.0ATR, target 3.0R, max 40d        330         0.325       313       41.5       1.66        0.311      586      35.8      1.05       0.098             0.105               0.200    -0.102  0.098
+          T_mH4_retest  not_extended & w_narrow & mkt_above_sma50           stop 3.0ATR, target 3.0R, max 40d       1046         0.178      1253       44.6       1.16        0.113     2039      42.2      1.06       0.092             0.113               0.116    -0.024  0.092
+            T_wH3_hold       sma50_rising & above_mH3 & vol_surge stop 1.5ATR, sell on close < SMA50, max 60d        204         0.411       255       27.1       1.72        0.365      469      23.0      1.08       0.059             0.018               0.070    -0.011  0.059
+           T_mH4_break     sma50_gt_sma150 & w_narrow & vol_surge stop 2.0ATR, sell on close < SMA50, max 60d        588         0.179       653       31.2       1.44        0.250     1223      26.6      1.07       0.049             0.014               0.075    -0.026  0.049
+T_wS3_sma50_confluence  sma150_rising & vol_surge & wH3_above_mH3           stop 2.0ATR, target 2.0R, max 10d        233         0.193       307       52.1       1.71        0.212      526      47.1      0.93       0.027             0.040               0.031    -0.004  0.027
+T_wS3_sma50_confluence     sma50_gt_sma150 & above_mH3 & m_narrow           stop 1.5ATR, target 3.0R, max 40d        644         0.150       755       34.6       1.24        0.217     1317      29.7      0.98       0.018             0.090               0.083    -0.065  0.018
+            T_wH3_hold     m_narrow & mkt_above_sma50 & vol_surge           stop 1.0ATR, target 3.0R, max 20d        298         0.233       321       36.4       1.44        0.292      601      27.0      0.99      -0.044             0.046               0.043    -0.087 -0.044
+         T_mH3_reclaim          near_sma50 & m_narrow & vol_surge           stop 1.0ATR, target 3.0R, max 20d        244         0.353       249       35.3       1.52        0.310      475      26.9      0.91      -0.057             0.046               0.054    -0.111 -0.057
+
+YEARS (sample B) for the top 8:
+  T_mS3_reclaim | sma50_gt_sma150 & near_sma50 & vol_surge | stop 2.0ATR, target 3.0R, max 40d
+     A 2023:+0.17R/58 2024:+0.36R/222 2025:+0.44R/169 2026:+0.15R/76
+     B 2023:-0.00R/60 2024:+0.30R/205 2025:+0.25R/147 2026:+0.46R/75
+  T_mS3_reclaim | sma150_rising & not_extended & vol_surge | stop 2.0ATR, target 3.0R, max 40d
+     A 2023:+0.48R/100 2024:+0.28R/398 2025:+0.30R/358 2026:+0.24R/174
+     B 2023:+0.15R/137 2024:+0.26R/362 2025:+0.39R/325 2026:+0.13R/181
+  T_mS3_reclaim | near_sma50 & above_mS3 & vol_surge | stop 2.0ATR, target 3.0R, max 40d
+     A 2023:+0.34R/97 2024:+0.27R/330 2025:+0.36R/301 2026:+0.27R/152
+     B 2023:-0.00R/113 2024:+0.33R/314 2025:+0.13R/250 2026:+0.53R/140
+  T_mS3_reclaim | near_sma50 & vol_surge | stop 2.0ATR, target 3.0R, max 40d
+     A 2023:+0.34R/97 2024:+0.27R/330 2025:+0.36R/301 2026:+0.27R/152
+     B 2023:-0.00R/113 2024:+0.33R/314 2025:+0.13R/250 2026:+0.53R/140
+  T_mS3_reclaim | near_sma50 & not_extended & vol_surge | stop 2.0ATR, target 3.0R, max 40d
+     A 2023:+0.34R/97 2024:+0.27R/330 2025:+0.36R/301 2026:+0.27R/152
+     B 2023:-0.00R/113 2024:+0.33R/314 2025:+0.13R/250 2026:+0.53R/140
+  T_mS3_reclaim | sma50_gt_sma150 & near_sma50 & vol_surge | stop 3.0ATR, target 2.0R, max 40d
+     A 2023:+0.06R/57 2024:+0.36R/215 2025:+0.34R/166 2026:+0.31R/73
+     B 2023:+0.03R/60 2024:+0.34R/202 2025:+0.16R/145 2026:+0.41R/75
+  T_mS3_reclaim | sma150_rising & below_wH4 & vol_surge | stop 2.0ATR, target 3.0R, max 40d
+     A 2023:+0.45R/55 2024:+0.22R/283 2025:+0.29R/256 2026:+0.25R/123
+     B 2023:+0.09R/90 2024:+0.24R/254 2025:+0.36R/239 2026:+0.21R/138
+  T_mS3_reclaim | sma150_rising & not_extended & vol_surge | stop 3.0ATR, target 3.0R, max 40d
+     A 2023:+0.46R/98 2024:+0.33R/387 2025:+0.30R/352 2026:+0.25R/167
+     B 2023:+0.08R/135 2024:+0.30R/354 2025:+0.23R/316 2026:+0.22R/173
+done in 6.6 min
