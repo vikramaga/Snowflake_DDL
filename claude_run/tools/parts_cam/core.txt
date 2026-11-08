@@ -1,0 +1,158 @@
+# ── CONFIG
+CFG = {
+    # history_days vs bars: 400 calendar days -> ~285 business days
+    # (pd.bdate_range); the rule needs 150 (SMA150) + 1 previous month.
+    "history_days"            : 400,
+    "min_bars"                : 170,
+
+    "sma_fast"                : 50,
+    "sma_slow"                : 150,
+    "near_sma50_pct"          : 3.0,   # |close / SMA50 - 1| <= 3%
+    "vol_avg_bars"            : 20,
+    "vol_mult"                : 1.5,   # volume >= 1.5x the 20-day average
+    "atr_period"              : 14,    # simple mean of the true range
+    "stop_atr"                : 2.0,
+    "target_r"                : 3.0,
+    "max_hold"                : 40,
+    "signal_lookback_days"    : 1,     # the latest session (the order is for the next open)
+
+    "min_avg_volume"          : 100_000,
+    "min_price"               : 5.0,
+
+    "batch_size"              : 50,
+    "batch_sleep"             : 1.5,
+}
+
+# ── Indicators
+def camarilla(df, rule):
+    """H3 / H4 / S3 from the PREVIOUS completed period ('M' month, 'W-FRI' week)."""
+    per = df.index.to_period(rule)
+    g = df.groupby(per).agg(H=("High", "max"), L=("Low", "min"), C=("Close", "last"))
+    p = g.shift(1)
+    rng = p.H - p.L
+    lv = pd.DataFrame({"H3": p.C + rng * 1.1 / 4, "H4": p.C + rng * 1.1 / 2,
+                       "S3": p.C - rng * 1.1 / 4}, index=g.index).reindex(per)
+    return {k: lv[k].values.astype(float) for k in lv.columns}
+
+def calc_indicators(df, cfg):
+    c, h, l, v = (df[k].values.astype(float) for k in ("Close", "High", "Low", "Volume"))
+    pc = np.concatenate([[np.nan], c[:-1]])
+    tr = np.nanmax(np.vstack([h - l, np.abs(h - pc), np.abs(l - pc)]), axis=0)
+    m, w = camarilla(df, "M"), camarilla(df, "W-FRI")
+    return {
+        "s50":  pd.Series(c).rolling(cfg["sma_fast"]).mean().values,
+        "s150": pd.Series(c).rolling(cfg["sma_slow"]).mean().values,
+        "vavg": pd.Series(v).rolling(cfg["vol_avg_bars"]).mean().values,
+        "atr":  pd.Series(tr).rolling(cfg["atr_period"]).mean().values,
+        "mS3": m["S3"], "mH3": m["H3"], "mH4": m["H4"],
+        "wS3": w["S3"], "wH3": w["H3"], "wH4": w["H4"],
+    }
+
+def check_pattern_at(df, ind, i, cfg):
+    """
+    SINGLE SOURCE OF TRUTH. Checks signal day i. Computes EVERY step (no
+    short-circuit) so the funnel shows where tickers drop out.
+    Returns (passed, details); details is {} only if data is too short.
+    """
+    if i < cfg["sma_slow"] + 1 or i >= len(df):
+        return False, {}
+    c, v = df["Close"].values, df["Volume"].values
+    s50, s150, vavg, atr, mS3 = (ind[k] for k in ("s50", "s150", "vavg", "atr", "mS3"))
+    need = (s50[i], s150[i], vavg[i], atr[i], mS3[i], c[i - 1])
+    if not all(np.isfinite(x) for x in need) or atr[i] <= 0:
+        return False, {}
+    step1 = bool(c[i] > mS3[i] and c[i - 1] <= mS3[i])                       # monthly S3 reclaim
+    step2 = bool(s50[i] > s150[i])                                           # SMA50 above SMA150
+    dist = (c[i] / s50[i] - 1) * 100
+    step3 = bool(abs(dist) <= cfg["near_sma50_pct"])                         # at the SMA50
+    vol_x = float(v[i] / vavg[i]) if vavg[i] > 0 else 0.0
+    step4 = bool(vol_x >= cfg["vol_mult"])                                   # volume surge
+    passed = step1 and step2 and step3 and step4
+    return passed, {
+        "date": df.index[i], "i": i, "close": float(c[i]), "prev_close": float(c[i - 1]),
+        "mS3": float(mS3[i]), "mH3": float(ind["mH3"][i]), "mH4": float(ind["mH4"][i]),
+        "wS3": float(ind["wS3"][i]), "wH3": float(ind["wH3"][i]), "wH4": float(ind["wH4"][i]),
+        "sma50": float(s50[i]), "sma150": float(s150[i]), "dist_sma50": float(dist),
+        "vol_x": vol_x, "atr": float(atr[i]),
+        "step1": step1, "step2": step2, "step3": step3, "step4": step4,
+    }
+
+# ── Diagnostic funnel (per ticker: did ANY of the lookback days pass
+#    steps 1..k cumulatively)
+FUNNEL_COUNTS = {
+    "tickers_checked": 0,
+    "passed_step1_monthly_s3_reclaim": 0,
+    "passed_step2_sma50_over_sma150": 0,
+    "passed_step3_near_sma50": 0,
+    "passed_step4_volume_surge": 0,
+}
+_FUNNEL_KEYS = list(FUNNEL_COUNTS)[1:]
+
+def find_signals(df, ind, cfg):
+    hits, best = [], [False] * 4
+    n = len(df)
+    any_checked = False
+    for i in range(max(0, n - cfg["signal_lookback_days"]), n):
+        ok, d = check_pattern_at(df, ind, i, cfg)
+        if not d: continue
+        any_checked = True
+        cum = True
+        for k in range(4):
+            cum = cum and d[f"step{k+1}"]
+            best[k] |= cum
+        if ok: hits.append(d)
+    if any_checked:
+        FUNNEL_COUNTS["tickers_checked"] += 1
+        for k, key in enumerate(_FUNNEL_KEYS):
+            FUNNEL_COUNTS[key] += best[k]
+    return hits
+
+def analyze_camarilla_s3(sym, df_daily):
+    if df_daily is None: return None
+    price   = float(df_daily["Close"].iloc[-1])
+    avg_vol = float(df_daily["Volume"].tail(20).mean())
+    if price   < CFG["min_price"]:      return None
+    if avg_vol < CFG["min_avg_volume"]: return None
+    if len(df_daily) < CFG["min_bars"]: return None
+
+    ind = calc_indicators(df_daily, CFG)
+    hits = find_signals(df_daily, ind, CFG)
+    if not hits: return None
+    sig = hits[-1]
+    entry = sig["close"]                      # estimate; the order is for the next open
+    stop = entry - CFG["stop_atr"] * sig["atr"]
+    target = entry + CFG["target_r"] * CFG["stop_atr"] * sig["atr"]
+    if stop <= 0: return None
+    risk_pct = (entry - stop) / entry * 100
+    over = [(n_, lv) for n_, lv in (("weekly H3", sig["wH3"]), ("weekly H4", sig["wH4"]),
+                                     ("monthly H3", sig["mH3"]), ("monthly H4", sig["mH4"]))
+            if np.isfinite(lv) and entry < lv < target]
+    flags = [f"vol {sig['vol_x']:.1f}x", f"{sig['dist_sma50']:+.1f}% vs SMA50"]
+    if over:
+        n_, lv = min(over, key=lambda x: x[1])
+        flags.append(f"first level overhead: {n_} {lv:.2f} ({(lv / entry - 1) * 100:+.1f}%)")
+
+    score = 40
+    score += min(20, (sig["vol_x"] - 1.5) * 10)                    # stronger volume
+    score += max(0, 15 - abs(sig["dist_sma50"]) * 5)               # closer to SMA50
+    score += min(15, max(0, (sig["sma50"] / sig["sma150"] - 1) * 150))  # trend strength
+    score += max(0, 10 - max(0, risk_pct - 4) * 2)                 # tighter stop
+    score = round(min(100, max(0, score)))
+
+    return {
+        "Score": score, "Price": round(price, 2),
+        "Entry_Price": round(entry, 2), "Stop_Loss": round(stop, 2), "Risk_%": round(risk_pct, 1),
+        "Target_3R": round(target, 2), "Target_%": round((target / entry - 1) * 100, 1),
+        "Max_Hold_Days": CFG["max_hold"],
+        "Monthly_S3": round(sig["mS3"], 2), "Prev_Close": round(sig["prev_close"], 2),
+        "Monthly_H3": round(sig["mH3"], 2), "Monthly_H4": round(sig["mH4"], 2),
+        "Weekly_S3": round(sig["wS3"], 2), "Weekly_H3": round(sig["wH3"], 2), "Weekly_H4": round(sig["wH4"], 2),
+        "SMA50": round(sig["sma50"], 2), "SMA150": round(sig["sma150"], 2),
+        "Dist_SMA50_%": round(sig["dist_sma50"], 1), "Volume_x": round(sig["vol_x"], 2),
+        "ATR14": round(sig["atr"], 2),
+        "Signal_Date": sig["date"].strftime("%Y-%m-%d"),
+        "Days_Since_Signal": int(len(df_daily) - 1 - sig["i"]),
+        "Flags": " | ".join(flags),
+        "_df": df_daily, "_ind": ind,
+    }
+
