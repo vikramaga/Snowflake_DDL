@@ -6,7 +6,7 @@
 import hashlib, subprocess, sys
 
 OUT = "minervini.py"
-WANT = "1b19f40bcae56fa4e31d0f3fe428734abf31c8e40c72ec1fe4b14d481af04fbd"
+WANT = "87586c4c4744c981aed177496bf62c9c7b5a20aca875051a8ea7c59b00e632ac"
 P = "claude_run/tools/parts_minv/"
 t = open("daily_pullback_jma_reclaim_v1.py").read()
 a, b = t.index("import subprocess, sys, os"), t.index("# ── CONFIG")
