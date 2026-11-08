@@ -149,6 +149,10 @@ def sync(run=None, probe=False):
     a, _ = bd.load(run)
     if a.empty:
         raise SyncError(f"run {run} has no Best 10 rows")
+    need = int(os.environ.get("TV_MIN_SCANNERS", "10"))
+    if a.Scanner.nunique() < need:
+        raise SyncError(f"run {run} has only {a.Scanner.nunique()} scanner(s) (need {need}) - "
+                        "watchlist left as it was")
     order = [x for x in bd.schedule() if x in set(a.Scanner)] + sorted(set(a.Scanner) - set(bd.schedule()))
     symbols = build_symbols(a, exchange_map(), {x: bd.nice(x) for x in order})
     n = sum(1 for x in symbols if not x.startswith("###"))

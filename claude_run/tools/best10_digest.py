@@ -66,11 +66,27 @@ def scanner_files(pattern):
     return sorted(f for f in glob.glob(pattern) if not os.path.basename(f).startswith("best10_all_scanners"))
 
 
+MIN_SCANNERS = int(os.environ.get("BEST10_MIN_SCANNERS", "10"))
+
+
+def n_scanners(run):
+    return len({os.path.dirname(f) for f in scanner_files(f"{ROOT}/{run}/*/best10_*.csv")})
+
+
 def pick_run(argv):
-    want = next((a for a in argv if a.isdigit()), "") or os.environ.get("RESULTS_RUN", "").strip()
-    if want and scanner_files(f"{ROOT}/{want}/*/best10_*.csv"):
-        return want
-    runs = [d for d in os.listdir(ROOT) if d.isdigit() and scanner_files(f"{ROOT}/{d}/*/best10_*.csv")] if os.path.isdir(ROOT) else []
+    """The daily digest passes its run in RESULTS_RUN: use exactly that run or
+    nothing (never an older or partial run). Otherwise an explicit run id from
+    argv, else the newest run that covers at least MIN_SCANNERS scanners."""
+    sched = os.environ.get("RESULTS_RUN", "").strip()
+    if sched:
+        if scanner_files(f"{ROOT}/{sched}/*/best10_*.csv"):
+            return sched
+        print(f"[Best 10 email] results of run {sched} are not in the repo - nothing sent, watchlist unchanged")
+        return None
+    want = next((a for a in argv if a.isdigit()), "")
+    if want:
+        return want if scanner_files(f"{ROOT}/{want}/*/best10_*.csv") else None
+    runs = [d for d in os.listdir(ROOT) if d.isdigit() and n_scanners(d) >= MIN_SCANNERS] if os.path.isdir(ROOT) else []
     return max(runs, key=int) if runs else None
 
 
