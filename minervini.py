@@ -17,18 +17,19 @@
 #
 # SETUP (Vik's request):
 #   A. PULLBACK TOWARD SMA50: a swing high 3-20 sessions before the signal,
-#      then a 2-15 session pullback whose low comes within 3% of the SMA50
-#      (above it, or up to 3% under it), without any close more than 3% under
-#      the SMA50.
+#      then a 2-15 session pullback whose low comes within 5% above the SMA50
+#      or up to 3% under it, without any close more than 3% under the SMA50.
 #   B. SELL VOLUME DRIED UP: during the pullback the red candles' average
-#      volume is at most 75% of the 50-day average volume (measured at the
-#      swing high), and selling volume is falling — the red candles in the
-#      second half of the pullback average no more than those in the first.
+#      volume is at most 90% of the 50-day average volume (measured at the
+#      swing high), and selling volume is not rising — the red candles in the
+#      second half of the pullback average at most 15% more than in the first.
 #   C. GREEN CANDLE WITH VOLUME: the signal day is a green candle (close >
-#      open) closing above the SMA50, with volume at least 2x the volume of
+#      open) closing above the SMA50, with volume at least 1.5x the volume of
 #      the previous red candle.
+#   (Loosened on 2026-11-08 from 3% / 75% / falling / 2x / 2 sessions for
+#   more matches.)
 #
-# Signal day = one of the last 2 sessions. Entry = signal close; Stop = the
+# Signal day = one of the last 3 sessions. Entry = signal close; Stop = the
 # pullback low (flagged when risk > 8%, Minervini's usual max); Target 1 =
 # the swing high, Target 2 = entry + 3R. Stop/targets are reasonable
 # defaults, not explicitly requested.
@@ -136,20 +137,21 @@ CFG = {
     "swing_max_ago"           : 20,
     "pullback_min_days"       : 2,
     "pullback_max_days"       : 15,
-    "sma50_near_pct"          : 3.0,   # pullback low within 3% above SMA50 ...
+    "sma50_near_pct"          : 5.0,   # pullback low within 5% above SMA50 ...
     "sma50_undercut_pct"      : 3.0,   # ... or up to 3% under it
     "max_close_below_sma50_pct": 3.0,  # no pullback close > 3% under SMA50
 
     # ── B. Sell-volume dry-up ──────────────────────────────────
     "vol_avg_bars"            : 50,
-    "red_vol_max_pct"         : 75.0,  # red-candle avg vol <= 75% of 50-day avg
+    "red_vol_max_pct"         : 90.0,  # red-candle avg vol <= 90% of 50-day avg
+    "red_vol_rise_tol"        : 1.15,  # late red candles may average up to 15% more than early ones
 
     # ── C. Green candle with volume ────────────────────────────
-    "green_vol_mult"          : 2.0,   # volume >= 2x the previous red candle
+    "green_vol_mult"          : 1.5,   # volume >= 1.5x the previous red candle
 
     "target2_r"               : 3.0,
     "max_risk_pct_flag"       : 8.0,
-    "signal_lookback_days"    : 2,
+    "signal_lookback_days"    : 3,
 
     # ── Filters ─────────────────────────────────────────────────
     "min_avg_volume"          : 200_000,
@@ -226,7 +228,7 @@ def check_pattern_at(df, ind, i, cfg):
     half = len(pb) // 2
     r1 = [v[k] for k in reds if k < pb[0] + half] if pb else []
     r2 = [v[k] for k in reds if k >= pb[0] + half] if pb else []
-    falling = (not r1 or not r2) or (np.mean(r2) <= np.mean(r1))
+    falling = (not r1 or not r2) or (np.mean(r2) <= np.mean(r1) * cfg["red_vol_rise_tol"])
     step3 = bool(reds and np.isfinite(red_pct) and red_pct <= cfg["red_vol_max_pct"] and falling)
 
     # Step 4 — green candle above SMA50 with volume >= 2x the previous red candle
@@ -516,7 +518,7 @@ print(f"  Tickers checked                           : {fc['tickers_checked']}")
 print(f"  Step 1 — Trend Template points 1-7          : {fc['passed_step1_trend_template']}")
 print(f"  Step 2 — + pullback toward SMA50            : {fc['passed_step2_pullback_to_sma50']}")
 print(f"  Step 3 — + sell volume dried up             : {fc['passed_step3_sell_volume_dried_up']}")
-print(f"  Step 4 — + green candle, vol >= {CFG['green_vol_mult']:.0f}x prev red : {fc['passed_step4_green_2x_volume']}")
+print(f"  Step 4 — + green candle, vol >= {CFG['green_vol_mult']:g}x prev red : {fc['passed_step4_green_2x_volume']}")
 print(f"  Step 5 — + RS Rating >= {CFG['min_rs_rating']}               : {fc['passed_step5_rs_rating']}  (= full pattern)")
 if TT_FAILS:
     print("  Trend Template failures (latest session): " +
@@ -615,12 +617,12 @@ def _send_email(rl, csv_path):
 <h1 style="margin:0;color:#60a5fa;font-size:19px">📊 Minervini Stage 2 — Volume Dry-Up Pullback to SMA50</h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">{datetime.today().strftime('%Y-%m-%d %H:%M UTC')} · {cnt} match{'es' if cnt != 1 else ''}
  — all 8 Trend Template points (RS Rating ≥ {CFG['min_rs_rating']}), a pullback toward the SMA50 on drying-up selling volume
- (red candles ≤ {CFG['red_vol_max_pct']:.0f}% of average), then a green candle with ≥ {CFG['green_vol_mult']:.0f}x the previous red candle's volume</p>
+ (red candles ≤ {CFG['red_vol_max_pct']:.0f}% of average), then a green candle with ≥ {CFG['green_vol_mult']:g}x the previous red candle's volume</p>
 </td></tr>
 <tr><td style="padding:12px 26px;background:#0b1220"><p style="margin:0;color:#cbd5e1;font-size:12px">
 🔍 FUNNEL: {fc['tickers_checked']} checked → {fc['passed_step1_trend_template']} Trend Template 1-7
 → {fc['passed_step2_pullback_to_sma50']} + pullback to SMA50 → {fc['passed_step3_sell_volume_dried_up']} + selling dried up
-→ {fc['passed_step4_green_2x_volume']} + green {CFG['green_vol_mult']:.0f}x volume
+→ {fc['passed_step4_green_2x_volume']} + green {CFG['green_vol_mult']:g}x volume
 → <b style="color:#facc15">{fc['passed_step5_rs_rating']} + RS ≥ {CFG['min_rs_rating']} = full match</b></p></td></tr>
 <tr><td style="padding:16px"><div style="overflow-x:auto;border:1px solid #e2e8f0;border-radius:8px">
 <table style="border-collapse:collapse;width:100%"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
@@ -638,7 +640,7 @@ against all stocks scanned. 📎 Full results (with Quantity for a fixed max los
                  f"{cnt} matches",
                  f"FUNNEL: {fc['tickers_checked']} checked -> {fc['passed_step1_trend_template']} trend template -> "
                  f"{fc['passed_step2_pullback_to_sma50']} pullback to SMA50 -> {fc['passed_step3_sell_volume_dried_up']} selling dried up -> "
-                 f"{fc['passed_step4_green_2x_volume']} green 2x volume -> {fc['passed_step5_rs_rating']} RS >= {CFG['min_rs_rating']} (=full match)", "="*60]
+                 f"{fc['passed_step4_green_2x_volume']} green volume -> {fc['passed_step5_rs_rating']} RS >= {CFG['min_rs_rating']} (=full match)", "="*60]
         for r in rl[:50]:
             plain.append(f"{r['Ticker']:<6} ${r['Price']:.2f}  Score:{r['Score']}  RS:{r['RS_Rating']}  Entry:${r['Entry_Price']:.2f}  "
                          f"SL:${r['Stop_Loss']:.2f} ({r['Risk_%']}%)  T1:${r['Target_1_Swing_High']:.2f}  "
@@ -737,10 +739,10 @@ print(f"""
   SETUP (signal day = one of the last {CFG['signal_lookback_days']} sessions)
   A) Swing high {CFG['swing_min_ago']}-{CFG['swing_max_ago']} sessions back, {CFG['pullback_min_days']}-{CFG['pullback_max_days']} day pullback, low within
      +{CFG['sma50_near_pct']:.0f}% / -{CFG['sma50_undercut_pct']:.0f}% of SMA50, no close > {CFG['max_close_below_sma50_pct']:.0f}% under it
-  B) Red candles average <= {CFG['red_vol_max_pct']:.0f}% of the {CFG['vol_avg_bars']}-day volume and are getting lighter
-  C) Green candle closing above SMA50 with volume >= {CFG['green_vol_mult']:.0f}x the previous red candle
+  B) Red candles average <= {CFG['red_vol_max_pct']:.0f}% of the {CFG['vol_avg_bars']}-day volume and are not getting heavier
+  C) Green candle closing above SMA50 with volume >= {CFG['green_vol_mult']:g}x the previous red candle
   OUTPUT: Entry = signal close, Stop = pullback low, T1 = swing high, T2 = entry + {CFG['target2_r']:.0f}R
-  ⚙️  If 0 results, check the FUNNEL: relax red_vol_max_pct 75 → 85,
-     green_vol_mult 2.0 → 1.5, or signal_lookback_days 2 → 5
+  ⚙️  Loosened 2026-11-08 (was 3% / 75% / 2x / 2 sessions). To widen further:
+     sma50_near_pct 5 → 8, red_vol_max_pct 90 → 100, or signal_lookback_days 3 → 5
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
