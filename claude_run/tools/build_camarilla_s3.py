@@ -49,8 +49,8 @@ runs with and without matches (subject, funnel, CSV + Best 10 CSV, chart).
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57""")
 for i in range(5):
-    if subprocess.call(["git", "pull", "--rebase", "origin", "master"]) == 0 and \\
-       subprocess.call(["git", "push", "origin", "HEAD:master"]) == 0:
+    ok = subprocess.call(["git", "pull", "--rebase", "origin", "master"]) == 0 and subprocess.call(["git", "push", "origin", "HEAD:master"]) == 0
+    if ok:
         print("✅ pushed"); break
 else:
     sys.exit("❌ push failed")
