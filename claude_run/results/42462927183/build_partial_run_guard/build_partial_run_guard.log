@@ -1,0 +1,35 @@
+[master c70db02] Best 10 email / TradingView sync: never use an older or partial run
+ 2 files changed, 24 insertions(+), 4 deletions(-)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   1da098f..c70db02  HEAD -> master
+OK  claude_run/tools/best10_digest.py
+OK  claude_run/tools/tv_watchlist_sync.py
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add claude_run/tools/best10_digest.py claude_run/tools/tv_watchlist_sync.py
++ git diff --cached --quiet
++ git commit -m Best 10 email / TradingView sync: never use an older or partial run
+
+On 8 Nov the scheduled run's results were not committed; the digest fell back
+to a one-scanner run, so the Best 10 email had 9 picks and the TradingView
+watchlist was replaced with 9 symbols.
+- best10_digest.py: with RESULTS_RUN (daily digest) uses exactly that run or
+  sends nothing; otherwise the newest run covering >= 10 scanners.
+- tv_watchlist_sync.py: will not replace the watchlist from a run with fewer
+  than 10 scanners; emails the usual "not updated" alert instead.
+
+Verified locally: missing scheduled run -> nothing; full run 42364661033
+(28 scanners) chosen when no run is given; one-scanner run refused by the sync.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
++ git pull --rebase origin master
++ git push origin HEAD:master
+✅ pushed
+[TradingView] signed in; 109 watchlist(s): '10aug_smaretest' (77), '10may_camarilla' (35), '11 july_smaretest' (29), '11june_macdcross0' (90), '11 may_camarillas2' (286), '12arpil' (63), '14april_increasingvolume' (60), '14april_reversal' (61), '14may_sma50_s3' (38), '14oct_liquiditysweep' (35), '15april_reversal' (54), '15may_jmacross' (31), '16aug_increasingvolume' (115), '16may_stage2' (44), '16Oct_liquiditysweep' (33), '16sept_multitf_bull' (161), '17may_trendline' (62), '17oct_jmacrossema8' (28), '17oct_rsi58_64' (119), '17oct_rsibounce' (70), '17oct_rsihighbo' (150), '18april_increasingvolume' (35), '18april_incrvolume' (82), '18april_sma50' (100), '19may_fundamentalstrong' (350), '19_Sept_multitf' (146), '1june_sma8cross' (101), '1 oct_monthlyrsiavegcross' (83), '1stoct_weeklydoubleincrease' (62), '2026_runners' (6), '20oct_masupport' (28), '20oct,_snap' (34), '21july_list' (213), '21oct_MASupport' (32), '22oct_macroaa' (20), '22oct_pennymacross' (25), '23 aug_confluence' (129), '24aug_multitf_bullish' (348), '25apr' (98), '25apr_bullish' (100), '25apr_unusualvolume' (30), '25july_incrvlm' (132), '25july_sma150breakafterlong' (39), '25oct_monthly2x' (240), '26apr_newsma50cross' (94), '26apr_selective' (64), '26apr_sma50' (111), '26aug_h4pullback' (58), '26jul_earlystage2' (186), '27june_bestpicks' (20), '27june_retst_ema20cross' (216), '28Oct_weekly dojicross' (42), '29oct_dailejmacross' (35), '2aug_smasupport' (85), '2 nov_weeklydojijma' (80), '2 sept_stage2' (45), '30aug_alltf_bullish' (188), '30sept_monthlydoubleincrease' (82), '31may_stage2' (45), '3july_smaretest' (199), '3may' (60), '3rd_Sept_NewsBased_USStocks' (48), '4june_8ema' (173), '4jun_indstocks_sma8cross' (40), '5juenm' (91), '5may_earningsbeat' (50), '5_October_monthlyrsicrossavg' (127), '5th July 2025_list' (0), '7jul_BOAFTERLONG' (90), '7oct_3candle' (80), '8aug_bullishengulf' (113), '8jul_smaretest' (144), '8june_sma150bo' (169), '8oct_dailyfivegence' (214), '9aug_basebreakout' (29), '9may_camarillah4' (38), '9may_earningsbeat' (89), '9may_sma50support' (55), '9oct_abovejma' (100), 'April2026' (32), 'Best 10 - all scanners' (10), 'Dec2025_Stage2' (38), 'FILTERED_us_stocks_above_cpr' (163), 'Ind_DailyBull' (18), 'Indstocks' (0), 'Jan2026_stage2' (52), 'march_2026_stage2' (9), 'Mutitf_12sept' (142), 'Mystocks' (17), 'mystocks_indian' (23), 'Nov_2025_stage2' (86), 'Nov_4_1:1R' (29), 'pillar' (0), 'premarket' (2), 'Rsifrombelwo_19_sept' (0), 'Sma150BO_30MAY' (194), 'Sma50pullback' (16), 'tracked_usstocks' (13), 'us_bullish' (25), 'us_dailybull' (34), 'us_early_stage2' (69), 'Us_longterm_stocks' (33), 'us_stage2' (33), 'Us stage2_under20' (81), 'us stocks' (8), 'US stocks' (123), 'usstocks_top_bull' (221), 'Watchlist' (33), 'Weekly_rsidivergence' (84)
+[TradingView] 212 symbols in 30 sections from run 42364661033
+[TradingView] replaced watchlist 'Best 10 - all scanners' (id 354293952) via /replace/?unsafe=true
+[TradingView] ✅  'Best 10 - all scanners' now has 212 symbols
