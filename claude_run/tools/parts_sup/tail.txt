@@ -1,0 +1,248 @@
+# -- Main scan
+print("=" * 65)
+print(f"  STEP 3  SCANNING {len(TICKERS)} TICKERS")
+print("=" * 65)
+
+results, no_daily_data, daily_map = [], 0, {}
+daily_batches = [TICKERS[i:i+CFG["batch_size"]]
+                 for i in range(0, len(TICKERS), CFG["batch_size"])]
+with tqdm(total=len(TICKERS), desc="Daily fetch", unit="stk") as pbar:
+    for batch in daily_batches:
+        got = download_daily(batch, CFG["history_days"])
+        daily_map.update(got)
+        no_daily_data += len(batch) - len(got)
+        pbar.update(len(batch))
+        time.sleep(CFG["batch_sleep"])
+got_daily = len(TICKERS) - no_daily_data
+print(f"\n  Daily data : {got_daily}/{len(TICKERS)} tickers\n")
+
+for sym in tqdm(list(daily_map.keys()), desc="Checking pattern", unit="stk"):
+    try:
+        r = analyze_support_retest(sym, daily_map[sym])
+        if r is None: continue
+        r["Ticker"] = sym
+        results.append(r)
+        print(f"  OK {sym:<6} ${r['Price']:.2f}  Score {r['Score']}  support {r['Support']} ({r['Support_Date']})  "
+              f"reversal +{r['Reversal_%']}% / {r['Reversal_ATR']} ATR  {r['Signal_Date']}")
+    except Exception: pass
+
+fc = FUNNEL_COUNTS
+print(f"\n{'=' * 65}\n  SCAN COMPLETE - {len(results)} matches from {got_daily} tickers with data")
+print(f"  FUNNEL (last {CFG['signal_lookback_days']} session(s))")
+print(f"  Tickers checked                                   : {fc['tickers_checked']}")
+print(f"  Step 1 - major swing low 25-65 sessions ago        : {fc['passed_step1_major_low_2_3_months_ago']}")
+print(f"  Step 2 - + strong reversal off it                  : {fc['passed_step2_strong_reversal']}")
+print(f"  Step 3 - + support held since                      : {fc['passed_step3_support_held']}")
+print(f"  Step 4 - + today's low back at the support         : {fc['passed_step4_back_at_support']}")
+print(f"  Step 5 - + rejection candle today                  : {fc['passed_step5_rejection_candle']}  (= full pattern)")
+print("=" * 65)
+
+results.sort(key=lambda x: x["Score"], reverse=True)
+
+# -- Save CSV + TradingView list
+ts      = datetime.today().strftime("%Y%m%d_%H%M")
+out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
+COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%","Target_Prior_High","Reward_R",
+        "Support","Support_Date","Reversal_High","Reversal_High_Date","Reversal_%","Reversal_ATR",
+        "Reversal_Vol_x","Prior_Tests","Low_vs_Support_ATR","Close_Position","Today_Vol_x",
+        "Above_SMA50","Above_SMA200","Signal_Date","Days_Since_Signal","Flags"]
+df_out = pd.DataFrame([{k: v for k, v in r.items() if not k.startswith("_")}
+                       for r in results]) if results else pd.DataFrame(columns=COLS)
+df_out = df_out[[c for c in COLS if c in df_out.columns]].reset_index(drop=True)
+
+fpath = os.path.join(out_dir, f"daily_major_support_retest_{ts}.csv")
+try:
+    from position_sizing import add_position_size
+    df_out = add_position_size(df_out)
+    try: __import__("best_picks").rank_best(df_out)
+    except Exception as _bp_err: print(f"  Best 10 skipped: {_bp_err}")
+except Exception as _ps_err:
+    print(f"  Position sizing skipped: {_ps_err}")
+df_out.to_csv(fpath, index=False)
+print(f"\n  CSV -> {fpath}")
+tv = os.path.join(out_dir, f"tv_daily_major_support_retest_{ts}.txt")
+with open(tv, "w") as f:
+    f.write(f"###Major Support Retest {datetime.today().strftime('%Y-%m-%d')}\n")
+    for r in results: f.write(f"NASDAQ:{r['Ticker']}\n")
+print(f"  TradingView -> {tv}")
+if results:
+    print(f"\n  Tickers: {', '.join(r['Ticker'] for r in results)}")
+
+# -- Email with CSV attached
+EMAIL_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%","Target_Prior_High","Reward_R",
+              "Support","Support_Date","Reversal_%","Reversal_Vol_x","Prior_Tests","Above_SMA200"]
+
+def _fmt_cell(col, v):
+    try:
+        if col in ("Price","Entry_Price","Stop_Loss","Target_Prior_High","Support"): return f"${float(v):.2f}"
+        if col in ("Risk_%","Reversal_%"): return f"{float(v):.1f}%"
+        if col in ("Reversal_Vol_x",): return f"{float(v):.1f}x"
+        if col == "Reward_R": return f"{float(v):.1f}R"
+        if col == "Score": return f"{float(v):.0f}"
+    except Exception: pass
+    return "-" if v is None else str(v)
+
+def _send_email(rl, csv_path):
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text      import MIMEText
+    from email.mime.base      import MIMEBase
+    from email                import encoders
+
+    gu = _GMAIL_USER; gp = _GMAIL_PASS; et = _EMAIL_TO
+    if not (gu and gp and et):
+        print("[Email] GMAIL_USER / GMAIL_PASS / EMAIL_TO missing - skipped")
+        return
+    eto = [e.strip() for e in et.split(",") if e.strip()]
+    cnt = len(rl)
+    fc = FUNNEL_COUNTS
+    try:
+        th = "".join(f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 10px;'
+                     f'font-size:11px;border-bottom:2px solid #3b82f6;white-space:nowrap">{c}</th>'
+                     for c in EMAIL_COLS)
+        rows = ""
+        for i, r in enumerate(rl[:50]):
+            bg = "#fff" if i % 2 == 0 else "#f0f9ff"
+            tds = ""
+            for c in EMAIL_COLS:
+                sty = "font-weight:700" if c == "Ticker" else ""
+                if c == "Score": sty = "font-weight:700;background:#166534;color:#fff;text-align:center"
+                if c == "Stop_Loss": sty = "color:#ef4444"
+                if c == "Entry_Price": sty = "color:#16a34a"
+                if c == "Target_Prior_High": sty = "color:#2563eb;font-weight:600"
+                tds += f'<td style="padding:6px 10px;font-size:12px;{sty}">{_fmt_cell(c, r.get(c))}</td>'
+            rows += f'<tr style="background:{bg}">{tds}</tr>'
+        if not rows:
+            rows = (f'<tr><td colspan="{len(EMAIL_COLS)}" style="padding:20px;text-align:center;'
+                    f'color:#94a3b8">No matches today</td></tr>')
+        tick_html = (f'<p style="margin:10px 0 0;font-size:12px;font-family:monospace">'
+                     f'{", ".join(r["Ticker"] for r in rl)}</p>') if rl else ""
+        html = f"""<!DOCTYPE html><html><body style="margin:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:20px 10px">
+<table width="100%" style="max-width:900px;background:#fff;border-radius:12px;overflow:hidden">
+<tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:20px 26px">
+<h1 style="margin:0;color:#60a5fa;font-size:19px">Major Support Retest - back at a level that reversed hard 1-3 months ago</h1>
+<p style="margin:6px 0 0;color:#94a3b8;font-size:12px">{datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &middot; {cnt} match{'es' if cnt != 1 else ''}
+ - a major swing low 25-65 sessions ago that rallied at least +{CFG['rally_min_pct']:g}% and {CFG['rally_min_atr']:g} ATR within {CFG['rally_bars']} sessions,
+ support held since, today's low back at that level and a rejection candle</p>
+</td></tr>
+<tr><td style="padding:12px 26px;background:#0b1220"><p style="margin:0;color:#cbd5e1;font-size:12px">
+FUNNEL: {fc['tickers_checked']} checked &rarr; {fc['passed_step1_major_low_2_3_months_ago']} major low 1-3 months ago
+&rarr; {fc['passed_step2_strong_reversal']} + strong reversal
+&rarr; {fc['passed_step3_support_held']} + support held
+&rarr; {fc['passed_step4_back_at_support']} + back at support today
+&rarr; <b style="color:#facc15">{fc['passed_step5_rejection_candle']} + rejection candle = full match</b></p></td></tr>
+<tr><td style="padding:16px"><div style="overflow-x:auto;border:1px solid #e2e8f0;border-radius:8px">
+<table style="border-collapse:collapse;width:100%"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
+{tick_html}
+<p style="font-size:11px;color:#64748b;margin:10px 0 0">Entry = today's close &middot; Stop = the lower of today's low and the support,
+minus {CFG['stop_buffer_atr']:g} ATR &middot; Target = the high the last reversal reached (Reward_R in R multiples).
+Support zone = support - {CFG['zone_below_atr']:g} ATR to + {CFG['zone_above_atr']:g} ATR; rejection = close in the upper half of the day's range and
+green or a lower wick at least the body. Prior_Tests = earlier swing lows within 1 ATR of the level (last {CFG['touch_lookback']} sessions).
+Full results (with Quantity for a fixed max loss) attached as CSV.</p>
+</td></tr>
+<tr><td style="background:#f8fafc;padding:10px;text-align:center;color:#94a3b8;font-size:10px">
+Not financial advice &middot; Auto-generated by GitHub Actions</td></tr>
+</table></td></tr></table></body></html>"""
+
+        plain = [f"Major Support Retest - {datetime.today().strftime('%Y-%m-%d')}",
+                 f"{cnt} matches",
+                 f"FUNNEL: {fc['tickers_checked']} checked -> {fc['passed_step1_major_low_2_3_months_ago']} major low -> "
+                 f"{fc['passed_step2_strong_reversal']} strong reversal -> {fc['passed_step3_support_held']} held -> "
+                 f"{fc['passed_step4_back_at_support']} at support -> {fc['passed_step5_rejection_candle']} rejection (=full match)",
+                 "=" * 60]
+        for r in rl[:50]:
+            plain.append(f"{r['Ticker']:<6} ${r['Price']:.2f}  Score:{r['Score']}  Entry:${r['Entry_Price']:.2f}  "
+                         f"SL:${r['Stop_Loss']:.2f} ({r['Risk_%']}%)  Target:${r['Target_Prior_High']:.2f} ({r['Reward_R']}R)  "
+                         f"support {r['Support']} ({r['Support_Date']}) reversal +{r['Reversal_%']}%")
+        if rl:
+            plain += ["", "Tickers: " + ", ".join(r["Ticker"] for r in rl)]
+        else:
+            plain.append("No matches today")
+        plain.append("\nFull results in CSV attachment.")
+
+        subj = (f"Major Support Retest - {cnt} signal{'s' if cnt != 1 else ''} - "
+                f"{datetime.today().strftime('%Y-%m-%d')}")
+        msg = MIMEMultipart("mixed")
+        msg["Subject"] = subj; msg["From"] = gu; msg["To"] = ", ".join(eto)
+        alt = MIMEMultipart("alternative")
+        alt.attach(MIMEText("\n".join(plain), "plain"))
+        alt.attach(MIMEText(html, "html"))
+        msg.attach(alt)
+    except Exception as e:
+        print(f"[Email] Failed to build email body: {type(e).__name__}: {e}")
+        return
+
+    if csv_path and os.path.exists(csv_path):
+        try:
+            with open(csv_path, "rb") as f:
+                part = MIMEBase("application", "octet-stream"); part.set_payload(f.read())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition", f"attachment; filename={os.path.basename(csv_path)}")
+            msg.attach(part)
+        except Exception as e:
+            print(f"[Email] CSV attach failed: {e}")
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
+            srv.login(gu, gp.replace(" ", ""))
+            try: __import__("best_picks").attach_to_email(msg)
+            except Exception as _bp_err: print(f"  Best 10 not added: {_bp_err}")
+            srv.sendmail(gu, eto, msg.as_string())
+        print(f"[Email] Sent to {', '.join(eto)} - {subj}")
+    except Exception as e:
+        print(f"[Email] {type(e).__name__}: {e}")
+
+try:
+    _send_email(results, fpath)
+except Exception as e:
+    print(f"[Email] Unexpected top-level error: {type(e).__name__}: {e}")
+
+# -- Charts for top 5: last 90 daily candles, support line, reversal high, stop
+if results:
+    top = results[:5]
+    fig, axes = plt.subplots(len(top), 1, figsize=(13, 4.2*len(top)), facecolor="#0f172a")
+    if len(top) == 1: axes = [axes]
+    for ax, r in zip(axes, top):
+        d = r["_df"].iloc[-90:]
+        x = np.arange(len(d))
+        ax.set_facecolor("#0f172a")
+        cols = ["#22c55e" if c > o else "#ef4444" for o, c in zip(d["Open"], d["Close"])]
+        ax.vlines(x, d["Low"], d["High"], color=cols, lw=0.8)
+        ax.bar(x, (d["Close"] - d["Open"]).abs().clip(lower=1e-9), bottom=np.minimum(d["Open"], d["Close"]),
+               color=cols, width=0.6)
+        ax.plot(x, r["_ind"]["s50"][-len(d):], color="#a78bfa", lw=0.9, label="SMA50")
+        for when, lab in ((r["Support_Date"], "support low"), (r["Reversal_High_Date"], "reversal high")):
+            k_ = np.where(d.index == pd.Timestamp(when))[0]
+            if len(k_): ax.axvline(k_[0], color="#334155", ls="--", lw=0.8); ax.text(k_[0], d["High"].max(), lab, color="#cbd5e1", fontsize=7, ha="center", va="bottom")
+        for lvl, c_, lab in ((r["Support"], "#22c55e", "Support"), (r["Stop_Loss"], "#ef4444", "Stop"),
+                             (r["Target_Prior_High"], "#38bdf8", "Target")):
+            ax.axhline(lvl, color=c_, ls=":", lw=0.9)
+            ax.text(len(d) - 0.4, lvl, f" {lab} {lvl:.2f}", color=c_, fontsize=7, va="center")
+        ax.set_xticks(x[::10]); ax.set_xticklabels([t.strftime("%m/%d") for t in d.index[::10]], fontsize=7)
+        ax.set_title(f"{r['Ticker']} | USD {r['Price']:.2f} | Score {r['Score']} | support {r['Support']:.2f} ({r['Support_Date']}) | "
+                     f"reversal +{r['Reversal_%']}% | {r['Reward_R']}R to prior high", color="#e2e8f0", fontsize=9, fontweight="bold")
+        ax.tick_params(colors="#94a3b8", labelsize=7)
+        for sp in ax.spines.values(): sp.set_edgecolor("#1e3a5f")
+        ax.grid(color="#1e3a5f", ls="--", lw=0.5, alpha=0.6)
+        ax.legend(loc="upper left", fontsize=7, facecolor="#0f172a", labelcolor="#cbd5e1", edgecolor="#1e3a5f")
+    plt.suptitle(f"Major Support Retest - {datetime.today().strftime('%Y-%m-%d')}",
+                 color="#60a5fa", fontsize=12, fontweight="bold")
+    plt.tight_layout()
+    cp = os.path.join(out_dir, f"daily_major_support_retest_chart_{ts}.png")
+    plt.savefig(cp, dpi=130, bbox_inches="tight", facecolor="#0f172a")
+    plt.close()
+    print(f"  Chart -> {cp}")
+
+print(f"""
+{'=' * 55}
+  PATTERN (latest session)
+  1) A major swing low {CFG['pivot_min_age']}-{CFG['pivot_max_age']} sessions ago (lowest of {CFG['pivot_wing']} bars each side
+     and of the {CFG['major_lookback']} bars before it) = the support
+  2) A strong reversal off it: +{CFG['rally_min_pct']:g}% and {CFG['rally_min_atr']:g} ATR within {CFG['rally_bars']} sessions
+  3) Support held since: no close below support - {CFG['break_tol_atr']:g} ATR
+  4) Today's low back in the zone support - {CFG['zone_below_atr']:g} ATR .. + {CFG['zone_above_atr']:g} ATR,
+     close not below support - {CFG['close_below_tol_atr']:g} ATR
+  5) Rejection candle: close in the upper half of the range, green or lower wick >= body
+  OUTPUT: Entry = close, Stop = min(low, support) - {CFG['stop_buffer_atr']:g} ATR, Target = the reversal high
+{'=' * 55}
+""")
