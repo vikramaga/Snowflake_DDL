@@ -158,7 +158,7 @@ CFG = {
 
     # ── Filters ───────────────────────────────────────────────
     "min_avg_volume"            : 80_000,
-    "min_price"                 : 1.0,
+    "min_price"                 : 0.10,  # includes penny stocks (was 1.0)
 
     "batch_size"                : 50,
     "batch_sleep"               : 1.5,
@@ -879,6 +879,8 @@ elif results:
 # Save
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 fpath   = os.path.join(out_dir, f"sma_retest_ema20_cross_{ts}.csv")
+try: __import__("best_picks").rank_best(df_out)
+except Exception as _bp_err: print(f"  Best 10 skipped: {_bp_err}")
 df_out.to_csv(fpath, index=False)
 print(f"\n  💾 CSV → {fpath}")
 tv = os.path.join(out_dir, f"tv_sma_retest_{ts}.txt")
@@ -1067,6 +1069,8 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
         print(f"[Email] Connecting to smtp.gmail.com:465 ...")
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
             srv.login(gu, gp.replace(" ", ""))
+            try: __import__("best_picks").attach_to_email(msg)
+            except Exception as _bp_err: print(f"  Best 10 not added: {_bp_err}")
             srv.sendmail(gu, eto, msg.as_string())
         print(f"[Email] ✅  Sent successfully to: {', '.join(eto)}")
         print(f"[Email]    Subject: {subj}")
