@@ -1,4 +1,6 @@
-# Replace a TradingView watchlist with the day's Best 10 picks.
+# Create a NEW TradingView watchlist each day with that day's Best 10 picks,
+# named "Best 10 - YYYY-MM-DD" (date of the run in IST). Earlier days' lists are
+# kept; a re-run on the same day replaces that day's list instead of adding a copy.
 #
 # Called at the end of claude_run/tools/best10_digest.py (so it runs after the
 # daily 06:00 IST run) when the TradingView session secrets are present.
@@ -7,7 +9,8 @@
 #
 # Env: TV_SESSIONID, TV_SESSIONID_SIGN  - the "sessionid" and "sessionid_sign"
 #        cookies of tradingview.com from a signed-in browser (repo secrets)
-#      TV_WATCHLIST  - watchlist name (default "Best 10 - all scanners")
+#      TV_WATCHLIST_PREFIX - start of the daily list name (default "Best 10")
+#      TV_WATCHLIST  - if set, ONE fixed list of that name is replaced every day instead
 #
 # TradingView has no public watchlist API; this uses the same endpoints as the
 # TradingView website (/api/v1/symbols_list/custom/). If they change, or the
@@ -20,13 +23,16 @@
 #   ### <each scanner>         (its Best 10, minus symbols already listed above)
 import glob, json, os, sys
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import requests
 
 BASE = "https://www.tradingview.com"
 API = f"{BASE}/api/v1/symbols_list/custom/"
-NAME = os.environ.get("TV_WATCHLIST", "Best 10 - all scanners")
+PREFIX = os.environ.get("TV_WATCHLIST_PREFIX", "Best 10").strip() or "Best 10"
+NAME = (os.environ.get("TV_WATCHLIST", "").strip()
+        or f"{PREFIX} - {datetime.now(ZoneInfo('Asia/Kolkata')):%Y-%m-%d}")
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -152,7 +158,7 @@ def sync(run=None, probe=False):
     need = int(os.environ.get("TV_MIN_SCANNERS", "10"))
     if a.Scanner.nunique() < need:
         raise SyncError(f"run {run} has only {a.Scanner.nunique()} scanner(s) (need {need}) - "
-                        "watchlist left as it was")
+                        "no watchlist created")
     order = [x for x in bd.schedule() if x in set(a.Scanner)] + sorted(set(a.Scanner) - set(bd.schedule()))
     symbols = build_symbols(a, exchange_map(), {x: bd.nice(x) for x in order})
     n = sum(1 for x in symbols if not x.startswith("###"))
@@ -177,13 +183,13 @@ def alert(reason):
     et = os.environ.get("EMAIL_TO", "")
     if not (gu and gp and et):
         return
-    body = (f"The TradingView watchlist '{NAME}' was not updated today.\n\nReason: {reason}\n\n"
+    body = (f"Today's TradingView watchlist '{NAME}' was not created.\n\nReason: {reason}\n\n"
             "If the session expired: sign in to tradingview.com in your browser, copy the cookies "
             "'sessionid' and 'sessionid_sign' (Developer tools > Application > Cookies) and paste them "
             "into the GitHub repo secrets TV_SESSIONID and TV_SESSIONID_SIGN.\n\n"
             "The Best 10 email and the scanners are not affected.")
     msg = MIMEText(body, "plain", "utf-8")
-    msg["Subject"] = f"⚠️ TradingView watchlist not updated · {datetime.today():%d %b %Y}"
+    msg["Subject"] = f"⚠️ TradingView watchlist not created · {datetime.today():%d %b %Y}"
     msg["From"], msg["To"] = gu, et
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
