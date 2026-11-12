@@ -20,7 +20,8 @@
 # List layout: "###" lines are TradingView section headers.
 #   ### Found by 2+ scanners   (most scanners first)
 #   ### Top 20 scores
-#   ### <each scanner>         (its Best 10, minus symbols already listed above)
+#   ### <each scanner>         (its Best 10, minus symbols already listed above; if all of
+#                              them are above, the header alone names them)
 import glob, json, os, sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -104,12 +105,16 @@ def build_symbols(a, ex, names):
     out, seen = [], set()
 
     def add(section, tickers):
-        syms = [tv_symbol(t, ex) for t in tickers]
-        syms = [x for x in syms if x not in seen]
+        allsyms = [tv_symbol(t, ex) for t in tickers]
+        syms = [x for x in allsyms if x not in seen]
         if syms:
             out.append("###" + section)
             out.extend(syms)
             seen.update(syms)
+        elif allsyms:
+            # every pick is already listed higher up: keep the scanner visible with its tickers in the header
+            names = ", ".join(x.split(":")[-1] for x in allsyms)
+            out.append(("###" + section + " - listed above: " + names)[:100])
 
     multi = (a.groupby("Ticker").agg(n=("Scanner", "nunique"), best=("Best_Score", "max"))
               .query("n >= 2").sort_values(["n", "best"], ascending=False))
