@@ -1,0 +1,1687 @@
+[master ddc3094] Bearish-stack SMA21 reclaim: volume rule loosened from > 3x to > 2x the previous day
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   a5ef2d3..ddc3094  HEAD -> master
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 276 bars ($355.63, 2026-11-11)
+  ✅ MSFT: daily 276 bars ($521.13, 2026-11-11)
+  ✅ NVDA: daily 276 bars ($173.73, 2026-11-11)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3156 → 3156
+  ✅ otherlisted       : +2262 → 5418
+  ✅ NASDAQ API        : +1077 → 6495
+  ✅ Static fallback   : +  10 → 6505
+
+  🎯 Total: 6505 tickers
+
+=================================================================
+  STEP 3  SCANNING 6505 TICKERS
+=================================================================
+Daily fetch:   0%|          | 0/6505 [00:00<?, ?stk/s]$AACPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ABLVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ACAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['AACPW', 'AACOW', 'ABLVW', 'AACIW', 'ACAAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AACPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ABLVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ABLVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ACAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ACAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   1%|          | 50/6505 [00:02<04:44, 22.71stk/s]$ADACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ACONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['ADACW', 'ACONW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ACONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ACONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ADACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ADACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   2%|▏         | 100/6505 [00:05<06:02, 17.68stk/s]$AERTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ADSEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AEAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AENTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['AERTW', 'ADSEW', 'AEAQW', 'AENTW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ADSEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ADSEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AEAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AEAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AENTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AENTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AERTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AERTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   2%|▏         | 150/6505 [00:08<06:37, 15.97stk/s]$AFRIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AESPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AFJKR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AGLTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AESPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['AFRIW', 'AESPW', 'AFJKR', 'AGLTW', 'AESPR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AESPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AESPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AESPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AESPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AFJKR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AFJKR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AFRIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AFRIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AGLTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AGLTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   3%|▎         | 200/6505 [00:12<06:39, 15.78stk/s]$AIIOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIRJW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AISPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['AIIOW', 'AIRJW', 'AISPW', 'AIMDW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIIOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIIOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIRJW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AIRJW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AISPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AISPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   4%|▍         | 250/6505 [00:15<06:50, 15.25stk/s]$ALPXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALFUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALOVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALISR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['ALPXR', 'ALFUW', 'ALOVW', 'ALISR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALFUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALFUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALISR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALISR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALOVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALOVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALPXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALPXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   5%|▍         | 300/6505 [00:19<06:52, 15.03stk/s]$ALVOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AMODW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AMPGZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['ALVOW', 'AMODW', 'AMPGZ']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALVOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ALVOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AMODW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AMODW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AMPGZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AMPGZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   5%|▌         | 350/6505 [00:22<06:51, 14.96stk/s]$APACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ANNAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANGHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['APACR', 'ANNAW', 'ANGHW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+['ANSS']: possibly delisted; no timezone found
+$ANGHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ANGHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ANNAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ANNAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+$APACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   6%|▌         | 400/6505 [00:26<07:01, 14.50stk/s]$APURR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APXTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APMCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APLMW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+6 Failed downloads:
+['APURR', 'ARCLW', 'APXTW', 'APMCR', 'APLMW', 'ARCIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APLMW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APLMW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APMCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APMCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APURR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APURR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APXTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$APXTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   7%|▋         | 450/6505 [00:30<07:19, 13.78stk/s]$ARTCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASBPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['ARTCW', 'ASBPW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARTCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ARTCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASBPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASBPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   8%|▊         | 500/6505 [00:33<07:06, 14.07stk/s]$ASPSZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ATLQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ATEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['ASPSZ', 'ASPCR', 'ATLQR', 'ATEST', 'ASPSW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPSZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ASPSZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ATEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ATEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ATLQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ATLQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:   8%|▊         | 550/6505 [00:37<07:00, 14.16stk/s]Daily fetch:   9%|▉         | 600/6505 [00:40<06:53, 14.27stk/s]$BACCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AXINR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BAERW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['BACCR', 'AXINR', 'BAERW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AXINR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$AXINR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BACCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BACCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BAERW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BAERW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  10%|▉         | 650/6505 [00:43<06:45, 14.45stk/s]$BCGWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BBCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['BCGWW', 'BBCIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BBCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BBCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCGWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCGWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  11%|█         | 700/6505 [00:47<06:49, 14.16stk/s]$BEAGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCTXL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BETRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BEATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BENFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCTXZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BDMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BDCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+8 Failed downloads:
+['BEAGR', 'BCTXL', 'BETRW', 'BEATW', 'BENFW', 'BCTXZ', 'BDMDW', 'BDCIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCTXL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCTXL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCTXZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BCTXZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BDCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BDCIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BDMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BDMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BEAGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BEAGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BEATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BEATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BENFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BENFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BETRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BETRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  12%|█▏        | 750/6505 [00:50<06:44, 14.22stk/s]$BIAFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BHAVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BGLWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BFRGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['BIAFW', 'BHAVR', 'BGLWW', 'BFRGW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BFRGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BFRGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BGLWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BGLWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BHAVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BHAVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BIAFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BIAFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  12%|█▏        | 800/6505 [00:54<06:38, 14.30stk/s]$BIVIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BIOTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BKHAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['BIVIW', 'BIOTW', 'BKHAR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BIOTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BIOTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BIVIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BIVIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BKHAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BKHAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  13%|█▎        | 850/6505 [00:57<06:20, 14.87stk/s]$BLZRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLUWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNCWZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLRKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNCWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+6 Failed downloads:
+['BLZRW', 'BLUWW', 'BNCWZ', 'BNAIW', 'BLRKW', 'BNCWW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLRKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLRKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLUWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLUWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLZRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BLZRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNCWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNCWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNCWZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BNCWZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  14%|█▍        | 900/6505 [01:00<06:18, 14.80stk/s]$BREZR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BRLSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BPACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['BREZR', 'BRLSW', 'BPACR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BPACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BPACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BREZR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BREZR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BRLSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BRLSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  15%|█▍        | 950/6505 [01:04<06:18, 14.68stk/s]$BTBDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BSAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['BTBDW', 'BSAAR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BSAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BSAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BTBDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BTBDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  15%|█▌        | 1000/6505 [01:07<06:15, 14.68stk/s]$BZAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BZFDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['BZAIW', 'BZFDW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BZAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BZAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BZFDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$BZFDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  16%|█▌        | 1050/6505 [01:11<06:07, 14.85stk/s]$CAIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CAQUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['CAIIW', 'CAQUW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CAIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CAIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CAQUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CAQUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  17%|█▋        | 1100/6505 [01:14<06:02, 14.91stk/s]$CBO: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CCAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CBX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['CBO', 'CCAQW', 'CBX']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CBO: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CBO: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CBX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CBX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CCAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CCAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  18%|█▊        | 1150/6505 [01:17<06:02, 14.75stk/s]$CDROW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDIOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDTTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['CDROW', 'CDIOW', 'CDTTW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDIOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDIOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDROW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDROW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDTTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CDTTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  18%|█▊        | 1200/6505 [01:21<05:55, 14.93stk/s]$CFLT: possibly delisted; no timezone found
+$CHARR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CHPGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['CFLT']: possibly delisted; no timezone found
+['CHARR', 'CHPGR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CHARR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CHARR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CHPGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CHPGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  19%|█▉        | 1250/6505 [01:25<06:14, 14.02stk/s]$CINGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['CINGW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CINGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CINGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  20%|█▉        | 1300/6505 [01:28<05:57, 14.56stk/s]$CLSKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['CLSKW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CLSKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CLSKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  21%|██        | 1350/6505 [01:31<05:45, 14.93stk/s]$COCHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CNCKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['COCHW', 'CNCKW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CNCKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CNCKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$COCHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$COCHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  22%|██▏       | 1400/6505 [01:34<05:46, 14.75stk/s]$CRANR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CORZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$COOTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRAQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CORZZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+7 Failed downloads:
+['CRANR', 'CORZW', 'COOTW', 'CRACW', 'CRACR', 'CRAQR', 'CORZZ']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$COOTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$COOTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CORZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CORZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CORZZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CORZZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRANR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRANR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRAQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRAQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  22%|██▏       | 1450/6505 [01:38<05:37, 14.98stk/s]$CSHRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRMLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRMN: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRGOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['CSHRW', 'CRMLW', 'CRMN', 'CRGOW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRGOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRGOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRMLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRMLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRMN: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CRMN: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CSHRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CSHRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  23%|██▎       | 1500/6505 [01:41<05:24, 15.40stk/s]$CUBWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CTAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['CUBWW', 'CTEST', 'CTAAR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CTAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CTAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CUBWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CUBWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  24%|██▍       | 1550/6505 [01:44<05:26, 15.17stk/s]$CYCUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CXIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CXAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['CYCUW', 'DAAQW', 'CXIIW', 'CXAIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CXAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CXAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CXIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CXIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CYCUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$CYCUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  25%|██▍       | 1600/6505 [01:48<05:33, 14.72stk/s]$DBCAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAVEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAICW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['DBCAW', 'DAVEW', 'DAICW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAICW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAICW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAVEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DAVEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DBCAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DBCAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  25%|██▌       | 1650/6505 [01:51<05:24, 14.97stk/s]$DFLIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DJTWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFNSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFSCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['DFLIW', 'DJTWW', 'DFNSW', 'DFSCW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFLIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFLIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFNSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFNSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFSCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DFSCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DJTWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DJTWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  26%|██▌       | 1700/6505 [01:54<05:24, 14.83stk/s]$DMAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DMIIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DRDBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['DMAAR', 'DMIIR', 'DRDBW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DMAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DMAAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DMIIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DMIIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DRDBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DRDBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  27%|██▋       | 1750/6505 [01:58<05:14, 15.12stk/s]$DRTSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DSYWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DTSQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['DRTSW', 'DSYWW', 'DTSQR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DRTSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DRTSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DSYWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DSYWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DTSQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DTSQR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  28%|██▊       | 1800/6505 [02:01<05:07, 15.32stk/s]$EDBLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DYORW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['EDBLW', 'DYORW', 'EA']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DYORW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$DYORW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EDBLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EDBLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  28%|██▊       | 1850/6505 [02:04<05:10, 15.01stk/s]$EGHAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['EGHAR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EGHAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EGHAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  29%|██▉       | 1900/6505 [02:07<05:00, 15.35stk/s]$EMISR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ENGNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ENRDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['EMISR', 'ENGNW', 'ENRDW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EMISR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EMISR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ENGNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ENGNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ENRDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ENRDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  30%|██▉       | 1950/6505 [02:11<05:08, 14.75stk/s]$ERNAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['ERNAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ERNAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ERNAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  31%|███       | 2000/6505 [02:14<05:06, 14.69stk/s]$EURKR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ESLAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EUDAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['EURKR', 'ESLAW', 'EUDAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ESLAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ESLAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EUDAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EUDAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EURKR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EURKR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  32%|███▏      | 2050/6505 [02:18<04:55, 15.06stk/s]$EXAS: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EWAVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FACTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FACWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EVOXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['EXAS', 'EWAVR', 'FACTW', 'FACWW', 'EVOXW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EVOXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EVOXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EWAVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EWAVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EXAS: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$EXAS: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FACTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FACTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FACWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FACWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  32%|███▏      | 2100/6505 [02:21<05:08, 14.26stk/s]$FERAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FBYDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['FERAR', 'FBYDW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FBYDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FBYDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FERAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FERAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  33%|███▎      | 2150/6505 [02:25<05:05, 14.25stk/s]$FGIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FIGXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FGIWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['FGIIW', 'FIGXW', 'FGIWW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FGIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FGIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FGIWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FGIWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FIGXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FIGXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  34%|███▍      | 2200/6505 [02:28<04:53, 14.66stk/s]$FMACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FLDDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FMSTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FJDIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['FMACR', 'FLDDW', 'FMSTW', 'FJDIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FJDIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FJDIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FLDDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FLDDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FMACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FMACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FMSTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FMSTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  35%|███▍      | 2250/6505 [02:32<05:00, 14.18stk/s]$FOXXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['FOXXW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FOXXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FOXXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  35%|███▌      | 2300/6505 [02:35<04:52, 14.36stk/s]$FTHAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FUFUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FSHPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['FTHAW', 'FUFUW', 'FSHPR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FSHPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FSHPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FTHAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FTHAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FUFUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FUFUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  36%|███▌      | 2350/6505 [02:39<04:54, 14.13stk/s]$GCGRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FXACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FWACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FWACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['GCGRW', 'FXACW', 'FWACW', 'FWACR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FWACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FWACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FWACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FWACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FXACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$FXACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GCGRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GCGRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  37%|███▋      | 2400/6505 [02:43<05:02, 13.56stk/s]$GFUZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['GFUZW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GFUZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GFUZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  38%|███▊      | 2450/6505 [02:46<04:47, 14.11stk/s]$GGROW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIBOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIXXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIWWR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['GGROW', 'GIBOW', 'GIXXR', 'GIWWR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GGROW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GGROW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIBOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIBOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIWWR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIWWR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIXXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GIXXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  38%|███▊      | 2500/6505 [02:50<04:47, 13.92stk/s]$GLNDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['GLNDW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GLNDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GLNDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  39%|███▉      | 2550/6505 [02:53<04:36, 14.33stk/s]$GRRRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GRMLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GPACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GPATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['GRRRW', 'GRMLW', 'GPACW', 'GPATW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GPACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GPACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GPATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GPATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GRMLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GRMLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GRRRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GRRRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  40%|███▉      | 2600/6505 [02:57<04:30, 14.42stk/s]$GSHRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTERR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GSRVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTENW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTERW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GUACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+6 Failed downloads:
+['GSHRW', 'GTERR', 'GSRVR', 'GTENW', 'GTERW', 'GUACW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GSHRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GSHRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GSRVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GSRVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTENW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTENW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTERR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTERR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTERW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GTERW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GUACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$GUACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  41%|████      | 2650/6505 [03:00<04:23, 14.65stk/s]$HCICR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HACQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCMAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['HCICR', 'HACQW', 'HCMAW', 'HCACR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HACQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HACQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCICR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCICR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCMAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HCMAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  42%|████▏     | 2700/6505 [03:04<04:24, 14.36stk/s]$HDRNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['HDRNW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HDRNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HDRNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  42%|████▏     | 2750/6505 [03:07<04:14, 14.76stk/s]$HOLOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HPAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HOVRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['HOLOW', 'HPAIW', 'HOVRW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HOLOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HOLOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HOVRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HOVRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HPAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HPAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  43%|████▎     | 2800/6505 [03:10<04:11, 14.74stk/s]$HUBC: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HTZWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HSCSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBCZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['HUBC', 'HUBCW', 'HTZWW', 'HSCSW', 'HUBCZ']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HSCSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HSCSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HTZWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HTZWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBC: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBC: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBCZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$HUBCZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  44%|████▍     | 2850/6505 [03:14<04:14, 14.35stk/s]$IACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IACQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IBACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['IACOW', 'IACQW', 'IBACR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IACQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IACQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IBACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IBACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  45%|████▍     | 2900/6505 [03:18<04:19, 13.92stk/s]$IEAGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IDACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ICUCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IGZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['IEAGR', 'IDACW', 'ICUCW', 'IGZ']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ICUCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ICUCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IDACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IDACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IEAGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IEAGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IGZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IGZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  45%|████▌     | 2950/6505 [03:21<04:12, 14.09stk/s]$INACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ILLUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IMSRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['INACR', 'ILLUW', 'IMSRW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ILLUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ILLUW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IMSRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IMSRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$INACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$INACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  46%|████▌     | 3000/6505 [03:25<04:05, 14.29stk/s]$IPFXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['IPFXW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IPFXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IPFXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  47%|████▋     | 3050/6505 [03:28<04:06, 14.01stk/s]$IPVVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IRHOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IQMXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ITHAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IPXGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['IPVVW', 'IRHOR', 'IQMXW', 'ITHAW', 'IPXGW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IPVVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IPVVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IPXGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IPXGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IQMXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IQMXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IRHOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$IRHOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ITHAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ITHAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  48%|████▊     | 3100/6505 [03:32<04:07, 13.78stk/s]Daily fetch:  48%|████▊     | 3150/6505 [03:35<03:52, 14.43stk/s]Daily fetch:  49%|████▉     | 3200/6505 [03:39<03:58, 13.83stk/s]$KEYYW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KIDZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KITTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KCHVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KFIIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KBONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+6 Failed downloads:
+['KEYYW', 'KIDZW', 'KITTW', 'KCHVR', 'KFIIR', 'KBONW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KBONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KBONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KCHVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KCHVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KEYYW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KEYYW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KFIIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KFIIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KIDZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KIDZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KITTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KITTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  50%|████▉     | 3250/6505 [03:43<03:51, 14.03stk/s]$KOYNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KRAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['KOYNW', 'KRAQW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KOYNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KOYNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KRAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KRAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  51%|█████     | 3300/6505 [03:46<03:44, 14.27stk/s]$KTWOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KYIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LATAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['KTWOR', 'KYIVW', 'LATAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KTWOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KTWOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KYIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$KYIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LATAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LATAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  51%|█████▏    | 3350/6505 [03:49<03:39, 14.39stk/s]$LCCCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LCFYW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['LCCCR', 'LCFYW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LCCCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LCCCR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LCFYW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LCFYW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  52%|█████▏    | 3400/6505 [03:53<03:37, 14.29stk/s]$LIMNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LKSPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['LIMNW', 'LKSPR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LIMNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LIMNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LKSPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LKSPR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  53%|█████▎    | 3450/6505 [03:56<03:28, 14.66stk/s]$LOTWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPBBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LNZAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPCVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['LOTWW', 'LPBBW', 'LNZAW', 'LPCVW', 'LPAAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LNZAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LNZAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LOTWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LOTWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPBBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPBBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPCVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LPCVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  54%|█████▍    | 3500/6505 [04:00<03:28, 14.39stk/s]$LWACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LTGRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['LWACW', 'LTGRW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LTGRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LTGRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LWACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$LWACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  55%|█████▍    | 3550/6505 [04:03<03:28, 14.16stk/s]$MACIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['MACIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MACIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MACIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  55%|█████▌    | 3600/6505 [04:07<03:19, 14.58stk/s]$MCGAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MDCXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MBVIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MDAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MCAHR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['MCGAW', 'MDCXW', 'MBVIW', 'MDAIW', 'MCAHR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MBVIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MBVIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MCAHR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MCAHR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MCGAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MCGAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MDAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MDAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MDCXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MDCXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  56%|█████▌    | 3650/6505 [04:10<03:23, 14.05stk/s]$MEVOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MFICL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MESHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['MEVOW', 'MFICL', 'MESHW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MESHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MESHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MEVOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MEVOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MFICL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MFICL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  57%|█████▋    | 3700/6505 [04:14<03:18, 14.16stk/s]$MLAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MKLYR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MKDWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['MLAAW', 'MKLYR', 'MKDWW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MKDWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MKDWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MKLYR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MKLYR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MLAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MLAAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  58%|█████▊    | 3750/6505 [04:17<03:14, 14.14stk/s]$MOBBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MOBXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['MOBBW', 'MOBXW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MOBBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MOBBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MOBXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MOBXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  58%|█████▊    | 3800/6505 [04:21<03:07, 14.45stk/s]$MRNOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MSAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['MRNOW', 'MSAIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MRNOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MRNOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MSAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MSAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  59%|█████▉    | 3850/6505 [04:25<03:16, 13.52stk/s]$MTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MTEKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MUZEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['MTEST', 'MTEKW', 'MUZEW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MTEKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MTEKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MUZEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MUZEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  60%|█████▉    | 3900/6505 [04:28<03:09, 13.77stk/s]$NANOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MYXXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MYXXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['NANOW', 'MYXXW', 'MYXXR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MYXXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MYXXR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MYXXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$MYXXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NANOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NANOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  61%|██████    | 3950/6505 [04:32<03:05, 13.75stk/s]$NEOVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NCOOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NBRGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NCPLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['NEOVW', 'NCOOR', 'NBRGR', 'NCPLW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NBRGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NBRGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NCOOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NCOOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NCPLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NCPLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NEOVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NEOVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  61%|██████▏   | 4000/6505 [04:35<02:57, 14.14stk/s]$NEXRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NIOBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NHIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NIVFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['NEXRW', 'NIOBW', 'NHIVW', 'NIVFW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NEXRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NEXRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NHIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NHIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NIOBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NIOBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NIVFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NIVFW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  62%|██████▏   | 4050/6505 [04:39<02:57, 13.81stk/s]$NOEMR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NMPAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NOEMW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['NOEMR', 'NMPAR', 'NOEMW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NMPAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NMPAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NOEMR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NOEMR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NOEMW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NOEMW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  63%|██████▎   | 4100/6505 [04:42<02:47, 14.38stk/s]$NRSNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NPACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['NRSNW', 'NTEST', 'NPACW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NPACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NPACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NRSNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NRSNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  64%|██████▍   | 4150/6505 [04:46<02:46, 14.14stk/s]$NUAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NUCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NWCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['NUAIW', 'NUCLW', 'NWCLW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NUAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NUAIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NUCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NUCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NWCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NWCLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  65%|██████▍   | 4200/6505 [04:49<02:41, 14.31stk/s]$OBAWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NXGLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NXATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OABIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['OBAWW', 'NXGLW', 'NXATW', 'OABIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NXATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NXATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NXGLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$NXGLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OABIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OABIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OBAWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OBAWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  65%|██████▌   | 4250/6505 [04:53<02:36, 14.40stk/s]$OIMAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OHACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OGGWZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OCSAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['OIMAW', 'OHACR', 'OGGWZ', 'OCSAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OCSAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OCSAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OGGWZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OGGWZ: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OHACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OHACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OIMAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OIMAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  66%|██████▌   | 4300/6505 [04:57<02:40, 13.73stk/s]$ONFOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONCHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OPAY: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['ONFOW', 'ONMDW', 'ONCHW', 'OPAY']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONCHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONCHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONFOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONFOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ONMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OPAY: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OPAY: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  67%|██████▋   | 4350/6505 [05:00<02:31, 14.18stk/s]$OPTXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ORIQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['OPTXW', 'ORIQW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OPTXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OPTXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ORIQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ORIQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  68%|██████▊   | 4400/6505 [05:04<02:29, 14.12stk/s]$PAACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OXBRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PACHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['PAACW', 'OXBRW', 'PACHW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OXBRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$OXBRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PAACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PAACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PACHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PACHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  68%|██████▊   | 4450/6505 [05:07<02:22, 14.38stk/s]$PARAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PBMWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PCAPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PALOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['PARAW', 'PBMWW', 'PCAPW', 'PALOW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PALOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PALOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PARAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PARAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PBMWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PBMWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PCAPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PCAPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  69%|██████▉   | 4500/6505 [05:11<02:22, 14.07stk/s]$PECER: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PCTTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['PECER', 'PCTTW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PCTTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PCTTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PECER: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PECER: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  70%|██████▉   | 4550/6505 [05:14<02:17, 14.20stk/s]$PIIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PGYWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PGACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['PIIIW', 'PGYWW', 'PGACR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PGACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PGACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PGYWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PGYWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PIIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PIIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  71%|███████   | 4600/6505 [05:18<02:12, 14.38stk/s]$PLMKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PLCIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['PLMKW', 'PLCIR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PLCIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PLCIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PLMKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PLMKW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  71%|███████▏  | 4650/6505 [05:21<02:10, 14.24stk/s]$PONOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PMTRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$POLEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['PONOR', 'PMTRW', 'POLEW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PMTRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PMTRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$POLEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$POLEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PONOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PONOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  72%|███████▏  | 4700/6505 [05:24<02:04, 14.51stk/s]$PRENW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['PRENW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PRENW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PRENW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  73%|███████▎  | 4750/6505 [05:28<01:59, 14.71stk/s]$PTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PSTG: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PTORW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QADRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['PTEST', 'PSTG', 'PTORW', 'QADRW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PSTG: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PSTG: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PTORW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$PTORW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QADRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QADRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  74%|███████▍  | 4800/6505 [05:31<01:59, 14.27stk/s]$QRVO: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RAINW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QSEAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QUMSR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['QRVO', 'RAINW', 'QSEAR', 'QUMSR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QRVO: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QRVO: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QSEAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QSEAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QUMSR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$QUMSR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RAINW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RAINW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  75%|███████▍  | 4850/6505 [05:35<01:58, 13.96stk/s]$RDACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RDAGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RANGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['RDACR', 'RDAGW', 'RANGR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RANGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RANGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RDACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RDACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RDAGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RDAGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  75%|███████▌  | 4900/6505 [05:39<01:52, 14.31stk/s]$RDZNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$REVBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RFAMR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RFAIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['RDZNW', 'REVBW', 'RFAMR', 'RFAIR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RDZNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RDZNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$REVBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$REVBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RFAIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RFAIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RFAMR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RFAMR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  76%|███████▌  | 4950/6505 [05:42<01:46, 14.61stk/s]$RMCOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RIBBR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RGTIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['RMCOW', 'RIBBR', 'RGTIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RGTIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RGTIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RIBBR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RIBBR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RMCOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RMCOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  77%|███████▋  | 5000/6505 [05:45<01:43, 14.60stk/s]$RMSGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['RMSGW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RMSGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RMSGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  78%|███████▊  | 5050/6505 [05:49<01:43, 14.00stk/s]$RREVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RVMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RVSNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RUMBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['RREVW', 'RVMDW', 'RVSNW', 'RUMBW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RREVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RREVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RUMBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RUMBW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RVMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RVMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RVSNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RVSNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  78%|███████▊  | 5100/6505 [05:53<01:39, 14.13stk/s]$SATLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SAAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RZLVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SAIHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['SATLW', 'SAAQW', 'RZLVW', 'SAIHW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RZLVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$RZLVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SAAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SAAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SAIHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SAIHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SATLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SATLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  79%|███████▉  | 5150/6505 [05:56<01:36, 14.06stk/s]$SCAGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCPQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCQCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SBCWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCLXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+6 Failed downloads:
+['SCAGW', 'SCATW', 'SCPQW', 'SCQCW', 'SBCWW', 'SCLXW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SBCWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SBCWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCAGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCAGW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCATW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCLXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCLXW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCPQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCPQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCQCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SCQCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  80%|███████▉  | 5200/6505 [06:01<01:39, 13.18stk/s]$SDAWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SDHIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['SDAWW', 'SDHIR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SDAWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SDAWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SDHIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SDHIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  81%|████████  | 5250/6505 [06:04<01:30, 13.87stk/s]$SHMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SHFSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['SHMDW', 'SHFSW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SHFSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SHFSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SHMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SHMDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  81%|████████▏ | 5300/6505 [06:07<01:24, 14.22stk/s]$SLDPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SKYAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['SLDPW', 'SKYAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SKYAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SKYAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SLDPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SLDPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  82%|████████▏ | 5350/6505 [06:10<01:20, 14.29stk/s]$SMXWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SLXNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SMAR: possibly delisted; no timezone found
+
+3 Failed downloads:
+['SMXWW', 'SLXNW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+['SMAR']: possibly delisted; no timezone found
+$SLXNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SLXNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMXWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SMXWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  83%|████████▎ | 5400/6505 [06:14<01:18, 14.17stk/s]$SORNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SPEGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SOUNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['SORNW', 'SPEGR', 'SOUNW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SORNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SORNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SOUNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SOUNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SPEGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SPEGR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  84%|████████▍ | 5450/6505 [06:17<01:13, 14.45stk/s]$SQFTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SPWRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSEAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['SQFTW', 'SPWRW', 'SSEAR', 'SSACR', 'SSACW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SPWRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SPWRW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SQFTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SQFTW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSACR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSEAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SSEAR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  85%|████████▍ | 5500/6505 [06:21<01:09, 14.46stk/s]$STLNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['STLNW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$STLNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$STLNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  85%|████████▌ | 5550/6505 [06:24<01:05, 14.53stk/s]$SWVLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVREW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVCCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+6 Failed downloads:
+['SWVLW', 'SVREW', 'SVIVW', 'SVAQW', 'SVCCW', 'SVA']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVAQW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVCCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVCCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVREW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SVREW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SWVLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SWVLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  86%|████████▌ | 5600/6505 [06:28<01:03, 14.21stk/s]$TACHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TAVIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SZZLR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SXTPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+5 Failed downloads:
+['TACHW', 'TAVIR', 'TACOW', 'SZZLR', 'SXTPW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SXTPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SXTPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SZZLR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$SZZLR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TACHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TACHW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TACOW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TAVIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TAVIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  87%|████████▋ | 5650/6505 [06:31<00:59, 14.25stk/s]$TDACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TDWDR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['TDACW', 'TDWDR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TDACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TDACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TDWDR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TDWDR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  88%|████████▊ | 5700/6505 [06:35<00:55, 14.49stk/s]$THEOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['THEOR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$THEOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$THEOR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  88%|████████▊ | 5750/6505 [06:38<00:52, 14.42stk/s]$TMSWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TNONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['TMSWW', 'TNONW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TMSWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TMSWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TNONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TNONW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  89%|████████▉ | 5800/6505 [06:42<00:48, 14.51stk/s]$TRGSR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['TRGSR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TRGSR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TRGSR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  90%|████████▉ | 5850/6505 [06:45<00:45, 14.26stk/s]$TVIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVGNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVAIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['TVIVW', 'TVGNW', 'TVAIR', 'TVACW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVACW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVAIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVAIR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVGNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVGNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TVIVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  91%|█████████ | 5900/6505 [06:49<00:42, 14.27stk/s]$TWLVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['TWLVR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TWLVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$TWLVR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  91%|█████████▏| 5950/6505 [06:52<00:37, 14.83stk/s]Daily fetch:  92%|█████████▏| 6000/6505 [06:55<00:33, 15.13stk/s]Daily fetch:  93%|█████████▎| 6050/6505 [06:58<00:30, 15.06stk/s]$VGASW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VHCPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VEEAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['VGASW', 'VHCPW', 'VEEAW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VEEAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VEEAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VGASW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VGASW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VHCPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VHCPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  94%|█████████▍| 6100/6505 [07:02<00:26, 15.27stk/s]$VLOSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['VLOSW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VLOSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VLOSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  95%|█████████▍| 6150/6505 [07:05<00:22, 15.44stk/s]$VRXAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VWAVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+2 Failed downloads:
+['VRXAW', 'VWAVW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VRXAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VRXAW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VWAVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$VWAVW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  95%|█████████▌| 6200/6505 [07:08<00:19, 15.32stk/s]$WENNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+1 Failed download:
+['WENNW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WENNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WENNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  96%|█████████▌| 6250/6505 [07:11<00:16, 15.21stk/s]$WHLRL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WLDSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WLIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['WHLRL', 'WLDSW', 'WLIIW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WHLRL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WHLRL: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WLDSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WLDSW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WLIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WLIIW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  97%|█████████▋| 6300/6505 [07:15<00:14, 14.13stk/s]$XBPEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WSTNR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WTGUR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['XBPEW', 'WSTNR', 'WTGUR']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WSTNR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WSTNR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WTGUR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$WTGUR: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XBPEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XBPEW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  98%|█████████▊| 6350/6505 [07:19<00:10, 14.28stk/s]$XRPNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XSLLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XLABW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XRXDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+4 Failed downloads:
+['XRPNW', 'XSLLW', 'XLABW', 'XRXDW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XLABW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XLABW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XRPNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XRPNW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XRXDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XRXDW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XSLLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$XSLLW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  98%|█████████▊| 6400/6505 [07:23<00:07, 13.75stk/s]$YDESW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$YICCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['YDESW', 'YICCW', 'ZAZZT']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$YDESW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$YDESW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$YICCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$YICCW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch:  99%|█████████▉| 6450/6505 [07:26<00:03, 13.93stk/s]$ZVZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZKPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZWZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZXIET: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZCZZT: possibly delisted; no timezone found
+$ZJZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZEOWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZEXIT: possibly delisted; no timezone found
+$ZOOZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZIEXT: possibly delisted; no timezone found
+
+14 Failed downloads:
+['ZVZZT', 'ZKPW', 'ZWZZT', 'ZTEST', 'ZJZZT', 'ZBZZT', 'ZVV', 'ZBZX', 'ZEOWW', 'ZOOZW']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+['ZXIET', 'ZCZZT', 'ZEXIT', 'ZIEXT']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEOWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZEOWW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZJZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZJZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZKPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZKPW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZOOZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZOOZW: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZTEST: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZVZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZVZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZWZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZWZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|█████████▉| 6500/6505 [07:30<00:00, 13.51stk/s]$ZXZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZZZTX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZZZTA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+
+3 Failed downloads:
+['ZXZZT', 'ZZZTX', 'ZZZTA']: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZXZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZXZZT: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZZZTA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZZZTA: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZZZTX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+$ZZZTX: possibly delisted; no price data found  (1d 2025-10-08 -> 2026-11-12)
+Daily fetch: 100%|██████████| 6505/6505 [07:32<00:00, 11.64stk/s]Daily fetch: 100%|██████████| 6505/6505 [07:34<00:00, 14.33stk/s]
+
+  Daily data : 5750/6505 tickers
+
+Checking pattern:   0%|          | 0/5750 [00:00<?, ?stk/s]Checking pattern:   4%|▍         | 237/5750 [00:00<00:02, 2353.95stk/s]Checking pattern:   8%|▊         | 473/5750 [00:00<00:02, 2175.57stk/s]Checking pattern:  12%|█▏        | 709/5750 [00:00<00:02, 2253.83stk/s]Checking pattern:  17%|█▋        | 969/5750 [00:00<00:02, 2382.23stk/s]Checking pattern:  21%|██▏       | 1222/5750 [00:00<00:01, 2427.30stk/s]Checking pattern:  25%|██▌       | 1466/5750 [00:00<00:01, 2335.47stk/s]Checking pattern:  30%|██▉       | 1712/5750 [00:00<00:01, 2374.62stk/s]Checking pattern:  34%|███▍      | 1951/5750 [00:00<00:01, 2359.19stk/s]Checking pattern:  38%|███▊      | 2204/5750 [00:00<00:01, 2407.29stk/s]Checking pattern:  43%|████▎     | 2454/5750 [00:01<00:01, 2430.42stk/s]Checking pattern:  47%|████▋     | 2709/5750 [00:01<00:01, 2465.61stk/s]Checking pattern:  51%|█████▏    | 2956/5750 [00:01<00:01, 2437.47stk/s]Checking pattern:  56%|█████▌    | 3201/5750 [00:01<00:01, 2440.78stk/s]Checking pattern:  60%|█████▉    | 3449/5750 [00:01<00:00, 2446.64stk/s]Checking pattern:  64%|██████▍   | 3702/5750 [00:01<00:00, 2465.89stk/s]Checking pattern:  69%|██████▊   | 3949/5750 [00:01<00:00, 2466.21stk/s]Checking pattern:  73%|███████▎  | 4196/5750 [00:01<00:00, 2431.28stk/s]Checking pattern:  77%|███████▋  | 4445/5750 [00:01<00:00, 2448.29stk/s]Checking pattern:  82%|████████▏ | 4690/5750 [00:01<00:00, 2428.98stk/s]Checking pattern:  86%|████████▌ | 4935/5750 [00:02<00:00, 2430.81stk/s]Checking pattern:  90%|█████████ | 5179/5750 [00:02<00:00, 2361.48stk/s]Checking pattern:  94%|█████████▍| 5420/5750 [00:02<00:00, 2374.95stk/s]Checking pattern:  98%|█████████▊| 5658/5750 [00:02<00:00, 2354.50stk/s]Checking pattern: 100%|██████████| 5750/5750 [00:02<00:00, 2404.18stk/s]
+  OK CPIX   $6.12  Score 59  vol 3.96x prev day  close +2.64% vs SMA21  2026-11-11
+  OK QURE   $24.58  Score 59  vol 2.17x prev day  close +7.09% vs SMA21  2026-11-11
+
+=================================================================
+  SCAN COMPLETE - 2 matches from 5750 tickers with data
+  FUNNEL (last 1 session(s))
+  Tickers checked                                   : 2561
+  Step 1 - JMA < EMA8 < SMA21 < SMA50 (prev session) : 703
+  Step 2 - + today's low at/below EMA8               : 521
+  Step 3 - + close crossed above SMA21               : 28
+  Step 4 - + volume > 2x previous day             : 2  (= full pattern)
+=================================================================
+  💰 Position sizing: max loss $40 per trade — 2 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 2 qualified stocks (trend, catalyst, value) ...
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_daily_bear_stack_sma21_reclaim_3xvol_v1_20261112_1818.csv  (3s)
+     #1  CPIX        27  (trend 20, catalyst 0, value 7)  above SMA200, SMA200 rising, beat last EPS
+     #2  QURE        22  (trend 8, catalyst 0, value 14)  SMA200 rising, beat last EPS, analysts Buy, target +135%
+
+  CSV -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_bear_stack_sma21_reclaim_3xvol_20261112_1818.csv
+  TradingView -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_daily_bear_stack_sma21_reclaim_3xvol_20261112_1818.txt
+
+  Tickers: CPIX, QURE
+  🏅 Best 10 added to the email (html text)
+[Email] Sent to vikramaga24@gmail.com - Bear-Stack SMA21 Reclaim 2x Vol - 2 signals - 2026-11-12
+  Chart -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_bear_stack_sma21_reclaim_3xvol_chart_20261112_1818.png
+
+=======================================================
+  PATTERN (latest session)
+  1) Previous session: JMA < EMA8 < SMA21 < SMA50 (bearish stack)
+  2) Today's low at or below EMA8 (the move starts from EMA8)
+  3) Yesterday closed at/below SMA21, today closes above SMA21
+  4) Today's volume > 2x yesterday's volume
+  OUTPUT: Entry = close, Stop = today's low, T1 = SMA50, T2 = +2R
+=======================================================
+
+patched
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add daily_bear_stack_sma21_reclaim_3xvol_v1.py
++ git commit -m Bearish-stack SMA21 reclaim: volume rule loosened from > 3x to > 2x the previous day
+
+Title/subject now say 2x; the volume part of the score starts from the CFG value.
+File name kept (..._3xvol_v1.py) so its results history stays linked.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+pushed
