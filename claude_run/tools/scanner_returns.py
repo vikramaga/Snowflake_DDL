@@ -1,4 +1,6 @@
-# Scanner return tracker (run on demand by ClaudeRunner).
+# Scanner return scorecard - runs daily at 06:00 IST from claude_run/schedule.txt and emails
+# the result (also runnable on demand). It runs alongside the day's scanners, so it scores the
+# lists saved up to the previous run (the latest list has had one full session).
 #
 # For every pick in the saved results of the daily runs (claude_run/results/<run>/<scanner>/),
 # measures what happened after the scan was published:
@@ -10,10 +12,12 @@
 # A stock repeated by the same scanner within 10 days counts once (first appearance).
 #
 # Three views, per scanner:
-#   1. TODAY'S WATCHLIST - the Best 10 lists of the latest run (= today's TradingView list)
+#   1. LATEST WATCHLIST  - the Best 10 lists of the latest saved run (= that day's TradingView list)
 #   2. BEST 10 OVERALL   - every Best 10 pick since Best 10 started
 #   3. ALL MATCHES       - every match since the oldest saved run
-# Outputs: scanner_returns_picks.csv, scanner_returns_summary.csv, scanner_returns.html
+# Only scanners currently in claude_run/schedule.txt are scored.
+# Outputs: scanner_scorecard_summary.csv, scanner_scorecard.html (saved with the run) and an email
+# with both plus scanner_scorecard_picks.csv.gz (every counted pick; not saved, to keep the repo small).
 import glob, os, re, subprocess, sys, time
 from datetime import datetime, timedelta, timezone
 
@@ -24,8 +28,17 @@ import pandas as pd
 import yfinance as yf
 
 ROOT = "claude_run/results"
+SCHEDULE = "claude_run/schedule.txt"
 DEDUPE_DAYS = 10
 TS = re.compile(r"_(20\d{6})_(\d{4})\.csv$")
+
+
+def scheduled():
+    try:
+        return {os.path.splitext(os.path.basename(l.strip()))[0] for l in open(SCHEDULE)
+                if l.strip() and not l.strip().startswith("#")} - {"scanner_returns"}
+    except OSError:
+        return None
 
 
 def runs():
@@ -177,6 +190,9 @@ def summarize(m, view):
 
 def main():
     p = picks()
+    keep = scheduled()
+    if keep and not p.empty:
+        p = p[p.Scanner.isin(keep)]
     if p.empty:
         sys.exit("no saved scanner results found")
     latest = p.Run_UTC.max()
@@ -193,22 +209,114 @@ def main():
     multi = today[today.Ticker.isin(t2[t2 >= 2].index)].drop_duplicates("Ticker").assign(Scanner="(found by 2+ scanners)")
     best_all = dedupe(m[m.In_Best10])
     allm = dedupe(m)
-    summ = pd.concat([summarize(pd.concat([today, multi]), "1 Today's watchlist"),
+    lst_day = today.Base_Date.max() if len(today) else None
+    summ = pd.concat([summarize(pd.concat([today, multi]), f"1 Latest watchlist (prices from {lst_day} close)"),
                       summarize(best_all, "2 Best 10 overall"),
                       summarize(allm, "3 All matches overall")])
-    m.to_csv("scanner_returns_picks.csv", index=False)
-    summ.to_csv("scanner_returns_summary.csv", index=False)
+    pcols = ["Scanner", "Ticker", "Base_Date", "In_Best10", "Entry", "Last", "Sessions", "Ret_Now_%",
+             "Ret_Managed_%", "Stop_Hit", "SPY_%", "Excess_%", "Max_Up_%"]
+    # one row per counted pick; gzipped so the daily results commit stays small (emailed only)
+    allm[pcols].round(2).to_csv("scanner_scorecard_picks.csv.gz", index=False, compression="gzip")
+    summ.to_csv("scanner_scorecard_summary.csv", index=False)
     pd.set_option("display.width", 250); pd.set_option("display.max_rows", 500)
     for v, g in summ.groupby("View"):
         print("\n" + "=" * 100 + f"\n{v}\n" + "=" * 100)
         print(g.drop(columns="View").to_string(index=False))
-    meta = (f"Latest price bar: {spy.index[-1].date()} (live if the market is open) | "
-            f"runs {p.Run_UTC.min():%Y-%m-%d} to {latest:%Y-%m-%d} | today's list = run {latest_run}")
-    html = ["<html><body style='font-family:Arial;font-size:12px'><h2>Scanner returns</h2><p>" + meta + "</p>"]
-    for v, g in summ.groupby("View"):
-        html.append(f"<h3>{v}</h3>" + g.drop(columns="View").to_html(index=False, border=1))
-    open("scanner_returns.html", "w").write("".join(html) + "</body></html>")
+    meta = (f"Latest price bar: {spy.index[-1].date()} | picks from runs {p.Run_UTC.min():%Y-%m-%d} to "
+            f"{latest:%Y-%m-%d} | latest watchlist = run {latest_run} | {len(keep or [])} scheduled scanners")
+    html = page(summ, meta)
+    open("scanner_scorecard.html", "w").write(html)
     print("\n" + meta)
+    send(summ, html, "scanner_scorecard_summary.csv")
+
+
+def nice(x):
+    return x if x.startswith(("(", "ALL")) else re.sub(r"_v\d+$", "", x).replace("_", " ").title()
+
+
+def page(summ, meta):
+    cols = ["Scanner", "Picks", "Avg_Managed_%", "Avg_vs_SPY_%", "Win_%", "Stop_Hit_%", "Avg_Ret_%", "Avg_Sessions"]
+    heads = ["Scanner", "Picks", "Return after stops", "vs SPY", "Up", "Stopped", "Raw return", "Sessions"]
+    out = ["<!DOCTYPE html><html><body style=\"margin:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif\">"
+           "<table width='100%' cellpadding='0' cellspacing='0'><tr><td align='center' style='padding:20px 10px'>"
+           "<table width='100%' style='max-width:900px;background:#fff;border-radius:12px;overflow:hidden'>"
+           "<tr><td style='background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:20px 26px'>"
+           "<h1 style='margin:0;color:#60a5fa;font-size:19px'>Scanner Scorecard</h1>"
+           f"<p style='margin:6px 0 0;color:#94a3b8;font-size:12px'>{meta}</p></td></tr><tr><td style='padding:16px'>"]
+    notes = {"1": "Each scanner's Best 10 from the latest list, from the close shown in its email to the latest close.",
+             "2": "Every Best 10 pick since Best 10 started; a stock repeated within 10 days counts once.",
+             "3": "Every match from the saved daily runs; exits at the stop if a later low touched it."}
+    for v, g in summ.groupby("View"):
+        out.append(f"<h3 style='margin:14px 0 4px;color:#1e3a5f'>{v[2:]}</h3>"
+                   f"<p style='margin:0 0 6px;font-size:11px;color:#64748b'>{notes.get(v[0], '')}</p>"
+                   "<table style='border-collapse:collapse;width:100%;font-size:12px'><tr>"
+                   + "".join(f"<th style='background:#1e293b;color:#e2e8f0;padding:6px 8px;text-align:left'>{h}</th>" for h in heads)
+                   + "</tr>")
+        for i, (_, r) in enumerate(g.iterrows()):
+            bold = "font-weight:700;" if r.Scanner == "ALL SCANNERS" else ""
+            bg = "#e2e8f0" if bold else ("#fff" if i % 2 == 0 else "#f8fafc")
+            cells = []
+            for c in cols:
+                val = r[c]
+                if c == "Scanner":
+                    txt = nice(str(val))
+                elif c in ("Avg_Managed_%", "Avg_vs_SPY_%", "Avg_Ret_%"):
+                    col = "#16a34a" if val > 0 else ("#dc2626" if val < 0 else "#334155")
+                    txt = f"<span style='color:{col}'>{val:+.2f}%</span>" if pd.notna(val) else "-"
+                elif c in ("Win_%", "Stop_Hit_%"):
+                    txt = f"{val:.0f}%" if pd.notna(val) else "-"
+                elif c == "Avg_Sessions":
+                    txt = f"{val:.1f}"
+                else:
+                    txt = f"{int(val)}"
+                cells.append(f"<td style='padding:5px 8px;border-bottom:1px solid #e2e8f0;{bold}'>{txt}</td>")
+            out.append(f"<tr style='background:{bg}'>" + "".join(cells) + "</tr>")
+        out.append("</table>")
+    out.append("<p style='font-size:11px;color:#64748b;margin:14px 0 0'>Entry = close of the last session before the "
+               "run (what the email showed). Return after stops = exit at Stop_Loss (or the open if it gapped below) "
+               "once a later low touched it. vs SPY = minus SPY over the same days. Short windows and small groups "
+               "(under ~30 picks) are noisy. Full tables attached.</p></td></tr>"
+               "<tr><td style='background:#f8fafc;padding:10px;text-align:center;color:#94a3b8;font-size:10px'>"
+               "Not financial advice &middot; Auto-generated by GitHub Actions</td></tr></table></td></tr></table></body></html>")
+    return "".join(out)
+
+
+def send(summ, html, csv_path):
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    from email.mime.base import MIMEBase
+    from email import encoders
+    gu = os.environ.get("GMAIL_USER") or os.environ.get("EMAIL_FROM", "")
+    gp = os.environ.get("GMAIL_PASS") or os.environ.get("EMAIL_PASSWORD", "")
+    et = os.environ.get("EMAIL_TO", "")
+    if not (gu and gp and et):
+        print("[Email] GMAIL_USER / GMAIL_PASS / EMAIL_TO missing - skipped"); return
+    lst = summ[summ.View.str.startswith("3") & (summ.Scanner != "ALL SCANNERS")]
+    lst = lst[lst.Picks >= 30]
+    top = ", ".join(nice(x) for x in lst.Scanner.head(3)) or "-"
+    subj = f"Scanner Scorecard - {datetime.now(timezone.utc):%Y-%m-%d} - leaders: {top}"
+    plain = summ.to_string(index=False)
+    msg = MIMEMultipart("mixed")
+    msg["Subject"], msg["From"], msg["To"] = subj, gu, et
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(plain, "plain")); alt.attach(MIMEText(html, "html"))
+    msg.attach(alt)
+    for f in (csv_path, "scanner_scorecard_picks.csv.gz"):
+        try:
+            part = MIMEBase("application", "octet-stream"); part.set_payload(open(f, "rb").read())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition", f"attachment; filename={os.path.basename(f)}")
+            msg.attach(part)
+        except Exception as err:
+            print(f"[Email] attach {f} failed: {err}")
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
+            srv.login(gu, gp.replace(" ", ""))
+            srv.sendmail(gu, [x.strip() for x in et.split(",") if x.strip()], msg.as_string())
+        print(f"[Email] Sent - {subj}")
+    except Exception as err:
+        print(f"[Email] {type(err).__name__}: {err}")
 
 
 if __name__ == "__main__":
