@@ -1,10 +1,45 @@
-# ClaudeRunner run 43371243706
+# ClaudeRunner run 43383165322
 
-- Trigger: push (claude_run/run.txt)
-- Finished: 2026-11-13 05:35 UTC
-- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/43371243706
-- Scripts: 1 — ok 1, failed 0, no result 0
+- Trigger: schedule (claude_run/schedule.txt)
+- Finished: 2026-11-13 07:34 UTC
+- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/43383165322
+- Scripts: 36 — ok 35, failed 0, no result 1
 
 | Script | Exit | Results folder |
 |---|---|---|
-| daily_sweep_mss_retest_v1.py | 0 | claude_run/results/43371243706/daily_sweep_mss_retest_v1/ |
+| claude_run/tools/scanner_returns.py | 0 | claude_run/results/43383165322/scanner_returns/ |
+| daily_3candle_higherlow_above_sma50_v1.py | 0 | claude_run/results/43383165322/daily_3candle_higherlow_above_sma50_v1/ |
+| daily_3candle_jma_reclaim_v1.py | 0 | claude_run/results/43383165322/daily_3candle_jma_reclaim_v1/ |
+| daily_bear_stack_sma21_reclaim_3xvol_v1.py | 0 | claude_run/results/43383165322/daily_bear_stack_sma21_reclaim_3xvol_v1/ |
+| daily_doji_hammer_jma_reclaim_v1.py | 0 | claude_run/results/43383165322/daily_doji_hammer_jma_reclaim_v1/ |
+| daily_jma_cross_ema8_v1.py | 0 | claude_run/results/43383165322/daily_jma_cross_ema8_v1/ |
+| daily_jma_reclaim_rsi_v1.py | 0 | claude_run/results/43383165322/daily_jma_reclaim_rsi_v1/ |
+| daily_liquidity_sweep_breakout_v1.py | 0 | claude_run/results/43383165322/daily_liquidity_sweep_breakout_v1/ |
+| daily_ma_support_ema21_sma50_v1.py | 0 | claude_run/results/43383165322/daily_ma_support_ema21_sma50_v1/ |
+| daily_ma_sweep_4x_v1.py | 0 | claude_run/results/43383165322/daily_ma_sweep_4x_v1/ |
+| daily_major_support_retest_v1.py | 0 | claude_run/results/43383165322/daily_major_support_retest_v1/ |
+| daily_penny_jma_reclaim_rsi_v1.py | 0 | claude_run/results/43383165322/daily_penny_jma_reclaim_rsi_v1/ |
+| daily_penny_liquidity_sweep_breakout_v1.py | 0 | claude_run/results/43383165322/daily_penny_liquidity_sweep_breakout_v1/ |
+| daily_penny_ma_support_ema21_sma50_v1.py | 0 | claude_run/results/43383165322/daily_penny_ma_support_ema21_sma50_v1/ |
+| daily_price_jma_ema21_sma50_volume_v1.py | 0 | claude_run/results/43383165322/daily_price_jma_ema21_sma50_volume_v1/ |
+| daily_pullback_jma_reclaim_v1.py | 0 | claude_run/results/43383165322/daily_pullback_jma_reclaim_v1/ |
+| daily_rsi2_rs_1to1_v1.py | 0 | claude_run/results/43383165322/daily_rsi2_rs_1to1_v1/ |
+| daily_rsi2_snapback_v1.py | 0 | claude_run/results/43383165322/daily_rsi2_snapback_v1/ |
+| daily_rsi_avg_bounce_v1.py | 0 | claude_run/results/43383165322/daily_rsi_avg_bounce_v1/ |
+| daily_rsi_bullish_divergence_v1.py | 0 | claude_run/results/43383165322/daily_rsi_bullish_divergence_v1/ |
+| daily_rsi_high_breakout_v1.py | 0 | claude_run/results/43383165322/daily_rsi_high_breakout_v1/ |
+| daily_sma50_150_squeeze_turn_v1.py | no result (timeout/cancelled) | claude_run/results/43383165322/daily_sma50_150_squeeze_turn_v1/ |
+| daily_sweep_mss_retest_v1.py | 0 | claude_run/results/43383165322/daily_sweep_mss_retest_v1/ |
+| daily_sweep_sma50_strategy_v1.py | 0 | claude_run/results/43383165322/daily_sweep_sma50_strategy_v1/ |
+| india_weekly_reversal_2x_above_sma50_v1.py | 0 | claude_run/results/43383165322/india_weekly_reversal_2x_above_sma50_v1/ |
+| minervini.py | 0 | claude_run/results/43383165322/minervini/ |
+| monthly_3candle_reclaim_jma_ema8_v1.py | 0 | claude_run/results/43383165322/monthly_3candle_reclaim_jma_ema8_v1/ |
+| monthly_reversal_2x_above_sma50_v1.py | 0 | claude_run/results/43383165322/monthly_reversal_2x_above_sma50_v1/ |
+| monthly_rsi_cross_above_avg_v1.py | 0 | claude_run/results/43383165322/monthly_rsi_cross_above_avg_v1/ |
+| monthly_rsi_weekly_green_reversal_v1.py | 0 | claude_run/results/43383165322/monthly_rsi_weekly_green_reversal_v1/ |
+| rsi_avg_turn_up_v1.py | 0 | claude_run/results/43383165322/rsi_avg_turn_up_v1/ |
+| smaretest.py | 0 | claude_run/results/43383165322/smaretest/ |
+| weekly_doji_jma_reclaim_v1.py | 0 | claude_run/results/43383165322/weekly_doji_jma_reclaim_v1/ |
+| weekly_hammer_green_doji_breakout_v1.py | 0 | claude_run/results/43383165322/weekly_hammer_green_doji_breakout_v1/ |
+| weekly_reversal_2x_above_sma50_v1.py | 0 | claude_run/results/43383165322/weekly_reversal_2x_above_sma50_v1/ |
+| weekly_rsi_bullish_divergence_v1.py | 0 | claude_run/results/43383165322/weekly_rsi_bullish_divergence_v1/ |
