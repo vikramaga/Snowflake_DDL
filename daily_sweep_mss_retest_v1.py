@@ -18,10 +18,10 @@
 #   5. HOLDING: today's close is at or above the bottom of the entry zone
 #
 # Entry = today's close; Stop = the sweep low - 0.25 ATR (just below the
-# swing low that was swept); Target = the nearest resistance above: the high
-# the MSS move reached before pulling back, or an earlier swing high in the
-# last 120 sessions, whichever is closer (2R if none). Flagged when the target
-# is under 1.5R. Thresholds are reasonable defaults, not explicitly requested;
+# swing low that was swept); Target = the high the MSS move reached before
+# this pullback (Target_2 = the next older swing high above it, else 2R).
+# Aggressive_Stop = bottom of the entry zone - 0.25 ATR, shown as a tighter
+# alternative with its own reward:risk. Flagged when the target is under 1.5R. Thresholds are reasonable defaults, not explicitly requested;
 # all are in CFG.
 #
 # ============================================================
@@ -122,7 +122,7 @@ CFG = {
     "mss_bars"                : 15,    # MSS close above the swing high within 15 sessions of the sweep
     "retest_tol_atr"          : 0.25,  # retest zone = broken swing high +/- 0.25 ATR
     "stop_buffer_atr"         : 0.25,  # stop = sweep low - 0.25 ATR
-    "resistance_lookback"     : 120,   # nearest swing high above entry in the last 120 sessions
+    "resistance_lookback"     : 120,   # Target_2 = next swing high above Target 1 (last 120 sessions)
     "min_reward_r"            : 1.5,   # flag targets under 1.5R
     "signal_lookback_days"    : 1,     # the latest session only (the retest is today)
 
@@ -289,21 +289,21 @@ def analyze_sweep_mss_retest(sym, df_daily):
     risk = entry - stop
     risk_pct = risk / entry * 100
     h = df_daily["High"].values.astype(float)
-    # target = the nearest resistance above entry: the high the MSS move reached before
-    # pulling back, or a swing high from before the sweep (last 120 sessions), whichever is closer
+    # Target 1 = the resistance the MSS move ran into: the high it reached before pulling back
+    # (older swing highs below it were already broken). Target 2 = the next swing high above
+    # that from before the sweep (last 120 sessions), or 2R past entry if there is none.
     peak = float(h[sig["m"]:i].max()) if sig["m"] is not None and i > sig["m"] else np.nan
-    cands = [float(h[q]) for q in range(max(0, i - CFG["resistance_lookback"]), sig["s"])
-             if ind["ph"][q] and h[q] > entry]                         # swing highs before the sweep
-    if np.isfinite(peak) and peak > entry:
-        cands.append(peak)
-    target = min(cands) if cands else np.nan
+    target = peak if np.isfinite(peak) and peak > entry else np.nan
     reward_r = (target - entry) / risk if np.isfinite(target) else np.nan
+    above = [float(h[q]) for q in range(max(0, i - CFG["resistance_lookback"]), sig["s"])
+             if ind["ph"][q] and np.isfinite(target) and h[q] > target]
+    target2 = min(above) if above else entry + 2 * risk
     s200 = ind["s200"][i]
     mss_pct = (df_daily["Close"].iloc[sig["m"]] / sig["H"] - 1) * 100
     sweep_depth_atr = (sig["L0"] - sig["sweep_low"]) / a
     zone = "FVG + retest" if sig["in_fvg"] and sig["in_retest"] else ("FVG" if sig["in_fvg"] else "Retest")
     flags = [f"entry zone: {zone}", f"sweep {sweep_depth_atr:.1f} ATR below the old low"]
-    if not np.isfinite(target): flags.append("no resistance found above - use 2R")
+    if not np.isfinite(target): flags.append("MSS high not above entry - using 2R")
     elif reward_r < CFG["min_reward_r"]: flags.append(f"target under {CFG['min_reward_r']:g}R")
     flags.append("above SMA200" if np.isfinite(s200) and entry > s200 else "below SMA200")
 
@@ -317,12 +317,16 @@ def analyze_sweep_mss_retest(sym, df_daily):
     score += min(5, max(0, mss_pct) * 2)                                # decisive MSS close
     score = round(min(100, max(0, score)))
     t2 = entry + 2 * risk
+    aggressive_stop = sig["zone_bot"] - CFG["stop_buffer_atr"] * a
+    aggr_r = (target - entry) / (entry - aggressive_stop) if np.isfinite(target) and entry > aggressive_stop else np.nan
 
     return {
         "Score": score, "Price": round(price, 2),
         "Entry_Price": round(entry, 2), "Stop_Loss": round(stop, 2), "Risk_%": round(risk_pct, 1),
         "Target_Resistance": round(target, 2) if np.isfinite(target) else round(t2, 2),
         "Reward_R": round(reward_r, 1) if np.isfinite(reward_r) else 2.0,
+        "Target_2": round(target2, 2),
+        "Aggressive_Stop": round(aggressive_stop, 2), "Reward_R_Aggr": round(aggr_r, 1) if np.isfinite(aggr_r) else np.nan,
         "Entry_Zone": zone,
         "Old_Swing_Low": round(sig["L0"], 2), "Old_Low_Date": df_daily.index[sig["j0"]].strftime("%Y-%m-%d"),
         "Sweep_Low": round(sig["sweep_low"], 2), "Sweep_Date": df_daily.index[sig["s"]].strftime("%Y-%m-%d"),
@@ -506,7 +510,8 @@ results.sort(key=lambda x: x["Score"], reverse=True)
 # -- Save CSV + TradingView list
 ts      = datetime.today().strftime("%Y%m%d_%H%M")
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
-COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%","Target_Resistance","Reward_R","Entry_Zone",
+COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%","Target_Resistance","Reward_R","Target_2",
+        "Aggressive_Stop","Reward_R_Aggr","Entry_Zone",
         "Old_Swing_Low","Old_Low_Date","Sweep_Low","Sweep_Date","MSS_Level","MSS_Date","FVG_Bottom","FVG_Top",
         "Above_SMA200","Signal_Date","Days_Since_Signal","Flags"]
 df_out = pd.DataFrame([{k: v for k, v in r.items() if not k.startswith("_")}
@@ -533,13 +538,13 @@ if results:
 
 # -- Email with CSV attached
 EMAIL_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%","Target_Resistance","Reward_R",
-              "Entry_Zone","Sweep_Date","MSS_Date","MSS_Level","Above_SMA200"]
+              "Aggressive_Stop","Reward_R_Aggr","Entry_Zone","Sweep_Date","MSS_Date","MSS_Level","Above_SMA200"]
 
 def _fmt_cell(col, v):
     try:
-        if col in ("Price","Entry_Price","Stop_Loss","Target_Resistance","MSS_Level"): return f"${float(v):.2f}"
+        if col in ("Price","Entry_Price","Stop_Loss","Target_Resistance","MSS_Level","Aggressive_Stop"): return f"${float(v):.2f}"
         if col == "Risk_%": return f"{float(v):.1f}%"
-        if col == "Reward_R": return f"{float(v):.1f}R"
+        if col in ("Reward_R","Reward_R_Aggr"): return f"{float(v):.1f}R"
         if col == "Score": return f"{float(v):.0f}"
     except Exception: pass
     return "-" if v is None else str(v)
@@ -598,7 +603,8 @@ FUNNEL: {fc['tickers_checked']} checked &rarr; {fc['passed_step1_liquidity_sweep
 <table style="border-collapse:collapse;width:100%"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
 {tick_html}
 <p style="font-size:11px;color:#64748b;margin:10px 0 0">Entry = today's close &middot; Stop = sweep low - {CFG['stop_buffer_atr']:g} ATR &middot;
-Target = nearest resistance above (the MSS move's high or an earlier swing high), Reward_R in R multiples.
+Target = the high the MSS move reached before this pullback (Target_2 in the CSV = the next older swing high above it).
+Aggressive_Stop = bottom of the entry zone - {CFG['stop_buffer_atr']:g} ATR, a tighter alternative; Reward_R_Aggr uses it.
 Retest zone = broken swing high +/- {CFG['retest_tol_atr']:g} ATR; FVG = gap between candle k-1's high and candle k+1's low in the up-move.
 Full results (with Quantity for a fixed max loss) attached as CSV.</p>
 </td></tr>
@@ -704,6 +710,6 @@ print(f"""
   3) The sweep low held since
   4) Today: first pullback into the retest zone (+/- {CFG['retest_tol_atr']:g} ATR) or the FVG
   5) Today's close at or above the bottom of that zone
-  OUTPUT: Entry = close, Stop = sweep low - {CFG['stop_buffer_atr']:g} ATR, Target = nearest resistance
+  OUTPUT: Entry = close, Stop = sweep low - {CFG['stop_buffer_atr']:g} ATR, Target = the MSS move's high
 {'=' * 55}
 """)
