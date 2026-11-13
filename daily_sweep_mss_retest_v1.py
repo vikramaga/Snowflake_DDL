@@ -1,5 +1,5 @@
 # ============================================================
-# NASDAQ / NYSE - Daily Liquidity Sweep + MSS + Retest/FVG Entry (v1)
+# NASDAQ / NYSE - Daily Liquidity Sweep / CHoCH + MSS + Retest/FVG Entry (v1)
 # ============================================================
 #
 # Smart-money style long setup:
@@ -7,6 +7,8 @@
 #      latest swing low (lowest low of 3 bars each side, formed up to 60
 #      sessions earlier) - the stop-loss hunt - and price closed back above
 #      that old low on the same bar or within the next 2 bars
+#      OR (CHoCH mode, added 2026-11-13) a HIGHER swing low with no sweep -
+#      the anchor of a change of character
 #   2. BULLISH MSS (market structure shift): within 15 sessions of the sweep,
 #      a close above the last swing high before the sweep
 #   3. SWEEP LOW HELD: no low since the sweep below the sweep low
@@ -17,12 +19,16 @@
 #      0.5 ATR above the zone, no candle came back into it before today
 #   5. HOLDING: today's close is at or above the bottom of the entry zone
 #
-# Entry = today's close; Stop = the sweep low - 0.25 ATR (just below the
-# swing low that was swept); Target = the high the MSS move reached before
-# this pullback (Target_2 = the next older swing high above it, else 2R).
+# Entry = today's close; Stop = the sweep low (or the CHoCH higher low)
+# - 0.25 ATR; Target = the high the MSS move reached before this pullback.
+# Target_Measured = measured move: that high + (that high - the low the
+# first leg started from), as in the CHoCH/FVG chart (2026-11-13).
 # Aggressive_Stop = bottom of the entry zone - 0.25 ATR, shown as a tighter
-# alternative with its own reward:risk. Flagged when the target is under 1.5R. Thresholds are reasonable defaults, not explicitly requested;
-# all are in CFG.
+# alternative with its own reward:risk. Flagged when the measured target is
+# under 1.5R. TRENDLINE confluence: today's low within 0.5 ATR of the rising
+# line through the first-leg low and the next higher swing low, with the
+# close above it (flag + score). Thresholds are reasonable defaults, not
+# explicitly requested; all are in CFG.
 #
 # ============================================================
 
@@ -125,6 +131,8 @@ CFG = {
     "resistance_lookback"     : 120,   # Target_2 = next swing high above Target 1 (last 120 sessions)
     "min_reward_r"            : 1.5,   # flag targets under 1.5R
     "signal_lookback_days"    : 1,     # the latest session only (the retest is today)
+    "allow_choch"             : True,  # also accept a higher swing low (no sweep) as the anchor
+    "trendline_tol_atr"       : 0.5,   # today's low within 0.5 ATR of the rising trendline
 
     "min_avg_volume"          : 200_000,
     "min_price"               : 5.0,
@@ -162,8 +170,14 @@ def _setup(df, ind, i, s, cfg):
     k_end = min(s + cfg["reclaim_bars"], i + 1)
     reclaimed = took and any(c[k] > L0 for k in range(s, k_end))
     # the sweep low = lowest low from the sweep bar until the reclaim window ends
-    sweep_low = float(l[s:k_end].min())
-    step1 = bool(took and reclaimed and l[s] == sweep_low)
+    sweep_ok = bool(took and reclaimed and l[s] == float(l[s:k_end].min()))
+    # CHoCH mode: a confirmed HIGHER swing low (no sweep) anchors the setup instead
+    choch_ok = bool(cfg.get("allow_choch") and not took and ind["pl"][s] and s + wg <= i)
+    sweep_low = float(l[s:k_end].min()) if sweep_ok else float(l[s])
+    step1 = sweep_ok or choch_ok
+    kind = "Sweep" if sweep_ok else ("CHoCH" if choch_ok else "-")
+    # the low the first leg started from (measured move / trendline anchor)
+    jo = s if sweep_ok else j0
     # swing high to break: the last confirmed swing high before the sweep, after the swept low
     highs_before = [j for j in range(j0, s - wg + 1) if ind["ph"][j]]
     if not highs_before:
@@ -178,6 +192,7 @@ def _setup(df, ind, i, s, cfg):
     held = bool(m is not None and l[s + 1:i + 1].min() > sweep_low and c[i] > sweep_low)
     step3 = bool(step2 and held)
     return {"s": s, "j0": j0, "L0": float(L0), "sweep_low": sweep_low, "H": H, "jh": jh, "m": m,
+            "kind": kind, "jo": jo, "origin": float(l[jo]),
             "step1": step1, "step2": step2, "step3": step3}
 
 def _fvg(df, s, m):
@@ -197,7 +212,8 @@ def check_pattern_at(df, ind, i, cfg):
     SINGLE SOURCE OF TRUTH. Checks signal day i against every sweep bar in the
     last `sweep_lookback` sessions. Computes EVERY step (no short-circuit) so the
     funnel shows where tickers drop out; reports the candidate that got furthest
-    (ties: the deepest sweep low, so the stop sits under the real stop-hunt wick).
+    (ties: a real sweep before a CHoCH higher low, then the deepest low, so the
+    stop sits under the real stop-hunt wick).
     Returns (passed, details); {} if data short.
     """
     if i < cfg["swing_max_age"] + cfg["sweep_lookback"] + 10 or i >= len(df):
@@ -225,13 +241,23 @@ def check_pattern_at(df, ind, i, cfg):
         step4 = bool(d["step3"] and (in_retest or in_fvg) and first)
         zone_bot = min([x for x in (lo_rt, fvg[0] if fvg else np.nan) if np.isfinite(x)], default=np.nan)
         step5 = bool(np.isfinite(zone_bot) and c[i] >= zone_bot and c[i] > d["sweep_low"])
+        # rising trendline: first-leg low -> the next higher swing low up to the MSS bar
+        tl, tl_ok = np.nan, False
+        if d["m"] is not None:
+            jo = d["jo"]
+            hl = [q for q in range(jo + 1, d["m"] + 1) if ind["pl"][q] and l[q] > l[jo]]
+            if hl:
+                q2 = hl[-1]
+                tl = l[jo] + (l[q2] - l[jo]) * (i - jo) / (q2 - jo)
+                tl_ok = bool(abs(l[i] - tl) <= cfg["trendline_tol_atr"] * a and c[i] > tl)
         d.update({"fvg": fvg, "in_retest": in_retest, "in_fvg": in_fvg, "first_return": first,
-                  "zone_bot": zone_bot, "zone_top": zone_top, "step4": step4, "step5": step5})
+                  "zone_bot": zone_bot, "zone_top": zone_top, "step4": step4, "step5": step5,
+                  "trendline": float(tl) if np.isfinite(tl) else np.nan, "trendline_ok": tl_ok})
         depth = 0
         for k in range(1, 6):
             if not d[f"step{k}"]: break
             depth = k
-        key = (depth, -d["sweep_low"], s)
+        key = (depth, d["kind"] == "Sweep", -d["sweep_low"], s)
         if best_key is None or key > best_key:
             best, best_key = d, key
     if best is None:
@@ -295,16 +321,20 @@ def analyze_sweep_mss_retest(sym, df_daily):
     peak = float(h[sig["m"]:i].max()) if sig["m"] is not None and i > sig["m"] else np.nan
     target = peak if np.isfinite(peak) and peak > entry else np.nan
     reward_r = (target - entry) / risk if np.isfinite(target) else np.nan
-    above = [float(h[q]) for q in range(max(0, i - CFG["resistance_lookback"]), sig["s"])
-             if ind["ph"][q] and np.isfinite(target) and h[q] > target]
-    target2 = min(above) if above else entry + 2 * risk
+    # measured move (CHoCH/FVG chart): the first leg (origin low -> MSS move high) added again on top
+    t_mm = peak + (peak - sig["origin"]) if np.isfinite(peak) else np.nan
+    rr_mm = (t_mm - entry) / risk if np.isfinite(t_mm) and t_mm > entry else np.nan
     s200 = ind["s200"][i]
     mss_pct = (df_daily["Close"].iloc[sig["m"]] / sig["H"] - 1) * 100
     sweep_depth_atr = (sig["L0"] - sig["sweep_low"]) / a
     zone = "FVG + retest" if sig["in_fvg"] and sig["in_retest"] else ("FVG" if sig["in_fvg"] else "Retest")
-    flags = [f"entry zone: {zone}", f"sweep {sweep_depth_atr:.1f} ATR below the old low"]
+    flags = [f"entry zone: {zone}", (f"sweep {sweep_depth_atr:.1f} ATR below the old low" if sig["kind"] == "Sweep"
+                                     else f"higher low {-sweep_depth_atr:.1f} ATR above the old low")]
+    flags.insert(0, "setup: liquidity sweep" if sig["kind"] == "Sweep" else "setup: CHoCH (higher low, no sweep)")
+    if sig["trendline_ok"]: flags.append("trendline confluence")
     if not np.isfinite(target): flags.append("MSS high not above entry - using 2R")
-    elif reward_r < CFG["min_reward_r"]: flags.append(f"target under {CFG['min_reward_r']:g}R")
+    best_r = max([x for x in (reward_r, rr_mm) if np.isfinite(x)], default=np.nan)
+    if np.isfinite(best_r) and best_r < CFG["min_reward_r"]: flags.append(f"measured target under {CFG['min_reward_r']:g}R")
     flags.append("above SMA200" if np.isfinite(s200) and entry > s200 else "below SMA200")
 
     score = 30
@@ -312,20 +342,25 @@ def analyze_sweep_mss_retest(sym, df_daily):
     score += 10 if sig["in_retest"] else 0                              # retest of the broken high
     score += min(10, max(0, sweep_depth_atr) * 10)                      # a clear stop-run
     score += max(0, 10 - max(0, risk_pct - 4) * 2)                      # tighter stop
-    score += min(15, max(0, reward_r) * 5) if np.isfinite(reward_r) else 5
+    score += min(15, max(0, best_r) * 5) if np.isfinite(best_r) else 5
+    score += 10 if sig["trendline_ok"] else 0                           # trendline confluence
     score += 5 if np.isfinite(s200) and entry > s200 else 0
     score += min(5, max(0, mss_pct) * 2)                                # decisive MSS close
     score = round(min(100, max(0, score)))
     t2 = entry + 2 * risk
     aggressive_stop = sig["zone_bot"] - CFG["stop_buffer_atr"] * a
-    aggr_r = (target - entry) / (entry - aggressive_stop) if np.isfinite(target) and entry > aggressive_stop else np.nan
+    aggr_t = t_mm if np.isfinite(t_mm) else target
+    aggr_r = (aggr_t - entry) / (entry - aggressive_stop) if np.isfinite(aggr_t) and entry > aggressive_stop else np.nan
 
     return {
         "Score": score, "Price": round(price, 2),
         "Entry_Price": round(entry, 2), "Stop_Loss": round(stop, 2), "Risk_%": round(risk_pct, 1),
         "Target_Resistance": round(target, 2) if np.isfinite(target) else round(t2, 2),
         "Reward_R": round(reward_r, 1) if np.isfinite(reward_r) else 2.0,
-        "Target_2": round(target2, 2),
+        "Target_Measured": round(t_mm, 2) if np.isfinite(t_mm) else np.nan,
+        "Reward_R_Measured": round(rr_mm, 1) if np.isfinite(rr_mm) else np.nan,
+        "Setup_Type": sig["kind"], "Trendline": round(sig["trendline"], 2) if np.isfinite(sig["trendline"]) else np.nan,
+        "Trendline_Confluence": "Yes" if sig["trendline_ok"] else "No",
         "Aggressive_Stop": round(aggressive_stop, 2), "Reward_R_Aggr": round(aggr_r, 1) if np.isfinite(aggr_r) else np.nan,
         "Entry_Zone": zone,
         "Old_Swing_Low": round(sig["L0"], 2), "Old_Low_Date": df_daily.index[sig["j0"]].strftime("%Y-%m-%d"),
@@ -498,7 +533,7 @@ fc = FUNNEL_COUNTS
 print(f"\n{'=' * 65}\n  SCAN COMPLETE - {len(results)} matches from {got_daily} tickers with data")
 print(f"  FUNNEL (last {CFG['signal_lookback_days']} session(s))")
 print(f"  Tickers checked                                   : {fc['tickers_checked']}")
-print(f"  Step 1 - liquidity sweep of a swing low (30d)      : {fc['passed_step1_liquidity_sweep']}")
+print(f"  Step 1 - sweep of a swing low or a CHoCH higher low: {fc['passed_step1_liquidity_sweep']}")
 print(f"  Step 2 - + bullish MSS (close above swing high)    : {fc['passed_step2_bullish_mss']}")
 print(f"  Step 3 - + sweep low held since                    : {fc['passed_step3_sweep_low_held']}")
 print(f"  Step 4 - + first pullback into retest / FVG today  : {fc['passed_step4_first_retest_or_fvg']}")
@@ -510,8 +545,8 @@ results.sort(key=lambda x: x["Score"], reverse=True)
 # -- Save CSV + TradingView list
 ts      = datetime.today().strftime("%Y%m%d_%H%M")
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
-COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%","Target_Resistance","Reward_R","Target_2",
-        "Aggressive_Stop","Reward_R_Aggr","Entry_Zone",
+COLS = ["Ticker","Price","Score","Setup_Type","Entry_Price","Stop_Loss","Risk_%","Target_Resistance","Reward_R",
+        "Target_Measured","Reward_R_Measured","Aggressive_Stop","Reward_R_Aggr","Entry_Zone","Trendline","Trendline_Confluence",
         "Old_Swing_Low","Old_Low_Date","Sweep_Low","Sweep_Date","MSS_Level","MSS_Date","FVG_Bottom","FVG_Top",
         "Above_SMA200","Signal_Date","Days_Since_Signal","Flags"]
 df_out = pd.DataFrame([{k: v for k, v in r.items() if not k.startswith("_")}
@@ -537,14 +572,14 @@ if results:
     print(f"\n  Tickers: {', '.join(r['Ticker'] for r in results)}")
 
 # -- Email with CSV attached
-EMAIL_COLS = ["Ticker","Price","Score","Entry_Price","Stop_Loss","Risk_%","Target_Resistance","Reward_R",
-              "Aggressive_Stop","Reward_R_Aggr","Entry_Zone","Sweep_Date","MSS_Date","MSS_Level","Above_SMA200"]
+EMAIL_COLS = ["Ticker","Price","Score","Setup_Type","Entry_Price","Stop_Loss","Risk_%","Target_Resistance","Reward_R",
+              "Target_Measured","Reward_R_Measured","Aggressive_Stop","Reward_R_Aggr","Entry_Zone","Trendline_Confluence","MSS_Date"]
 
 def _fmt_cell(col, v):
     try:
-        if col in ("Price","Entry_Price","Stop_Loss","Target_Resistance","MSS_Level","Aggressive_Stop"): return f"${float(v):.2f}"
+        if col in ("Price","Entry_Price","Stop_Loss","Target_Resistance","MSS_Level","Aggressive_Stop","Target_Measured"): return f"${float(v):.2f}"
         if col == "Risk_%": return f"{float(v):.1f}%"
-        if col in ("Reward_R","Reward_R_Aggr"): return f"{float(v):.1f}R"
+        if col in ("Reward_R","Reward_R_Aggr","Reward_R_Measured"): return f"{float(v):.1f}R"
         if col == "Score": return f"{float(v):.0f}"
     except Exception: pass
     return "-" if v is None else str(v)
@@ -588,13 +623,13 @@ def _send_email(rl, csv_path):
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:20px 10px">
 <table width="100%" style="max-width:900px;background:#fff;border-radius:12px;overflow:hidden">
 <tr><td style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:20px 26px">
-<h1 style="margin:0;color:#60a5fa;font-size:19px">Liquidity Sweep + MSS + Retest/FVG Entry</h1>
+<h1 style="margin:0;color:#60a5fa;font-size:19px">Liquidity Sweep / CHoCH + MSS + Retest/FVG Entry</h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">{datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &middot; {cnt} match{'es' if cnt != 1 else ''}
- - a swing low was swept (stop hunt) and reclaimed, a close broke the last swing high (bullish MSS),
+ - a swing low was swept (stop hunt) and reclaimed, or a higher low formed (CHoCH), a close broke the last swing high (bullish MSS),
  and today price pulled back for the first time into the retest level or the FVG and held it</p>
 </td></tr>
 <tr><td style="padding:12px 26px;background:#0b1220"><p style="margin:0;color:#cbd5e1;font-size:12px">
-FUNNEL: {fc['tickers_checked']} checked &rarr; {fc['passed_step1_liquidity_sweep']} liquidity sweep
+FUNNEL: {fc['tickers_checked']} checked &rarr; {fc['passed_step1_liquidity_sweep']} liquidity sweep or CHoCH higher low
 &rarr; {fc['passed_step2_bullish_mss']} + bullish MSS
 &rarr; {fc['passed_step3_sweep_low_held']} + sweep low held
 &rarr; {fc['passed_step4_first_retest_or_fvg']} + first pullback into retest/FVG today
@@ -603,8 +638,10 @@ FUNNEL: {fc['tickers_checked']} checked &rarr; {fc['passed_step1_liquidity_sweep
 <table style="border-collapse:collapse;width:100%"><thead><tr>{th}</tr></thead><tbody>{rows}</tbody></table></div>
 {tick_html}
 <p style="font-size:11px;color:#64748b;margin:10px 0 0">Entry = today's close &middot; Stop = sweep low - {CFG['stop_buffer_atr']:g} ATR &middot;
-Target = the high the MSS move reached before this pullback (Target_2 in the CSV = the next older swing high above it).
-Aggressive_Stop = bottom of the entry zone - {CFG['stop_buffer_atr']:g} ATR, a tighter alternative; Reward_R_Aggr uses it.
+Target = the high the MSS move reached before this pullback; Target_Measured = that high + the first leg again (measured move).
+Aggressive_Stop = bottom of the entry zone - {CFG['stop_buffer_atr']:g} ATR (under the FVG/trendline), a tighter alternative; Reward_R_Aggr uses it with the measured target.
+Setup_Type: Sweep = a swing low was swept and reclaimed; CHoCH = a higher swing low, no sweep. Trendline_Confluence = today's low
+within {CFG['trendline_tol_atr']:g} ATR of the rising line through the first-leg low and the next higher low, close above it.
 Retest zone = broken swing high +/- {CFG['retest_tol_atr']:g} ATR; FVG = gap between candle k-1's high and candle k+1's low in the up-move.
 Full results (with Quantity for a fixed max loss) attached as CSV.</p>
 </td></tr>
@@ -621,7 +658,8 @@ Not financial advice &middot; Auto-generated by GitHub Actions</td></tr>
         for r in rl[:50]:
             plain.append(f"{r['Ticker']:<6} ${r['Price']:.2f}  Score:{r['Score']}  Entry:${r['Entry_Price']:.2f}  "
                          f"SL:${r['Stop_Loss']:.2f} ({r['Risk_%']}%)  Target:${r['Target_Resistance']:.2f} ({r['Reward_R']}R)  "
-                         f"{r['Entry_Zone']}  sweep {r['Sweep_Date']} MSS {r['MSS_Date']}")
+                         f"Measured:${r['Target_Measured']} ({r['Reward_R_Measured']}R)  {r['Setup_Type']}  {r['Entry_Zone']}  "
+                         f"trendline {r['Trendline_Confluence']}  MSS {r['MSS_Date']}")
         if rl:
             plain += ["", "Tickers: " + ", ".join(r["Ticker"] for r in rl)]
         else:
@@ -680,21 +718,27 @@ if results:
                color=cols, width=0.6)
         if np.isfinite(r["FVG_Bottom"]):
             ax.axhspan(r["FVG_Bottom"], r["FVG_Top"], color="#38bdf8", alpha=0.15)
-        for when, lab in ((r["Sweep_Date"], "sweep"), (r["MSS_Date"], "MSS")):
+        for when, lab in ((r["Sweep_Date"], "sweep" if r["Setup_Type"] == "Sweep" else "higher low"), (r["MSS_Date"], "MSS")):
             k_ = np.where(d.index == pd.Timestamp(when))[0]
             if len(k_): ax.axvline(k_[0], color="#334155", ls="--", lw=0.8); ax.text(k_[0], d["High"].max(), lab, color="#cbd5e1", fontsize=7, ha="center", va="bottom")
-        for lvl, c_, lab in ((r["Old_Swing_Low"], "#94a3b8", "Old low"), (r["MSS_Level"], "#facc15", "MSS level"),
-                             (r["Stop_Loss"], "#ef4444", "Stop"), (r["Target_Resistance"], "#22c55e", "Target")):
+        lv = [(r["Old_Swing_Low"], "#94a3b8", "Old low"), (r["MSS_Level"], "#facc15", "MSS level"),
+              (r["Stop_Loss"], "#ef4444", "Stop"), (r["Target_Resistance"], "#22c55e", "Target")]
+        if np.isfinite(r["Target_Measured"]): lv.append((r["Target_Measured"], "#38bdf8", "Measured"))
+        sg = r["_sig"]
+        if np.isfinite(sg["trendline"]) and sg["jo"] >= len(r["_df"]) - n_:
+            x0 = sg["jo"] - (len(r["_df"]) - n_)
+            ax.plot([x0, n_ - 1], [sg["origin"], sg["trendline"]], color="#f59e0b", lw=1.0)
+        for lvl, c_, lab in lv:
             ax.axhline(lvl, color=c_, ls=":", lw=0.9)
             ax.text(n_ - 0.4, lvl, f" {lab} {lvl:.2f}", color=c_, fontsize=7, va="center")
         ax.set_xticks(x[::10]); ax.set_xticklabels([t.strftime("%m/%d") for t in d.index[::10]], fontsize=7)
-        ax.set_title(f"{r['Ticker']} | USD {r['Price']:.2f} | Score {r['Score']} | {r['Entry_Zone']} | "
+        ax.set_title(f"{r['Ticker']} | USD {r['Price']:.2f} | Score {r['Score']} | {r['Setup_Type']} | {r['Entry_Zone']} | "
                      f"target {r['Target_Resistance']:.2f} ({r['Reward_R']}R) | {r['Signal_Date']}",
                      color="#e2e8f0", fontsize=9, fontweight="bold")
         ax.tick_params(colors="#94a3b8", labelsize=7)
         for sp in ax.spines.values(): sp.set_edgecolor("#1e3a5f")
         ax.grid(color="#1e3a5f", ls="--", lw=0.5, alpha=0.6)
-    plt.suptitle(f"Liquidity Sweep + MSS + Retest/FVG - {datetime.today().strftime('%Y-%m-%d')}",
+    plt.suptitle(f"Liquidity Sweep / CHoCH + MSS + Retest/FVG - {datetime.today().strftime('%Y-%m-%d')}",
                  color="#60a5fa", fontsize=12, fontweight="bold")
     plt.tight_layout()
     cp = os.path.join(out_dir, f"daily_sweep_mss_retest_chart_{ts}.png")
@@ -706,10 +750,12 @@ print(f"""
 {'=' * 55}
   PATTERN (latest session)
   1) Liquidity sweep: a low below the last swing low (last {CFG['sweep_lookback']} sessions), reclaimed within {CFG['reclaim_bars']} bars
+     - or a CHoCH higher swing low (no sweep)
   2) Bullish MSS: a close above the last swing high within {CFG['mss_bars']} sessions
   3) The sweep low held since
   4) Today: first pullback into the retest zone (+/- {CFG['retest_tol_atr']:g} ATR) or the FVG
   5) Today's close at or above the bottom of that zone
-  OUTPUT: Entry = close, Stop = sweep low - {CFG['stop_buffer_atr']:g} ATR, Target = the MSS move's high
+  OUTPUT: Entry = close, Stop = anchor low - {CFG['stop_buffer_atr']:g} ATR, Target = the MSS move's high,
+          Target_Measured = that high + the first leg; trendline confluence flagged
 {'=' * 55}
 """)
