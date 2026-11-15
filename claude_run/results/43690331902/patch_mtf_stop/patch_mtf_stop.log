@@ -1,0 +1,251 @@
+[master ffeb6eb] MTF CHoCH + FVG: stop at the 5-min pullback low; FVG stop kept as Aggressive_Stop
+ 1 file changed, 15 insertions(+), 9 deletions(-)
+From https://github.com/vikramaga/Snowflake_DDL
+ * branch            master     -> FETCH_HEAD
+Current branch master is up to date.
+To https://github.com/vikramaga/Snowflake_DDL
+   91c51cf..ffeb6eb  HEAD -> master
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 275 bars ($356.27, 2026-11-13)
+  ✅ MSFT: daily 275 bars ($523.88, 2026-11-13)
+  ✅ NVDA: daily 275 bars ($162.85, 2026-11-13)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +  10 → 6525
+
+  🎯 Total: 6525 tickers
+
+=================================================================
+  STEP 3  SCANNING 6525 TICKERS
+=================================================================
+Daily fetch:   0%|          | 0/6525 [00:00<?, ?stk/s]Daily fetch:   1%|          | 50/6525 [00:03<06:59, 15.42stk/s]Daily fetch:   2%|▏         | 100/6525 [00:08<09:06, 11.75stk/s]Daily fetch:   2%|▏         | 150/6525 [00:13<09:51, 10.77stk/s]Daily fetch:   3%|▎         | 200/6525 [00:18<09:58, 10.57stk/s]Daily fetch:   4%|▍         | 250/6525 [00:23<10:00, 10.44stk/s]Daily fetch:   5%|▍         | 300/6525 [00:28<10:07, 10.25stk/s]Daily fetch:   5%|▌         | 350/6525 [00:33<10:11, 10.09stk/s]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▌         | 400/6525 [00:38<10:03, 10.15stk/s]Daily fetch:   7%|▋         | 450/6525 [00:43<10:17,  9.84stk/s]Daily fetch:   8%|▊         | 500/6525 [00:47<09:41, 10.35stk/s]Daily fetch:   8%|▊         | 550/6525 [00:52<09:46, 10.19stk/s]Daily fetch:   9%|▉         | 600/6525 [00:57<09:19, 10.60stk/s]Daily fetch:  10%|▉         | 650/6525 [01:01<09:08, 10.70stk/s]Daily fetch:  11%|█         | 700/6525 [01:06<09:02, 10.74stk/s]Daily fetch:  11%|█▏        | 750/6525 [01:11<09:15, 10.40stk/s]Daily fetch:  12%|█▏        | 800/6525 [01:16<09:09, 10.43stk/s]Daily fetch:  13%|█▎        | 850/6525 [01:20<08:58, 10.54stk/s]Daily fetch:  14%|█▍        | 900/6525 [01:26<09:14, 10.15stk/s]Daily fetch:  15%|█▍        | 950/6525 [01:30<09:01, 10.29stk/s]Daily fetch:  15%|█▌        | 1000/6525 [01:35<08:49, 10.43stk/s]Daily fetch:  16%|█▌        | 1050/6525 [01:40<08:41, 10.49stk/s]Daily fetch:  17%|█▋        | 1100/6525 [01:45<08:44, 10.35stk/s]$CBX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+Daily fetch:  18%|█▊        | 1150/6525 [01:50<08:42, 10.28stk/s]Daily fetch:  18%|█▊        | 1200/6525 [01:54<08:18, 10.69stk/s]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1250/6525 [01:59<08:36, 10.22stk/s]Daily fetch:  20%|█▉        | 1300/6525 [02:04<08:14, 10.58stk/s]Daily fetch:  21%|██        | 1350/6525 [02:08<07:48, 11.05stk/s]Daily fetch:  21%|██▏       | 1400/6525 [02:12<07:44, 11.04stk/s]Daily fetch:  22%|██▏       | 1450/6525 [02:19<08:31,  9.92stk/s]Daily fetch:  23%|██▎       | 1500/6525 [02:23<08:03, 10.40stk/s]$CTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+Daily fetch:  24%|██▍       | 1550/6525 [02:28<08:13, 10.09stk/s]Daily fetch:  25%|██▍       | 1600/6525 [02:33<07:56, 10.33stk/s]Daily fetch:  25%|██▌       | 1650/6525 [02:37<07:33, 10.75stk/s]Daily fetch:  26%|██▌       | 1700/6525 [02:43<08:13,  9.77stk/s]Daily fetch:  27%|██▋       | 1750/6525 [02:47<07:40, 10.37stk/s]Daily fetch:  28%|██▊       | 1800/6525 [02:52<07:30, 10.48stk/s]Daily fetch:  28%|██▊       | 1850/6525 [02:56<07:20, 10.61stk/s]Daily fetch:  29%|██▉       | 1900/6525 [03:01<07:00, 11.01stk/s]Daily fetch:  30%|██▉       | 1950/6525 [03:05<07:05, 10.75stk/s]Daily fetch:  31%|███       | 2000/6525 [03:10<07:07, 10.59stk/s]Daily fetch:  31%|███▏      | 2050/6525 [03:15<07:11, 10.38stk/s]$EXAS: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+Daily fetch:  32%|███▏      | 2100/6525 [03:21<07:20, 10.05stk/s]Daily fetch:  33%|███▎      | 2150/6525 [03:26<07:13, 10.09stk/s]Daily fetch:  34%|███▎      | 2200/6525 [03:30<06:49, 10.55stk/s]Daily fetch:  34%|███▍      | 2250/6525 [03:35<06:52, 10.37stk/s]Daily fetch:  35%|███▌      | 2300/6525 [03:39<06:38, 10.60stk/s]Daily fetch:  36%|███▌      | 2350/6525 [03:44<06:39, 10.44stk/s]Daily fetch:  37%|███▋      | 2400/6525 [03:50<06:45, 10.16stk/s]Daily fetch:  38%|███▊      | 2450/6525 [03:54<06:21, 10.69stk/s]Daily fetch:  38%|███▊      | 2500/6525 [03:58<06:15, 10.72stk/s]Daily fetch:  39%|███▉      | 2550/6525 [04:03<06:12, 10.67stk/s]Daily fetch:  40%|███▉      | 2600/6525 [04:08<06:05, 10.74stk/s]Daily fetch:  41%|████      | 2650/6525 [04:13<06:17, 10.28stk/s]Daily fetch:  41%|████▏     | 2700/6525 [04:18<06:11, 10.31stk/s]Daily fetch:  42%|████▏     | 2750/6525 [04:22<05:59, 10.49stk/s]Daily fetch:  43%|████▎     | 2800/6525 [04:27<05:54, 10.52stk/s]Daily fetch:  44%|████▎     | 2850/6525 [04:32<05:53, 10.38stk/s]Daily fetch:  44%|████▍     | 2900/6525 [04:37<05:49, 10.38stk/s]Daily fetch:  45%|████▌     | 2950/6525 [04:42<05:41, 10.47stk/s]Daily fetch:  46%|████▌     | 3000/6525 [04:46<05:39, 10.39stk/s]Daily fetch:  47%|████▋     | 3050/6525 [04:51<05:25, 10.69stk/s]Daily fetch:  48%|████▊     | 3100/6525 [04:56<05:40, 10.07stk/s]Daily fetch:  48%|████▊     | 3150/6525 [05:01<05:22, 10.46stk/s]Daily fetch:  49%|████▉     | 3200/6525 [05:06<05:17, 10.48stk/s]Daily fetch:  50%|████▉     | 3250/6525 [05:11<05:29,  9.94stk/s]Daily fetch:  51%|█████     | 3300/6525 [05:16<05:20, 10.06stk/s]Daily fetch:  51%|█████▏    | 3350/6525 [05:20<05:05, 10.38stk/s]Daily fetch:  52%|█████▏    | 3400/6525 [05:25<05:02, 10.33stk/s]Daily fetch:  53%|█████▎    | 3450/6525 [05:30<04:58, 10.30stk/s]Daily fetch:  54%|█████▎    | 3500/6525 [05:36<05:01, 10.02stk/s]Daily fetch:  54%|█████▍    | 3550/6525 [05:40<04:46, 10.40stk/s]Daily fetch:  55%|█████▌    | 3600/6525 [05:45<04:37, 10.54stk/s]Daily fetch:  56%|█████▌    | 3650/6525 [05:51<05:03,  9.46stk/s]Daily fetch:  57%|█████▋    | 3700/6525 [05:56<04:47,  9.83stk/s]Daily fetch:  57%|█████▋    | 3750/6525 [06:00<04:34, 10.10stk/s]Daily fetch:  58%|█████▊    | 3800/6525 [06:05<04:26, 10.23stk/s]Daily fetch:  59%|█████▉    | 3850/6525 [06:10<04:19, 10.29stk/s]Daily fetch:  60%|█████▉    | 3900/6525 [06:15<04:12, 10.40stk/s]Daily fetch:  61%|██████    | 3950/6525 [06:19<04:08, 10.38stk/s]Daily fetch:  61%|██████▏   | 4000/6525 [06:24<04:06, 10.25stk/s]Daily fetch:  62%|██████▏   | 4050/6525 [06:30<04:06, 10.06stk/s]Daily fetch:  63%|██████▎   | 4100/6525 [06:34<03:52, 10.45stk/s]Daily fetch:  64%|██████▎   | 4150/6525 [06:39<03:54, 10.14stk/s]Daily fetch:  64%|██████▍   | 4200/6525 [06:44<03:48, 10.16stk/s]Daily fetch:  65%|██████▌   | 4250/6525 [06:49<03:44, 10.12stk/s]Daily fetch:  66%|██████▌   | 4300/6525 [06:54<03:44,  9.91stk/s]Daily fetch:  67%|██████▋   | 4350/6525 [06:59<03:30, 10.35stk/s]Daily fetch:  67%|██████▋   | 4400/6525 [07:04<03:25, 10.36stk/s]Daily fetch:  68%|██████▊   | 4450/6525 [07:08<03:20, 10.35stk/s]Daily fetch:  69%|██████▉   | 4500/6525 [07:13<03:18, 10.22stk/s]Daily fetch:  70%|██████▉   | 4550/6525 [07:18<03:11, 10.30stk/s]Daily fetch:  70%|███████   | 4600/6525 [07:23<03:06, 10.31stk/s]Daily fetch:  71%|███████▏  | 4650/6525 [07:28<03:02, 10.29stk/s]Daily fetch:  72%|███████▏  | 4700/6525 [07:33<02:54, 10.45stk/s]Daily fetch:  73%|███████▎  | 4750/6525 [07:37<02:46, 10.64stk/s]$PSTG: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+Daily fetch:  74%|███████▎  | 4800/6525 [07:42<02:43, 10.53stk/s]Daily fetch:  74%|███████▍  | 4850/6525 [07:47<02:38, 10.58stk/s]Daily fetch:  75%|███████▌  | 4900/6525 [07:51<02:33, 10.55stk/s]Daily fetch:  76%|███████▌  | 4950/6525 [07:56<02:28, 10.58stk/s]Daily fetch:  77%|███████▋  | 5000/6525 [08:01<02:23, 10.61stk/s]Daily fetch:  77%|███████▋  | 5050/6525 [08:06<02:21, 10.42stk/s]Daily fetch:  78%|███████▊  | 5100/6525 [08:11<02:21, 10.04stk/s]Daily fetch:  79%|███████▉  | 5150/6525 [08:16<02:17, 10.02stk/s]Daily fetch:  80%|███████▉  | 5200/6525 [08:22<02:15,  9.76stk/s]Daily fetch:  80%|████████  | 5250/6525 [08:27<02:09,  9.86stk/s]Daily fetch:  81%|████████  | 5300/6525 [08:31<02:00, 10.15stk/s]Daily fetch:  82%|████████▏ | 5350/6525 [08:35<01:51, 10.50stk/s]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5400/6525 [08:41<01:52, 10.04stk/s]Daily fetch:  84%|████████▎ | 5450/6525 [08:45<01:41, 10.58stk/s]Daily fetch:  84%|████████▍ | 5500/6525 [08:50<01:35, 10.77stk/s]Daily fetch:  85%|████████▌ | 5550/6525 [08:54<01:30, 10.77stk/s]Daily fetch:  86%|████████▌ | 5600/6525 [08:59<01:25, 10.79stk/s]Daily fetch:  87%|████████▋ | 5650/6525 [09:04<01:21, 10.75stk/s]Daily fetch:  87%|████████▋ | 5700/6525 [09:08<01:18, 10.57stk/s]Daily fetch:  88%|████████▊ | 5750/6525 [09:13<01:13, 10.61stk/s]Daily fetch:  89%|████████▉ | 5800/6525 [09:18<01:09, 10.47stk/s]Daily fetch:  90%|████████▉ | 5850/6525 [09:23<01:03, 10.62stk/s]Daily fetch:  90%|█████████ | 5900/6525 [09:27<00:56, 11.09stk/s]Daily fetch:  91%|█████████ | 5950/6525 [09:31<00:52, 10.91stk/s]Daily fetch:  92%|█████████▏| 6000/6525 [09:35<00:46, 11.29stk/s]Daily fetch:  93%|█████████▎| 6050/6525 [09:40<00:42, 11.20stk/s]Daily fetch:  93%|█████████▎| 6100/6525 [09:45<00:38, 10.97stk/s]Daily fetch:  94%|█████████▍| 6150/6525 [09:49<00:34, 10.85stk/s]Daily fetch:  95%|█████████▌| 6200/6525 [09:54<00:29, 10.86stk/s]Daily fetch:  96%|█████████▌| 6250/6525 [09:59<00:25, 10.97stk/s]Daily fetch:  97%|█████████▋| 6300/6525 [10:04<00:21, 10.43stk/s]Daily fetch:  97%|█████████▋| 6350/6525 [10:09<00:16, 10.51stk/s]Daily fetch:  98%|█████████▊| 6400/6525 [10:13<00:11, 10.56stk/s]Daily fetch:  99%|█████████▉| 6450/6525 [10:19<00:07, 10.10stk/s]$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+
+6 Failed downloads:
+['ZEXIT', 'ZIEXT', 'ZCZZT']: possibly delisted; no timezone found
+['ZBZX', 'ZBZZT', 'ZAZZT']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Daily fetch: 100%|█████████▉| 6500/6525 [10:24<00:02,  9.83stk/s]$ZTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+3 Failed downloads:
+['ZTEST', 'ZVV']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+['ZXIET']: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6525/6525 [10:27<00:00,  9.33stk/s]Daily fetch: 100%|██████████| 6525/6525 [10:29<00:00, 10.37stk/s]
+$ROKU: possibly delisted; no price data found  (period=5d)
+
+1 Failed download:
+['ROKU']: possibly delisted; no price data found  (period=5d)
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+
+  Daily data : 5760/6525 tickers
+
+
+  Stage 1 - daily HH + HL uptrend: 667
+  Stage 2 - 1H retracement in progress: 421 (1H data for 667)
+  5-min data for 420; latest session 2026-11-13
+
+=================================================================
+  SCAN COMPLETE - latest session 2026-11-13
+  Daily uptrend 667 -> 1H retracement 421 -> CHoCH waiting retest 23 -> retest holding 11 -> TRIGGERED 82  (armed shown: 150 of 163)
+  ENTRY LAZ    2026-11-13 13:50 ET  40.25  SL 39.93  T1 42.84 (8.0R)  -> open
+  ENTRY OSW    2026-11-13 15:10 ET  30.59  SL 30.27  T1 33.05 (7.5R)  -> open
+  ENTRY CODI   2026-11-13 12:45 ET  11.48  SL 11.33  T1 12.49 (6.7R)  -> open
+  ENTRY AMX    2026-11-13 15:05 ET  25.4  SL 25.27  T1 26.19 (6.6R)  -> open
+  ENTRY GEHC   2026-11-13 10:20 ET  82.1  SL 81.71  T1 84.66 (6.5R)  -> open
+  ENTRY AMTM   2026-11-13 11:25 ET  21.89  SL 21.64  T1 23.37 (6.0R)  -> open
+  ENTRY QXO    2026-11-13 11:25 ET  12.61  SL 12.35  T1 14.12 (5.6R)  -> open
+  ENTRY SG     2026-11-13 15:15 ET  12.19  SL 11.84  T1 13.89 (4.8R)  -> open
+  ENTRY VIV    2026-11-13 14:00 ET  11.97  SL 11.86  T1 12.47 (4.4R)  -> open
+  ENTRY VSEC   2026-11-13 12:00 ET  182.29  SL 179.46  T1 194.86 (4.4R)  -> open
+  ENTRY EPRT   2026-11-13 15:40 ET  27.69  SL 27.52  T1 28.4 (4.1R)  -> open
+  ENTRY SYRE   2026-11-13 10:45 ET  102.46  SL 100.39  T1 110.64 (4.0R)  -> open
+  ENTRY KMB    2026-11-13 09:45 ET  108.05  SL 106.77  T1 112.91 (3.8R)  -> open
+  ENTRY WSC    2026-11-13 12:05 ET  19.75  SL 19.37  T1 21.11 (3.6R)  -> open
+  ENTRY MAC    2026-11-13 15:50 ET  25.15  SL 24.98  T1 25.69 (3.4R)  -> open
+  ENTRY RPC    2026-11-13 12:05 ET  9.56  SL 9.4  T1 10.08 (3.4R)  -> open
+  ENTRY LMT    2026-11-13 15:30 ET  595.47  SL 588.15  T1 619.5 (3.3R)  -> open
+  ENTRY RDN    2026-11-13 11:35 ET  36.69  SL 36.34  T1 37.83 (3.3R)  -> open
+  ENTRY SARO   2026-11-13 12:05 ET  27.86  SL 27.39  T1 29.35 (3.2R)  -> open
+  ENTRY MBX    2026-11-13 11:20 ET  54.52  SL 53.16  T1 58.56 (3.0R)  -> open
+  ENTRY STGW   2026-11-13 15:45 ET  11.27  SL 10.94  T1 12.26 (3.0R)  -> open
+  ENTRY WFC    2026-11-13 14:35 ET  85.65  SL 85.24  T1 86.86 (3.0R)  -> open
+  ENTRY VMRK   2026-11-13 09:45 ET  64.6  SL 63.85  T1 66.75 (2.9R)  -> open
+  ENTRY GXO    2026-11-13 13:10 ET  54.9  SL 54.03  T1 57.35 (2.8R)  -> open
+  ENTRY MRVI   2026-11-13 15:45 ET  7.59  SL 7.38  T1 8.18 (2.7R)  -> open
+  ENTRY CPRI   2026-11-13 10:20 ET  20.7  SL 20.3  T1 21.74 (2.6R)  -> open
+  ENTRY OLED   2026-11-13 11:45 ET  89.01  SL 87.82  T1 91.85 (2.4R)  -> open
+  ENTRY JBGS   2026-11-13 13:10 ET  12.03  SL 11.73  T1 12.72 (2.3R)  -> open
+  ENTRY EMA    2026-11-13 15:45 ET  51.01  SL 50.8  T1 51.48 (2.2R)  -> open
+  ENTRY NXPI   2026-11-13 11:50 ET  259.6  SL 253.06  T1 274.21 (2.2R)  -> open
+  ENTRY INCY   2026-11-13 14:30 ET  120.99  SL 119.6  T1 123.9 (2.1R)  -> open
+  ENTRY OGE    2026-11-13 14:40 ET  51.46  SL 51.31  T1 51.78 (2.1R)  -> open
+  ENTRY PECO   2026-11-13 15:25 ET  41.24  SL 41.09  T1 41.55 (2.1R)  -> open
+  ENTRY ALGN   2026-11-13 09:55 ET  169.61  SL 165.87  T1 177.04 (2.0R)  -> open
+  ENTRY BALL   2026-11-13 09:45 ET  65.71  SL 64.75  T1 67.65 (2.0R)  -> open
+  ENTRY MD     2026-11-13 15:50 ET  31.36  SL 31.04  T1 31.96 (1.9R)  -> open
+  ENTRY OLN    2026-11-13 14:35 ET  17.5  SL 17.14  T1 18.15 (1.9R)  -> open
+  ENTRY OSK    2026-11-13 10:45 ET  139.76  SL 138.2  T1 142.65 (1.9R)  -> open
+  ENTRY LHX    2026-11-13 15:55 ET  272.38  SL 268.33  T1 279.7 (1.8R)  -> open
+  ENTRY ALSN   2026-11-13 14:15 ET  127.07  SL 124.51  T1 131.54 (1.7R)  -> open
+  ENTRY BCE    2026-11-13 09:55 ET  21.49  SL 21.3  T1 21.8 (1.7R)  -> open
+  ENTRY ALKS   2026-11-13 11:30 ET  46.91  SL 46.05  T1 48.29 (1.6R)  -> open
+  ENTRY FTDR   2026-11-13 10:35 ET  97.83  SL 94.81  T1 102.56 (1.6R)  -> open
+  ENTRY HTHT   2026-11-13 10:00 ET  50.04  SL 49.34  T1 51.16 (1.6R)  -> open
+  ENTRY RYAN   2026-11-13 10:00 ET  46.96  SL 45.64  T1 49.0 (1.6R)  -> open
+  ENTRY KD     2026-11-13 14:50 ET  16.93  SL 16.61  T1 17.39 (1.4R)  -> open
+  ENTRY PTON   2026-11-13 12:30 ET  5.72  SL 5.51  T1 6.0 (1.3R)  -> open
+  ENTRY WEN    2026-11-13 10:35 ET  8.29  SL 8.13  T1 8.49 (1.3R)  -> open
+  ENTRY AFL    2026-11-13 09:45 ET  127.5  SL 126.17  T1 129.08 (1.2R)  -> open
+  ENTRY G      2026-11-13 10:45 ET  43.47  SL 42.78  T1 44.29 (1.2R)  -> open
+  ENTRY JBIO   2026-11-13 15:15 ET  16.29  SL 15.56  T1 17.16 (1.2R)  -> open
+  ENTRY BNY    2026-11-13 13:05 ET  152.29  SL 150.68  T1 154.07 (1.1R)  -> open
+  ENTRY RLI    2026-11-13 10:00 ET  69.82  SL 68.95  T1 70.73 (1.1R)  -> open
+  ENTRY ROL    2026-11-13 10:30 ET  38.42  SL 37.87  T1 39.04 (1.1R)  -> open
+  ENTRY SHAK   2026-11-13 15:15 ET  75.14  SL 71.92  T1 78.65 (1.1R)  -> open
+  ENTRY M      2026-11-13 15:50 ET  24.71  SL 23.9  T1 25.49 (1.0R)  -> open
+  ENTRY STEP   2026-11-13 15:45 ET  48.14  SL 46.24  T1 50.01 (1.0R)  -> open
+  ENTRY H      2026-11-13 09:50 ET  189.22  SL 186.66  T1 191.59 (0.9R)  -> open
+  ENTRY OMC    2026-11-13 10:20 ET  87.98  SL 86.36  T1 89.43 (0.9R)  -> open
+  ENTRY TYL    2026-11-13 11:25 ET  427.32  SL 422.09  T1 431.86 (0.9R)  -> open
+  ENTRY MA     2026-11-13 09:55 ET  660.57  SL 651.43  T1 667.51 (0.8R)  -> open
+  ENTRY MDLZ   2026-11-13 13:00 ET  67.4  SL 67.05  T1 67.67 (0.8R)  -> open
+  ENTRY RPRX   2026-11-13 15:50 ET  69.39  SL 68.07  T1 70.37 (0.8R)  -> open
+  ENTRY V      2026-11-13 09:55 ET  425.5  SL 419.6  T1 430.18 (0.8R)  -> open
+  ENTRY LNT    2026-11-13 09:45 ET  73.57  SL 72.87  T1 74.05 (0.7R)  -> open
+  ENTRY MSCI   2026-11-13 10:30 ET  657.35  SL 650.87  T1 662.15 (0.7R)  -> open
+  ENTRY PDM    2026-11-13 15:45 ET  10.02  SL 9.73  T1 10.22 (0.7R)  -> open
+  ENTRY PLNT   2026-11-13 11:10 ET  61.04  SL 59.88  T1 61.85 (0.7R)  -> open
+  ENTRY PRG    2026-11-13 15:55 ET  38.39  SL 37.39  T1 39.05 (0.7R)  -> open
+  ENTRY TFX    2026-11-13 10:40 ET  155.18  SL 152.97  T1 156.75 (0.7R)  -> open
+  ENTRY KIM    2026-11-13 11:00 ET  25.65  SL 25.19  T1 25.94 (0.6R)  -> open
+  ENTRY MOH    2026-11-13 14:55 ET  209.41  SL 204.8  T1 212.0 (0.6R)  -> open
+  ENTRY ADP    2026-11-13 10:30 ET  310.17  SL 306.79  T1 311.83 (0.5R)  -> open
+  ENTRY BILL   2026-11-13 13:30 ET  54.49  SL 53.33  T1 55.01 (0.5R)  -> open
+  ENTRY MRK    2026-11-13 15:40 ET  147.9  SL 145.09  T1 149.31 (0.5R)  -> open
+  ENTRY PAYX   2026-11-13 10:00 ET  116.49  SL 114.46  T1 117.56 (0.5R)  -> open
+  ENTRY VERX   2026-11-13 10:30 ET  18.02  SL 17.6  T1 18.22 (0.5R)  -> open
+  ENTRY ECL    2026-11-13 10:30 ET  309.39  SL 304.04  T1 311.3 (0.4R)  -> open
+  ENTRY GKOS   2026-11-13 11:25 ET  247.9  SL 242.1  T1 249.97 (0.4R)  -> open
+  ENTRY SPGI   2026-11-13 10:30 ET  474.32  SL 467.55  T1 476.82 (0.4R)  -> open
+  ENTRY SFD    2026-11-13 10:35 ET  19.41  SL 18.74  T1 19.58 (0.3R)  -> open
+  ENTRY DUK    2026-11-13 11:45 ET  129.54  SL 127.81  T1 129.97 (0.2R)  -> open
+=================================================================
+  💰 Position sizing: max loss $40 per trade — 82 sized, 184 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 82 qualified stocks (trend, catalyst, value) ...
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_mtf_choch_fvg_v1_20261115_0744.csv  (53s)
+     #1  BALL        84  (trend 35, catalyst 18, value 31)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, PEG <= 1.5, analysts Buy, target +11%
+     #2  MDLZ        81  (trend 35, catalyst 22, value 24)  above SMA200, SMA50 rising, SMA200 turning up, contract/order news, 1 net upgrade, beat last EPS, PEG <= 1.5, analysts Buy
+     #3  LMT         79  (trend 30, catalyst 22, value 27)  above SMA200, SMA50 rising, SMA200 rising, contract/order news, 1 net upgrade, beat last EPS, PEG <= 1.5, target +11%
+     #4  RPRX        77  (trend 35, catalyst 18, value 24)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, fair P/E, analysts Buy
+     #5  MAC         75  (trend 35, catalyst 18, value 22)  above SMA200, SMA50 rising, SMA200 turning up, positive news, 2 net upgrades, beat last EPS, analysts Buy
+     #6  LNT         73  (trend 35, catalyst 14, value 24)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, fair P/E, analysts Buy
+     #7  TFX         73  (trend 35, catalyst 22, value 16)  above SMA200, SMA50 rising, SMA200 turning up, positive news, 1 net upgrade, beat last EPS, PEG <= 1.5
+     #8  MRK         72  (trend 30, catalyst 14, value 28)  above SMA200, SMA50 rising, SMA200 rising, positive news, beat last EPS, fair P/E, analysts Buy
+     #9  NXPI        70  (trend 35, catalyst 8, value 27)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, PEG <= 1.5, analysts Buy, target +13%
+     #10 H           69  (trend 35, catalyst 10, value 24)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, PEG <= 1.5, analysts Buy
+
+  CSV -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/mtf_choch_fvg_20261115_0744.csv
+  TradingView file -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_mtf_choch_fvg_20261115_0744.txt
+[TradingView] replaced watchlist 'MTF FVG - 2026-11-15' (id 355413870) via /replace/?unsafe=true
+[TradingView] 'MTF FVG - 2026-11-15' - 266 symbols
+  🏅 Best 10 added to the email (html text)
+[Email] Sent to vikramaga24@gmail.com - MTF CHoCH+FVG - 82 entries, 34 setting up, 163 armed - 2026-11-15
+patched 2f2c07964139038e4bc6623b5af1d8ae7ff42e184dc7420f6041745a1b025fe3
++ git config user.name Scanner Bot
++ git config user.email vikram-scanner-bot@users.noreply.github.com
++ git add mtf_choch_fvg_v1.py
++ git commit -m MTF CHoCH + FVG: stop at the 5-min pullback low; FVG stop kept as Aggressive_Stop
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WG6bhVDgntdGBGqtFYno57
+pushed
