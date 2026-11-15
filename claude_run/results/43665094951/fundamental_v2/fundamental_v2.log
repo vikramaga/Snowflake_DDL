@@ -1,0 +1,503 @@
+
+1 Failed download:
+['MSFT']: OperationalError('database is locked')
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: 208 bars  $356.27  2026-11-13
+  ✅ NVDA: 208 bars  $162.85  2026-11-13
+  ✅ MSFT: 208 bars  $523.88  2026-11-13
+
+  Testing .info fetch for AAPL...
+  ✅ Fund_Score=40/50  Flags: RevG+12% EPS$8.98 Mgn28% CR1.0 ROE142% PE40  (0.2s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +  10 → 6525
+
+  🎯 Total: 6525 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6525 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Pass 1: Technical + Support screening (fast)
+  Pass 2: Fundamental fetch for pass-1 stocks only
+
+Pass 1 Tech:   0%|          | 0/6525 [00:00<?]Pass 1 Tech:   0%|          | 1/6525 [00:03<6:55:46]Pass 1 Tech:   1%|          | 51/6525 [00:08<15:10] Pass 1 Tech:   2%|▏         | 101/6525 [00:12<11:45]Pass 1 Tech:   2%|▏         | 151/6525 [00:17<10:49]Pass 1 Tech:   3%|▎         | 201/6525 [00:21<10:23]Pass 1 Tech:   4%|▍         | 251/6525 [00:26<09:57]Pass 1 Tech:   5%|▍         | 301/6525 [00:30<09:39]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Pass 1 Tech:   5%|▌         | 351/6525 [00:35<09:22]Pass 1 Tech:   6%|▌         | 401/6525 [00:40<09:50]Pass 1 Tech:   7%|▋         | 451/6525 [00:44<09:21]Pass 1 Tech:   8%|▊         | 501/6525 [00:49<09:11]Pass 1 Tech:   8%|▊         | 551/6525 [00:53<08:41]Pass 1 Tech:   9%|▉         | 601/6525 [00:58<09:07]Pass 1 Tech:  10%|▉         | 651/6525 [01:02<08:58]Pass 1 Tech:  11%|█         | 701/6525 [01:07<08:54]Pass 1 Tech:  12%|█▏        | 751/6525 [01:11<08:41]Pass 1 Tech:  12%|█▏        | 801/6525 [01:15<08:25]Pass 1 Tech:  13%|█▎        | 851/6525 [01:21<09:03]Pass 1 Tech:  14%|█▍        | 901/6525 [01:26<08:47]Pass 1 Tech:  15%|█▍        | 951/6525 [01:30<08:37]Pass 1 Tech:  15%|█▌        | 1001/6525 [01:34<08:12]Pass 1 Tech:  16%|█▌        | 1051/6525 [01:39<08:19]$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  17%|█▋        | 1101/6525 [01:43<08:04]Pass 1 Tech:  18%|█▊        | 1151/6525 [01:47<07:50]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Pass 1 Tech:  18%|█▊        | 1201/6525 [01:52<07:52]Pass 1 Tech:  19%|█▉        | 1251/6525 [01:56<07:38]Pass 1 Tech:  20%|█▉        | 1301/6525 [02:00<07:12]Pass 1 Tech:  21%|██        | 1351/6525 [02:04<07:03]Pass 1 Tech:  21%|██▏       | 1401/6525 [02:08<07:12]Pass 1 Tech:  22%|██▏       | 1451/6525 [02:12<07:07]$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  23%|██▎       | 1501/6525 [02:17<07:13]Pass 1 Tech:  24%|██▍       | 1551/6525 [02:21<07:13]Pass 1 Tech:  25%|██▍       | 1601/6525 [02:26<07:11]Pass 1 Tech:  25%|██▌       | 1651/6525 [02:30<07:11]Pass 1 Tech:  26%|██▌       | 1701/6525 [02:34<06:51]Pass 1 Tech:  27%|██▋       | 1751/6525 [02:39<06:45]Pass 1 Tech:  28%|██▊       | 1801/6525 [02:43<06:33]Pass 1 Tech:  28%|██▊       | 1851/6525 [02:46<06:17]Pass 1 Tech:  29%|██▉       | 1901/6525 [02:51<06:25]Pass 1 Tech:  30%|██▉       | 1951/6525 [02:55<06:18]Pass 1 Tech:  31%|███       | 2001/6525 [02:59<06:13]$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  31%|███▏      | 2051/6525 [03:03<06:21]Pass 1 Tech:  32%|███▏      | 2101/6525 [03:08<06:26]Pass 1 Tech:  33%|███▎      | 2151/6525 [03:12<06:16]Pass 1 Tech:  34%|███▎      | 2201/6525 [03:17<06:22]Pass 1 Tech:  34%|███▍      | 2251/6525 [03:21<06:09]Pass 1 Tech:  35%|███▌      | 2301/6525 [03:25<06:08]Pass 1 Tech:  36%|███▌      | 2351/6525 [03:31<06:24]Pass 1 Tech:  37%|███▋      | 2401/6525 [03:35<06:05]Pass 1 Tech:  38%|███▊      | 2451/6525 [03:39<06:10]Pass 1 Tech:  38%|███▊      | 2501/6525 [03:44<05:58]Pass 1 Tech:  39%|███▉      | 2551/6525 [03:48<05:42]Pass 1 Tech:  40%|███▉      | 2601/6525 [03:53<05:52]Pass 1 Tech:  41%|████      | 2651/6525 [03:57<05:56]Pass 1 Tech:  41%|████▏     | 2701/6525 [04:01<05:35]Pass 1 Tech:  42%|████▏     | 2751/6525 [04:06<05:31]Pass 1 Tech:  43%|████▎     | 2801/6525 [04:10<05:23]Pass 1 Tech:  44%|████▎     | 2851/6525 [04:15<05:28]Pass 1 Tech:  44%|████▍     | 2901/6525 [04:19<05:22]Pass 1 Tech:  45%|████▌     | 2951/6525 [04:23<05:14]Pass 1 Tech:  46%|████▌     | 3001/6525 [04:28<05:06]Pass 1 Tech:  47%|████▋     | 3051/6525 [04:33<05:30]Pass 1 Tech:  48%|████▊     | 3101/6525 [04:38<05:12]Pass 1 Tech:  48%|████▊     | 3151/6525 [04:42<05:03]Pass 1 Tech:  49%|████▉     | 3201/6525 [04:47<05:04]Pass 1 Tech:  50%|████▉     | 3251/6525 [04:51<04:55]Pass 1 Tech:  51%|█████     | 3301/6525 [04:55<04:40]Pass 1 Tech:  51%|█████▏    | 3351/6525 [04:59<04:39]Pass 1 Tech:  52%|█████▏    | 3401/6525 [05:04<04:30]Pass 1 Tech:  53%|█████▎    | 3451/6525 [05:09<04:36]Pass 1 Tech:  54%|█████▎    | 3501/6525 [05:13<04:22]Pass 1 Tech:  54%|█████▍    | 3551/6525 [05:17<04:18]Pass 1 Tech:  55%|█████▌    | 3601/6525 [05:22<04:22]Pass 1 Tech:  56%|█████▌    | 3651/6525 [05:26<04:10]Pass 1 Tech:  57%|█████▋    | 3701/6525 [05:30<04:06]Pass 1 Tech:  57%|█████▋    | 3751/6525 [05:34<03:58]Pass 1 Tech:  58%|█████▊    | 3801/6525 [05:39<03:58]Pass 1 Tech:  59%|█████▉    | 3851/6525 [05:43<03:58]Pass 1 Tech:  60%|█████▉    | 3901/6525 [05:48<03:55]Pass 1 Tech:  61%|██████    | 3951/6525 [05:52<03:48]Pass 1 Tech:  61%|██████▏   | 4001/6525 [05:57<03:50]Pass 1 Tech:  62%|██████▏   | 4051/6525 [06:01<03:37]Pass 1 Tech:  63%|██████▎   | 4101/6525 [06:06<03:39]Pass 1 Tech:  64%|██████▎   | 4151/6525 [06:10<03:31]Pass 1 Tech:  64%|██████▍   | 4200/6525 [06:10<02:27]Pass 1 Tech:  65%|██████▍   | 4216/6525 [06:15<03:26]Pass 1 Tech:  65%|██████▌   | 4251/6525 [06:20<04:02]Pass 1 Tech:  66%|██████▌   | 4301/6525 [06:24<03:38]Pass 1 Tech:  67%|██████▋   | 4351/6525 [06:29<03:24]Pass 1 Tech:  67%|██████▋   | 4401/6525 [06:33<03:15]Pass 1 Tech:  68%|██████▊   | 4451/6525 [06:38<03:11]Pass 1 Tech:  69%|██████▉   | 4501/6525 [06:42<03:03]Pass 1 Tech:  70%|██████▉   | 4551/6525 [06:46<02:57]Pass 1 Tech:  71%|███████   | 4601/6525 [06:51<02:51]Pass 1 Tech:  71%|███████▏  | 4651/6525 [06:55<02:45]Pass 1 Tech:  72%|███████▏  | 4701/6525 [06:59<02:39]$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  73%|███████▎  | 4751/6525 [07:04<02:40]Pass 1 Tech:  74%|███████▎  | 4801/6525 [07:09<02:39]Pass 1 Tech:  74%|███████▍  | 4851/6525 [07:15<02:51]Pass 1 Tech:  75%|███████▌  | 4901/6525 [07:20<02:38]Pass 1 Tech:  76%|███████▌  | 4951/6525 [07:24<02:26]Pass 1 Tech:  77%|███████▋  | 5001/6525 [07:29<02:24]Pass 1 Tech:  77%|███████▋  | 5046/6525 [07:29<01:41]Pass 1 Tech:  78%|███████▊  | 5060/6525 [07:34<02:26]Pass 1 Tech:  78%|███████▊  | 5101/6525 [07:38<02:25]Pass 1 Tech:  79%|███████▉  | 5151/6525 [07:43<02:19]Pass 1 Tech:  80%|███████▉  | 5201/6525 [07:48<02:12]Pass 1 Tech:  80%|████████  | 5251/6525 [07:52<02:01]Pass 1 Tech:  81%|████████  | 5301/6525 [07:56<01:51]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Pass 1 Tech:  82%|████████▏ | 5351/6525 [08:01<01:43]Pass 1 Tech:  83%|████████▎ | 5401/6525 [08:05<01:37]Pass 1 Tech:  84%|████████▎ | 5451/6525 [08:09<01:31]Pass 1 Tech:  84%|████████▍ | 5501/6525 [08:13<01:28]Pass 1 Tech:  85%|████████▌ | 5551/6525 [08:18<01:25]Pass 1 Tech:  86%|████████▌ | 5601/6525 [08:22<01:22]Pass 1 Tech:  87%|████████▋ | 5651/6525 [08:27<01:18]Pass 1 Tech:  87%|████████▋ | 5701/6525 [08:31<01:11]Pass 1 Tech:  88%|████████▊ | 5751/6525 [08:35<01:07]Pass 1 Tech:  89%|████████▉ | 5801/6525 [08:40<01:04]Pass 1 Tech:  90%|████████▉ | 5851/6525 [08:44<00:57]Pass 1 Tech:  90%|█████████ | 5897/6525 [08:44<00:38]Pass 1 Tech:  91%|█████████ | 5912/6525 [08:48<00:54]Pass 1 Tech:  91%|█████████ | 5951/6525 [08:52<00:52]Pass 1 Tech:  92%|█████████▏| 5992/6525 [08:52<00:33]Pass 1 Tech:  92%|█████████▏| 6010/6525 [08:56<00:45]Pass 1 Tech:  93%|█████████▎| 6051/6525 [09:01<00:45]Pass 1 Tech:  94%|█████████▎| 6101/6525 [09:05<00:38]Pass 1 Tech:  94%|█████████▍| 6151/6525 [09:09<00:32]Pass 1 Tech:  95%|█████████▌| 6201/6525 [09:13<00:27]Pass 1 Tech:  96%|█████████▌| 6251/6525 [09:18<00:24]Pass 1 Tech:  97%|█████████▋| 6301/6525 [09:22<00:19]Pass 1 Tech:  97%|█████████▋| 6351/6525 [09:27<00:15]Pass 1 Tech:  98%|█████████▊| 6401/6525 [09:32<00:11]$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZEXIT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+6 Failed downloads:
+['ZBZX', 'ZBZZT', 'ZAZZT']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+['ZEXIT', 'ZCZZT', 'ZIEXT']: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Pass 1 Tech:  99%|█████████▉| 6451/6525 [09:36<00:06]$ZXIET: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+3 Failed downloads:
+['ZXIET']: possibly delisted; no timezone found
+['ZTEST', 'ZVV']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Pass 1 Tech: 100%|█████████▉| 6501/6525 [09:40<00:02]Pass 1 Tech: 100%|██████████| 6525/6525 [09:41<00:00]
+
+  Pass 1 done: 5630/6525 got data (86%)
+  Tech passes: 144 stocks → fetching fundamentals now
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PASS 2  FUNDAMENTAL CHECK (144 stocks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pass 2 Fund:   0%|          | 0/144 [00:00<?, ?stk/s]Pass 2 Fund:   1%|          | 1/144 [00:00<01:12,  1.99stk/s]Pass 2 Fund:   1%|▏         | 2/144 [00:00<01:07,  2.12stk/s]Pass 2 Fund:   2%|▏         | 3/144 [00:01<01:06,  2.13stk/s]Pass 2 Fund:   3%|▎         | 4/144 [00:01<01:07,  2.06stk/s]Pass 2 Fund:   3%|▎         | 5/144 [00:02<01:06,  2.09stk/s]Pass 2 Fund:   4%|▍         | 6/144 [00:02<01:05,  2.11stk/s]Pass 2 Fund:   5%|▍         | 7/144 [00:03<01:06,  2.07stk/s]Pass 2 Fund:   6%|▌         | 8/144 [00:03<01:04,  2.10stk/s]Pass 2 Fund:   6%|▋         | 9/144 [00:04<01:03,  2.12stk/s]Pass 2 Fund:   7%|▋         | 10/144 [00:04<01:02,  2.13stk/s]Pass 2 Fund:   8%|▊         | 11/144 [00:05<01:04,  2.08stk/s]Pass 2 Fund:   8%|▊         | 12/144 [00:05<01:02,  2.11stk/s]Pass 2 Fund:   9%|▉         | 13/144 [00:06<01:01,  2.13stk/s]Pass 2 Fund:  10%|▉         | 14/144 [00:06<01:00,  2.15stk/s]Pass 2 Fund:  10%|█         | 15/144 [00:07<00:59,  2.16stk/s]Pass 2 Fund:  11%|█         | 16/144 [00:07<01:02,  2.04stk/s]Pass 2 Fund:  12%|█▏        | 17/144 [00:08<01:02,  2.03stk/s]Pass 2 Fund:  12%|█▎        | 18/144 [00:08<01:02,  2.01stk/s]Pass 2 Fund:  13%|█▎        | 19/144 [00:09<01:02,  2.00stk/s]Pass 2 Fund:  14%|█▍        | 20/144 [00:09<01:00,  2.05stk/s]Pass 2 Fund:  15%|█▍        | 21/144 [00:10<00:58,  2.10stk/s]Pass 2 Fund:  15%|█▌        | 22/144 [00:10<00:57,  2.12stk/s]Pass 2 Fund:  16%|█▌        | 23/144 [00:10<00:56,  2.14stk/s]Pass 2 Fund:  17%|█▋        | 24/144 [00:11<00:56,  2.13stk/s]Pass 2 Fund:  17%|█▋        | 25/144 [00:11<00:57,  2.08stk/s]Pass 2 Fund:  18%|█▊        | 26/144 [00:12<00:55,  2.11stk/s]Pass 2 Fund:  19%|█▉        | 27/144 [00:12<00:54,  2.13stk/s]Pass 2 Fund:  19%|█▉        | 28/144 [00:13<00:54,  2.14stk/s]Pass 2 Fund:  20%|██        | 29/144 [00:13<00:53,  2.16stk/s]Pass 2 Fund:  21%|██        | 30/144 [00:14<00:54,  2.10stk/s]Pass 2 Fund:  22%|██▏       | 31/144 [00:14<00:53,  2.13stk/s]Pass 2 Fund:  22%|██▏       | 32/144 [00:15<00:52,  2.15stk/s]Pass 2 Fund:  23%|██▎       | 33/144 [00:15<00:51,  2.17stk/s]Pass 2 Fund:  24%|██▎       | 34/144 [00:16<00:50,  2.17stk/s]Pass 2 Fund:  24%|██▍       | 35/144 [00:16<00:51,  2.10stk/s]Pass 2 Fund:  25%|██▌       | 36/144 [00:17<00:50,  2.12stk/s]Pass 2 Fund:  26%|██▌       | 37/144 [00:17<00:51,  2.08stk/s]Pass 2 Fund:  26%|██▋       | 38/144 [00:18<00:51,  2.05stk/s]Pass 2 Fund:  27%|██▋       | 39/144 [00:18<00:50,  2.09stk/s]Pass 2 Fund:  28%|██▊       | 40/144 [00:19<00:49,  2.12stk/s]Pass 2 Fund:  28%|██▊       | 41/144 [00:19<00:48,  2.14stk/s]Pass 2 Fund:  29%|██▉       | 42/144 [00:19<00:47,  2.13stk/s]Pass 2 Fund:  30%|██▉       | 43/144 [00:20<00:48,  2.07stk/s]Pass 2 Fund:  31%|███       | 44/144 [00:20<00:47,  2.10stk/s]Pass 2 Fund:  31%|███▏      | 45/144 [00:21<00:46,  2.13stk/s]Pass 2 Fund:  32%|███▏      | 46/144 [00:21<00:45,  2.14stk/s]Pass 2 Fund:  33%|███▎      | 47/144 [00:22<00:45,  2.15stk/s]Pass 2 Fund:  33%|███▎      | 48/144 [00:22<00:44,  2.16stk/s]Pass 2 Fund:  34%|███▍      | 49/144 [00:23<00:43,  2.18stk/s]Pass 2 Fund:  35%|███▍      | 50/144 [00:23<00:43,  2.17stk/s]Pass 2 Fund:  35%|███▌      | 51/144 [00:24<00:42,  2.18stk/s]Pass 2 Fund:  36%|███▌      | 52/144 [00:24<00:42,  2.18stk/s]Pass 2 Fund:  37%|███▋      | 53/144 [00:25<00:41,  2.18stk/s]Pass 2 Fund:  38%|███▊      | 54/144 [00:25<00:41,  2.16stk/s]Pass 2 Fund:  38%|███▊      | 55/144 [00:25<00:40,  2.18stk/s]Pass 2 Fund:  39%|███▉      | 56/144 [00:26<00:40,  2.18stk/s]Pass 2 Fund:  40%|███▉      | 57/144 [00:26<00:41,  2.10stk/s]Pass 2 Fund:  40%|████      | 58/144 [00:27<00:41,  2.05stk/s]Pass 2 Fund:  41%|████      | 59/144 [00:27<00:41,  2.03stk/s]Pass 2 Fund:  42%|████▏     | 60/144 [00:28<00:41,  2.01stk/s]Pass 2 Fund:  42%|████▏     | 61/144 [00:28<00:40,  2.03stk/s]Pass 2 Fund:  43%|████▎     | 62/144 [00:29<00:39,  2.08stk/s]Pass 2 Fund:  44%|████▍     | 63/144 [00:29<00:38,  2.10stk/s]Pass 2 Fund:  44%|████▍     | 64/144 [00:30<00:37,  2.13stk/s]Pass 2 Fund:  45%|████▌     | 65/144 [00:30<00:37,  2.12stk/s]Pass 2 Fund:  46%|████▌     | 66/144 [00:31<00:36,  2.14stk/s]Pass 2 Fund:  47%|████▋     | 67/144 [00:31<00:35,  2.15stk/s]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all filters
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Total    Fund    Tech    Supp    Bars_Since_JMA_Cross  Cluster   Dist_%    Best_Support_Name       Sector              
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────
+  AAMI      $94.98      81       44      30      7       3           1         +2.67%    SMA50                   Financial Services  
+  AEP       $129.18     66       35      17      14      2           2         +1.94%    SMA150 + SMA200         Utilities           
+  ANET      $197.29     82       38      30      14      2           2         +2.26%    SMA50 + Cam_S3_M2       Technology          
+  AOD       $10.10      72       39      13      20      2           4         +0.70%    SMA150 + SMA50 + Cam_S3_M1 + Cam_S3_M2  Financial Services  
+  APH       $78.23      74       44      16      14      1           2         +0.60%    SMA150 + SwingLow       Technology          
+  APP       $409.10     71       44      13      14      5           2         +2.76%    SMA150 + SMA200         Communication Services
+  ATEN      $28.66      81       44      23      14      2           2         -0.62%    SMA150 + 52W_Retrace    Technology          
+  ATI       $183.09     67       44      16      7       3           1         +1.69%    Cam_S3_M2               Industrials         
+  ATNI      $28.40      65       32      26      7       5           1         +2.53%    SMA50                   Communication Services
+  AVO       $11.83      50       30      13      7       2           1         +2.78%    52W_Retrace             Consumer Defensive  
+  AYA       $22.88      77       44      13      20      3           3         +1.15%    SMA150 + SwingLow + 52W_Retrace  Basic Materials     
+  BBVA      $25.92      62       39      16      7       3           1         +2.86%    SMA150                  Financial Services  
+  BCH       $39.19      68       35      13      20      3           3         -0.96%    SMA150 + SMA200 + Cam_S3_M2  Financial Services  
+  BG        $101.65     52       32      13      7       0           1         +0.36%    Cam_S3_M2               Consumer Defensive  
+  BGH       $12.55      46       13      13      20      3           3         +0.16%    Cam_S3_M1 + Cam_S3_M2 + SwingLow  Financial Services  
+  BGT       $10.02      46       19      13      14      3           2         -0.99%    SMA50 + Cam_S3_M2       Financial Services  
+  BGY       $5.42       52       30      13      9       2           1         -0.91%    Cam_S3_M2               Financial Services  
+  BNL       $17.60      47       27      13      7       5           1         -0.96%    Cam_S3_M2               Real Estate         
+  BPOP      $157.88     65       35      16      14      0           2         -0.41%    SMA50 + SMA150          Financial Services  
+  BSAC      $32.43      47       27      13      7       4           1         -0.25%    Cam_S3_M2               Financial Services  
+  BTG       $4.91       63       40      16      7       4           1         +2.29%    SMA200                  Basic Materials     
+  BWB       $20.77      76       39      23      14      3           2         +0.63%    SMA50 + SMA150          Financial Services  
+  BXSL      $23.78      58       19      23      16      5           2         +0.08%    SMA50 + Cam_S3_M2       Financial Services  
+  CDNS      $323.01     62       38      17      7       2           1         +0.68%    SMA50                   Technology          
+  CTO       $20.32      69       36      13      20      5           4         +0.79%    Cam_S3_M2 + SMA50 + SMA150 + SMA200  Real Estate         
+  CVLT      $152.07     58       34      17      7       2           1         -0.97%    SMA50                   Technology          
+  DCI       $86.70      62       40      13      9       2           1         -0.38%    SMA50                   Industrials         
+  ENTG      $147.41     70       30      20      20      0           3         -0.07%    SMA50 + SMA150 + Cam_S3_M2  Technology          
+  ESS       $273.32     57       21      16      20      3           3         +0.89%    SMA50 + SMA150 + SMA200  Real Estate         
+  EVT       $27.61      65       32      13      20      0           5         +1.28%    Cam_S3_M1 + SMA50 + SMA150 + Cam_S3_M2 + SwingLow  Financial Services  
+  FNV       $247.01     63       40      16      7       5           1         -0.28%    SMA50                   Basic Materials     
+  GGN       $5.06       74       41      13      20      3           3         -0.39%    SMA150 + SMA200 + Cam_S3_M2  Financial Services  
+  GHM       $83.42      51       26      18      7       5           1         -0.61%    Cam_S3_M2               Industrials         
+  GNK       $26.14      61       36      16      9       3           1         -0.68%    SMA50                   Industrials         
+  GRMN      $283.03     84       40      30      14      4           2         +0.20%    SMA50 + Cam_S3_M2       Technology          
+  GRND      $14.84      80       38      26      16      1           2         +2.27%    SMA50 + SMA150          Technology          
+  GS        $916.56     64       44      13      7       2           1         -0.58%    SMA50                   Financial Services  
+  GSL       $43.05      70       40      16      14      1           2         -0.42%    Cam_S3_M2 + SwingLow    Industrials         
+  HCC       $83.35      64       44      13      7       1           1         -0.93%    SwingLow                Basic Materials     
+  HNST      $5.01       57       32      16      9       2           1         -0.69%    SMA50                   Consumer Defensive  
+  HTFL      $48.46      48       24      17      7       2           1         +1.21%    Cam_S3_M2               Healthcare          
+  IA        $21.07      68       40      21      7       3           1         +2.48%    SMA200                  Industrials         
+  IEX       $237.63     77       40      30      7       1           1         +2.95%    SMA50                   Industrials         
+  IHS       $8.42       67       30      17      20      2           6         -0.24%    SMA50 + SMA150 + SMA200 + Cam_S3_M1 + Cam_S3_M2 + SwingLow  Real Estate         
+  ING       $33.22      58       35      16      7       2           1         +2.40%    SMA150                  Financial Services  
+  INGM      $28.42      70       44      19      7       0           1         +1.94%    SMA150                  Technology          
+  IQV       $265.12     68       35      17      16      3           2         +2.54%    Cam_S3_M1 + Cam_S3_M2   Healthcare          
+  IRDM      $45.87      65       35      16      14      2           2         -0.46%    SMA150 + SwingLow       Communication Services
+  IRMD      $85.35      70       40      16      14      2           2         +0.29%    SMA50 + Cam_S3_M2       Healthcare          
+  JBHT      $232.85     67       44      16      7       0           1         -0.41%    SMA50                   Industrials         
+  KMDA      $8.09       65       32      19      14      1           2         +0.50%    SMA50 + Cam_S3_M2       Healthcare          
+  KT        $18.97      60       24      16      20      5           3         +1.34%    SMA50 + SMA150 + Cam_S3_M2  Communication ServicesPass 2 Fund:  47%|████▋     | 68/144 [00:32<00:35,  2.16stk/s]Pass 2 Fund:  48%|████▊     | 69/144 [00:32<00:34,  2.16stk/s]Pass 2 Fund:  49%|████▊     | 70/144 [00:33<00:34,  2.17stk/s]Pass 2 Fund:  49%|████▉     | 71/144 [00:33<00:34,  2.13stk/s]Pass 2 Fund:  50%|█████     | 72/144 [00:34<00:34,  2.08stk/s]Pass 2 Fund:  51%|█████     | 73/144 [00:34<00:35,  2.02stk/s]Pass 2 Fund:  51%|█████▏    | 74/144 [00:35<00:33,  2.06stk/s]Pass 2 Fund:  52%|█████▏    | 75/144 [00:35<00:32,  2.10stk/s]Pass 2 Fund:  53%|█████▎    | 76/144 [00:35<00:31,  2.13stk/s]Pass 2 Fund:  53%|█████▎    | 77/144 [00:36<00:31,  2.13stk/s]Pass 2 Fund:  54%|█████▍    | 78/144 [00:36<00:30,  2.15stk/s]Pass 2 Fund:  55%|█████▍    | 79/144 [00:37<00:30,  2.12stk/s]Pass 2 Fund:  56%|█████▌    | 80/144 [00:37<00:30,  2.11stk/s]Pass 2 Fund:  56%|█████▋    | 81/144 [00:38<00:29,  2.14stk/s]Pass 2 Fund:  57%|█████▋    | 82/144 [00:38<00:28,  2.15stk/s]Pass 2 Fund:  58%|█████▊    | 83/144 [00:39<00:28,  2.15stk/s]Pass 2 Fund:  58%|█████▊    | 84/144 [00:39<00:27,  2.15stk/s]Pass 2 Fund:  59%|█████▉    | 85/144 [00:40<00:27,  2.16stk/s]Pass 2 Fund:  60%|█████▉    | 86/144 [00:40<00:27,  2.11stk/s]Pass 2 Fund:  60%|██████    | 87/144 [00:41<00:26,  2.13stk/s]Pass 2 Fund:  61%|██████    | 88/144 [00:41<00:26,  2.08stk/s]Pass 2 Fund:  62%|██████▏   | 89/144 [00:42<00:26,  2.11stk/s]Pass 2 Fund:  62%|██████▎   | 90/144 [00:42<00:25,  2.13stk/s]Pass 2 Fund:  63%|██████▎   | 91/144 [00:43<00:25,  2.08stk/s]Pass 2 Fund:  64%|██████▍   | 92/144 [00:43<00:24,  2.10stk/s]Pass 2 Fund:  65%|██████▍   | 93/144 [00:43<00:23,  2.13stk/s]Pass 2 Fund:  65%|██████▌   | 94/144 [00:44<00:23,  2.08stk/s]Pass 2 Fund:  66%|██████▌   | 95/144 [00:44<00:23,  2.11stk/s]Pass 2 Fund:  67%|██████▋   | 96/144 [00:45<00:22,  2.12stk/s]Pass 2 Fund:  67%|██████▋   | 97/144 [00:45<00:22,  2.10stk/s]Pass 2 Fund:  68%|██████▊   | 98/144 [00:46<00:22,  2.06stk/s]Pass 2 Fund:  69%|██████▉   | 99/144 [00:46<00:21,  2.08stk/s]Pass 2 Fund:  69%|██████▉   | 100/144 [00:47<00:20,  2.10stk/s]Pass 2 Fund:  70%|███████   | 101/144 [00:47<00:20,  2.13stk/s]Pass 2 Fund:  71%|███████   | 102/144 [00:48<00:19,  2.15stk/s]Pass 2 Fund:  72%|███████▏  | 103/144 [00:48<00:18,  2.16stk/s]Pass 2 Fund:  72%|███████▏  | 104/144 [00:49<00:18,  2.16stk/s]Pass 2 Fund:  73%|███████▎  | 105/144 [00:49<00:18,  2.13stk/s]Pass 2 Fund:  74%|███████▎  | 106/144 [00:50<00:18,  2.07stk/s]Pass 2 Fund:  74%|███████▍  | 107/144 [00:50<00:17,  2.10stk/s]Pass 2 Fund:  75%|███████▌  | 108/144 [00:51<00:16,  2.13stk/s]Pass 2 Fund:  76%|███████▌  | 109/144 [00:51<00:16,  2.16stk/s]Pass 2 Fund:  76%|███████▋  | 110/144 [00:51<00:15,  2.16stk/s]Pass 2 Fund:  77%|███████▋  | 111/144 [00:52<00:15,  2.11stk/s]Pass 2 Fund:  78%|███████▊  | 112/144 [00:53<00:15,  2.05stk/s]Pass 2 Fund:  78%|███████▊  | 113/144 [00:53<00:15,  2.05stk/s]Pass 2 Fund:  79%|███████▉  | 114/144 [00:53<00:14,  2.09stk/s]Pass 2 Fund:  80%|███████▉  | 115/144 [00:54<00:14,  2.05stk/s]Pass 2 Fund:  81%|████████  | 116/144 [00:54<00:13,  2.08stk/s]Pass 2 Fund:  81%|████████▏ | 117/144 [00:55<00:12,  2.11stk/s]Pass 2 Fund:  82%|████████▏ | 118/144 [00:55<00:12,  2.13stk/s]Pass 2 Fund:  83%|████████▎ | 119/144 [00:56<00:11,  2.13stk/s]Pass 2 Fund:  83%|████████▎ | 120/144 [00:56<00:11,  2.14stk/s]Pass 2 Fund:  84%|████████▍ | 121/144 [00:57<00:10,  2.15stk/s]Pass 2 Fund:  85%|████████▍ | 122/144 [00:57<00:10,  2.10stk/s]Pass 2 Fund:  85%|████████▌ | 123/144 [00:58<00:09,  2.13stk/s]Pass 2 Fund:  86%|████████▌ | 124/144 [00:58<00:09,  2.08stk/s]Pass 2 Fund:  87%|████████▋ | 125/144 [00:59<00:09,  2.08stk/s]Pass 2 Fund:  88%|████████▊ | 126/144 [00:59<00:08,  2.10stk/s]Pass 2 Fund:  88%|████████▊ | 127/144 [01:00<00:08,  2.12stk/s]Pass 2 Fund:  89%|████████▉ | 128/144 [01:00<00:07,  2.13stk/s]Pass 2 Fund:  90%|████████▉ | 129/144 [01:01<00:07,  2.09stk/s]Pass 2 Fund:  90%|█████████ | 130/144 [01:01<00:06,  2.11stk/s]Pass 2 Fund:  91%|█████████ | 131/144 [01:01<00:06,  2.13stk/s]Pass 2 Fund:  92%|█████████▏| 132/144 [01:02<00:05,  2.14stk/s]Pass 2 Fund:  92%|█████████▏| 133/144 [01:02<00:05,  2.05stk/s]Pass 2 Fund:  93%|█████████▎| 134/144 [01:03<00:04,  2.03stk/s]Pass 2 Fund:  94%|█████████▍| 135/144 [01:03<00:04,  2.07stk/s]Pass 2 Fund:  94%|█████████▍| 136/144 [01:04<00:03,  2.08stk/s]Pass 2 Fund:  95%|█████████▌| 137/144 [01:04<00:03,  2.11stk/s]Pass 2 Fund:  96%|█████████▌| 138/144 [01:05<00:02,  2.12stk/s]Pass 2 Fund:  97%|█████████▋| 139/144 [01:05<00:02,  2.08stk/s]Pass 2 Fund:  97%|█████████▋| 140/144 [01:06<00:01,  2.10stk/s]Pass 2 Fund:  98%|█████████▊| 141/144 [01:06<00:01,  2.12stk/s]Pass 2 Fund:  99%|█████████▊| 142/144 [01:07<00:00,  2.14stk/s]Pass 2 Fund:  99%|█████████▉| 143/144 [01:07<00:00,  2.14stk/s]Pass 2 Fund: 100%|██████████| 144/144 [01:08<00:00,  2.16stk/s]Pass 2 Fund: 100%|██████████| 144/144 [01:08<00:00,  2.11stk/s]
+
+  L         $111.90     64       27      17      20      0           3         +2.80%    SMA50 + SMA150 + SMA200  Financial Services  
+  LNG       $308.75     76       39      30      7       0           1         -0.41%    Cam_S3_M1               Energy              
+  LNN       $107.25     60       40      13      7       3           1         -0.80%    Cam_S3_M2               Industrials         
+  MOV       $31.78      55       32      16      7       1           1         +2.81%    SMA200                  Consumer Cyclical   
+  MPB       $35.28      60       31      13      16      1           2         +1.50%    SMA150 + Cam_S3_M2      Financial Services  
+  MPWR      $1390.54    74       44      23      7       4           1         +0.19%    SMA150                  Technology          
+  MRX       $70.72      67       44      16      7       1           1         -0.48%    SMA50                   Financial Services  
+  MSFT      $523.88     85       44      27      14      5           2         +0.94%    SMA50 + Cam_S3_M1       Technology          
+  MSGE      $79.49      81       31      30      20      0           3         +0.29%    SMA50 + Cam_S3_M1 + Cam_S3_M2  Communication Services
+  MT        $62.79      55       32      16      7       3           1         -0.35%    Cam_S3_M2               Basic Materials     
+  NDSN      $324.74     90       40      30      20      0           3         +1.34%    Cam_S3_M2 + SMA50 + Cam_S3_M1  Industrials         
+  NEM       $113.14     80       44      16      20      5           3         +1.98%    SMA150 + SMA200 + Cam_S3_M2  Basic Materials     
+  NMAI      $13.68      50       13      23      14      2           2         +0.22%    SMA50 + SMA150          Financial Services  
+  NMZ       $8.75       46       19      13      14      3           2         +1.63%    Cam_S3_M1 + SwingLow    Financial Services  
+  NNI       $126.96     51       24      20      7       5           1         +1.09%    SMA50                   Financial Services  
+  NOC       $550.43     59       40      12      7       1           1         +1.79%    SMA150                  Industrials         
+  NRIM      $23.94      54       27      13      14      1           2         +2.97%    Cam_S3_M1 + Cam_S3_M2   Financial Services  
+  NTES      $122.18     80       40      20      20      4           4         +1.70%    SMA50 + SMA150 + SMA200 + Cam_S3_M2  Communication Services
+  NYT       $72.81      69       40      20      9       3           1         +2.16%    SMA150                  Communication Services
+  OFG       $51.69      68       35      26      7       0           1         +0.64%    SMA50                   Financial Services  
+  OMER      $17.49      47       24      16      7       2           1         +1.51%    Cam_S3_M1               Healthcare          
+  PCAR      $106.66     64       44      13      7       1           1         +1.78%    Cam_S3_M2               Industrials         
+  PH        $955.68     75       39      16      20      3           4         +1.27%    SMA50 + SMA150 + SMA200 + Cam_S3_M2  Industrials         
+  PKOH      $45.45      68       32      20      16      2           2         +1.61%    Cam_S3_M2 + SwingLow    Industrials         
+  PLAB      $27.55      68       46      15      7       0           1         +1.89%    SwingLow                Technology          
+  PSNL      $15.71      47       17      16      14      1           2         +1.22%    Cam_S3_M1 + SwingLow    Healthcare          
+  PSTL      $22.35      72       36      16      20      4           3         -0.13%    SMA50 + SMA150 + Cam_S3_M2  Real Estate         
+  PXLW      $5.54       50       30      13      7       3           1         +0.54%    52W_Retrace             Technology          
+  RMT       $13.09      67       35      16      16      4           2         -0.76%    SMA50 + SwingLow        Financial Services  
+  RVTY      $154.39     67       26      27      14      2           2         +2.69%    SMA50 + Cam_S3_M1       Healthcare          
+  SATA      $97.73      63       23      26      14      1           2         +0.31%    SMA50 + Cam_S3_M2       Financial Services  
+  SENEA     $176.47     75       40      26      9       1           1         +1.78%    SMA50                   Consumer Defensive  
+  SFST      $60.63      72       39      13      20      0           3         +0.80%    SMA150 + SMA50 + SMA200  Financial Services  
+  SKM       $34.57      71       32      19      20      2           4         +1.41%    SMA50 + SMA200 + Cam_S3_M2 + 52W_Retrace  Communication Services
+  SMFG      $24.74      54       31      16      7       1           1         +1.64%    SMA150                  Financial Services  
+  SNPS      $455.20     61       30      17      14      1           2         +2.26%    SMA50 + SMA150          Technology          
+  SOLS      $66.12      65       40      18      7       2           1         -0.36%    52W_Retrace             Basic Materials     
+  SOLV      $89.08      51       18      26      7       5           1         +1.78%    SMA50                   Healthcare          
+  SOPH      $8.21       50       17      26      7       2           1         +1.99%    Cam_S3_M2               Healthcare          
+  STT       $173.45     58       35      16      7       2           1         +1.39%    SMA150                  Financial Services  
+  TDY       $643.73     72       32      20      20      0           3         +1.83%    SMA150 + SMA200 + Cam_S3_M1  Technology          
+  TEI       $6.08       68       35      13      20      4           3         +1.00%    Cam_S3_M1 + Cam_S3_M2 + SwingLow  Financial Services  
+  TEL       $216.34     74       40      20      14      2           2         +1.38%    SMA50 + SMA200          Technology          
+  TIGO      $79.33      62       39      16      7       4           1         +2.24%    52W_Retrace             Communication Services
+  TMDX      $91.38      69       44      18      7       4           1         -0.27%    SMA200                  Healthcare          
+  TONX      $3.20       51       17      20      14      2           2         +1.59%    SMA150 + 52W_Retrace    Technology          
+  UI        $669.76     69       44      18      7       3           1         +0.90%    SMA200                  Technology          
+  UNFI      $48.70      54       24      23      7       1           1         +1.37%    SMA150                  Consumer Defensive  
+  URI       $1124.56    73       39      27      7       1           1         +1.31%    Cam_S3_M1               Industrials         
+  USAC      $25.14      71       44      13      14      4           2         -0.48%    SMA50 + Cam_S3_M1       Energy              
+  VTOL      $40.30      59       32      13      14      0           2         -0.84%    SMA50 + Cam_S3_M1       Energy              
+  WF        $72.13      50       27      16      7       3           1         -0.95%    SMA50                   Financial Services  
+  WLTH      $10.72      54       13      27      14      4           2         +2.29%    SMA50 + 52W_Retrace     Technology          
+  WPM       $131.45     62       39      16      7       4           1         +0.60%    SMA150                  Basic Materials     
+  WTS       $360.39     81       44      30      7       1           1         +1.40%    SMA50                   Industrials         
+  WWD       $329.86     74       44      16      14      4           2         +1.32%    SMA50 + 52W_Retrace     Industrials         
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers    : 6525
+  Got data   : 5630  (86%)
+  Tech passes: 144
+  ✅ Matches  : 108
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                     Fund + Tech Strong at Support   2026-11-15   108 matches                                   ║
+  ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬──────────┬───────┬──────┬──────┬──────┬─────────┬────────┬────────────────────────────────────────────────────────────┐
+  │ Ticker │  Price   │ Total │ Fund │ Tech │ Supp │ Cluster │ Dist_% │                     Best_Support_Name                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NDSN  │ $324.74  │   90  │  40  │  30  │  20  │    3    │ +1.34% │               Cam_S3_M2 + SMA50 + Cam_S3_M1                │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  MSFT  │ $523.88  │   85  │  44  │  27  │  14  │    2    │ +0.94% │                     SMA50 + Cam_S3_M1                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  GRMN  │ $283.03  │   84  │  40  │  30  │  14  │    2    │ +0.20% │                     SMA50 + Cam_S3_M2                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  ANET  │ $197.29  │   82  │  38  │  30  │  14  │    2    │ +2.26% │                     SMA50 + Cam_S3_M2                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  AAMI  │  $94.98  │   81  │  44  │  30  │  7   │    1    │ +2.67% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  ATEN  │  $28.66  │   81  │  44  │  23  │  14  │    2    │ -0.62% │                    SMA150 + 52W_Retrace                    │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  MSGE  │  $79.49  │   81  │  31  │  30  │  20  │    3    │ +0.29% │               SMA50 + Cam_S3_M1 + Cam_S3_M2                │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  WTS   │ $360.39  │   81  │  44  │  30  │  7   │    1    │ +1.40% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  GRND  │  $14.84  │   80  │  38  │  26  │  16  │    2    │ +2.27% │                       SMA50 + SMA150                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NEM   │ $113.14  │   80  │  44  │  16  │  20  │    3    │ +1.98% │                SMA150 + SMA200 + Cam_S3_M2                 │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NTES  │ $122.18  │   80  │  40  │  20  │  20  │    4    │ +1.70% │            SMA50 + SMA150 + SMA200 + Cam_S3_M2             │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  AYA   │  $22.88  │   77  │  44  │  13  │  20  │    3    │ +1.15% │              SMA150 + SwingLow + 52W_Retrace               │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  IEX   │ $237.63  │   77  │  40  │  30  │  7   │    1    │ +2.95% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BWB   │  $20.77  │   76  │  39  │  23  │  14  │    2    │ +0.63% │                       SMA50 + SMA150                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  LNG   │ $308.75  │   76  │  39  │  30  │  7   │    1    │ -0.41% │                         Cam_S3_M1                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   PH   │ $955.68  │   75  │  39  │  16  │  20  │    4    │ +1.27% │            SMA50 + SMA150 + SMA200 + Cam_S3_M2             │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │ SENEA  │ $176.47  │   75  │  40  │  26  │  9   │    1    │ +1.78% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  APH   │  $78.23  │   74  │  44  │  16  │  14  │    2    │ +0.60% │                     SMA150 + SwingLow                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  GGN   │  $5.06   │   74  │  41  │  13  │  20  │    3    │ -0.39% │                SMA150 + SMA200 + Cam_S3_M2                 │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  MPWR  │ $1390.54 │   74  │  44  │  23  │  7   │    1    │ +0.19% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  TEL   │ $216.34  │   74  │  40  │  20  │  14  │    2    │ +1.38% │                       SMA50 + SMA200                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  WWD   │ $329.86  │   74  │  44  │  16  │  14  │    2    │ +1.32% │                    SMA50 + 52W_Retrace                     │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  URI   │ $1124.56 │   73  │  39  │  27  │  7   │    1    │ +1.31% │                         Cam_S3_M1                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  AOD   │  $10.10  │   72  │  39  │  13  │  20  │    4    │ +0.70% │           SMA150 + SMA50 + Cam_S3_M1 + Cam_S3_M2           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  PSTL  │  $22.35  │   72  │  36  │  16  │  20  │    3    │ -0.13% │                 SMA50 + SMA150 + Cam_S3_M2                 │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SFST  │  $60.63  │   72  │  39  │  13  │  20  │    3    │ +0.80% │                  SMA150 + SMA50 + SMA200                   │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  TDY   │ $643.73  │   72  │  32  │  20  │  20  │    3    │ +1.83% │                SMA150 + SMA200 + Cam_S3_M1                 │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  APP   │ $409.10  │   71  │  44  │  13  │  14  │    2    │ +2.76% │                      SMA150 + SMA200                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SKM   │  $34.57  │   71  │  32  │  19  │  20  │    4    │ +1.41% │          SMA50 + SMA200 + Cam_S3_M2 + 52W_Retrace          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  USAC  │  $25.14  │   71  │  44  │  13  │  14  │    2    │ -0.48% │                     SMA50 + Cam_S3_M1                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  ENTG  │ $147.41  │   70  │  30  │  20  │  20  │    3    │ -0.07% │                 SMA50 + SMA150 + Cam_S3_M2                 │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  GSL   │  $43.05  │   70  │  40  │  16  │  14  │    2    │ -0.42% │                    Cam_S3_M2 + SwingLow                    │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  INGM  │  $28.42  │   70  │  44  │  19  │  7   │    1    │ +1.94% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  IRMD  │  $85.35  │   70  │  40  │  16  │  14  │    2    │ +0.29% │                     SMA50 + Cam_S3_M2                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  CTO   │  $20.32  │   69  │  36  │  13  │  20  │    4    │ +0.79% │            Cam_S3_M2 + SMA50 + SMA150 + SMA200             │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NYT   │  $72.81  │   69  │  40  │  20  │  9   │    1    │ +2.16% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  TMDX  │  $91.38  │   69  │  44  │  18  │  7   │    1    │ -0.27% │                           SMA200                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   UI   │ $669.76  │   69  │  44  │  18  │  7   │    1    │ +0.90% │                           SMA200                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BCH   │  $39.19  │   68  │  35  │  13  │  20  │    3    │ -0.96% │                SMA150 + SMA200 + Cam_S3_M2                 │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   IA   │  $21.07  │   68  │  40  │  21  │  7   │    1    │ +2.48% │                           SMA200                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  IQV   │ $265.12  │   68  │  35  │  17  │  16  │    2    │ +2.54% │                   Cam_S3_M1 + Cam_S3_M2                    │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  OFG   │  $51.69  │   68  │  35  │  26  │  7   │    1    │ +0.64% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  PKOH  │  $45.45  │   68  │  32  │  20  │  16  │    2    │ +1.61% │                    Cam_S3_M2 + SwingLow                    │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  PLAB  │  $27.55  │   68  │  46  │  15  │  7   │    1    │ +1.89% │                          SwingLow                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  TEI   │  $6.08   │   68  │  35  │  13  │  20  │    3    │ +1.00% │              Cam_S3_M1 + Cam_S3_M2 + SwingLow              │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  ATI   │ $183.09  │   67  │  44  │  16  │  7   │    1    │ +1.69% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  IHS   │  $8.42   │   67  │  30  │  17  │  20  │    6    │ -0.24% │ SMA50 + SMA150 + SMA200 + Cam_S3_M1 + Cam_S3_M2 + SwingLow │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  JBHT  │ $232.85  │   67  │  44  │  16  │  7   │    1    │ -0.41% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  MRX   │  $70.72  │   67  │  44  │  16  │  7   │    1    │ -0.48% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  RMT   │  $13.09  │   67  │  35  │  16  │  16  │    2    │ -0.76% │                      SMA50 + SwingLow                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  RVTY  │ $154.39  │   67  │  26  │  27  │  14  │    2    │ +2.69% │                     SMA50 + Cam_S3_M1                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  AEP   │ $129.18  │   66  │  35  │  17  │  14  │    2    │ +1.94% │                      SMA150 + SMA200                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  ATNI  │  $28.40  │   65  │  32  │  26  │  7   │    1    │ +2.53% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BPOP  │ $157.88  │   65  │  35  │  16  │  14  │    2    │ -0.41% │                       SMA50 + SMA150                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  EVT   │  $27.61  │   65  │  32  │  13  │  20  │    5    │ +1.28% │     Cam_S3_M1 + SMA50 + SMA150 + Cam_S3_M2 + SwingLow      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  IRDM  │  $45.87  │   65  │  35  │  16  │  14  │    2    │ -0.46% │                     SMA150 + SwingLow                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  KMDA  │  $8.09   │   65  │  32  │  19  │  14  │    2    │ +0.50% │                     SMA50 + Cam_S3_M2                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SOLS  │  $66.12  │   65  │  40  │  18  │  7   │    1    │ -0.36% │                        52W_Retrace                         │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   GS   │ $916.56  │   64  │  44  │  13  │  7   │    1    │ -0.58% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  HCC   │  $83.35  │   64  │  44  │  13  │  7   │    1    │ -0.93% │                          SwingLow                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   L    │ $111.90  │   64  │  27  │  17  │  20  │    3    │ +2.80% │                  SMA50 + SMA150 + SMA200                   │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  PCAR  │ $106.66  │   64  │  44  │  13  │  7   │    1    │ +1.78% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BTG   │  $4.91   │   63  │  40  │  16  │  7   │    1    │ +2.29% │                           SMA200                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  FNV   │ $247.01  │   63  │  40  │  16  │  7   │    1    │ -0.28% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SATA  │  $97.73  │   63  │  23  │  26  │  14  │    2    │ +0.31% │                     SMA50 + Cam_S3_M2                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BBVA  │  $25.92  │   62  │  39  │  16  │  7   │    1    │ +2.86% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  CDNS  │ $323.01  │   62  │  38  │  17  │  7   │    1    │ +0.68% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  DCI   │  $86.70  │   62  │  40  │  13  │  9   │    1    │ -0.38% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  TIGO  │  $79.33  │   62  │  39  │  16  │  7   │    1    │ +2.24% │                        52W_Retrace                         │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  WPM   │ $131.45  │   62  │  39  │  16  │  7   │    1    │ +0.60% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  GNK   │  $26.14  │   61  │  36  │  16  │  9   │    1    │ -0.68% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SNPS  │ $455.20  │   61  │  30  │  17  │  14  │    2    │ +2.26% │                       SMA50 + SMA150                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   KT   │  $18.97  │   60  │  24  │  16  │  20  │    3    │ +1.34% │                 SMA50 + SMA150 + Cam_S3_M2                 │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  LNN   │ $107.25  │   60  │  40  │  13  │  7   │    1    │ -0.80% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  MPB   │  $35.28  │   60  │  31  │  13  │  16  │    2    │ +1.50% │                     SMA150 + Cam_S3_M2                     │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NOC   │ $550.43  │   59  │  40  │  12  │  7   │    1    │ +1.79% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  VTOL  │  $40.30  │   59  │  32  │  13  │  14  │    2    │ -0.84% │                     SMA50 + Cam_S3_M1                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BXSL  │  $23.78  │   58  │  19  │  23  │  16  │    2    │ +0.08% │                     SMA50 + Cam_S3_M2                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  CVLT  │ $152.07  │   58  │  34  │  17  │  7   │    1    │ -0.97% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  ING   │  $33.22  │   58  │  35  │  16  │  7   │    1    │ +2.40% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  STT   │ $173.45  │   58  │  35  │  16  │  7   │    1    │ +1.39% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  ESS   │ $273.32  │   57  │  21  │  16  │  20  │    3    │ +0.89% │                  SMA50 + SMA150 + SMA200                   │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  HNST  │  $5.01   │   57  │  32  │  16  │  9   │    1    │ -0.69% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  MOV   │  $31.78  │   55  │  32  │  16  │  7   │    1    │ +2.81% │                           SMA200                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   MT   │  $62.79  │   55  │  32  │  16  │  7   │    1    │ -0.35% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NRIM  │  $23.94  │   54  │  27  │  13  │  14  │    2    │ +2.97% │                   Cam_S3_M1 + Cam_S3_M2                    │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SMFG  │  $24.74  │   54  │  31  │  16  │  7   │    1    │ +1.64% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  UNFI  │  $48.70  │   54  │  24  │  23  │  7   │    1    │ +1.37% │                           SMA150                           │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  WLTH  │  $10.72  │   54  │  13  │  27  │  14  │    2    │ +2.29% │                    SMA50 + 52W_Retrace                     │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   BG   │ $101.65  │   52  │  32  │  13  │  7   │    1    │ +0.36% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BGY   │  $5.42   │   52  │  30  │  13  │  9   │    1    │ -0.91% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  GHM   │  $83.42  │   51  │  26  │  18  │  7   │    1    │ -0.61% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NNI   │ $126.96  │   51  │  24  │  20  │  7   │    1    │ +1.09% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SOLV  │  $89.08  │   51  │  18  │  26  │  7   │    1    │ +1.78% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  TONX  │  $3.20   │   51  │  17  │  20  │  14  │    2    │ +1.59% │                    SMA150 + 52W_Retrace                    │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  AVO   │  $11.83  │   50  │  30  │  13  │  7   │    1    │ +2.78% │                        52W_Retrace                         │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NMAI  │  $13.68  │   50  │  13  │  23  │  14  │    2    │ +0.22% │                       SMA50 + SMA150                       │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  PXLW  │  $5.54   │   50  │  30  │  13  │  7   │    1    │ +0.54% │                        52W_Retrace                         │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  SOPH  │  $8.21   │   50  │  17  │  26  │  7   │    1    │ +1.99% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │   WF   │  $72.13  │   50  │  27  │  16  │  7   │    1    │ -0.95% │                           SMA50                            │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  HTFL  │  $48.46  │   48  │  24  │  17  │  7   │    1    │ +1.21% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BNL   │  $17.60  │   47  │  27  │  13  │  7   │    1    │ -0.96% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BSAC  │  $32.43  │   47  │  27  │  13  │  7   │    1    │ -0.25% │                         Cam_S3_M2                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  OMER  │  $17.49  │   47  │  24  │  16  │  7   │    1    │ +1.51% │                         Cam_S3_M1                          │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  PSNL  │  $15.71  │   47  │  17  │  16  │  14  │    2    │ +1.22% │                    Cam_S3_M1 + SwingLow                    │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BGH   │  $12.55  │   46  │  13  │  13  │  20  │    3    │ +0.16% │              Cam_S3_M1 + Cam_S3_M2 + SwingLow              │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  BGT   │  $10.02  │   46  │  19  │  13  │  14  │    2    │ -0.99% │                     SMA50 + Cam_S3_M2                      │
+  ├────────┼──────────┼───────┼──────┼──────┼──────┼─────────┼────────┼────────────────────────────────────────────────────────────┤
+  │  NMZ   │  $8.75   │   46  │  19  │  13  │  14  │    2    │ +1.63% │                    Cam_S3_M1 + SwingLow                    │
+  └────────┴──────────┴───────┴──────┴──────┴──────┴─────────┴────────┴────────────────────────────────────────────────────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Total               Fund(0-50) + Tech(0-30) + Supp(0-20)
+  Cluster              how many support levels coincide
+  Dist_%               distance from best support level
+  Best_Support_Name    which support(s) price is testing
+  ──────────────────────────────────────────────────────
+  🛑 Default stop: 10-day low — 108/108 tickers
+  💰 Position sizing: max loss $40 per trade — 99 sized, 9 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/fund_tech_support_20261115_0203.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_fund_tech_support_20261115_0203.txt
+[Email] Sending to vikramaga24@gmail.com  (108 results)...
+[Email] 📎 Attached: fund_tech_support_20261115_0203.csv (32,780 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 Fund+Tech Support + JMA↑SMA21 — 108 signals — 2026-11-15
+  (CI: files in workspace, email sent)
+Traceback (most recent call last):
+  File "/home/runner/work/Snowflake_DDL/Snowflake_DDL/fundamental_v2.py", line 1168, in <module>
+    jma_p = r["_jma"].reindex(df_p.index)
+            ~^^^^^^^^
+KeyError: '_jma'

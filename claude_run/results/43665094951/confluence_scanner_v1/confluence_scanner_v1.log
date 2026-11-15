@@ -1,0 +1,575 @@
+
+1 Failed download:
+['AAPL']: OperationalError('database is locked')
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ MSFT: 208 bars  $523.88  2026-11-13
+  ✅ NVDA: 208 bars  $162.85  2026-11-13
+  ✅ AAPL: 208 bars  $356.27  2026-11-13
+
+  Testing .info fetch for AAPL...
+  ✅ Fund_Score=40/50  Flags: RevG+12% EPS$8.98 Mgn28% CR1.0 ROE142% PE40  (0.2s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +  10 → 6525
+
+  🎯 Total: 6525 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2b  SPY BASELINE (for RS vs SPY check)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SPY 252-bar performance: +13.5%
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6525 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Pass 1: Layer 2 (Stage-2 structure) + Layer 3 (retest+reclaim trigger) — fast
+  Pass 2: Layer 1 (fundamentals) — fetched only for Pass-1 survivors
+
+Pass 1 Tech:   0%|          | 0/6525 [00:00<?]Pass 1 Tech:   0%|          | 1/6525 [00:04<7:43:11]Pass 1 Tech:   0%|          | 22/6525 [00:04<15:30] Pass 1 Tech:   1%|          | 34/6525 [00:04<09:07]Pass 1 Tech:   1%|          | 51/6525 [00:09<18:35]Pass 1 Tech:   1%|          | 58/6525 [00:09<14:56]Pass 1 Tech:   2%|▏         | 101/6525 [00:14<13:02]Pass 1 Tech:   2%|▏         | 115/6525 [00:14<10:11]Pass 1 Tech:   2%|▏         | 136/6525 [00:14<06:59]Pass 1 Tech:   2%|▏         | 151/6525 [00:20<15:29]Pass 1 Tech:   2%|▏         | 163/6525 [00:20<12:13]Pass 1 Tech:   3%|▎         | 201/6525 [00:25<13:10]Pass 1 Tech:   4%|▍         | 248/6525 [00:25<07:03]Pass 1 Tech:   4%|▍         | 263/6525 [00:30<12:00]Pass 1 Tech:   5%|▍         | 300/6525 [00:30<07:29]Pass 1 Tech:   5%|▍         | 316/6525 [00:35<12:16]Pass 1 Tech:   5%|▌         | 328/6525 [00:35<10:20]Pass 1 Tech:   5%|▌         | 340/6525 [00:35<08:30]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Pass 1 Tech:   5%|▌         | 351/6525 [00:40<15:41]Pass 1 Tech:   6%|▌         | 361/6525 [00:40<12:38]Pass 1 Tech:   6%|▌         | 369/6525 [00:40<10:29]Pass 1 Tech:   6%|▌         | 394/6525 [00:40<05:50]Pass 1 Tech:   6%|▌         | 406/6525 [00:46<16:38]Pass 1 Tech:   7%|▋         | 442/6525 [00:47<08:19]Pass 1 Tech:   7%|▋         | 456/6525 [00:51<13:38]Pass 1 Tech:   7%|▋         | 484/6525 [00:51<08:31]Pass 1 Tech:   8%|▊         | 498/6525 [00:51<06:50]Pass 1 Tech:   8%|▊         | 511/6525 [00:56<13:30]Pass 1 Tech:   8%|▊         | 551/6525 [01:02<13:35]Pass 1 Tech:   9%|▉         | 584/6525 [01:02<08:41]Pass 1 Tech:   9%|▉         | 601/6525 [01:07<13:40]Pass 1 Tech:  10%|▉         | 629/6525 [01:07<09:15]Pass 1 Tech:  10%|▉         | 651/6525 [01:14<14:11]Pass 1 Tech:  10%|█         | 675/6525 [01:14<10:04]Pass 1 Tech:  11%|█         | 701/6525 [01:20<14:37]Pass 1 Tech:  12%|█▏        | 751/6525 [01:27<13:26]Pass 1 Tech:  12%|█▏        | 794/6525 [01:27<08:35]Pass 1 Tech:  12%|█▏        | 808/6525 [01:32<12:54]Pass 1 Tech:  13%|█▎        | 847/6525 [01:33<08:15]Pass 1 Tech:  13%|█▎        | 863/6525 [01:39<13:07]Pass 1 Tech:  13%|█▎        | 877/6525 [01:39<10:52]Pass 1 Tech:  14%|█▎        | 896/6525 [01:39<08:11]Pass 1 Tech:  14%|█▍        | 909/6525 [01:46<16:07]Pass 1 Tech:  15%|█▍        | 951/6525 [01:51<14:38]Pass 1 Tech:  15%|█▌        | 995/6525 [01:52<08:32]Pass 1 Tech:  15%|█▌        | 1010/6525 [01:57<12:49]Pass 1 Tech:  16%|█▌        | 1044/6525 [01:57<08:21]Pass 1 Tech:  16%|█▌        | 1059/6525 [02:04<14:21]Pass 1 Tech:  16%|█▋        | 1070/6525 [02:04<12:11]Pass 1 Tech:  17%|█▋        | 1098/6525 [02:04<07:48]$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  17%|█▋        | 1112/6525 [02:10<14:14]Pass 1 Tech:  18%|█▊        | 1145/6525 [02:10<08:27]Pass 1 Tech:  18%|█▊        | 1160/6525 [02:16<13:38]Pass 1 Tech:  18%|█▊        | 1183/6525 [02:16<09:26]$CFLT: possibly delisted; no timezone found
+Pass 1 Tech:  18%|█▊        | 1200/6525 [02:30<09:24]$CHAR: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+2 Failed downloads:
+['CFLT']: possibly delisted; no timezone found
+['CHAR']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Pass 1 Tech:  18%|█▊        | 1201/6525 [02:32<27:07]Pass 1 Tech:  19%|█▉        | 1236/6525 [02:32<15:45]Pass 1 Tech:  19%|█▉        | 1253/6525 [02:37<18:39]Pass 1 Tech:  20%|█▉        | 1289/6525 [02:38<11:08]Pass 1 Tech:  20%|██        | 1306/6525 [02:43<14:21]Pass 1 Tech:  20%|██        | 1325/6525 [02:43<10:47]Pass 1 Tech:  21%|██        | 1351/6525 [02:48<12:51]Pass 1 Tech:  21%|██        | 1362/6525 [02:48<10:50]Pass 1 Tech:  21%|██        | 1372/6525 [02:48<09:08]Pass 1 Tech:  21%|██▏       | 1397/6525 [02:48<05:42]Pass 1 Tech:  22%|██▏       | 1409/6525 [02:55<13:52]Pass 1 Tech:  22%|██▏       | 1419/6525 [02:55<11:16]Pass 1 Tech:  22%|██▏       | 1451/6525 [03:00<12:51]Pass 1 Tech:  23%|██▎       | 1476/6525 [03:01<08:29]$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  23%|██▎       | 1501/6525 [03:07<12:22]Pass 1 Tech:  23%|██▎       | 1516/6525 [03:07<09:45]Pass 1 Tech:  24%|██▎       | 1537/6525 [03:07<06:53]Pass 1 Tech:  24%|██▍       | 1550/6525 [03:07<05:34]Pass 1 Tech:  24%|██▍       | 1561/6525 [03:13<14:00]Pass 1 Tech:  25%|██▍       | 1601/6525 [03:19<12:57]Pass 1 Tech:  25%|██▌       | 1636/6525 [03:19<07:56]Pass 1 Tech:  25%|██▌       | 1651/6525 [03:25<12:58]Pass 1 Tech:  26%|██▌       | 1689/6525 [03:26<07:41]Pass 1 Tech:  26%|██▌       | 1704/6525 [03:31<11:26]Pass 1 Tech:  27%|██▋       | 1731/6525 [03:31<07:47]Pass 1 Tech:  27%|██▋       | 1751/6525 [03:37<11:45]Pass 1 Tech:  27%|██▋       | 1767/6525 [03:37<09:11]Pass 1 Tech:  28%|██▊       | 1801/6525 [03:42<10:34]Pass 1 Tech:  28%|██▊       | 1828/6525 [03:42<07:18]Pass 1 Tech:  28%|██▊       | 1851/6525 [03:47<09:56]Pass 1 Tech:  29%|██▉       | 1886/6525 [03:48<06:15]Pass 1 Tech:  29%|██▉       | 1901/6525 [03:54<10:55]Pass 1 Tech:  29%|██▉       | 1921/6525 [03:54<08:08]Pass 1 Tech:  30%|██▉       | 1951/6525 [03:59<10:14]Pass 1 Tech:  30%|███       | 1982/6525 [03:59<06:44]Pass 1 Tech:  31%|███       | 2001/6525 [04:05<10:10]Pass 1 Tech:  31%|███       | 2028/6525 [04:05<06:58]$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  31%|███▏      | 2051/6525 [04:10<09:50]Pass 1 Tech:  32%|███▏      | 2066/6525 [04:10<07:53]Pass 1 Tech:  32%|███▏      | 2077/6525 [04:11<06:36]Pass 1 Tech:  32%|███▏      | 2098/6525 [04:11<04:34]Pass 1 Tech:  32%|███▏      | 2110/6525 [04:16<09:54]Pass 1 Tech:  33%|███▎      | 2127/6525 [04:16<07:04]Pass 1 Tech:  33%|███▎      | 2150/6525 [04:16<04:36]Pass 1 Tech:  33%|███▎      | 2163/6525 [04:21<09:34]Pass 1 Tech:  34%|███▎      | 2189/6525 [04:21<05:54]Pass 1 Tech:  34%|███▎      | 2202/6525 [04:26<10:58]Pass 1 Tech:  34%|███▍      | 2211/6525 [04:26<09:09]Pass 1 Tech:  34%|███▍      | 2246/6525 [04:26<04:41]Pass 1 Tech:  35%|███▍      | 2260/6525 [04:31<08:32]Pass 1 Tech:  35%|███▌      | 2286/6525 [04:31<05:28]Pass 1 Tech:  35%|███▌      | 2301/6525 [04:36<09:43]Pass 1 Tech:  36%|███▌      | 2342/6525 [04:36<05:08]Pass 1 Tech:  36%|███▌      | 2358/6525 [04:41<08:56]Pass 1 Tech:  37%|███▋      | 2401/6525 [04:46<08:00]Pass 1 Tech:  37%|███▋      | 2418/6525 [04:46<06:27]Pass 1 Tech:  37%|███▋      | 2441/6525 [04:46<04:44]Pass 1 Tech:  38%|███▊      | 2454/6525 [04:51<08:30]Pass 1 Tech:  38%|███▊      | 2477/6525 [04:51<05:53]Pass 1 Tech:  38%|███▊      | 2501/6525 [04:56<08:22]Pass 1 Tech:  39%|███▉      | 2539/6525 [04:56<04:53]Pass 1 Tech:  39%|███▉      | 2554/6525 [05:00<07:39]Pass 1 Tech:  40%|███▉      | 2590/6525 [05:00<04:40]Pass 1 Tech:  40%|███▉      | 2606/6525 [05:06<08:07]Pass 1 Tech:  41%|████      | 2651/6525 [05:11<07:48]Pass 1 Tech:  41%|████      | 2665/6525 [05:11<06:34]Pass 1 Tech:  41%|████      | 2688/6525 [05:11<04:48]$HCWB: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['HCWB']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  41%|████▏     | 2701/6525 [05:24<15:53]Pass 1 Tech:  42%|████▏     | 2726/6525 [05:25<10:35]Pass 1 Tech:  42%|████▏     | 2742/6525 [05:25<08:10]Pass 1 Tech:  42%|████▏     | 2756/6525 [05:29<11:05]Pass 1 Tech:  42%|████▏     | 2766/6525 [05:30<09:13]Pass 1 Tech:  43%|████▎     | 2797/6525 [05:30<05:06]Pass 1 Tech:  43%|████▎     | 2811/6525 [05:34<08:40]Pass 1 Tech:  44%|████▎     | 2846/6525 [05:35<04:51]Pass 1 Tech:  44%|████▍     | 2861/6525 [05:39<08:03]Pass 1 Tech:  44%|████▍     | 2895/6525 [05:40<04:48]Pass 1 Tech:  45%|████▍     | 2911/6525 [05:45<07:48]Pass 1 Tech:  45%|████▍     | 2931/6525 [05:45<05:42]Pass 1 Tech:  45%|████▌     | 2951/6525 [05:49<08:06]Pass 1 Tech:  46%|████▌     | 2997/6525 [05:50<04:12]Pass 1 Tech:  46%|████▌     | 3014/6525 [05:55<06:46]Pass 1 Tech:  47%|████▋     | 3051/6525 [06:01<07:56]Pass 1 Tech:  48%|████▊     | 3101/6525 [06:05<06:34]Pass 1 Tech:  48%|████▊     | 3149/6525 [06:05<04:07]Pass 1 Tech:  49%|████▊     | 3168/6525 [06:10<05:46]Pass 1 Tech:  49%|████▉     | 3188/6525 [06:10<04:37]Pass 1 Tech:  49%|████▉     | 3203/6525 [06:15<06:56]Pass 1 Tech:  50%|████▉     | 3242/6525 [06:15<04:10]Pass 1 Tech:  50%|████▉     | 3258/6525 [06:19<06:17]Pass 1 Tech:  50%|█████     | 3278/6525 [06:20<04:45]Pass 1 Tech:  50%|█████     | 3291/6525 [06:20<03:58]Pass 1 Tech:  51%|█████     | 3303/6525 [06:24<07:10]Pass 1 Tech:  51%|█████     | 3313/6525 [06:24<05:54]Pass 1 Tech:  51%|█████▏    | 3347/6525 [06:24<03:06]Pass 1 Tech:  52%|█████▏    | 3361/6525 [06:29<06:14]Pass 1 Tech:  52%|█████▏    | 3401/6525 [06:33<05:52]Pass 1 Tech:  52%|█████▏    | 3419/6525 [06:33<04:33]Pass 1 Tech:  53%|█████▎    | 3436/6525 [06:34<03:31]Pass 1 Tech:  53%|█████▎    | 3447/6525 [06:34<02:58]Pass 1 Tech:  53%|█████▎    | 3458/6525 [06:39<07:01]Pass 1 Tech:  54%|█████▎    | 3501/6525 [06:43<06:01]Pass 1 Tech:  54%|█████▍    | 3524/6525 [06:43<04:19]Pass 1 Tech:  54%|█████▍    | 3551/6525 [06:48<05:30]Pass 1 Tech:  55%|█████▍    | 3564/6525 [06:48<04:34]Pass 1 Tech:  55%|█████▍    | 3581/6525 [06:48<03:28]Pass 1 Tech:  55%|█████▌    | 3601/6525 [06:53<06:00]Pass 1 Tech:  55%|█████▌    | 3620/6525 [06:53<04:20]Pass 1 Tech:  56%|█████▌    | 3650/6525 [06:53<02:40]Pass 1 Tech:  56%|█████▌    | 3664/6525 [06:58<05:24]Pass 1 Tech:  56%|█████▋    | 3685/6525 [06:58<03:50]Pass 1 Tech:  57%|█████▋    | 3701/6525 [07:03<06:21]Pass 1 Tech:  57%|█████▋    | 3725/6525 [07:03<04:11]Pass 1 Tech:  57%|█████▋    | 3751/6525 [07:07<05:35]Pass 1 Tech:  58%|█████▊    | 3785/6525 [07:07<03:24]Pass 1 Tech:  58%|█████▊    | 3801/6525 [07:12<05:18]Pass 1 Tech:  59%|█████▊    | 3826/6525 [07:12<03:39]Pass 1 Tech:  59%|█████▉    | 3839/6525 [07:12<03:01]Pass 1 Tech:  59%|█████▉    | 3851/6525 [07:17<06:12]Pass 1 Tech:  59%|█████▉    | 3871/6525 [07:17<04:15]Pass 1 Tech:  60%|█████▉    | 3901/6525 [07:22<05:18]Pass 1 Tech:  61%|██████    | 3951/6525 [07:27<04:34]Pass 1 Tech:  61%|██████    | 3968/6525 [07:27<03:43]Pass 1 Tech:  61%|██████▏   | 4001/6525 [07:33<05:18]Pass 1 Tech:  62%|██████▏   | 4051/6525 [07:39<04:58]Pass 1 Tech:  63%|██████▎   | 4101/6525 [07:45<04:58]Pass 1 Tech:  64%|██████▎   | 4151/6525 [07:51<04:47]Pass 1 Tech:  64%|██████▍   | 4169/6525 [07:51<04:04]Pass 1 Tech:  64%|██████▍   | 4201/6525 [07:58<05:01]Pass 1 Tech:  65%|██████▍   | 4211/6525 [07:58<04:30]Pass 1 Tech:  65%|██████▌   | 4251/6525 [08:05<05:18]Pass 1 Tech:  66%|██████▌   | 4281/6525 [08:05<03:44]Pass 1 Tech:  66%|██████▌   | 4301/6525 [08:11<05:17]Pass 1 Tech:  66%|██████▋   | 4334/6525 [08:11<03:29]Pass 1 Tech:  67%|██████▋   | 4351/6525 [08:17<05:11]Pass 1 Tech:  67%|██████▋   | 4395/6525 [08:17<02:58]Pass 1 Tech:  68%|██████▊   | 4411/6525 [08:23<04:53]Pass 1 Tech:  68%|██████▊   | 4451/6525 [08:30<05:11]Pass 1 Tech:  69%|██████▉   | 4492/6525 [08:30<03:16]Pass 1 Tech:  69%|██████▉   | 4507/6525 [08:35<04:29]Pass 1 Tech:  70%|██████▉   | 4537/6525 [08:35<03:05]Pass 1 Tech:  70%|██████▉   | 4552/6525 [08:39<04:12]Pass 1 Tech:  70%|███████   | 4572/6525 [08:39<03:08]Pass 1 Tech:  70%|███████   | 4591/6525 [08:39<02:21]Pass 1 Tech:  71%|███████   | 4604/6525 [08:44<04:02]Pass 1 Tech:  71%|███████   | 4620/6525 [08:44<03:01]Pass 1 Tech:  71%|███████   | 4640/6525 [08:44<02:06]Pass 1 Tech:  71%|███████▏  | 4652/6525 [08:49<04:10]Pass 1 Tech:  72%|███████▏  | 4698/6525 [08:49<01:55]Pass 1 Tech:  72%|███████▏  | 4714/6525 [08:53<03:14]Pass 1 Tech:  73%|███████▎  | 4733/6525 [08:53<02:24]$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  73%|███████▎  | 4751/6525 [08:58<03:48]Pass 1 Tech:  73%|███████▎  | 4794/6525 [08:58<02:00]Pass 1 Tech:  74%|███████▎  | 4810/6525 [09:03<03:22]Pass 1 Tech:  74%|███████▍  | 4851/6525 [09:07<03:11]Pass 1 Tech:  75%|███████▍  | 4879/6525 [09:08<02:14]Pass 1 Tech:  75%|███████▌  | 4901/6525 [09:12<03:02]Pass 1 Tech:  76%|███████▌  | 4951/6525 [09:17<02:40]Pass 1 Tech:  77%|███████▋  | 5001/6525 [09:22<02:34]Pass 1 Tech:  77%|███████▋  | 5020/6525 [09:22<02:07]Pass 1 Tech:  77%|███████▋  | 5050/6525 [09:22<01:31]Pass 1 Tech:  78%|███████▊  | 5063/6525 [09:27<02:45]Pass 1 Tech:  78%|███████▊  | 5073/6525 [09:27<02:23]Pass 1 Tech:  78%|███████▊  | 5101/6525 [09:32<02:57]Pass 1 Tech:  78%|███████▊  | 5121/6525 [09:32<02:11]Pass 1 Tech:  79%|███████▉  | 5151/6525 [09:38<02:52]Pass 1 Tech:  79%|███████▉  | 5175/6525 [09:38<02:01]Pass 1 Tech:  80%|███████▉  | 5201/6525 [09:43<02:47]Pass 1 Tech:  80%|████████  | 5242/6525 [09:43<01:36]Pass 1 Tech:  81%|████████  | 5257/6525 [09:48<02:27]Pass 1 Tech:  81%|████████  | 5268/6525 [09:48<02:05]Pass 1 Tech:  81%|████████  | 5281/6525 [09:48<01:40]Pass 1 Tech:  81%|████████  | 5298/6525 [09:48<01:13]Pass 1 Tech:  81%|████████▏ | 5310/6525 [09:52<02:30]Pass 1 Tech:  82%|████████▏ | 5329/6525 [09:52<01:41]Pass 1 Tech:  82%|████████▏ | 5340/6525 [09:53<01:21]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Pass 1 Tech:  82%|████████▏ | 5351/6525 [09:57<02:48]Pass 1 Tech:  83%|████████▎ | 5394/6525 [09:57<01:11]Pass 1 Tech:  83%|████████▎ | 5409/6525 [10:01<02:03]Pass 1 Tech:  83%|████████▎ | 5448/6525 [10:01<01:07]Pass 1 Tech:  84%|████████▍ | 5465/6525 [10:05<01:49]Pass 1 Tech:  84%|████████▍ | 5501/6525 [10:10<01:57]Pass 1 Tech:  85%|████████▍ | 5535/6525 [10:10<01:15]Pass 1 Tech:  85%|████████▌ | 5551/6525 [10:16<02:00]Pass 1 Tech:  86%|████████▌ | 5581/6525 [10:16<01:18]Pass 1 Tech:  86%|████████▌ | 5601/6525 [10:20<01:47]Pass 1 Tech:  86%|████████▌ | 5611/6525 [10:20<01:33]Pass 1 Tech:  86%|████████▋ | 5630/6525 [10:20<01:07]Pass 1 Tech:  87%|████████▋ | 5651/6525 [10:25<01:44]Pass 1 Tech:  87%|████████▋ | 5660/6525 [10:25<01:28]Pass 1 Tech:  87%|████████▋ | 5687/6525 [10:25<00:52]Pass 1 Tech:  87%|████████▋ | 5701/6525 [10:30<01:38]Pass 1 Tech:  88%|████████▊ | 5715/6525 [10:30<01:14]Pass 1 Tech:  88%|████████▊ | 5732/6525 [10:30<00:52]Pass 1 Tech:  88%|████████▊ | 5743/6525 [10:30<00:42]Pass 1 Tech:  88%|████████▊ | 5753/6525 [10:35<01:49]Pass 1 Tech:  89%|████████▊ | 5781/6525 [10:35<00:57]Pass 1 Tech:  89%|████████▉ | 5801/6525 [10:41<01:51]Pass 1 Tech:  89%|████████▉ | 5824/6525 [10:41<01:11]Pass 1 Tech:  90%|████████▉ | 5845/6525 [10:41<00:49]Pass 1 Tech:  90%|████████▉ | 5858/6525 [10:46<01:33]Pass 1 Tech:  90%|████████▉ | 5868/6525 [10:46<01:16]Pass 1 Tech:  90%|█████████ | 5890/6525 [10:46<00:47]Pass 1 Tech:  90%|█████████ | 5902/6525 [10:53<01:48]Pass 1 Tech:  91%|█████████ | 5951/6525 [10:57<01:15]Pass 1 Tech:  91%|█████████▏| 5962/6525 [10:58<01:03]Pass 1 Tech:  92%|█████████▏| 5977/6525 [10:58<00:48]Pass 1 Tech:  92%|█████████▏| 5990/6525 [10:58<00:37]Pass 1 Tech:  92%|█████████▏| 6001/6525 [11:03<01:22]Pass 1 Tech:  92%|█████████▏| 6016/6525 [11:03<00:57]Pass 1 Tech:  92%|█████████▏| 6035/6525 [11:03<00:37]Pass 1 Tech:  93%|█████████▎| 6046/6525 [11:03<00:29]Pass 1 Tech:  93%|█████████▎| 6057/6525 [11:09<01:21]Pass 1 Tech:  93%|█████████▎| 6065/6525 [11:09<01:05]Pass 1 Tech:  94%|█████████▎| 6101/6525 [11:14<00:53]Pass 1 Tech:  94%|█████████▍| 6132/6525 [11:14<00:30]Pass 1 Tech:  94%|█████████▍| 6151/6525 [11:18<00:42]Pass 1 Tech:  95%|█████████▍| 6168/6525 [11:18<00:30]Pass 1 Tech:  95%|█████████▍| 6187/6525 [11:18<00:21]Pass 1 Tech:  95%|█████████▌| 6201/6525 [11:22<00:38]Pass 1 Tech:  95%|█████████▌| 6217/6525 [11:22<00:27]Pass 1 Tech:  96%|█████████▌| 6241/6525 [11:23<00:16]Pass 1 Tech:  96%|█████████▌| 6254/6525 [11:28<00:35]Pass 1 Tech:  97%|█████████▋| 6298/6525 [11:28<00:14]Pass 1 Tech:  97%|█████████▋| 6314/6525 [11:32<00:22]Pass 1 Tech:  97%|█████████▋| 6328/6525 [11:32<00:17]Pass 1 Tech:  97%|█████████▋| 6351/6525 [11:37<00:23]Pass 1 Tech:  98%|█████████▊| 6390/6525 [11:38<00:10]Pass 1 Tech:  98%|█████████▊| 6405/6525 [11:44<00:17]$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZIEXT: possibly delisted; no timezone found
+
+6 Failed downloads:
+['ZAZZT', 'ZBZZT', 'ZBZX']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+['ZCZZT', 'ZEXIT', 'ZIEXT']: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Pass 1 Tech:  99%|█████████▉| 6451/6525 [11:51<00:10]Pass 1 Tech:  99%|█████████▉| 6484/6525 [11:51<00:04]$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+
+3 Failed downloads:
+['ZVV', 'ZTEST']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+['ZXIET']: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Pass 1 Tech: 100%|█████████▉| 6501/6525 [11:56<00:03]Pass 1 Tech: 100%|██████████| 6525/6525 [11:57<00:00]
+
+  Pass 1 done: 5631/6525 got data (86%)
+  Structure+Trigger passes: 138 stocks → fetching fundamentals now
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PASS 2  FUNDAMENTAL CHECK (138 stocks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pass 2 Fund:   0%|          | 0/138 [00:00<?, ?stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   1%|          | 1/138 [00:00<01:44,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   1%|▏         | 2/138 [00:01<01:39,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   2%|▏         | 3/138 [00:02<01:37,  1.38stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   3%|▎         | 4/138 [00:02<01:36,  1.39stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   4%|▎         | 5/138 [00:03<01:37,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   4%|▍         | 6/138 [00:04<01:35,  1.38stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   5%|▌         | 7/138 [00:05<01:42,  1.28stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   6%|▌         | 8/138 [00:06<01:41,  1.28stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   7%|▋         | 9/138 [00:06<01:38,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   7%|▋         | 10/138 [00:07<01:35,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   8%|▊         | 11/138 [00:08<01:38,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   9%|▊         | 12/138 [00:09<01:37,  1.30stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   9%|▉         | 13/138 [00:09<01:36,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  10%|█         | 14/138 [00:10<01:42,  1.21stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  11%|█         | 15/138 [00:11<01:41,  1.21stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  12%|█▏        | 16/138 [00:12<01:37,  1.25stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  12%|█▏        | 17/138 [00:13<01:33,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  13%|█▎        | 18/138 [00:13<01:31,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  14%|█▍        | 19/138 [00:14<01:30,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  14%|█▍        | 20/138 [00:15<01:33,  1.27stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  15%|█▌        | 21/138 [00:16<01:30,  1.30stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  16%|█▌        | 22/138 [00:16<01:27,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  17%|█▋        | 23/138 [00:17<01:26,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  17%|█▋        | 24/138 [00:18<01:24,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  18%|█▊        | 25/138 [00:19<01:22,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  19%|█▉        | 26/138 [00:19<01:23,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  20%|█▉        | 27/138 [00:20<01:21,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  20%|██        | 28/138 [00:21<01:20,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  21%|██        | 29/138 [00:21<01:19,  1.38stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  22%|██▏       | 30/138 [00:22<01:19,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  22%|██▏       | 31/138 [00:23<01:18,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  23%|██▎       | 32/138 [00:24<01:17,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  24%|██▍       | 33/138 [00:24<01:16,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  25%|██▍       | 34/138 [00:25<01:16,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  25%|██▌       | 35/138 [00:26<01:15,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  26%|██▌       | 36/138 [00:27<01:15,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  27%|██▋       | 37/138 [00:27<01:14,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  28%|██▊       | 38/138 [00:28<01:15,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  28%|██▊       | 39/138 [00:29<01:14,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  29%|██▉       | 40/138 [00:30<01:12,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  30%|██▉       | 41/138 [00:30<01:11,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  30%|███       | 42/138 [00:31<01:09,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  31%|███       | 43/138 [00:32<01:08,  1.38stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  32%|███▏      | 44/138 [00:33<01:08,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  33%|███▎      | 45/138 [00:33<01:07,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  33%|███▎      | 46/138 [00:34<01:06,  1.38stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  34%|███▍      | 47/138 [00:35<01:05,  1.39stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  35%|███▍      | 48/138 [00:35<01:04,  1.40stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  36%|███▌      | 49/138 [00:36<01:04,  1.39stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  36%|███▌      | 50/138 [00:37<01:04,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  37%|███▋      | 51/138 [00:38<01:03,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  38%|███▊      | 52/138 [00:38<01:03,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  38%|███▊      | 53/138 [00:39<01:04,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  39%|███▉      | 54/138 [00:40<01:05,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  40%|███▉      | 55/138 [00:41<01:09,  1.19stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  41%|████      | 56/138 [00:42<01:06,  1.24stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  41%|████▏     | 57/138 [00:42<01:03,  1.27stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  42%|████▏     | 58/138 [00:43<01:02,  1.28stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  43%|████▎     | 59/138 [00:44<01:00,  1.30stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  43%|████▎     | 60/138 [00:45<00:59,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  44%|████▍     | 61/138 [00:45<00:57,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  45%|████▍     | 62/138 [00:46<00:56,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  46%|████▌     | 63/138 [00:47<00:56,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  46%|████▋     | 64/138 [00:48<00:57,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  47%|████▋     | 65/138 [00:48<00:55,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  48%|████▊     | 66/138 [00:49<00:54,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  49%|████▊     | 67/138 [00:50<00:52,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  49%|████▉     | 68/138 [00:51<00:51,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  50%|█████     | 69/138 [00:51<00:50,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  51%|█████     | 70/138 [00:52<00:49,  1.38stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  51%|█████▏    | 71/138 [00:53<00:50,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  52%|█████▏    | 72/138 [00:54<00:48,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  53%|█████▎    | 73/138 [00:54<00:49,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  54%|█████▎    | 74/138 [00:55<00:47,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  54%|█████▍    | 75/138 [00:56<00:48,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  55%|█████▌    | 76/138 [00:57<00:48,  1.28stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  56%|█████▌    | 77/138 [00:58<00:49,  1.24stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  57%|█████▋    | 78/138 [00:58<00:46,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  57%|█████▋    | 79/138 [00:59<00:44,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  58%|█████▊    | 80/138 [01:00<00:43,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  59%|█████▊    | 81/138 [01:01<00:43,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  59%|█████▉    | 82/138 [01:01<00:42,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  60%|██████    | 83/138 [01:02<00:40,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  61%|██████    | 84/138 [01:03<00:40,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  62%|██████▏   | 85/138 [01:03<00:38,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  62%|██████▏   | 86/138 [01:04<00:38,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  63%|██████▎   | 87/138 [01:05<00:37,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  64%|██████▍   | 88/138 [01:06<00:36,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  64%|██████▍   | 89/138 [01:06<00:36,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  65%|██████▌   | 90/138 [01:07<00:35,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  66%|██████▌   | 91/138 [01:08<00:35,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  67%|██████▋   | 92/138 [01:09<00:35,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  67%|██████▋   | 93/138 [01:10<00:34,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  68%|██████▊   | 94/138 [01:10<00:32,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  69%|██████▉   | 95/138 [01:11<00:31,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  70%|██████▉   | 96/138 [01:12<00:30,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  70%|███████   | 97/138 [01:12<00:29,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  71%|███████   | 98/138 [01:13<00:30,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  72%|███████▏  | 99/138 [01:14<00:29,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  72%|███████▏  | 100/138 [01:15<00:28,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  73%|███████▎  | 101/138 [01:15<00:27,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  74%|███████▍  | 102/138 [01:16<00:27,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  75%|███████▍  | 103/138 [01:17<00:26,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  75%|███████▌  | 104/138 [01:18<00:25,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  76%|███████▌  | 105/138 [01:18<00:24,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  77%|███████▋  | 106/138 [01:19<00:23,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  78%|███████▊  | 107/138 [01:20<00:23,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  78%|███████▊  | 108/138 [01:21<00:22,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  79%|███████▉  | 109/138 [01:21<00:21,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  80%|███████▉  | 110/138 [01:22<00:20,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  80%|████████  | 111/138 [01:23<00:20,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  81%|████████  | 112/138 [01:24<00:19,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  82%|████████▏ | 113/138 [01:24<00:19,  1.30stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  83%|████████▎ | 114/138 [01:26<00:22,  1.06stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  83%|████████▎ | 115/138 [01:27<00:21,  1.08stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  84%|████████▍ | 116/138 [01:27<00:18,  1.16stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  85%|████████▍ | 117/138 [01:28<00:17,  1.22stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  86%|████████▌ | 118/138 [01:29<00:16,  1.24stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  86%|████████▌ | 119/138 [01:30<00:14,  1.28stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  87%|████████▋ | 120/138 [01:30<00:13,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  88%|████████▊ | 121/138 [01:31<00:12,  1.34stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  88%|████████▊ | 122/138 [01:32<00:11,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  89%|████████▉ | 123/138 [01:33<00:11,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  90%|████████▉ | 124/138 [01:33<00:10,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  91%|█████████ | 125/138 [01:34<00:09,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  91%|█████████▏| 126/138 [01:35<00:08,  1.37stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  92%|█████████▏| 127/138 [01:35<00:07,  1.38stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  93%|█████████▎| 128/138 [01:36<00:07,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  93%|█████████▎| 129/138 [01:37<00:06,  1.32stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  94%|█████████▍| 130/138 [01:38<00:06,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  95%|█████████▍| 131/138 [01:39<00:05,  1.33stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  96%|█████████▌| 132/138 [01:39<00:04,  1.35stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  96%|█████████▋| 133/138 [01:40<00:03,  1.36stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  97%|█████████▋| 134/138 [01:41<00:03,  1.29stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  98%|█████████▊| 135/138 [01:42<00:02,  1.28stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  99%|█████████▊| 136/138 [01:42<00:01,  1.30stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  99%|█████████▉| 137/138 [01:43<00:00,  1.31stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund: 100%|██████████| 138/138 [01:44<00:00,  1.30stk/s]Pass 2 Fund: 100%|██████████| 138/138 [01:44<00:00,  1.32stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers    : 6525
+  Got data   : 5631  (86%)
+  Tech passes: 138
+  ✅ Matches  : 0
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📈 BACKTEST — LAST 63 TRADING DAYS (~3 MONTHS)
+  Full NASDAQ universe, 2:1 reward vs stop-loss, 15-day max hold
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Total signals found : 735
+  Wins                : 163
+  Losses              : 413
+  Timeouts (excluded) : 159
+  ✅ SUCCESS RATE      : 28.3%  (163/576 resolved trades)
+  ℹ️  Note: this backtest measures LAYER 3 (the entry trigger)
+      on its own — it does not re-check Layer 1/2 (fundamentals
+      /structure) as they stood on each historical signal date.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  No matches. Try relaxing:
+   min_fund_score                  15 → 5    (Layer 1)
+   min_rs_pct_vs_spy               -5 → -15  (Layer 2)
+   max_below_52w_high_pct          25 → 40   (Layer 2)
+   min_above_52w_low_pct           30 → 15   (Layer 2)
+   min_tech_score                  10 → 6    (Layer 3)
+   min_total_score                 40 → 25
+   require_prior_uptrend         True → False
+   require_sma50_rising          True → False
+   require_volume_confirmation   True → False
+   prior_uptrend_lookback           3 → 5
+   min_price                         2 → 1
+   min_avg_volume                80000 → 50000
+  💰 Position sizing: max loss $40 per trade — 0 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/confluence_scanner_20261115_0206.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_confluence_scanner_20261115_0206.txt
+  💾 Backtest trade log → /home/runner/work/Snowflake_DDL/Snowflake_DDL/confluence_scanner_backtest_20261115_0206.csv  (735 trades)
+[Email] Sending to vikramaga24@gmail.com  (0 results)...
+[Email] 📎 Attached: confluence_scanner_20261115_0206.csv (464 bytes)
+[Email] 📎 Attached: confluence_scanner_backtest_20261115_0206.csv (33,786 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 3-Layer Confluence — 0 signals (3M trigger backtest: 28%) — 2026-11-15
+  (CI: files in workspace, email sent)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SCORE BREAKDOWN  (100 total)
+  Fund    0–50   Layer 1: 8 fundamental metrics (fundamental_v2.py)
+  Struct  0–20   Layer 2: Minervini Stage-2 uptrend strength
+  Tech    0–30   Layer 3: retest+reclaim trigger quality
+
+  📋 A TICKER ONLY APPEARS HERE IF ALL 3 LAYERS PASS
+  ────────────────────────────────────────────────────
+  LAYER 1 — FUNDAMENTALS (gate: Fund_Score >= min_fund_score)
+    Revenue growth, profit margin, ROE, P/E, EPS, debt/equity
+
+  LAYER 2 — STRUCTURE (Minervini Stage 2, all 6 required)
+    1) Price > SMA150 > SMA200
+    2) SMA150 AND SMA200 both trending up
+    3) Price > SMA50
+    4) Price >= 30% above its 52-week low
+    5) Price within 25% of its 52-week high
+    6) RS: stock's performance over rs_period >= SPY's - 5%
+
+  LAYER 3 — ENTRY TRIGGER (checked against EMA8/SMA21/SMA50/
+            SMA150 independently; matches if any satisfies it.
+            Scans the last recent_signal_lookback_days trading days
+            (15d, ~2-3 weeks) — not
+            just today — so a stock whose setup fired any day in that
+            window still shows up now, using its CURRENT price/
+            fundamentals/structure)
+    0) PRIOR UPTREND: price was above the MA a few bars before
+       the retest (confirms pullback, not breakdown)
+    1) SMA50 RISING: SMA50 today > SMA50 sma_rising_lookback bars ago
+    2) CANDLE A (that day): RED, closed BELOW the MA
+    3) CANDLE B (next day): GREEN, closed ABOVE the SAME MA AND
+       above EMA8, simultaneously
+    4) VOLUME: candle B volume > candle A volume
+
+  📋 OUTPUT
+  Price       = candle B close on the MOST RECENT signal day found
+                (the entry price as of that day — may differ from
+                today's live price if the signal is a few days old)
+  Stop_Loss   = candle A low on that same signal day
+  Risk_%      = (Price - Stop_Loss) / Price
+  Retested_MA = which MA (EMA8/SMA21/SMA50/SMA150) the most recent
+                signal fired against
+  Matched_MAs = all MAs that matched on that SAME day, if more than
+                one (same-day confluence)
+  Days_Since_Signal = how many trading days ago the most recent
+                trigger fired (0 = today)
+  Recent_Signals = every date+MA this trigger fired within the last
+                15 trading days —
+                the full "identified in the last 2-3 weeks" list
+  Above_52wLow_% / Below_52wHigh_% / RS_vs_SPY_% = Layer 2 structural detail
+
+  📋 BACKTEST
+  Every ticker that clears Layer 2 (Structure) is re-checked
+  day-by-day over the last backtest_lookback_days (~3 months) for
+  the Layer 3 entry trigger specifically — this measures the
+  TRIGGER's own historical accuracy, not the full 3-layer combo's
+  (fundamentals and structure as of each past date aren't re-checked,
+  since that would require a much more expensive point-in-time
+  historical re-scan). Each historical signal found is simulated
+  forward up to backtest_holding_days bars:
+    WIN     = price hits backtest_reward_r : 1 reward (vs. the
+              signal's own risk) before hitting its stop-loss
+    LOSS    = stop-loss hit first
+    TIMEOUT = neither hit within the holding window — excluded
+              from the win-rate calc, reported separately
+  Success rate % = wins / (wins + losses), i.e. resolved trades only.
+  The scan-wide aggregate is printed at the end and in the email
+  header. Each matching ticker also shows its OWN historical
+  Backtest_WinRate_% (n/a if it had no resolved signals recently).
+  Full trade-by-trade log is saved to
+  confluence_scanner_backtest_<timestamp>.csv and attached to the
+  email alongside the main results CSV.
+
+  💡 BEST SETUPS
+  Total > 65               elite across all 3 layers
+  Struct = 20                perfect Stage-2 structure
+  Risk_% < 5                 tight stop relative to entry
+  Days_Since_Signal <= 3      freshest trigger in the 2-3 week window
+  Recent_Signal_Count > 1     trigger fired more than once recently
+                              (repeated support at the same level)
+  Backtest_WinRate_% > 50    this ticker's own trigger has worked recently
+  Fund > 35                  genuinely strong business quality
+
+  ⚙️  TUNE IF 0 RESULTS  (loosen one layer at a time to find the
+      bottleneck — Layer 2 Structure is usually the strictest gate)
+  min_fund_score                    15 → 5     (Layer 1)
+  min_rs_pct_vs_spy                 -5 → -15   (Layer 2)
+  max_below_52w_high_pct            25 → 40    (Layer 2)
+  min_above_52w_low_pct             30 → 15    (Layer 2)
+  min_tech_score                    10 → 6     (Layer 3)
+  min_total_score                   40 → 25
+  recent_signal_lookback_days       15 → 25    (widen the 2-3 week window)
+  prior_uptrend_lookback              3 → 5
+  sma_rising_lookback                 5 → 10
+  require_prior_uptrend            True → False
+  require_sma50_rising             True → False
+  require_volume_confirmation      True → False
+  min_price                          2 → 1
+  min_avg_volume                 80000 → 50000
+
+  ⚙️  BACKTEST TUNING
+  backtest_lookback_days   63 → 126   (6 months instead of 3)
+  backtest_holding_days    15 → 20
+  backtest_reward_r        2.0 → 1.5  (easier win condition)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

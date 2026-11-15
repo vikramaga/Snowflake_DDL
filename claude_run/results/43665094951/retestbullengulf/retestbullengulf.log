@@ -1,0 +1,309 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: $356.27  SMA50=$338.79  SMA150=$314.30  2026-11-13
+  ✅ NVDA: $162.85  SMA50=$214.63  SMA150=$211.36  2026-11-13
+  ✅ MSFT: $523.88  SMA50=$519.00  SMA150=$456.96  2026-11-13
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  DIAGNOSTIC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Downloaded 10/10
+
+  SYM        PRICE   >S150   S50>S150  RESULT
+  ─────────────────────────────────────────────
+  AAPL    $ 356.27       ✅          ✅  ❌
+  NVDA    $ 162.85       ❌          ✅  ❌
+  MSFT    $ 523.88       ✅          ✅  ❌
+  AMD     $ 534.06       ✅          ✅  ❌
+  PLTR    $ 167.99       ✅          ✅  ❌
+  META    $ 641.69       ✅          ✅  ❌
+  CRWD    $ 226.61       ✅          ✅  ❌
+  AVGO    $ 347.01       ❌          ❌  ❌
+  MU      $ 778.31       ❌          ✅  ❌
+  AXON    $ 315.43       ❌          ❌  ❌
+
+  Pattern:
+    C1  Bull structure  : price > SMA150  AND  SMA50 > SMA150
+    C2  Retest          : red candle LOW within 3.0% of SMA50 or SMA20
+    C3  Engulfing       : next green candle open <= red close
+                          AND green close >= red open
+    C4  Volume          : green candle volume > red candle volume
+
+  Tune if mostly ❌:
+    touch_pct            3 → 5     (wider retest zone)
+    lookback_bars       10 → 15
+    max_bars_since_engulf 5 → 8
+    min_vol_mult        0.8 → 0.5
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +   3 → 6518
+
+  🎯 Total: 6518 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 4  SCANNING 6518 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scanning:   0%|          | 0/6518 [00:00<?, ?stk/s]Scanning:   0%|          | 1/6518 [00:03<5:59:19,  3.31s/stk]Scanning:   1%|          | 51/6518 [00:07<14:06,  7.64stk/s] Scanning:   2%|▏         | 101/6518 [00:11<11:16,  9.49stk/s]Scanning:   2%|▏         | 151/6518 [00:16<10:25, 10.19stk/s]Scanning:   3%|▎         | 201/6518 [00:20<09:47, 10.76stk/s]Scanning:   4%|▍         | 251/6518 [00:25<09:31, 10.97stk/s]Scanning:   5%|▍         | 301/6518 [00:29<09:14, 11.21stk/s]Scanning:   5%|▌         | 351/6518 [00:33<08:42, 11.80stk/s]Scanning:   6%|▌         | 401/6518 [00:38<09:13, 11.06stk/s]Scanning:   7%|▋         | 451/6518 [00:42<08:44, 11.57stk/s]Scanning:   8%|▊         | 501/6518 [00:46<08:45, 11.45stk/s]Scanning:   8%|▊         | 551/6518 [00:50<08:21, 11.90stk/s]Scanning:   9%|▉         | 601/6518 [00:54<08:04, 12.20stk/s]Scanning:  10%|▉         | 651/6518 [00:58<08:12, 11.91stk/s]Scanning:  11%|█         | 701/6518 [01:03<08:15, 11.73stk/s]Scanning:  12%|█▏        | 751/6518 [01:07<08:15, 11.65stk/s]Scanning:  12%|█▏        | 801/6518 [01:11<07:56, 12.01stk/s]Scanning:  13%|█▎        | 851/6518 [01:15<07:59, 11.83stk/s]Scanning:  14%|█▍        | 901/6518 [01:20<08:08, 11.51stk/s]Scanning:  15%|█▍        | 951/6518 [01:24<08:08, 11.41stk/s]Scanning:  15%|█▌        | 1001/6518 [01:28<07:47, 11.80stk/s]Scanning:  16%|█▌        | 1051/6518 [01:33<07:48, 11.68stk/s]$CBX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+Scanning:  17%|█▋        | 1101/6518 [01:37<07:39, 11.78stk/s]Scanning:  18%|█▊        | 1151/6518 [01:41<07:21, 12.16stk/s]Scanning:  18%|█▊        | 1201/6518 [01:45<07:17, 12.15stk/s]Scanning:  19%|█▉        | 1251/6518 [01:48<07:01, 12.49stk/s]Scanning:  20%|█▉        | 1301/6518 [01:52<06:44, 12.90stk/s]Scanning:  21%|██        | 1351/6518 [01:56<06:41, 12.85stk/s]Scanning:  21%|██▏       | 1401/6518 [02:00<06:53, 12.37stk/s]Scanning:  22%|██▏       | 1451/6518 [02:05<06:54, 12.22stk/s]$CTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+Scanning:  23%|██▎       | 1501/6518 [02:17<10:49,  7.72stk/s]Scanning:  24%|██▍       | 1551/6518 [02:21<09:48,  8.44stk/s]Scanning:  25%|██▍       | 1601/6518 [02:25<08:51,  9.25stk/s]Scanning:  25%|██▌       | 1651/6518 [02:30<08:15,  9.81stk/s]Scanning:  26%|██▌       | 1701/6518 [02:34<07:37, 10.54stk/s]Scanning:  27%|██▋       | 1751/6518 [02:38<07:15, 10.94stk/s]Scanning:  28%|██▊       | 1801/6518 [02:42<06:50, 11.50stk/s]Scanning:  28%|██▊       | 1851/6518 [02:45<06:24, 12.15stk/s]Scanning:  29%|██▉       | 1901/6518 [02:50<06:29, 11.85stk/s]Scanning:  30%|██▉       | 1951/6518 [02:54<06:18, 12.07stk/s]Scanning:  31%|███       | 2001/6518 [02:58<06:14, 12.06stk/s]Scanning:  31%|███▏      | 2051/6518 [03:03<06:23, 11.64stk/s]Scanning:  32%|███▏      | 2101/6518 [03:07<06:24, 11.50stk/s]Scanning:  33%|███▎      | 2151/6518 [03:11<06:06, 11.90stk/s]Scanning:  34%|███▍      | 2201/6518 [03:15<06:09, 11.68stk/s]Scanning:  35%|███▍      | 2251/6518 [03:20<06:04, 11.70stk/s]Scanning:  35%|███▌      | 2301/6518 [03:24<05:56, 11.83stk/s]Scanning:  36%|███▌      | 2351/6518 [03:29<06:13, 11.15stk/s]Scanning:  37%|███▋      | 2401/6518 [03:32<05:45, 11.90stk/s]Scanning:  38%|███▊      | 2451/6518 [03:37<05:45, 11.77stk/s]Scanning:  38%|███▊      | 2501/6518 [03:41<05:31, 12.11stk/s]Scanning:  39%|███▉      | 2551/6518 [03:44<05:19, 12.43stk/s]Scanning:  40%|███▉      | 2601/6518 [03:49<05:28, 11.92stk/s]Scanning:  41%|████      | 2651/6518 [03:53<05:33, 11.59stk/s]Scanning:  41%|████▏     | 2701/6518 [03:57<05:10, 12.28stk/s]Scanning:  42%|████▏     | 2751/6518 [04:01<05:08, 12.19stk/s]Scanning:  43%|████▎     | 2801/6518 [04:05<05:02, 12.30stk/s]Scanning:  44%|████▎     | 2851/6518 [04:10<05:07, 11.92stk/s]Scanning:  45%|████▍     | 2901/6518 [04:14<05:02, 11.97stk/s]Scanning:  45%|████▌     | 2951/6518 [04:18<05:01, 11.84stk/s]Scanning:  46%|████▌     | 3001/6518 [04:22<05:00, 11.72stk/s]Scanning:  47%|████▋     | 3051/6518 [04:27<05:06, 11.30stk/s]Scanning:  48%|████▊     | 3101/6518 [04:31<04:46, 11.94stk/s]Scanning:  48%|████▊     | 3151/6518 [04:35<04:39, 12.03stk/s]Scanning:  49%|████▉     | 3201/6518 [04:40<04:42, 11.73stk/s]Scanning:  50%|████▉     | 3251/6518 [04:43<04:29, 12.11stk/s]Scanning:  51%|█████     | 3301/6518 [04:47<04:19, 12.40stk/s]Scanning:  51%|█████▏    | 3351/6518 [04:52<04:23, 12.03stk/s]Scanning:  52%|█████▏    | 3401/6518 [04:55<04:14, 12.26stk/s]Scanning:  53%|█████▎    | 3451/6518 [05:00<04:12, 12.12stk/s]Scanning:  54%|█████▎    | 3501/6518 [05:04<04:08, 12.16stk/s]Scanning:  54%|█████▍    | 3551/6518 [05:08<03:58, 12.43stk/s]Scanning:  55%|█████▌    | 3601/6518 [05:12<04:02, 12.01stk/s]Scanning:  56%|█████▌    | 3651/6518 [05:16<03:56, 12.14stk/s]Scanning:  57%|█████▋    | 3701/6518 [05:20<03:53, 12.08stk/s]Scanning:  58%|█████▊    | 3751/6518 [05:24<03:42, 12.44stk/s]Scanning:  58%|█████▊    | 3801/6518 [05:28<03:38, 12.41stk/s]Scanning:  59%|█████▉    | 3851/6518 [05:33<03:44, 11.86stk/s]Scanning:  60%|█████▉    | 3901/6518 [05:37<03:41, 11.79stk/s]Scanning:  61%|██████    | 3951/6518 [05:41<03:36, 11.87stk/s]Scanning:  61%|██████▏   | 4001/6518 [05:46<03:37, 11.59stk/s]Scanning:  62%|██████▏   | 4051/6518 [05:50<03:29, 11.80stk/s]Scanning:  63%|██████▎   | 4101/6518 [05:54<03:22, 11.96stk/s]Scanning:  64%|██████▎   | 4151/6518 [05:58<03:15, 12.09stk/s]Scanning:  64%|██████▍   | 4201/6518 [06:02<03:14, 11.93stk/s]Scanning:  65%|██████▌   | 4251/6518 [06:07<03:20, 11.31stk/s]Scanning:  66%|██████▌   | 4301/6518 [06:11<03:07, 11.80stk/s]Scanning:  67%|██████▋   | 4351/6518 [06:15<03:06, 11.60stk/s]Scanning:  68%|██████▊   | 4401/6518 [06:19<02:55, 12.05stk/s]Scanning:  68%|██████▊   | 4451/6518 [06:23<02:53, 11.94stk/s]Scanning:  69%|██████▉   | 4501/6518 [06:28<02:49, 11.88stk/s]Scanning:  70%|██████▉   | 4551/6518 [06:32<02:45, 11.86stk/s]Scanning:  71%|███████   | 4601/6518 [06:36<02:42, 11.79stk/s]Scanning:  71%|███████▏  | 4651/6518 [06:40<02:34, 12.07stk/s]Scanning:  72%|███████▏  | 4701/6518 [06:44<02:26, 12.38stk/s]Scanning:  73%|███████▎  | 4751/6518 [06:48<02:22, 12.36stk/s]Scanning:  74%|███████▎  | 4801/6518 [06:53<02:26, 11.72stk/s]Scanning:  74%|███████▍  | 4851/6518 [06:57<02:22, 11.70stk/s]Scanning:  75%|███████▌  | 4901/6518 [07:01<02:16, 11.81stk/s]Scanning:  76%|███████▌  | 4951/6518 [07:05<02:07, 12.26stk/s]Scanning:  77%|███████▋  | 5001/6518 [07:09<02:06, 12.03stk/s]Scanning:  77%|███████▋  | 5051/6518 [07:14<02:07, 11.49stk/s]Scanning:  78%|███████▊  | 5101/6518 [07:18<02:00, 11.79stk/s]Scanning:  79%|███████▉  | 5151/6518 [07:23<02:02, 11.20stk/s]Scanning:  80%|███████▉  | 5201/6518 [07:28<01:58, 11.15stk/s]Scanning:  81%|████████  | 5251/6518 [07:32<01:49, 11.56stk/s]Scanning:  81%|████████▏ | 5301/6518 [07:36<01:43, 11.78stk/s]Scanning:  82%|████████▏ | 5351/6518 [07:39<01:35, 12.27stk/s]Scanning:  83%|████████▎ | 5401/6518 [07:44<01:31, 12.17stk/s]Scanning:  84%|████████▎ | 5451/6518 [07:48<01:28, 12.10stk/s]Scanning:  84%|████████▍ | 5501/6518 [07:51<01:21, 12.40stk/s]Scanning:  85%|████████▌ | 5551/6518 [07:56<01:19, 12.12stk/s]Scanning:  86%|████████▌ | 5601/6518 [08:00<01:16, 11.99stk/s]Scanning:  87%|████████▋ | 5651/6518 [08:04<01:12, 11.89stk/s]Scanning:  87%|████████▋ | 5701/6518 [08:08<01:07, 12.14stk/s]Scanning:  88%|████████▊ | 5751/6518 [08:13<01:05, 11.75stk/s]Scanning:  89%|████████▉ | 5801/6518 [08:17<01:01, 11.71stk/s]Scanning:  90%|████████▉ | 5851/6518 [08:21<00:55, 12.08stk/s]Scanning:  91%|█████████ | 5901/6518 [08:25<00:51, 12.09stk/s]Scanning:  91%|█████████▏| 5951/6518 [08:29<00:44, 12.75stk/s]Scanning:  92%|█████████▏| 6001/6518 [08:32<00:40, 12.80stk/s]Scanning:  93%|█████████▎| 6051/6518 [08:37<00:37, 12.43stk/s]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  Bullish Engulfing on SMA50/SMA20 Retest + Above SMA150
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Tier_Label                                  Touched_SMA       Touch_Depth_%   Red_Date      Green_Date    Vol_Ratio    Bars_Since_Engulf   RSI   
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ALUB      $10.17      78       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.24%           2026-11-10    2026-11-11    8.52×        2d                  59.0  
+  APLE      $19.46      39       🥉 TIER 3 — SMA20 Engulf                     SMA20             1.98%           2026-11-05    2026-11-06    1.55×        5d                  65.5  
+  BEKE      $17.86      73       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     1.21%           2026-11-12    2026-11-13    1.44×        0d                  51.4  
+  BGB       $11.19      74       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.54%           2026-11-11    2026-11-12    1.14×        1d                  58.3  
+  BLKB      $54.15      49       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.28%           2026-11-06    2026-11-09    1.03×        4d                  58.4  
+  BXSL      $23.78      62       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.14%           2026-11-09    2026-11-10    1.04×        3d                  50.6  
+  CDW       $171.65     48       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     2.47%           2026-11-06    2026-11-09    1.09×        4d                  61.8  
+  CF        $125.09     53       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.75%           2026-11-09    2026-11-10    1.18×        3d                  59.1  
+  CME       $317.97     57       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.62%           2026-11-09    2026-11-10    1.05×        3d                  71.7  
+  CNC       $71.27      39       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     2.42%           2026-11-09    2026-11-10    1.09×        3d                  55.4  
+  CVX       $219.89     41       🥈 TIER 2 — SMA50 Engulf                     SMA50             2.94%           2026-11-09    2026-11-10    1.07×        3d                  52.0  
+  DH        $1.31       48       🥉 TIER 3 — SMA20 Engulf                     SMA20             1.83%           2026-11-09    2026-11-10    1.16×        3d                  68.5  
+  DOCS      $33.34      46       🥉 TIER 3 — SMA20 Engulf                     SMA20             2.82%           2026-11-10    2026-11-11    1.07×        2d                  58.3  
+  EPRX      $8.15       82       🥈 TIER 2 — SMA50 Engulf                     SMA50             0.08%           2026-11-12    2026-11-13    1.95×        0d                  60.8  
+  FCRS      $10.25      89       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.05%           2026-11-11    2026-11-12    75.99×       1d                  63.6  
+  FGII      $10.10      64       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.41%           2026-11-05    2026-11-06    2.74×        5d                  75.4  
+  FNKO      $6.91       61       🥈 TIER 2 — SMA50 Engulf                     SMA50             1.14%           2026-11-05    2026-11-06    2.68×        5d                  56.0  
+  GCT       $66.63      58       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.47%           2026-11-09    2026-11-10    1.00×        3d                  66.1  
+  GNE       $18.40      42       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     1.18%           2026-11-05    2026-11-06    1.15×        5d                  63.5  
+  HLP       $4.12       55       🥉 TIER 3 — SMA20 Engulf                     SMA20             2.34%           2026-11-09    2026-11-10    1.65×        3d                  62.0  
+  IDT       $83.09      53       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.87%           2026-11-09    2026-11-10    1.31×        3d                  58.7  
+  LNG       $308.75     41       🥈 TIER 2 — SMA50 Engulf                     SMA50             2.94%           2026-11-06    2026-11-09    1.09×        4d                  58.8  
+  OPCH      $31.65      70       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.54%           2026-11-10    2026-11-11    3.82×        2d                  74.4  
+  ORIO      $1.07       58       🥈 TIER 2 — SMA50 Engulf                     SMA50             0.35%           2026-11-05    2026-11-06    1.90×        5d                  56.6  
+  PCTY      $178.22     44       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.71%           2026-11-05    2026-11-06    1.29×        5d                  66.6  
+  POWW      $2.29       63       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.42%           2026-11-09    2026-11-10    2.51×        3d                  47.6  
+  PRME      $4.27       57       🥈 TIER 2 — SMA50 Engulf                     SMA50             2.79%           2026-11-10    2026-11-11    2.85×        2d                  51.9  
+  RLGT      $9.34       61       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.26%           2026-11-06    2026-11-09    1.99×        4d                  54.2  
+  SATA      $97.73      67       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     0.74%           2026-11-11    2026-11-12    1.35×        1d                  53.6  
+  SKWD      $63.02      55       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     2.26%           2026-11-09    2026-11-10    1.14×        3d                  59.0  
+  SOLV      $89.08      40       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     2.47%           2026-11-05    2026-11-06    1.69×        5d                  55.3  
+  TRMK      $47.88      72       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     1.55%           2026-11-10    2026-11-11    2.61×        2d                  65.8  
+  TXO       $13.36      60       🥉 TIER 3 — SMA20 Engulf                     SMA20             1.44%           2026-11-11    2026-11-12    1.37×        1d                  49.0  
+  VGZ       $2.62       46       🥉 TIER 3 — SMA20 Engulf                     SMA20             0.11%           2026-11-05    2026-11-06    1.14×        5d                  49.0  Scanning:  94%|█████████▎| 6101/6518 [08:41<00:33, 12.36stk/s]Scanning:  94%|█████████▍| 6151/6518 [08:45<00:28, 12.68stk/s]Scanning:  95%|█████████▌| 6201/6518 [08:48<00:24, 12.89stk/s]Scanning:  96%|█████████▌| 6251/6518 [08:53<00:21, 12.36stk/s]Scanning:  97%|█████████▋| 6301/6518 [08:57<00:17, 12.24stk/s]Scanning:  97%|█████████▋| 6351/6518 [09:01<00:14, 11.91stk/s]Scanning:  98%|█████████▊| 6401/6518 [09:06<00:10, 11.47stk/s]$ZAZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+$ZBZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+$ZBZX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+$ZEXIT: possibly delisted; no timezone found
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+$ZIEXT: possibly delisted; no timezone found
+
+7 Failed downloads:
+['ZAZZT', 'ZTEST', 'ZBZZT', 'ZBZX']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+['ZCZZT', 'ZEXIT', 'ZIEXT']: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+Scanning:  99%|█████████▉| 6451/6518 [09:11<00:06, 11.15stk/s]$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+
+2 Failed downloads:
+['ZXIET']: possibly delisted; no timezone found
+['ZVV']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Scanning: 100%|█████████▉| 6501/6518 [09:14<00:01, 12.34stk/s]Scanning: 100%|██████████| 6518/6518 [09:15<00:00, 11.72stk/s]
+
+  VRSN      $313.02     46       🏆 TIER 1 — SMA50+SMA20 Confluence Engulf    SMA50 + SMA20     1.27%           2026-11-09    2026-11-10    1.17×        3d                  58.2  
+  VTRS      $20.82      39       🥉 TIER 3 — SMA20 Engulf                     SMA20             2.01%           2026-11-05    2026-11-06    1.22×        5d                  70.1  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE | 6518 tickers | 5745 (88%) | ✅ 36 matches
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🛑 Default stop: 10-day low — 36/36 tickers
+  💰 Position sizing: max loss $40 per trade — 36 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/bullish_engulfing_sma_20261115_0202.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_bullish_engulfing_20261115_0202.txt
+
+  🏆  Tier 1  (16 stocks)
+
+  ┌────────┬─────────┬───────┬───────────────┬───────────────┬───────────┬───────────────────┬──────┐
+  │ Ticker │  Price  │ Score │  Touched_SMA  │ Touch_Depth_% │ Vol_Ratio │ Bars_Since_Engulf │ RSI  │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  FCRS  │  $10.25 │   89  │ SMA50 + SMA20 │     0.05%     │   75.99×  │         1d        │ 63.6 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  ALUB  │  $10.17 │   78  │ SMA50 + SMA20 │     0.24%     │   8.52×   │         2d        │ 59.0 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  BGB   │  $11.19 │   74  │ SMA50 + SMA20 │     0.54%     │   1.14×   │         1d        │ 58.3 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  BEKE  │  $17.86 │   73  │ SMA50 + SMA20 │     1.21%     │   1.44×   │         0d        │ 51.4 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  TRMK  │  $47.88 │   72  │ SMA50 + SMA20 │     1.55%     │   2.61×   │         2d        │ 65.8 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  SATA  │  $97.73 │   67  │ SMA50 + SMA20 │     0.74%     │   1.35×   │         1d        │ 53.6 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  FGII  │  $10.10 │   64  │ SMA50 + SMA20 │     0.41%     │   2.74×   │         5d        │ 75.4 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  POWW  │  $2.29  │   63  │ SMA50 + SMA20 │     0.42%     │   2.51×   │         3d        │ 47.6 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  BXSL  │  $23.78 │   62  │ SMA50 + SMA20 │     0.14%     │   1.04×   │         3d        │ 50.6 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  RLGT  │  $9.34  │   61  │ SMA50 + SMA20 │     0.26%     │   1.99×   │         4d        │ 54.2 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  SKWD  │  $63.02 │   55  │ SMA50 + SMA20 │     2.26%     │   1.14×   │         3d        │ 59.0 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  CDW   │ $171.65 │   48  │ SMA50 + SMA20 │     2.47%     │   1.09×   │         4d        │ 61.8 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  VRSN  │ $313.02 │   46  │ SMA50 + SMA20 │     1.27%     │   1.17×   │         3d        │ 58.2 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  GNE   │  $18.40 │   42  │ SMA50 + SMA20 │     1.18%     │   1.15×   │         5d        │ 63.5 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  SOLV  │  $89.08 │   40  │ SMA50 + SMA20 │     2.47%     │   1.69×   │         5d        │ 55.3 │
+  ├────────┼─────────┼───────┼───────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  CNC   │  $71.27 │   39  │ SMA50 + SMA20 │     2.42%     │   1.09×   │         3d        │ 55.4 │
+  └────────┴─────────┴───────┴───────────────┴───────────────┴───────────┴───────────────────┴──────┘
+
+  🥈  Tier 2  (6 stocks)
+
+  ┌────────┬─────────┬───────┬─────────────┬───────────────┬───────────┬───────────────────┬──────┐
+  │ Ticker │  Price  │ Score │ Touched_SMA │ Touch_Depth_% │ Vol_Ratio │ Bars_Since_Engulf │ RSI  │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  EPRX  │  $8.15  │   82  │    SMA50    │     0.08%     │   1.95×   │         0d        │ 60.8 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  FNKO  │  $6.91  │   61  │    SMA50    │     1.14%     │   2.68×   │         5d        │ 56.0 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  ORIO  │  $1.07  │   58  │    SMA50    │     0.35%     │   1.90×   │         5d        │ 56.6 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  PRME  │  $4.27  │   57  │    SMA50    │     2.79%     │   2.85×   │         2d        │ 51.9 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  CVX   │ $219.89 │   41  │    SMA50    │     2.94%     │   1.07×   │         3d        │ 52.0 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  LNG   │ $308.75 │   41  │    SMA50    │     2.94%     │   1.09×   │         4d        │ 58.8 │
+  └────────┴─────────┴───────┴─────────────┴───────────────┴───────────┴───────────────────┴──────┘
+
+  🥉  Tier 3  (14 stocks)
+
+  ┌────────┬─────────┬───────┬─────────────┬───────────────┬───────────┬───────────────────┬──────┐
+  │ Ticker │  Price  │ Score │ Touched_SMA │ Touch_Depth_% │ Vol_Ratio │ Bars_Since_Engulf │ RSI  │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  OPCH  │  $31.65 │   70  │    SMA20    │     0.54%     │   3.82×   │         2d        │ 74.4 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  TXO   │  $13.36 │   60  │    SMA20    │     1.44%     │   1.37×   │         1d        │ 49.0 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  GCT   │  $66.63 │   58  │    SMA20    │     0.47%     │   1.00×   │         3d        │ 66.1 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  CME   │ $317.97 │   57  │    SMA20    │     0.62%     │   1.05×   │         3d        │ 71.7 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  HLP   │  $4.12  │   55  │    SMA20    │     2.34%     │   1.65×   │         3d        │ 62.0 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │   CF   │ $125.09 │   53  │    SMA20    │     0.75%     │   1.18×   │         3d        │ 59.1 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  IDT   │  $83.09 │   53  │    SMA20    │     0.87%     │   1.31×   │         3d        │ 58.7 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  BLKB  │  $54.15 │   49  │    SMA20    │     0.28%     │   1.03×   │         4d        │ 58.4 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │   DH   │  $1.31  │   48  │    SMA20    │     1.83%     │   1.16×   │         3d        │ 68.5 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  DOCS  │  $33.34 │   46  │    SMA20    │     2.82%     │   1.07×   │         2d        │ 58.3 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  VGZ   │  $2.62  │   46  │    SMA20    │     0.11%     │   1.14×   │         5d        │ 49.0 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  PCTY  │ $178.22 │   44  │    SMA20    │     0.71%     │   1.29×   │         5d        │ 66.6 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  APLE  │  $19.46 │   39  │    SMA20    │     1.98%     │   1.55×   │         5d        │ 65.5 │
+  ├────────┼─────────┼───────┼─────────────┼───────────────┼───────────┼───────────────────┼──────┤
+  │  VTRS  │  $20.82 │   39  │    SMA20    │     2.01%     │   1.22×   │         5d        │ 70.1 │
+  └────────┴─────────┴───────┴─────────────┴───────────────┴───────────┴───────────────────┴──────┘
+[Email] Sending to vikramaga24@gmail.com  (36 results)...
+[Email] 📎 Attached: bullish_engulfing_sma_20261115_0202.csv
+[Email] 📎 Attached: tv_bullish_engulfing_20261115_0202.txt
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent to: vikramaga24@gmail.com
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/bullish_engulfing_chart_20261115_0202.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 PATTERN EXPLAINED
+
+  C1  BULL STRUCTURE
+      Price above SMA150 (long-term trend intact)
+      SMA50 above SMA150 (medium-term bullish)
+
+  C2  RETEST OF SMA50 OR SMA20
+      A red candle's LOW came within 3% of SMA50 or SMA20
+      = Price pulled back and tested a key support level
+
+  C3  BULLISH ENGULFING  (very next candle)
+      Green candle OPEN  <= Red candle CLOSE
+      Green candle CLOSE >= Red candle OPEN
+      = Green body completely covers/engulfs the red body
+      Classic "institutional absorption" signal
+
+  C4  HIGHER VOLUME on the green engulfing candle vs red
+      = Strong buying conviction confirmed by volume
+
+  TIERS (by which SMA was retested):
+      🏆 Tier 1  Both SMA50 + SMA20 touched (strongest confluence)
+      🥈 Tier 2  SMA50 only (strong support)
+      🥉 Tier 3  SMA20 only (faster pullback)
+
+  💡 BEST SETUPS
+  Bars_Since_Engulf = 0     engulf happened today = fresh entry
+  Vol_Ratio >= 2×            strong institutional buying
+  Touch_Depth_% < 1%        precise SMA touch = clean setup
+  Tier 1 (both SMAs)        maximum support confluence
+
+  ⚙️  TUNE IF 0 RESULTS
+  touch_pct              3 → 5
+  lookback_bars         10 → 15
+  max_bars_since_engulf  5 → 8
+  min_vol_mult          0.8 → 0.5
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

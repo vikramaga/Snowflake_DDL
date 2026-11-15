@@ -1,0 +1,256 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: $356.27  EMA20=$346.34  SMA50=$338.79  SMA150=$nan  Stack:❌  2026-11-13
+  ✅ MSFT: $523.88  EMA20=$528.29  SMA50=$519.00  SMA150=$nan  Stack:❌  2026-11-13
+  ✅ NVDA: $162.85  EMA20=$193.26  SMA50=$214.63  SMA150=$nan  Stack:❌  2026-11-13
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  DIAGNOSTIC (10 sample stocks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Downloaded 10/10
+
+  SYM            P    P1        RETEST    EMA20X   SCORE  RESULT
+  ────────────────────────────────────────────────────────────
+  AAPL    $ 356.27     ✅                no match         —       —  ❌
+  MSFT    $ 523.88     ✅                no match         —       —  ❌
+  NVDA    $ 162.85     ❌                no match         —       —  ❌
+  AMD     $ 534.06     ✅                no match         —       —  ❌
+  PLTR    $ 167.99     ✅                no match         —       —  ❌
+  META    $ 641.69     ✅                no match         —       —  ❌
+  CRWD    $ 226.61     ✅                no match         —       —  ❌
+  AVGO    $ 347.01     ❌                no match         —       —  ❌
+  DDOG    $ 184.16     ❌                no match         —       —  ❌
+  MU      $ 778.31     ❌                no match         —       —  ❌
+
+  Pattern:
+    C1  Bull structure  : price currently above SMA150
+    C2  SMA50-only retest: candle LOW touched SMA50 (NOT SMA150)
+                          within ±3.0% in last 30 bars
+    C3  Above EMA20     : current price > EMA20
+    C4  Cam S3 cross    : Bar[-2] close < Camarilla S3
+                          Bar[-1] close >= Camarilla S3 (exact 1-bar)
+                          cross must happen AFTER the SMA50 retest
+
+  Tune if mostly ❌:
+    retest_touch_pct    3.0 → 5    (wider retest zone)
+    retest_lookback     30 → 40   (look further back)
+    cam_cross_lookback  5 → 10   (wider cross window)
+    rsi_min             35 → 25
+    max_close_below_sma150_pct 1.5 → 3
+    require_sma50_only  True → False (allow SMA150 also touched)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +   3 → 6518
+
+  🎯 Total: 6518 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 4  SCANNING 6518 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scanning:   0%|          | 0/6518 [00:00<?, ?stk/s]Scanning:   0%|          | 1/6518 [00:03<5:40:07,  3.13s/stk]Scanning:   0%|          | 32/6518 [00:03<07:49, 13.81stk/s] Scanning:   1%|          | 51/6518 [00:07<15:01,  7.17stk/s]Scanning:   1%|▏         | 82/6518 [00:07<07:23, 14.53stk/s]Scanning:   2%|▏         | 101/6518 [00:12<13:17,  8.04stk/s]Scanning:   2%|▏         | 126/6518 [00:12<08:30, 12.52stk/s]Scanning:   2%|▏         | 151/6518 [00:16<12:15,  8.65stk/s]Scanning:   3%|▎         | 186/6518 [00:16<07:20, 14.38stk/s]Scanning:   3%|▎         | 205/6518 [00:21<11:22,  9.25stk/s]Scanning:   4%|▍         | 246/6518 [00:21<06:35, 15.84stk/s]Scanning:   4%|▍         | 268/6518 [00:25<09:57, 10.45stk/s]Scanning:   5%|▍         | 300/6518 [00:25<06:40, 15.53stk/s]Scanning:   5%|▍         | 320/6518 [00:30<10:08, 10.18stk/s]Scanning:   5%|▌         | 343/6518 [00:30<07:26, 13.83stk/s]Scanning:   6%|▌         | 360/6518 [00:34<11:33,  8.88stk/s]Scanning:   6%|▌         | 385/6518 [00:34<07:56, 12.87stk/s]Scanning:   6%|▌         | 401/6518 [00:39<13:04,  7.80stk/s]Scanning:   7%|▋         | 450/6518 [00:39<06:36, 15.30stk/s]Scanning:   7%|▋         | 472/6518 [00:43<09:42, 10.38stk/s]Scanning:   8%|▊         | 501/6518 [00:48<12:05,  8.30stk/s]Scanning:   8%|▊         | 532/6518 [00:48<08:14, 12.11stk/s]Scanning:   8%|▊         | 551/6518 [00:52<11:10,  8.90stk/s]Scanning:   9%|▉         | 581/6518 [00:53<07:32, 13.13stk/s]Scanning:   9%|▉         | 601/6518 [00:57<10:46,  9.15stk/s]Scanning:  10%|▉         | 631/6518 [00:57<07:11, 13.65stk/s]Scanning:  10%|▉         | 651/6518 [01:01<10:47,  9.06stk/s]Scanning:  10%|█         | 680/6518 [01:01<07:14, 13.44stk/s]Scanning:  11%|█         | 701/6518 [01:07<11:43,  8.26stk/s]Scanning:  11%|█▏        | 743/6518 [01:07<06:48, 14.15stk/s]Scanning:  12%|█▏        | 764/6518 [01:13<11:08,  8.61stk/s]Scanning:  12%|█▏        | 801/6518 [01:18<11:58,  7.95stk/s]Scanning:  13%|█▎        | 833/6518 [01:18<08:16, 11.45stk/s]Scanning:  13%|█▎        | 851/6518 [01:24<12:57,  7.29stk/s]Scanning:  14%|█▎        | 889/6518 [01:24<08:06, 11.58stk/s]Scanning:  14%|█▍        | 909/6518 [01:29<11:52,  7.87stk/s]Scanning:  15%|█▍        | 951/6518 [01:35<11:47,  7.87stk/s]Scanning:  15%|█▌        | 990/6518 [01:35<07:44, 11.90stk/s]Scanning:  15%|█▌        | 1009/6518 [01:40<10:56,  8.40stk/s]Scanning:  16%|█▌        | 1036/6518 [01:40<07:54, 11.56stk/s]Scanning:  16%|█▌        | 1053/6518 [01:45<12:15,  7.43stk/s]Scanning:  17%|█▋        | 1085/6518 [01:46<07:59, 11.34stk/s]$CBX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+Scanning:  17%|█▋        | 1103/6518 [01:51<12:02,  7.50stk/s]Scanning:  17%|█▋        | 1137/6518 [01:51<07:35, 11.81stk/s]Scanning:  18%|█▊        | 1156/6518 [01:56<11:28,  7.78stk/s]Scanning:  18%|█▊        | 1189/6518 [01:56<07:22, 12.05stk/s]Scanning:  19%|█▊        | 1208/6518 [02:01<11:13,  7.89stk/s]Scanning:  19%|█▉        | 1245/6518 [02:02<06:53, 12.76stk/s]Scanning:  19%|█▉        | 1266/6518 [02:06<09:21,  9.36stk/s]Scanning:  20%|█▉        | 1297/6518 [02:06<06:15, 13.89stk/s]Scanning:  20%|██        | 1317/6518 [02:10<08:56,  9.70stk/s]Scanning:  21%|██        | 1347/6518 [02:10<05:59, 14.37stk/s]Scanning:  21%|██        | 1366/6518 [02:14<09:08,  9.39stk/s]Scanning:  21%|██▏       | 1397/6518 [02:14<05:59, 14.26stk/s]Scanning:  22%|██▏       | 1416/6518 [02:19<09:25,  9.03stk/s]Scanning:  22%|██▏       | 1451/6518 [02:23<09:48,  8.60stk/s]Scanning:  23%|██▎       | 1477/6518 [02:24<07:02, 11.93stk/s]$CTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+Scanning:  23%|██▎       | 1501/6518 [02:28<09:13,  9.07stk/s]Scanning:  23%|██▎       | 1529/6518 [02:28<06:22, 13.04stk/s]Scanning:  24%|██▍       | 1551/6518 [02:32<08:57,  9.23stk/s]Scanning:  24%|██▍       | 1573/6518 [02:32<06:36, 12.48stk/s]Scanning:  25%|██▍       | 1601/6518 [02:37<08:44,  9.37stk/s]Scanning:  25%|██▌       | 1636/6518 [02:37<05:32, 14.67stk/s]Scanning:  25%|██▌       | 1654/6518 [02:42<08:49,  9.19stk/s]Scanning:  26%|██▌       | 1685/6518 [02:42<05:49, 13.81stk/s]Scanning:  26%|██▌       | 1703/6518 [02:46<08:40,  9.24stk/s]Scanning:  27%|██▋       | 1734/6518 [02:46<05:40, 14.07stk/s]Scanning:  27%|██▋       | 1752/6518 [02:50<08:35,  9.25stk/s]Scanning:  27%|██▋       | 1788/6518 [02:50<05:15, 14.99stk/s]Scanning:  28%|██▊       | 1808/6518 [02:55<07:56,  9.89stk/s]Scanning:  28%|██▊       | 1840/6518 [02:55<05:11, 15.00stk/s]Scanning:  29%|██▊       | 1859/6518 [02:59<07:41, 10.10stk/s]Scanning:  29%|██▉       | 1891/6518 [02:59<05:00, 15.41stk/s]Scanning:  29%|██▉       | 1910/6518 [03:03<07:55,  9.69stk/s]Scanning:  30%|██▉       | 1942/6518 [03:03<05:08, 14.84stk/s]Scanning:  30%|███       | 1961/6518 [03:07<07:51,  9.67stk/s]Scanning:  30%|███       | 1985/6518 [03:08<05:35, 13.51stk/s]Scanning:  31%|███       | 2002/6518 [03:12<08:39,  8.69stk/s]Scanning:  31%|███       | 2036/6518 [03:12<05:16, 14.16stk/s]Scanning:  32%|███▏      | 2055/6518 [03:16<08:07,  9.16stk/s]Scanning:  32%|███▏      | 2083/6518 [03:16<05:26, 13.57stk/s]Scanning:  32%|███▏      | 2101/6518 [03:21<08:14,  8.93stk/s]Scanning:  33%|███▎      | 2136/6518 [03:21<05:01, 14.54stk/s]Scanning:  33%|███▎      | 2155/6518 [03:25<07:43,  9.41stk/s]Scanning:  34%|███▎      | 2193/6518 [03:25<04:39, 15.46stk/s]Scanning:  34%|███▍      | 2214/6518 [03:30<07:27,  9.61stk/s]Scanning:  34%|███▍      | 2246/6518 [03:30<04:56, 14.42stk/s]Scanning:  35%|███▍      | 2266/6518 [03:34<07:06,  9.96stk/s]Scanning:  35%|███▌      | 2293/6518 [03:34<04:56, 14.23stk/s]Scanning:  35%|███▌      | 2311/6518 [03:38<07:36,  9.21stk/s]Scanning:  36%|███▌      | 2339/6518 [03:39<05:05, 13.66stk/s]Scanning:  36%|███▌      | 2356/6518 [03:47<11:24,  6.08stk/s]Scanning:  37%|███▋      | 2394/6518 [03:47<06:38, 10.35stk/s]Scanning:  37%|███▋      | 2414/6518 [03:51<08:20,  8.21stk/s]Scanning:  38%|███▊      | 2446/6518 [03:51<05:25, 12.52stk/s]Scanning:  38%|███▊      | 2465/6518 [03:56<08:06,  8.33stk/s]Scanning:  38%|███▊      | 2501/6518 [04:00<07:44,  8.65stk/s]Scanning:  39%|███▉      | 2526/6518 [04:00<05:38, 11.79stk/s]Scanning:  39%|███▉      | 2551/6518 [04:04<07:20,  9.00stk/s]Scanning:  40%|███▉      | 2582/6518 [04:04<04:55, 13.31stk/s]Scanning:  40%|███▉      | 2601/6518 [04:09<07:35,  8.60stk/s]Scanning:  41%|████      | 2644/6518 [04:09<04:24, 14.67stk/s]Scanning:  41%|████      | 2665/6518 [04:14<06:31,  9.85stk/s]Scanning:  41%|████▏     | 2701/6518 [04:18<06:41,  9.52stk/s]Scanning:  42%|████▏     | 2731/6518 [04:18<04:42, 13.39stk/s]Scanning:  42%|████▏     | 2751/6518 [04:22<06:38,  9.46stk/s]Scanning:  43%|████▎     | 2775/6518 [04:22<04:51, 12.85stk/s]Scanning:  43%|████▎     | 2801/6518 [04:27<06:33,  9.45stk/s]Scanning:  43%|████▎     | 2824/6518 [04:27<04:48, 12.82stk/s]Scanning:  44%|████▎     | 2847/6518 [04:27<03:30, 17.44stk/s]Scanning:  44%|████▍     | 2864/6518 [04:32<06:25,  9.48stk/s]Scanning:  44%|████▍     | 2899/6518 [04:32<03:52, 15.58stk/s]Scanning:  45%|████▍     | 2918/6518 [04:36<06:15,  9.58stk/s]Scanning:  45%|████▌     | 2950/6518 [04:36<04:01, 14.80stk/s]Scanning:  46%|████▌     | 2969/6518 [04:40<06:02,  9.79stk/s]Scanning:  46%|████▌     | 3001/6518 [04:45<06:49,  8.60stk/s]Scanning:  47%|████▋     | 3033/6518 [04:45<04:31, 12.86stk/s]Scanning:  47%|████▋     | 3051/6518 [04:49<06:36,  8.75stk/s]Scanning:  47%|████▋     | 3085/6518 [04:49<04:12, 13.62stk/s]Scanning:  48%|████▊     | 3103/6518 [04:53<05:58,  9.54stk/s]Scanning:  48%|████▊     | 3130/6518 [04:53<04:06, 13.74stk/s]Scanning:  48%|████▊     | 3151/6518 [04:58<06:03,  9.25stk/s]Scanning:  49%|████▉     | 3181/6518 [04:58<03:59, 13.95stk/s]Scanning:  49%|████▉     | 3201/6518 [05:03<06:12,  8.89stk/s]Scanning:  50%|████▉     | 3238/6518 [05:03<03:46, 14.51stk/s]Scanning:  50%|████▉     | 3258/6518 [05:07<05:30,  9.86stk/s]Scanning:  50%|█████     | 3280/6518 [05:07<04:04, 13.26stk/s]Scanning:  51%|█████     | 3301/6518 [05:11<05:50,  9.18stk/s]Scanning:  51%|█████     | 3332/6518 [05:11<03:45, 14.13stk/s]Scanning:  51%|█████▏    | 3351/6518 [05:16<05:54,  8.92stk/s]Scanning:  52%|█████▏    | 3388/6518 [05:16<03:33, 14.65stk/s]Scanning:  52%|█████▏    | 3408/6518 [05:20<05:11,  9.98stk/s]Scanning:  53%|█████▎    | 3440/6518 [05:20<03:23, 15.11stk/s]Scanning:  53%|█████▎    | 3460/6518 [05:25<05:33,  9.16stk/s]Scanning:  54%|█████▎    | 3501/6518 [05:29<05:21,  9.39stk/s]Scanning:  54%|█████▍    | 3533/6518 [05:29<03:41, 13.50stk/s]Scanning:  54%|█████▍    | 3551/6518 [05:34<05:13,  9.47stk/s]Scanning:  55%|█████▍    | 3577/6518 [05:34<03:42, 13.20stk/s]Scanning:  55%|█████▌    | 3601/6518 [05:38<05:21,  9.08stk/s]Scanning:  56%|█████▌    | 3635/6518 [05:39<03:26, 13.99stk/s]Scanning:  56%|█████▌    | 3653/6518 [05:43<05:14,  9.10stk/s]Scanning:  57%|█████▋    | 3689/6518 [05:43<03:15, 14.45stk/s]Scanning:  57%|█████▋    | 3709/6518 [05:49<05:35,  8.37stk/s]Scanning:  58%|█████▊    | 3751/6518 [05:54<05:31,  8.33stk/s]Scanning:  58%|█████▊    | 3781/6518 [05:54<03:54, 11.68stk/s]Scanning:  58%|█████▊    | 3801/6518 [05:59<05:34,  8.12stk/s]Scanning:  59%|█████▉    | 3832/6518 [05:59<03:45, 11.91stk/s]Scanning:  59%|█████▉    | 3851/6518 [06:05<05:50,  7.61stk/s]Scanning:  60%|█████▉    | 3886/6518 [06:05<03:41, 11.90stk/s]Scanning:  60%|█████▉    | 3905/6518 [06:10<05:27,  7.98stk/s]Scanning:  60%|██████    | 3943/6518 [06:10<03:19, 12.88stk/s]Scanning:  61%|██████    | 3964/6518 [06:15<04:59,  8.52stk/s]Scanning:  61%|██████▏   | 4001/6518 [06:21<05:18,  7.89stk/s]Scanning:  62%|██████▏   | 4031/6518 [06:21<03:42, 11.16stk/s]Scanning:  62%|██████▏   | 4051/6518 [06:27<05:27,  7.54stk/s]Scanning:  63%|██████▎   | 4086/6518 [06:27<03:29, 11.59stk/s]Scanning:  63%|██████▎   | 4104/6518 [06:32<05:20,  7.54stk/s]Scanning:  63%|██████▎   | 4135/6518 [06:32<03:31, 11.26stk/s]Scanning:  64%|██████▎   | 4154/6518 [06:37<04:46,  8.24stk/s]Scanning:  64%|██████▍   | 4183/6518 [06:37<03:11, 12.17stk/s]Scanning:  64%|██████▍   | 4201/6518 [06:42<04:46,  8.09stk/s]Scanning:  65%|██████▍   | 4235/6518 [06:42<02:57, 12.87stk/s]Scanning:  65%|██████▌   | 4254/6518 [06:46<04:19,  8.72stk/s]Scanning:  66%|██████▌   | 4291/6518 [06:46<02:37, 14.15stk/s]Scanning:  66%|██████▌   | 4311/6518 [06:51<03:53,  9.46stk/s]Scanning:  67%|██████▋   | 4339/6518 [06:51<02:39, 13.65stk/s]Scanning:  67%|██████▋   | 4358/6518 [06:55<04:01,  8.94stk/s]Scanning:  67%|██████▋   | 4390/6518 [06:55<02:34, 13.78stk/s]Scanning:  68%|██████▊   | 4409/6518 [06:59<03:42,  9.48stk/s]Scanning:  68%|██████▊   | 4451/6518 [07:04<03:39,  9.42stk/s]Scanning:  69%|██████▉   | 4487/6518 [07:04<02:23, 14.13stk/s]Scanning:  69%|██████▉   | 4504/6518 [07:10<04:05,  8.22stk/s]Scanning:  70%|██████▉   | 4537/6518 [07:10<02:40, 12.33stk/s]Scanning:  70%|██████▉   | 4555/6518 [07:14<03:41,  8.84stk/s]Scanning:  70%|███████   | 4588/6518 [07:14<02:22, 13.52stk/s]Scanning:  71%|███████   | 4607/6518 [07:18<03:26,  9.27stk/s]Scanning:  71%|███████   | 4638/6518 [07:19<02:14, 13.94stk/s]Scanning:  71%|███████▏  | 4657/6518 [07:23<03:16,  9.46stk/s]Scanning:  72%|███████▏  | 4691/6518 [07:23<02:03, 14.83stk/s]Scanning:  72%|███████▏  | 4711/6518 [07:27<03:00, 10.02stk/s]Scanning:  73%|███████▎  | 4742/6518 [07:27<01:58, 15.05stk/s]Scanning:  73%|███████▎  | 4761/6518 [07:31<02:58,  9.82stk/s]Scanning:  74%|███████▎  | 4793/6518 [07:31<01:54, 15.05stk/s]Scanning:  74%|███████▍  | 4812/6518 [07:36<02:57,  9.61stk/s]Scanning:  74%|███████▍  | 4845/6518 [07:36<01:52, 14.91stk/s]Scanning:  75%|███████▍  | 4865/6518 [07:40<02:51,  9.65stk/s]Scanning:  75%|███████▌  | 4901/6518 [07:45<03:00,  8.97stk/s]Scanning:  76%|███████▌  | 4931/6518 [07:45<02:03, 12.87stk/s]Scanning:  76%|███████▌  | 4951/6518 [07:49<02:50,  9.20stk/s]Scanning:  76%|███████▋  | 4986/6518 [07:49<01:47, 14.26stk/s]Scanning:  77%|███████▋  | 5004/6518 [07:54<02:45,  9.13stk/s]Scanning:  77%|███████▋  | 5042/6518 [07:54<01:40, 14.72stk/s]Scanning:  78%|███████▊  | 5063/6518 [07:58<02:32,  9.57stk/s]Scanning:  78%|███████▊  | 5101/6518 [08:03<02:36,  9.06stk/s]Scanning:  79%|███████▊  | 5132/6518 [08:03<01:47, 12.88stk/s]Scanning:  79%|███████▉  | 5151/6518 [08:09<02:49,  8.06stk/s]Scanning:  80%|███████▉  | 5190/6518 [08:09<01:43, 12.89stk/s]Scanning:  80%|███████▉  | 5210/6518 [08:13<02:25,  9.02stk/s]Scanning:  80%|████████  | 5244/6518 [08:13<01:33, 13.62stk/s]Scanning:  81%|████████  | 5264/6518 [08:18<02:12,  9.48stk/s]Scanning:  81%|████████  | 5288/6518 [08:18<01:34, 12.95stk/s]Scanning:  81%|████████▏ | 5305/6518 [08:22<02:15,  8.95stk/s]Scanning:  82%|████████▏ | 5332/6518 [08:22<01:29, 13.20stk/s]Scanning:  82%|████████▏ | 5351/6518 [08:26<02:08,  9.08stk/s]Scanning:  83%|████████▎ | 5383/6518 [08:26<01:19, 14.31stk/s]Scanning:  83%|████████▎ | 5401/6518 [08:30<02:00,  9.28stk/s]Scanning:  83%|████████▎ | 5437/6518 [08:30<01:11, 15.16stk/s]Scanning:  84%|████████▎ | 5456/6518 [08:35<01:52,  9.44stk/s]Scanning:  84%|████████▍ | 5489/6518 [08:35<01:10, 14.61stk/s]Scanning:  85%|████████▍ | 5508/6518 [08:39<01:44,  9.63stk/s]Scanning:  85%|████████▍ | 5531/6518 [08:39<01:14, 13.25stk/s]Scanning:  85%|████████▌ | 5551/6518 [08:44<01:49,  8.81stk/s]Scanning:  85%|████████▌ | 5570/6518 [08:44<01:20, 11.74stk/s]Scanning:  86%|████████▌ | 5601/6518 [08:49<01:46,  8.58stk/s]Scanning:  86%|████████▋ | 5633/6518 [08:49<01:07, 13.17stk/s]Scanning:  87%|████████▋ | 5651/6518 [08:55<01:51,  7.75stk/s]Scanning:  87%|████████▋ | 5684/6518 [08:55<01:08, 12.12stk/s]Scanning:  87%|████████▋ | 5702/6518 [09:00<01:40,  8.10stk/s]Scanning:  88%|████████▊ | 5724/6518 [09:00<01:11, 11.10stk/s]Scanning:  88%|████████▊ | 5751/6518 [09:06<01:40,  7.62stk/s]Scanning:  89%|████████▉ | 5785/6518 [09:06<01:01, 11.98stk/s]Scanning:  89%|████████▉ | 5803/6518 [09:11<01:30,  7.89stk/s]Scanning:  90%|████████▉ | 5836/6518 [09:11<00:55, 12.26stk/s]Scanning:  90%|████████▉ | 5855/6518 [09:16<01:23,  7.91stk/s]Scanning:  90%|█████████ | 5879/6518 [09:16<00:57, 11.05stk/s]Scanning:  91%|█████████ | 5901/6518 [09:21<01:20,  7.68stk/s]Scanning:  91%|█████████ | 5935/6518 [09:21<00:47, 12.22stk/s]Scanning:  91%|█████████▏| 5953/6518 [09:26<01:09,  8.10stk/s]Scanning:  92%|█████████▏| 5975/6518 [09:26<00:48, 11.10stk/s]Scanning:  92%|█████████▏| 6001/6518 [09:31<01:03,  8.19stk/s]Scanning:  92%|█████████▏| 6022/6518 [09:31<00:44, 11.06stk/s]Scanning:  93%|█████████▎| 6051/6518 [09:36<00:55,  8.39stk/s]Scanning:  93%|█████████▎| 6076/6518 [09:37<00:37, 11.81stk/s]Scanning:  94%|█████████▎| 6101/6518 [09:41<00:49,  8.46stk/s]Scanning:  94%|█████████▍| 6133/6518 [09:42<00:29, 12.90stk/s]Scanning:  94%|█████████▍| 6151/6518 [09:47<00:45,  8.08stk/s]Scanning:  95%|█████████▍| 6177/6518 [09:47<00:29, 11.61stk/s]Scanning:  95%|█████████▌| 6201/6518 [09:52<00:38,  8.14stk/s]Scanning:  96%|█████████▌| 6226/6518 [09:52<00:25, 11.52stk/s]Scanning:  96%|█████████▌| 6251/6518 [09:57<00:33,  8.03stk/s]Scanning:  96%|█████████▋| 6286/6518 [09:57<00:18, 12.70stk/s]Scanning:  97%|█████████▋| 6304/6518 [10:03<00:26,  7.94stk/s]Scanning:  97%|█████████▋| 6338/6518 [10:03<00:14, 12.40stk/s]Scanning:  98%|█████████▊| 6357/6518 [10:09<00:21,  7.55stk/s]Scanning:  98%|█████████▊| 6387/6518 [10:09<00:11, 11.28stk/s]Scanning:  98%|█████████▊| 6406/6518 [10:15<00:15,  7.04stk/s]$ZBZX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+$ZCZZT: possibly delisted; no timezone found
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+$ZIEXT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+
+7 Failed downloads:
+['ZBZX', 'ZAZZT', 'ZTEST', 'ZBZZT']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+['ZCZZT', 'ZIEXT', 'ZEXIT']: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+Scanning:  99%|█████████▉| 6451/6518 [10:21<00:09,  6.96stk/s]Scanning: 100%|█████████▉| 6492/6518 [10:21<00:02, 10.86stk/s]$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+
+2 Failed downloads:
+['ZXIET']: possibly delisted; no timezone found
+['ZVV']: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2026-01-19 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Scanning: 100%|█████████▉| 6511/6518 [10:25<00:00,  8.70stk/s]Scanning: 100%|██████████| 6518/6518 [10:27<00:00, 10.39stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  SMA50 Retest + EMA20 + Camarilla S3 Cross
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Retest_Bar_Date  Retest_Depth_%  Bars_Retest_to_Cross  Cam_S3_Cross_Date   Bars_Since_Cross  Cam_S3      Cross_Vol_x   EMA20      SMA50      SMA150     Dist_EMA20_%   Dist_Cam_S3_%   RSI   
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ACCO      $5.31       40       2026-09-30       0.74%          28                    2026-11-09          4                 $5.13       0.99×         $5.03      $4.59      $4.12      +5.54%         +3.48%          61.0  
+  CACI      $642.22     38       2026-10-06       2.69%          25                    2026-11-10          3                 $644.29     1.16×         $639.86    $627.74    $561.21    +0.37%         -0.32%          51.9  
+  CTKB      $5.84       50       2026-10-16       2.84%          20                    2026-11-13          0                 $5.78       1.02×         $5.73      $5.50      $4.75      +1.92%         +1.12%          53.4  
+  EXPD      $194.80     55       2026-09-30       0.01%          30                    2026-11-11          2                 $194.55     0.82×         $194.34    $192.80    $175.23    +0.23%         +0.13%          51.0  
+  HNI       $48.31      32       2026-10-14       2.92%          18                    2026-11-09          4                 $47.81      1.22×         $48.16     $47.32     $41.65     +0.32%         +1.04%          51.7  
+  JXN       $138.95     42       2026-09-30       1.20%          28                    2026-11-09          4                 $131.84     1.20×         $135.53    $133.62    $121.54    +2.52%         +5.39%          58.1  
+  NMM       $89.03      49       2026-10-16       1.48%          17                    2026-11-10          3                 $87.01      1.29×         $88.04     $90.01     $80.32     +1.12%         +2.32%          52.3  
+  NSIT      $168.76     46       2026-10-15       0.64%          18                    2026-11-10          3                 $165.47     0.80×         $167.87    $164.04    $130.07    +0.53%         +1.99%          51.5  
+  RRGB      $8.81       44       2026-10-07       2.58%          25                    2026-11-11          2                 $8.54       1.14×         $8.74      $8.27      $6.92      +0.83%         +3.19%          52.4  
+  RS        $427.33     40       2026-10-07       1.36%          23                    2026-11-09          4                 $419.71     1.16×         $425.00    $408.46    $391.82    +0.55%         +1.82%          53.7  
+  SAIL      $20.79      43       2026-10-13       0.84%          19                    2026-11-09          4                 $19.88      1.08×         $20.24     $20.04     $16.91     +2.72%         +4.58%          53.7  
+  SPT       $11.64      38       2026-10-02       1.31%          26                    2026-11-09          4                 $11.09      0.97×         $11.52     $11.09     $8.93      +1.05%         +4.93%          52.9  
+  SXC       $10.54      59       2026-10-22       1.61%          15                    2026-11-12          1                 $10.72      0.83×         $10.40     $10.07     $8.91      +1.39%         -1.65%          53.4  
+  VAC       $116.81     36       2026-10-02       2.25%          26                    2026-11-09          4                 $111.22     1.04×         $113.16    $107.61    $97.03     +3.23%         +5.02%          57.7  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE | 6518 tickers | 6011 (92%) | ✅ 14 matches
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                          SMA50 Retest + EMA20 + Cam S3 Cross   2026-11-15   14 matches                                        ║
+  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬─────────┬───────┬────────────────┬──────────────────────┬───────────────────┬──────────────────┬──────────────┬───────────────┬──────┐
+  │ Ticker │  Price  │ Score │ Retest_Depth_% │ Bars_Retest_to_Cross │ Cam_S3_Cross_Date │ Bars_Since_Cross │ Dist_EMA20_% │ Dist_Cam_S3_% │ RSI  │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  SXC   │  $10.54 │   59  │     1.61%      │          15          │     2026-11-12    │        1         │    +1.39%    │     -1.65%    │ 53.4 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  EXPD  │ $194.80 │   55  │     0.01%      │          30          │     2026-11-11    │        2         │    +0.23%    │     +0.13%    │ 51.0 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  CTKB  │  $5.84  │   50  │     2.84%      │          20          │     2026-11-13    │        0         │    +1.92%    │     +1.12%    │ 53.4 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  NMM   │  $89.03 │   49  │     1.48%      │          17          │     2026-11-10    │        3         │    +1.12%    │     +2.32%    │ 52.3 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  NSIT  │ $168.76 │   46  │     0.64%      │          18          │     2026-11-10    │        3         │    +0.53%    │     +1.99%    │ 51.5 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  RRGB  │  $8.81  │   44  │     2.58%      │          25          │     2026-11-11    │        2         │    +0.83%    │     +3.19%    │ 52.4 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  SAIL  │  $20.79 │   43  │     0.84%      │          19          │     2026-11-09    │        4         │    +2.72%    │     +4.58%    │ 53.7 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  JXN   │ $138.95 │   42  │     1.20%      │          28          │     2026-11-09    │        4         │    +2.52%    │     +5.39%    │ 58.1 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  ACCO  │  $5.31  │   40  │     0.74%      │          28          │     2026-11-09    │        4         │    +5.54%    │     +3.48%    │ 61.0 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │   RS   │ $427.33 │   40  │     1.36%      │          23          │     2026-11-09    │        4         │    +0.55%    │     +1.82%    │ 53.7 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  CACI  │ $642.22 │   38  │     2.69%      │          25          │     2026-11-10    │        3         │    +0.37%    │     -0.32%    │ 51.9 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  SPT   │  $11.64 │   38  │     1.31%      │          26          │     2026-11-09    │        4         │    +1.05%    │     +4.93%    │ 52.9 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  VAC   │ $116.81 │   36  │     2.25%      │          26          │     2026-11-09    │        4         │    +3.23%    │     +5.02%    │ 57.7 │
+  ├────────┼─────────┼───────┼────────────────┼──────────────────────┼───────────────────┼──────────────────┼──────────────┼───────────────┼──────┤
+  │  HNI   │  $48.31 │   32  │     2.92%      │          18          │     2026-11-09    │        4         │    +0.32%    │     +1.04%    │ 51.7 │
+  └────────┴─────────┴───────┴────────────────┴──────────────────────┴───────────────────┴──────────────────┴──────────────┴───────────────┴──────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Retest_Depth_%     0% = exact touch on SMA50, lower = better
+  Bars_Retest_Cross  bars between SMA50 retest and Cam S3 cross
+  Bars_Since_Cross   0 = Camarilla S3 crossed today
+  Dist_EMA20_%       how far price is above EMA20 now
+  Dist_Cam_S3_%      how far price is above Camarilla S3 now
+  ──────────────────────────────────────────────────────
+  🛑 Default stop: 10-day low — 14/14 tickers
+  💰 Position sizing: max loss $40 per trade — 13 sized, 1 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/sma_retest_ema20_cross_20261115_0214.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_sma_retest_20261115_0214.txt
+[Email] Sending to vikramaga24@gmail.com  (14 results)...
+[Email] 📎 Attached: sma_retest_ema20_cross_20261115_0214.csv (2,367 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 SMA50 Retest + Cam S3 Cross — 14 signals — 2026-11-15
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/sma_retest_ema20_chart_20261115_0214.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 PATTERN EXPLAINED
+
+  C1  BULL STRUCTURE  (prerequisite)
+      Price > SMA150  (above long-term support)
+      = Stock is in a healthy long-term uptrend
+
+  C2  SMA50-ONLY RETEST  (the pullback — SMA50 specific)
+      Price pulled back and candle LOW touched SMA50 (🔵 blue)
+      Price did NOT also touch SMA150 in the same window
+        (that would be a deeper SMA150 retest, not this pattern)
+      Support held — no significant close below SMA150
+      = A shallow, controlled pullback to medium-term support
+
+  C3  CURRENTLY ABOVE EMA20
+      Price is now trading above EMA20 (🟢 green)
+      = Short-term trend has been reclaimed
+
+  C4  CAMARILLA S3 EXACT 1-BAR CROSS  (the entry trigger)
+      Bar[-2] close < Camarilla S3   ← was below S3 yesterday
+      Bar[-1] close >= Camarilla S3  ← crossed above S3 today
+      Camarilla S3 (🟠 orange) = Close - (High-Low) × 1.1 / 4
+      calculated from the PRIOR completed month's range
+      = Price just reclaimed a key monthly pivot support level
+
+  LOGIC FLOW:
+    Uptrend (price > SMA150)
+      → Shallow pullback to SMA50 only (not SMA150)
+      → Price reclaims EMA20
+      → Price reclaims Camarilla S3
+      = Confluence entry: short-term trend + monthly pivot support
+
+  💡 BEST SETUPS
+  Retest_Depth_% < 1%       almost exact SMA50 touch = clean retest
+  Bars_Since_Cross = 0      Cam S3 crossed today = freshest entry
+  Bars_Retest_to_Cross ≤ 5  quick recovery = strong momentum
+  Dist_EMA20_% small         price just above EMA20, not extended
+  RSI 45–65                  healthy, not overbought
+
+  ⚙️  TUNE IF 0 RESULTS
+  retest_touch_pct           3 → 5
+  retest_lookback           30 → 40
+  cam_cross_lookback         5 → 10
+  max_close_below_sma150_pct 1.5 → 3
+  rsi_min                   35 → 25
+  require_sma50_only      True → False  (allow SMA150 also touched)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

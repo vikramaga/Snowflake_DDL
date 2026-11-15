@@ -1,0 +1,223 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: $356.27  H4_this=358.6135  H4_prev=352.2443  declining=❌  2026-11-13
+  ✅ NVDA: $162.85  H4_this=227.9875  H4_prev=242.4422  declining=✅  2026-11-13
+  ✅ AMD: $534.06  H4_this=596.2705  H4_prev=720.935  declining=✅  2026-11-13
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  DIAGNOSTIC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Downloaded 10/10
+
+  SYM        PRICE    H4↓   SMA_H4   CROSS    PB  RESULT
+  ────────────────────────────────────────────────────
+  AAPL    $ 356.27      —        —       —     —  ❌
+  NVDA    $ 162.85      —        —       —     —  ❌
+  AMD     $ 534.06      —        —       —     —  ❌
+  PLTR    $ 167.99      —        —       —     —  ❌
+  MU      $ 778.31      —        —       —     —  ❌
+  SMCI    $  26.87      —        —       —     —  ❌
+  META    $ 641.69      —        —       —     —  ❌
+  CRWD    $ 226.61      —        —       —     —  ❌
+  MXL     $  55.78      —        —       —     —  ❌
+  AXON    $ 315.43      —        —       —     —  ❌
+
+  Steps:
+    Step 1  H4 declining : this month H4 < prev month H4
+    Step 2  SMA near H4  : SMA50 + SMA150 within 8.0% of H4
+    Step 3  Cross + PB   : price crossed above SMA50+SMA150+H4
+                           then pulled back gently (red candles <= 4.0%/day)
+                           touching EMA8 or JMA within 3.0%
+    Step 4  Green recover: green candle > JMA + EMA8, vol > prev red candle
+
+  Tune if mostly ❌:
+    sma_h4_zone_pct       8 → 12
+    ema_zone_pct          3 → 5
+    max_red_candle_pct    4 → 6
+    cross_lookback       20 → 30
+    max_bars_since_green  3 → 5
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +   5 → 6520
+
+  🎯 Total: 6520 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 4  SCANNING 6520 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Scanning:   0%|          | 0/6520 [00:00<?, ?stk/s]Scanning:   0%|          | 1/6520 [00:05<10:19:36,  5.70s/stk]Scanning:   1%|          | 39/6520 [00:05<11:25,  9.45stk/s]  Scanning:   1%|          | 61/6520 [00:11<19:16,  5.58stk/s]Scanning:   2%|▏         | 101/6520 [00:18<17:52,  5.98stk/s]Scanning:   2%|▏         | 131/6520 [00:18<11:25,  9.33stk/s]Scanning:   2%|▏         | 151/6520 [00:24<16:48,  6.31stk/s]Scanning:   3%|▎         | 195/6520 [00:24<09:19, 11.30stk/s]Scanning:   3%|▎         | 216/6520 [00:30<14:08,  7.43stk/s]Scanning:   4%|▍         | 251/6520 [00:36<15:44,  6.64stk/s]Scanning:   4%|▍         | 286/6520 [00:36<10:27,  9.93stk/s]Scanning:   5%|▍         | 304/6520 [00:43<15:35,  6.64stk/s]Scanning:   5%|▌         | 334/6520 [00:43<10:38,  9.69stk/s]Scanning:   5%|▌         | 352/6520 [00:48<15:03,  6.83stk/s]Scanning:   6%|▌         | 381/6520 [00:48<10:07, 10.10stk/s]Scanning:   6%|▌         | 401/6520 [00:56<17:00,  6.00stk/s]Scanning:   7%|▋         | 451/6520 [01:01<14:15,  7.09stk/s]Scanning:   7%|▋         | 482/6520 [01:01<10:07,  9.94stk/s]Scanning:   8%|▊         | 501/6520 [01:08<15:16,  6.57stk/s]Scanning:   8%|▊         | 537/6520 [01:08<09:52, 10.10stk/s]Scanning:   9%|▊         | 556/6520 [01:14<13:46,  7.21stk/s]Scanning:   9%|▉         | 589/6520 [01:14<09:05, 10.87stk/s]Scanning:   9%|▉         | 608/6520 [01:19<13:23,  7.36stk/s]Scanning:  10%|▉         | 645/6520 [01:19<08:20, 11.73stk/s]Scanning:  10%|█         | 665/6520 [01:26<13:26,  7.26stk/s]Scanning:  11%|█         | 697/6520 [01:26<08:54, 10.89stk/s]Scanning:  11%|█         | 717/6520 [01:32<13:59,  6.92stk/s]Scanning:  12%|█▏        | 751/6520 [01:38<15:17,  6.29stk/s]Scanning:  12%|█▏        | 793/6520 [01:38<09:21, 10.20stk/s]Scanning:  12%|█▏        | 812/6520 [01:44<13:04,  7.28stk/s]Scanning:  13%|█▎        | 844/6520 [01:44<08:51, 10.68stk/s]Scanning:  13%|█▎        | 863/6520 [01:50<13:34,  6.95stk/s]Scanning:  14%|█▍        | 901/6520 [01:57<14:17,  6.55stk/s]Scanning:  15%|█▍        | 951/6520 [02:03<13:06,  7.08stk/s]Scanning:  15%|█▌        | 993/6520 [02:03<08:44, 10.54stk/s]Scanning:  16%|█▌        | 1011/6520 [02:09<12:08,  7.56stk/s]Scanning:  16%|█▌        | 1038/6520 [02:09<08:57, 10.20stk/s]Scanning:  16%|█▌        | 1055/6520 [02:15<13:45,  6.62stk/s]Scanning:  17%|█▋        | 1088/6520 [02:15<08:59, 10.06stk/s]$CBO: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+Scanning:  17%|█▋        | 1106/6520 [02:21<13:25,  6.72stk/s]Scanning:  18%|█▊        | 1146/6520 [02:21<08:01, 11.15stk/s]Scanning:  18%|█▊        | 1167/6520 [02:27<11:39,  7.65stk/s]Scanning:  18%|█▊        | 1201/6520 [02:33<13:01,  6.81stk/s]Scanning:  19%|█▉        | 1248/6520 [02:33<07:42, 11.39stk/s]Scanning:  19%|█▉        | 1269/6520 [02:38<10:44,  8.15stk/s]Scanning:  20%|█▉        | 1301/6520 [02:44<11:44,  7.41stk/s]Scanning:  20%|██        | 1332/6520 [02:44<08:15, 10.48stk/s]Scanning:  21%|██        | 1351/6520 [02:49<11:44,  7.34stk/s]Scanning:  21%|██▏       | 1393/6520 [02:49<07:06, 12.02stk/s]Scanning:  22%|██▏       | 1414/6520 [02:56<11:08,  7.64stk/s]Scanning:  22%|██▏       | 1451/6520 [03:02<11:53,  7.10stk/s]Scanning:  23%|██▎       | 1482/6520 [03:02<08:21, 10.04stk/s]$CTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+Scanning:  23%|██▎       | 1501/6520 [03:08<12:16,  6.82stk/s]Scanning:  23%|██▎       | 1525/6520 [03:08<08:59,  9.26stk/s]Scanning:  24%|██▍       | 1551/6520 [03:14<12:02,  6.88stk/s]Scanning:  24%|██▍       | 1577/6520 [03:14<08:30,  9.68stk/s]Scanning:  25%|██▍       | 1601/6520 [03:20<11:28,  7.15stk/s]Scanning:  25%|██▌       | 1639/6520 [03:20<07:02, 11.56stk/s]Scanning:  25%|██▌       | 1658/6520 [03:26<11:12,  7.23stk/s]Scanning:  26%|██▌       | 1693/6520 [03:26<07:09, 11.23stk/s]Scanning:  26%|██▋       | 1713/6520 [03:32<10:38,  7.53stk/s]Scanning:  27%|██▋       | 1745/6520 [03:32<07:01, 11.34stk/s]Scanning:  27%|██▋       | 1764/6520 [03:38<10:56,  7.24stk/s]Scanning:  28%|██▊       | 1801/6520 [03:43<11:06,  7.08stk/s]Scanning:  28%|██▊       | 1839/6520 [03:43<07:06, 10.97stk/s]Scanning:  28%|██▊       | 1858/6520 [03:48<09:48,  7.92stk/s]Scanning:  29%|██▉       | 1893/6520 [03:48<06:24, 12.05stk/s]Scanning:  29%|██▉       | 1913/6520 [03:55<10:21,  7.42stk/s]Scanning:  30%|██▉       | 1951/6520 [04:00<10:42,  7.12stk/s]Scanning:  30%|███       | 1979/6520 [04:00<07:41,  9.83stk/s]Scanning:  31%|███       | 2001/6520 [04:09<12:39,  5.95stk/s]Scanning:  31%|███       | 2036/6520 [04:09<08:10,  9.14stk/s]Scanning:  32%|███▏      | 2054/6520 [04:15<12:06,  6.14stk/s]Scanning:  32%|███▏      | 2086/6520 [04:15<07:58,  9.27stk/s]Scanning:  32%|███▏      | 2105/6520 [04:21<11:21,  6.48stk/s]Scanning:  33%|███▎      | 2144/6520 [04:22<06:50, 10.65stk/s]Scanning:  33%|███▎      | 2165/6520 [04:27<09:52,  7.34stk/s]Scanning:  34%|███▍      | 2201/6520 [04:34<11:17,  6.38stk/s]Scanning:  34%|███▍      | 2240/6520 [04:34<07:13,  9.88stk/s]Scanning:  35%|███▍      | 2259/6520 [04:40<10:04,  7.05stk/s]Scanning:  35%|███▌      | 2292/6520 [04:40<06:44, 10.45stk/s]Scanning:  35%|███▌      | 2311/6520 [04:46<10:00,  7.01stk/s]Scanning:  36%|███▌      | 2342/6520 [04:46<06:41, 10.41stk/s]Scanning:  36%|███▌      | 2361/6520 [04:54<11:14,  6.16stk/s]Scanning:  37%|███▋      | 2401/6520 [04:59<10:09,  6.76stk/s]Scanning:  37%|███▋      | 2434/6520 [04:59<06:53,  9.88stk/s]Scanning:  38%|███▊      | 2451/6520 [05:05<10:26,  6.49stk/s]Scanning:  38%|███▊      | 2496/6520 [05:05<06:02, 11.09stk/s]Scanning:  39%|███▊      | 2518/6520 [05:11<08:33,  7.80stk/s]Scanning:  39%|███▉      | 2550/6520 [05:11<05:49, 11.35stk/s]Scanning:  39%|███▉      | 2570/6520 [05:17<08:33,  7.70stk/s]Scanning:  40%|███▉      | 2601/6520 [05:23<10:21,  6.30stk/s]Scanning:  41%|████      | 2644/6520 [05:23<06:15, 10.32stk/s]Scanning:  41%|████      | 2664/6520 [05:30<09:10,  7.00stk/s]Scanning:  41%|████▏     | 2701/6520 [05:35<08:58,  7.10stk/s]Scanning:  42%|████▏     | 2733/6520 [05:35<06:14, 10.11stk/s]Scanning:  42%|████▏     | 2751/6520 [05:41<09:02,  6.95stk/s]Scanning:  43%|████▎     | 2782/6520 [05:41<06:06, 10.19stk/s]Scanning:  43%|████▎     | 2801/6520 [05:47<08:50,  7.01stk/s]Scanning:  43%|████▎     | 2829/6520 [05:47<06:03, 10.16stk/s]Scanning:  44%|████▎     | 2851/6520 [05:53<09:12,  6.64stk/s]Scanning:  44%|████▍     | 2895/6520 [05:53<05:15, 11.50stk/s]Scanning:  45%|████▍     | 2916/6520 [05:59<07:58,  7.54stk/s]Scanning:  45%|████▌     | 2951/6520 [06:05<08:34,  6.94stk/s]Scanning:  46%|████▌     | 2982/6520 [06:05<05:56,  9.92stk/s]Scanning:  46%|████▌     | 3001/6520 [06:11<08:35,  6.82stk/s]Scanning:  47%|████▋     | 3038/6520 [06:11<05:24, 10.72stk/s]Scanning:  47%|████▋     | 3057/6520 [06:18<08:22,  6.89stk/s]Scanning:  48%|████▊     | 3097/6520 [06:18<05:05, 11.19stk/s]Scanning:  48%|████▊     | 3118/6520 [06:23<07:03,  8.03stk/s]Scanning:  48%|████▊     | 3151/6520 [06:29<08:02,  6.98stk/s]Scanning:  49%|████▉     | 3185/6520 [06:29<05:22, 10.35stk/s]Scanning:  49%|████▉     | 3203/6520 [06:36<08:28,  6.52stk/s]Scanning:  50%|████▉     | 3243/6520 [06:36<05:10, 10.56stk/s]Scanning:  50%|█████     | 3264/6520 [06:42<07:15,  7.48stk/s]Scanning:  51%|█████     | 3297/6520 [06:42<04:49, 11.14stk/s]Scanning:  51%|█████     | 3317/6520 [06:47<06:58,  7.65stk/s]Scanning:  51%|█████▏    | 3351/6520 [06:54<07:57,  6.63stk/s]Scanning:  52%|█████▏    | 3394/6520 [06:54<04:50, 10.77stk/s]Scanning:  52%|█████▏    | 3414/6520 [06:59<06:47,  7.62stk/s]Scanning:  53%|█████▎    | 3451/6520 [07:06<07:36,  6.72stk/s]Scanning:  53%|█████▎    | 3479/6520 [07:06<05:30,  9.19stk/s]Scanning:  54%|█████▎    | 3501/6520 [07:12<07:25,  6.78stk/s]Scanning:  54%|█████▍    | 3537/6520 [07:12<04:46, 10.41stk/s]Scanning:  55%|█████▍    | 3555/6520 [07:18<06:45,  7.31stk/s]Scanning:  55%|█████▍    | 3585/6520 [07:18<04:34, 10.71stk/s]Scanning:  55%|█████▌    | 3603/6520 [07:24<07:19,  6.64stk/s]Scanning:  56%|█████▌    | 3639/6520 [07:24<04:30, 10.64stk/s]Scanning:  56%|█████▌    | 3659/6520 [07:30<06:44,  7.08stk/s]Scanning:  57%|█████▋    | 3698/6520 [07:30<04:04, 11.55stk/s]Scanning:  57%|█████▋    | 3719/6520 [07:36<06:03,  7.70stk/s]Scanning:  58%|█████▊    | 3751/6520 [07:41<06:37,  6.97stk/s]Scanning:  58%|█████▊    | 3781/6520 [07:41<04:33, 10.01stk/s]Scanning:  58%|█████▊    | 3801/6520 [07:47<06:31,  6.94stk/s]Scanning:  59%|█████▉    | 3833/6520 [07:47<04:17, 10.44stk/s]Scanning:  59%|█████▉    | 3851/6520 [07:54<06:51,  6.49stk/s]Scanning:  60%|█████▉    | 3888/6520 [07:54<04:11, 10.49stk/s]Scanning:  60%|█████▉    | 3908/6520 [08:00<06:18,  6.91stk/s]Scanning:  61%|██████    | 3951/6520 [08:06<06:04,  7.04stk/s]Scanning:  61%|██████    | 3988/6520 [08:06<04:00, 10.53stk/s]Scanning:  61%|██████▏   | 4006/6520 [08:13<06:09,  6.80stk/s]Scanning:  62%|██████▏   | 4041/6520 [08:13<04:01, 10.28stk/s]Scanning:  62%|██████▏   | 4061/6520 [08:19<05:46,  7.09stk/s]Scanning:  63%|██████▎   | 4091/6520 [08:19<03:55, 10.32stk/s]Scanning:  63%|██████▎   | 4110/6520 [08:25<05:50,  6.88stk/s]Scanning:  64%|██████▎   | 4147/6520 [08:25<03:34, 11.04stk/s]Scanning:  64%|██████▍   | 4167/6520 [08:31<05:18,  7.38stk/s]Scanning:  64%|██████▍   | 4185/6520 [08:31<04:07,  9.42stk/s]Scanning:  64%|██████▍   | 4201/6520 [08:37<06:36,  5.84stk/s]Scanning:  65%|██████▍   | 4235/6520 [08:37<03:55,  9.70stk/s]Scanning:  65%|██████▌   | 4252/6520 [08:45<06:38,  5.70stk/s]Scanning:  66%|██████▌   | 4296/6520 [08:45<03:35, 10.31stk/s]Scanning:  66%|██████▌   | 4318/6520 [08:50<04:56,  7.42stk/s]Scanning:  67%|██████▋   | 4351/6520 [08:57<05:36,  6.44stk/s]Scanning:  67%|██████▋   | 4389/6520 [08:57<03:33,  9.98stk/s]Scanning:  68%|██████▊   | 4408/6520 [09:02<04:54,  7.17stk/s]Scanning:  68%|██████▊   | 4451/6520 [09:09<04:52,  7.07stk/s]Scanning:  68%|██████▊   | 4464/6520 [09:09<04:10,  8.21stk/s]Scanning:  69%|██████▉   | 4501/6520 [09:15<04:41,  7.18stk/s]Scanning:  70%|██████▉   | 4535/6520 [09:15<03:07, 10.59stk/s]Scanning:  70%|██████▉   | 4551/6520 [09:21<04:42,  6.98stk/s]Scanning:  70%|███████   | 4585/6520 [09:21<03:00, 10.69stk/s]Scanning:  71%|███████   | 4603/6520 [09:27<04:33,  7.02stk/s]Scanning:  71%|███████   | 4637/6520 [09:27<02:52, 10.89stk/s]Scanning:  71%|███████▏  | 4656/6520 [09:33<04:15,  7.29stk/s]Scanning:  72%|███████▏  | 4693/6520 [09:33<02:36, 11.70stk/s]Scanning:  72%|███████▏  | 4714/6520 [09:38<03:48,  7.91stk/s]Scanning:  73%|███████▎  | 4748/6520 [09:38<02:26, 12.11stk/s]Scanning:  73%|███████▎  | 4768/6520 [09:44<03:48,  7.67stk/s]Scanning:  74%|███████▎  | 4801/6520 [09:51<04:27,  6.42stk/s]Scanning:  74%|███████▍  | 4840/6520 [09:51<02:45, 10.13stk/s]Scanning:  75%|███████▍  | 4859/6520 [09:57<03:55,  7.05stk/s]Scanning:  75%|███████▌  | 4895/6520 [09:57<02:29, 10.85stk/s]Scanning:  75%|███████▌  | 4915/6520 [10:02<03:37,  7.36stk/s]Scanning:  76%|███████▌  | 4950/6520 [10:03<02:18, 11.30stk/s]Scanning:  76%|███████▌  | 4971/6520 [10:08<03:15,  7.91stk/s]Scanning:  77%|███████▋  | 5001/6520 [10:14<03:51,  6.57stk/s]Scanning:  77%|███████▋  | 5044/6520 [10:14<02:16, 10.80stk/s]Scanning:  78%|███████▊  | 5064/6520 [10:21<03:33,  6.83stk/s]Scanning:  78%|███████▊  | 5101/6520 [10:27<03:33,  6.64stk/s]Scanning:  79%|███████▉  | 5135/6520 [10:27<02:23,  9.65stk/s]Scanning:  79%|███████▉  | 5152/6520 [10:34<03:42,  6.14stk/s]Scanning:  80%|███████▉  | 5201/6520 [10:41<03:18,  6.63stk/s]Scanning:  80%|████████  | 5245/6520 [10:41<02:04, 10.22stk/s]Scanning:  81%|████████  | 5264/6520 [10:47<02:49,  7.40stk/s]Scanning:  81%|████████▏ | 5298/6520 [10:47<01:54, 10.70stk/s]Scanning:  82%|████████▏ | 5318/6520 [10:52<02:37,  7.61stk/s]Scanning:  82%|████████▏ | 5348/6520 [10:52<01:47, 10.91stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Scanning:  82%|████████▏ | 5367/6520 [10:59<02:47,  6.87stk/s]Scanning:  83%|████████▎ | 5398/6520 [10:59<01:49, 10.26stk/s]Scanning:  83%|████████▎ | 5417/6520 [11:05<02:38,  6.98stk/s]Scanning:  84%|████████▎ | 5451/6520 [11:10<02:43,  6.55stk/s]Scanning:  84%|████████▍ | 5489/6520 [11:10<01:40, 10.30stk/s]Scanning:  84%|████████▍ | 5507/6520 [11:16<02:18,  7.34stk/s]Scanning:  85%|████████▍ | 5536/6520 [11:16<01:32, 10.60stk/s]Scanning:  85%|████████▌ | 5554/6520 [11:22<02:23,  6.74stk/s]Scanning:  86%|████████▌ | 5589/6520 [11:22<01:26, 10.71stk/s]Scanning:  86%|████████▌ | 5608/6520 [11:28<02:12,  6.88stk/s]Scanning:  87%|████████▋ | 5644/6520 [11:28<01:19, 10.97stk/s]Scanning:  87%|████████▋ | 5664/6520 [11:35<02:01,  7.05stk/s]Scanning:  87%|████████▋ | 5700/6520 [11:35<01:13, 11.12stk/s]Scanning:  88%|████████▊ | 5721/6520 [11:40<01:45,  7.58stk/s]Scanning:  88%|████████▊ | 5751/6520 [11:47<02:00,  6.36stk/s]Scanning:  89%|████████▉ | 5791/6520 [11:47<01:11, 10.21stk/s]Scanning:  89%|████████▉ | 5810/6520 [11:53<01:41,  6.98stk/s]Scanning:  90%|████████▉ | 5846/6520 [11:53<01:02, 10.77stk/s]Scanning:  90%|████████▉ | 5867/6520 [11:58<01:24,  7.72stk/s]Scanning:  90%|█████████ | 5891/6520 [11:58<00:59, 10.49stk/s]Scanning:  91%|█████████ | 5909/6520 [12:04<01:30,  6.73stk/s]Scanning:  91%|█████████ | 5940/6520 [12:04<00:55, 10.36stk/s]Scanning:  91%|█████████▏| 5958/6520 [12:09<01:16,  7.35stk/s]Scanning:  92%|█████████▏| 5985/6520 [12:09<00:49, 10.80stk/s]Scanning:  92%|█████████▏| 6002/6520 [12:15<01:14,  6.92stk/s]Scanning:  92%|█████████▏| 6030/6520 [12:15<00:46, 10.49stk/s]Scanning:  93%|█████████▎| 6051/6520 [12:21<01:08,  6.88stk/s]Scanning:  93%|█████████▎| 6082/6520 [12:21<00:40, 10.69stk/s]Scanning:  94%|█████████▎| 6101/6520 [12:26<00:57,  7.32stk/s]Scanning:  94%|█████████▍| 6137/6520 [12:26<00:32, 11.96stk/s]Scanning:  94%|█████████▍| 6157/6520 [12:31<00:46,  7.82stk/s]Scanning:  95%|█████████▍| 6186/6520 [12:31<00:28, 11.54stk/s]Scanning:  95%|█████████▌| 6204/6520 [12:37<00:42,  7.51stk/s]Scanning:  96%|█████████▌| 6233/6520 [12:37<00:25, 11.22stk/s]Scanning:  96%|█████████▌| 6251/6520 [12:43<00:40,  6.67stk/s]Scanning:  97%|█████████▋| 6292/6520 [12:43<00:19, 11.59stk/s]Scanning:  97%|█████████▋| 6312/6520 [12:49<00:28,  7.32stk/s]Scanning:  97%|█████████▋| 6349/6520 [12:49<00:14, 11.65stk/s]Scanning:  98%|█████████▊| 6370/6520 [12:56<00:20,  7.36stk/s]Scanning:  98%|█████████▊| 6401/6520 [13:02<00:19,  6.14stk/s]$ZEXIT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZIEXT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+
+6 Failed downloads:
+['ZEXIT', 'ZIEXT', 'ZCZZT']: possibly delisted; no timezone found
+['ZBZZT', 'ZAZZT', 'ZBZX']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Scanning:  99%|█████████▉| 6451/6520 [13:09<00:10,  6.66stk/s]Scanning: 100%|█████████▉| 6500/6520 [13:09<00:01, 10.60stk/s]$ZTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+
+3 Failed downloads:
+['ZTEST', 'ZVV']: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+['ZXIET']: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-10-11 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Scanning: 100%|██████████| 6520/6520 [13:14<00:00,  8.54stk/s]Scanning: 100%|██████████| 6520/6520 [13:15<00:00,  8.20stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE — Declining H4 + SMA Near H4 + Gentle Pullback + Green Recovery
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    H4_Decline_%   Dist_S50_H4_%   Dist_S150_H4_%   Cross_Ago   PB_Bars    Avg_Red_%   Touched_EMA_JMA  Vol_Declining  Green_Date    Green_Ago   Vol_Green_vs_Red   RSI   
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ATAT      $38.13      64       0.19%          +5.13%          +2.52%           7d          1          0.94%       ✅                ✅              2026-11-13    0d          1.43×              68.6  
+  GSAT      $86.29      65       0.43%          +0.57%          +2.00%           5d          1          0.77%       ✅                ✅              2026-11-12    1d          1.50×              64.8  
+  LOGI      $102.33     73       1.60%          +3.90%          +3.68%           18d         1          0.04%       ✅                ✅              2026-11-13    0d          1.81×              52.5  
+  RYTM      $115.02     78       4.15%          +1.82%          +0.00%           7d          2          1.77%       ✅                —              2026-11-13    0d          1.09×              66.3  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE | 6520 | 5746 (88%) | ✅ 4
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  📊 DEBUG BREAKDOWN:
+  Total processed           : 5756
+  Passed vol/price filter   : 4017
+  ❌ Failed Step 1 (H4↓)    : 1905
+  ❌ Failed Step 2 (SMA/H4) : 1312
+  ❌ Failed Step 3 (cross)   : 618
+  ❌ Failed Step 3 (pullback): 31
+  ❌ Failed Step 4 (green)   : 147
+  ✅ Passed all              : 4
+
+
+  ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║  Declining H4 + Gentle Pullback + Green Recovery   2026-11-15   4                                                         matches                                                       ║
+  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬─────────┬───────┬──────────────┬─────────┬───────────┬─────────────────┬───────────┬──────────────────┬──────┐
+  │ Ticker │  Price  │ Score │ H4_Decline_% │ PB_Bars │ Avg_Red_% │ Touched_EMA_JMA │ Green_Ago │ Vol_Green_vs_Red │ RSI  │
+  ├────────┼─────────┼───────┼──────────────┼─────────┼───────────┼─────────────────┼───────────┼──────────────────┼──────┤
+  │  RYTM  │ $115.02 │   78  │    4.15%     │    2    │   1.77%   │        ✅        │     0d    │      1.09×       │ 66.3 │
+  ├────────┼─────────┼───────┼──────────────┼─────────┼───────────┼─────────────────┼───────────┼──────────────────┼──────┤
+  │  LOGI  │ $102.33 │   73  │    1.60%     │    1    │   0.04%   │        ✅        │     0d    │      1.81×       │ 52.5 │
+  ├────────┼─────────┼───────┼──────────────┼─────────┼───────────┼─────────────────┼───────────┼──────────────────┼──────┤
+  │  GSAT  │  $86.29 │   65  │    0.43%     │    1    │   0.77%   │        ✅        │     1d    │      1.50×       │ 64.8 │
+  ├────────┼─────────┼───────┼──────────────┼─────────┼───────────┼─────────────────┼───────────┼──────────────────┼──────┤
+  │  ATAT  │  $38.13 │   64  │    0.19%     │    1    │   0.94%   │        ✅        │     0d    │      1.43×       │ 68.6 │
+  └────────┴─────────┴───────┴──────────────┴─────────┴───────────┴─────────────────┴───────────┴──────────────────┴──────┘
+  🛑 Default stop: 10-day low — 4/4 tickers
+  💰 Position sizing: max loss $40 per trade — 4 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/h4_pullback_recovery_20261115_0206.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_h4_pullback_20261115_0206.txt
+[Email] Sending to vikramaga24@gmail.com  (4 results)...
+[Email] 📎 h4_pullback_recovery_20261115_0206.csv
+[Email] 📎 tv_h4_pullback_20261115_0206.txt
+[Email] ✅  Sent to: vikramaga24@gmail.com
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/h4_pullback_chart_20261115_0206.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 PATTERN EXPLAINED (from chart)
+
+  STEP 1 — DECLINING CAMARILLA H4
+    This month's H4 < Previous month's H4
+    = The pivot resistance is contracting — energy coiling
+    Stocks that break above a declining H4 often run hard
+
+  STEP 2 — SMA50 + SMA150 CLUSTERED NEAR H4
+    Both MAs within 8% of the Cam H4 level
+    = Triple confluence zone (2 MAs + monthly pivot)
+    When all 3 are bunched, the breakout is more significant
+
+  STEP 3 — GENTLE PULLBACK TO EMA8/JMA AFTER CROSS
+    Price crosses above SMA50 + SMA150 + H4
+    Then GENTLY retraces back toward EMA8/JMA:
+    • Each red candle <= 4% body (not a violent selloff)
+    • Volume declining during pullback (sellers dry up)
+    • Price comes within 3% of EMA8 or JMA
+    This is the "high and tight" pullback — controlled
+
+  STEP 4 — GREEN CANDLE CLOSES ABOVE JMA + EMA8
+    First green candle after the pullback closes above
+    BOTH JMA and EMA8 on HIGHER volume than last red bar
+    = Buyers came back exactly at the fast MA support
+
+  💡 BEST SETUPS
+  H4_Decline_% > 2%     meaningful contraction = more energy
+  Avg_Red_% < 2%        very gentle pullback = controlled
+  Touched_EMA_JMA ✅     precise retest of fast MAs
+  Vol_Green_vs_Red > 2× strong buyer conviction
+  Green_Ago = 0-1d      fresh recovery — earliest entry
+
+  ⚙️  TUNE IF 0 RESULTS
+  sma_h4_zone_pct       8 → 12
+  ema_zone_pct          3 → 5
+  max_red_candle_pct    4 → 6
+  cross_lookback       20 → 30
+  max_bars_since_green  3 → 5
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

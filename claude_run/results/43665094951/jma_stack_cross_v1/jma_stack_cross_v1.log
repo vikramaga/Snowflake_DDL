@@ -1,0 +1,701 @@
+
+1 Failed download:
+['MSFT']: OperationalError('database is locked')
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: 208 bars  $356.27  2026-11-13
+  ✅ NVDA: 208 bars  $162.85  2026-11-13
+  ✅ MSFT: 208 bars  $523.88  2026-11-13
+
+  Testing .info fetch for AAPL...
+  ✅ Fund_Score=40/50  Flags: RevG+12% EPS$8.98 Mgn28% CR1.0 ROE142% PE40  (0.1s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +  10 → 6525
+
+  🎯 Total: 6525 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6525 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Pass 1: JMA price-cross + MA stack + volume screening (fast)
+  Pass 2: Fundamental fetch for pass-1 stocks only
+
+Pass 1 Tech:   0%|          | 0/6525 [00:00<?]Pass 1 Tech:   0%|          | 1/6525 [00:02<5:25:45]Pass 1 Tech:   1%|          | 51/6525 [00:06<12:22] Pass 1 Tech:   2%|▏         | 101/6525 [00:10<09:40]Pass 1 Tech:   2%|▏         | 151/6525 [00:14<09:02]Pass 1 Tech:   3%|▎         | 201/6525 [00:18<08:39]Pass 1 Tech:   4%|▍         | 251/6525 [00:21<08:15]Pass 1 Tech:   5%|▍         | 301/6525 [00:25<07:59]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Pass 1 Tech:   5%|▌         | 351/6525 [00:29<07:50]Pass 1 Tech:   6%|▌         | 401/6525 [00:33<08:13]Pass 1 Tech:   7%|▋         | 451/6525 [00:37<07:47]Pass 1 Tech:   8%|▊         | 501/6525 [00:40<07:41]Pass 1 Tech:   8%|▊         | 551/6525 [00:44<07:18]Pass 1 Tech:   9%|▉         | 601/6525 [00:47<07:02]Pass 1 Tech:  10%|▉         | 651/6525 [00:51<07:06]Pass 1 Tech:  11%|█         | 701/6525 [00:55<07:12]Pass 1 Tech:  12%|█▏        | 751/6525 [00:59<07:11]Pass 1 Tech:  12%|█▏        | 801/6525 [01:02<06:56]Pass 1 Tech:  13%|█▎        | 851/6525 [01:06<07:03]Pass 1 Tech:  14%|█▍        | 901/6525 [01:10<07:05]Pass 1 Tech:  15%|█▍        | 951/6525 [01:14<06:58]Pass 1 Tech:  15%|█▌        | 1001/6525 [01:17<06:40]Pass 1 Tech:  16%|█▌        | 1051/6525 [01:21<06:49]$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  17%|█▋        | 1101/6525 [01:24<06:41]Pass 1 Tech:  18%|█▊        | 1151/6525 [01:28<06:28]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Pass 1 Tech:  18%|█▊        | 1201/6525 [01:31<06:23]Pass 1 Tech:  19%|█▉        | 1251/6525 [01:35<06:13]Pass 1 Tech:  20%|█▉        | 1301/6525 [01:38<05:54]Pass 1 Tech:  21%|██        | 1351/6525 [01:41<05:52]Pass 1 Tech:  21%|██▏       | 1401/6525 [01:45<05:55]Pass 1 Tech:  22%|██▏       | 1451/6525 [01:48<05:49]$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  23%|██▎       | 1501/6525 [01:52<05:55]Pass 1 Tech:  24%|██▍       | 1551/6525 [01:56<05:57]Pass 1 Tech:  25%|██▍       | 1601/6525 [01:59<05:52]Pass 1 Tech:  25%|██▌       | 1651/6525 [02:03<05:52]Pass 1 Tech:  26%|██▌       | 1701/6525 [02:06<05:36]Pass 1 Tech:  27%|██▋       | 1751/6525 [02:10<05:33]Pass 1 Tech:  28%|██▊       | 1801/6525 [02:13<05:25]Pass 1 Tech:  28%|██▊       | 1851/6525 [02:16<05:14]Pass 1 Tech:  29%|██▉       | 1901/6525 [02:20<05:23]Pass 1 Tech:  30%|██▉       | 1951/6525 [02:23<05:16]Pass 1 Tech:  31%|███       | 2001/6525 [02:27<05:12]$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  31%|███▏      | 2051/6525 [02:31<05:21]Pass 1 Tech:  32%|███▏      | 2101/6525 [02:35<05:22]Pass 1 Tech:  33%|███▎      | 2151/6525 [02:38<05:15]Pass 1 Tech:  34%|███▎      | 2201/6525 [02:42<05:22]Pass 1 Tech:  34%|███▍      | 2251/6525 [02:45<05:08]Pass 1 Tech:  35%|███▌      | 2301/6525 [02:49<05:08]Pass 1 Tech:  36%|███▌      | 2351/6525 [02:54<05:21]Pass 1 Tech:  37%|███▋      | 2401/6525 [02:57<05:01]Pass 1 Tech:  38%|███▊      | 2451/6525 [03:01<05:05]Pass 1 Tech:  38%|███▊      | 2501/6525 [03:04<05:00]Pass 1 Tech:  39%|███▉      | 2551/6525 [03:08<04:44]Pass 1 Tech:  40%|███▉      | 2601/6525 [03:12<04:49]Pass 1 Tech:  41%|████      | 2651/6525 [03:16<04:52]Pass 1 Tech:  41%|████▏     | 2701/6525 [03:19<04:34]Pass 1 Tech:  42%|████▏     | 2751/6525 [03:22<04:33]Pass 1 Tech:  43%|████▎     | 2801/6525 [03:26<04:27]Pass 1 Tech:  44%|████▎     | 2851/6525 [03:30<04:31]Pass 1 Tech:  44%|████▍     | 2901/6525 [03:34<04:27]Pass 1 Tech:  45%|████▌     | 2951/6525 [03:37<04:18]Pass 1 Tech:  46%|████▌     | 3001/6525 [03:41<04:13]Pass 1 Tech:  47%|████▋     | 3051/6525 [03:45<04:34]Pass 1 Tech:  48%|████▊     | 3101/6525 [03:49<04:18]Pass 1 Tech:  48%|████▊     | 3151/6525 [03:52<04:10]Pass 1 Tech:  49%|████▉     | 3201/6525 [03:56<04:07]Pass 1 Tech:  50%|████▉     | 3251/6525 [04:00<04:02]Pass 1 Tech:  51%|█████     | 3301/6525 [04:03<03:51]Pass 1 Tech:  51%|█████▏    | 3351/6525 [04:07<03:49]Pass 1 Tech:  52%|█████▏    | 3401/6525 [04:10<03:42]Pass 1 Tech:  53%|█████▎    | 3451/6525 [04:14<03:44]Pass 1 Tech:  54%|█████▎    | 3501/6525 [04:17<03:35]Pass 1 Tech:  54%|█████▍    | 3551/6525 [04:21<03:31]Pass 1 Tech:  55%|█████▌    | 3601/6525 [04:25<03:34]Pass 1 Tech:  56%|█████▌    | 3651/6525 [04:28<03:30]Pass 1 Tech:  57%|█████▋    | 3701/6525 [04:32<03:26]Pass 1 Tech:  57%|█████▋    | 3751/6525 [04:36<03:20]Pass 1 Tech:  58%|█████▊    | 3801/6525 [04:39<03:16]Pass 1 Tech:  59%|█████▉    | 3851/6525 [04:43<03:16]Pass 1 Tech:  60%|█████▉    | 3901/6525 [04:47<03:16]Pass 1 Tech:  61%|██████    | 3951/6525 [04:51<03:10]Pass 1 Tech:  61%|██████▏   | 4001/6525 [04:54<03:08]Pass 1 Tech:  62%|██████▏   | 4051/6525 [04:58<02:59]Pass 1 Tech:  63%|██████▎   | 4101/6525 [05:02<02:58]Pass 1 Tech:  64%|██████▎   | 4151/6525 [05:05<02:51]Pass 1 Tech:  64%|██████▍   | 4201/6525 [05:09<02:49]Pass 1 Tech:  65%|██████▌   | 4251/6525 [05:13<02:54]Pass 1 Tech:  66%|██████▌   | 4301/6525 [05:17<02:46]Pass 1 Tech:  67%|██████▋   | 4351/6525 [05:20<02:39]Pass 1 Tech:  67%|██████▋   | 4401/6525 [05:24<02:34]Pass 1 Tech:  68%|██████▊   | 4451/6525 [05:27<02:33]Pass 1 Tech:  69%|██████▉   | 4501/6525 [05:31<02:30]Pass 1 Tech:  70%|██████▉   | 4551/6525 [05:35<02:22]Pass 1 Tech:  71%|███████   | 4601/6525 [05:38<02:19]Pass 1 Tech:  71%|███████▏  | 4651/6525 [05:42<02:15]Pass 1 Tech:  72%|███████▏  | 4701/6525 [05:45<02:08]$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Pass 1 Tech:  73%|███████▎  | 4751/6525 [05:50<02:15]Pass 1 Tech:  74%|███████▎  | 4801/6525 [05:53<02:12]Pass 1 Tech:  74%|███████▍  | 4851/6525 [05:57<02:05]Pass 1 Tech:  75%|███████▌  | 4901/6525 [06:01<01:59]Pass 1 Tech:  76%|███████▌  | 4951/6525 [06:04<01:54]Pass 1 Tech:  77%|███████▋  | 5001/6525 [06:08<01:53]Pass 1 Tech:  77%|███████▋  | 5051/6525 [06:12<01:52]Pass 1 Tech:  78%|███████▊  | 5101/6525 [06:16<01:46]Pass 1 Tech:  79%|███████▉  | 5151/6525 [06:20<01:47]Pass 1 Tech:  80%|███████▉  | 5201/6525 [06:24<01:42]Pass 1 Tech:  80%|████████  | 5251/6525 [06:27<01:36]Pass 1 Tech:  81%|████████  | 5301/6525 [06:31<01:29]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Pass 1 Tech:  82%|████████▏ | 5351/6525 [06:34<01:23]Pass 1 Tech:  83%|████████▎ | 5401/6525 [06:37<01:18]Pass 1 Tech:  84%|████████▎ | 5451/6525 [06:41<01:14]Pass 1 Tech:  84%|████████▍ | 5501/6525 [06:44<01:10]Pass 1 Tech:  85%|████████▌ | 5551/6525 [06:48<01:10]Pass 1 Tech:  86%|████████▌ | 5601/6525 [06:52<01:07]Pass 1 Tech:  87%|████████▋ | 5651/6525 [06:56<01:04]Pass 1 Tech:  87%|████████▋ | 5701/6525 [06:59<00:58]Pass 1 Tech:  88%|████████▊ | 5751/6525 [07:03<00:56]Pass 1 Tech:  89%|████████▉ | 5801/6525 [07:07<00:53]Pass 1 Tech:  90%|████████▉ | 5851/6525 [07:10<00:47]Pass 1 Tech:  90%|█████████ | 5901/6525 [07:14<00:45]Pass 1 Tech:  91%|█████████ | 5951/6525 [07:17<00:39]Pass 1 Tech:  92%|█████████▏| 6001/6525 [07:20<00:35]Pass 1 Tech:  93%|█████████▎| 6051/6525 [07:24<00:33]Pass 1 Tech:  94%|█████████▎| 6101/6525 [07:27<00:29]Pass 1 Tech:  94%|█████████▍| 6151/6525 [07:31<00:26]Pass 1 Tech:  95%|█████████▌| 6201/6525 [07:34<00:22]Pass 1 Tech:  96%|█████████▌| 6251/6525 [07:38<00:19]Pass 1 Tech:  97%|█████████▋| 6301/6525 [07:41<00:15]Pass 1 Tech:  97%|█████████▋| 6351/6525 [07:45<00:12]Pass 1 Tech:  98%|█████████▊| 6401/6525 [07:49<00:09]$ZEXIT: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+
+6 Failed downloads:
+['ZEXIT', 'ZCZZT', 'ZIEXT']: possibly delisted; no timezone found
+['ZAZZT', 'ZBZZT', 'ZBZX']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Pass 1 Tech:  99%|█████████▉| 6451/6525 [07:53<00:05]$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+
+3 Failed downloads:
+['ZTEST', 'ZVV']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+['ZXIET']: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Pass 1 Tech: 100%|█████████▉| 6501/6525 [07:56<00:01]Pass 1 Tech: 100%|██████████| 6525/6525 [07:58<00:00]
+
+  Pass 1 done: 5630/6525 got data (86%)
+  Tech passes: 141 stocks → fetching fundamentals now
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PASS 2  FUNDAMENTAL CHECK (141 stocks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pass 2 Fund:   0%|          | 0/141 [00:00<?, ?stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   1%|          | 1/141 [00:00<01:14,  1.87stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   1%|▏         | 2/141 [00:01<01:12,  1.92stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   2%|▏         | 3/141 [00:01<01:11,  1.94stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   3%|▎         | 4/141 [00:02<01:11,  1.91stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   4%|▎         | 5/141 [00:02<01:10,  1.93stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   4%|▍         | 6/141 [00:03<01:10,  1.91stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   5%|▍         | 7/141 [00:03<01:10,  1.91stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   6%|▌         | 8/141 [00:04<01:09,  1.92stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   6%|▋         | 9/141 [00:04<01:08,  1.93stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   7%|▋         | 10/141 [00:05<01:07,  1.94stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   8%|▊         | 11/141 [00:05<01:09,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   9%|▊         | 12/141 [00:06<01:08,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:   9%|▉         | 13/141 [00:06<01:07,  1.91stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  10%|▉         | 14/141 [00:07<01:06,  1.91stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  11%|█         | 15/141 [00:07<01:06,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  11%|█▏        | 16/141 [00:08<01:06,  1.89stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  12%|█▏        | 17/141 [00:08<01:05,  1.90stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  13%|█▎        | 18/141 [00:09<01:04,  1.92stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  13%|█▎        | 19/141 [00:09<01:03,  1.92stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  14%|█▍        | 20/141 [00:10<01:05,  1.84stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  15%|█▍        | 21/141 [00:11<01:04,  1.86stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  16%|█▌        | 22/141 [00:11<01:04,  1.85stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  16%|█▋        | 23/141 [00:12<01:02,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  17%|█▋        | 24/141 [00:12<01:02,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  18%|█▊        | 25/141 [00:13<01:02,  1.87stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  18%|█▊        | 26/141 [00:13<01:01,  1.87stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  19%|█▉        | 27/141 [00:14<01:03,  1.80stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  20%|█▉        | 28/141 [00:14<01:01,  1.85stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  21%|██        | 29/141 [00:15<00:59,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  21%|██▏       | 30/141 [00:15<01:00,  1.84stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  22%|██▏       | 31/141 [00:16<00:58,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  23%|██▎       | 32/141 [00:16<00:58,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  23%|██▎       | 33/141 [00:17<00:57,  1.89stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  24%|██▍       | 34/141 [00:18<00:57,  1.87stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  25%|██▍       | 35/141 [00:18<00:57,  1.85stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+Pass 2 Fund:  26%|██▌       | 36/141 [00:19<00:55,  1.88stk/s]HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+Pass 2 Fund:  26%|██▌       | 37/141 [00:19<00:55,  1.88stk/s]Pass 2 Fund:  27%|██▋       | 38/141 [00:20<00:51,  2.01stk/s]Pass 2 Fund:  28%|██▊       | 39/141 [00:20<00:48,  2.11stk/s]Pass 2 Fund:  28%|██▊       | 40/141 [00:20<00:46,  2.18stk/s]Pass 2 Fund:  29%|██▉       | 41/141 [00:21<00:44,  2.23stk/s]Pass 2 Fund:  30%|██▉       | 42/141 [00:21<00:43,  2.28stk/s]Pass 2 Fund:  30%|███       | 43/141 [00:22<00:42,  2.32stk/s]Pass 2 Fund:  31%|███       | 44/141 [00:22<00:41,  2.36stk/s]Pass 2 Fund:  32%|███▏      | 45/141 [00:22<00:40,  2.36stk/s]Pass 2 Fund:  33%|███▎      | 46/141 [00:23<00:40,  2.34stk/s]Pass 2 Fund:  33%|███▎      | 47/141 [00:23<00:39,  2.36stk/s]Pass 2 Fund:  34%|███▍      | 48/141 [00:24<00:39,  2.38stk/s]Pass 2 Fund:  35%|███▍      | 49/141 [00:24<00:38,  2.39stk/s]Pass 2 Fund:  35%|███▌      | 50/141 [00:25<00:37,  2.40stk/s]Pass 2 Fund:  36%|███▌      | 51/141 [00:25<00:38,  2.37stk/s]Pass 2 Fund:  37%|███▋      | 52/141 [00:25<00:37,  2.34stk/s]Pass 2 Fund:  38%|███▊      | 53/141 [00:26<00:37,  2.37stk/s]Pass 2 Fund:  38%|███▊      | 54/141 [00:26<00:36,  2.38stk/s]Pass 2 Fund:  39%|███▉      | 55/141 [00:27<00:35,  2.40stk/s]Pass 2 Fund:  40%|███▉      | 56/141 [00:27<00:35,  2.39stk/s]Pass 2 Fund:  40%|████      | 57/141 [00:28<00:34,  2.41stk/s]Pass 2 Fund:  41%|████      | 58/141 [00:28<00:34,  2.39stk/s]Pass 2 Fund:  42%|████▏     | 59/141 [00:28<00:34,  2.39stk/s]Pass 2 Fund:  43%|████▎     | 60/141 [00:29<00:33,  2.41stk/s]Pass 2 Fund:  43%|████▎     | 61/141 [00:29<00:33,  2.41stk/s]Pass 2 Fund:  44%|████▍     | 62/141 [00:30<00:32,  2.42stk/s]Pass 2 Fund:  45%|████▍     | 63/141 [00:30<00:32,  2.41stk/s]Pass 2 Fund:  45%|████▌     | 64/141 [00:30<00:31,  2.41stk/s]Pass 2 Fund:  46%|████▌     | 65/141 [00:31<00:31,  2.40stk/s]Pass 2 Fund:  47%|████▋     | 66/141 [00:31<00:31,  2.40stk/s]Pass 2 Fund:  48%|████▊     | 67/141 [00:32<00:30,  2.41stk/s]Pass 2 Fund:  48%|████▊     | 68/141 [00:32<00:30,  2.39stk/s]Pass 2 Fund:  49%|████▉     | 69/141 [00:33<00:30,  2.37stk/s]Pass 2 Fund:  50%|████▉     | 70/141 [00:33<00:29,  2.38stk/s]Pass 2 Fund:  50%|█████     | 71/141 [00:33<00:29,  2.40stk/s]Pass 2 Fund:  51%|█████     | 72/141 [00:34<00:28,  2.41stk/s]Pass 2 Fund:  52%|█████▏    | 73/141 [00:34<00:28,  2.41stk/s]Pass 2 Fund:  52%|█████▏    | 74/141 [00:35<00:27,  2.40stk/s]Pass 2 Fund:  53%|█████▎    | 75/141 [00:35<00:28,  2.36stk/s]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all filters
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Total    Fund    Tech    Bars_Since_Cross  Vol_Chg_%   Sector              
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  ABNB      $186.78     25       0       25      0           +13.2%      —                   
+  ADSK      $264.42     30       0       30      0           +55.5%      —                   
+  AEE       $114.77     27       0       27      0           +44.9%      —                   
+  AFL       $127.61     21       0       21      3           +43.9%      —                   
+  AJG       $282.94     25       0       25      0           +5.5%       —                   
+  ALC       $74.12      27       0       27      0           +23.8%      —                   
+  ALLE      $191.98     25       0       25      0           +19.8%      —                   
+  ALUB      $10.17      24       0       24      2           +316.7%     —                   
+  AMPH      $29.37      25       0       25      0           +1.6%       —                   
+  AMPL      $17.34      19       0       19      2           +0.8%       —                   
+  ASB       $30.94      25       0       25      0           +0.8%       —                   
+  ATO       $176.30     19       0       19      3           +10.0%      —                   
+  AUB       $39.38      25       0       25      0           +9.8%       —                   
+  AVA       $40.91      27       0       27      0           +37.5%      —                   
+  AXS       $108.72     19       0       19      3           +9.3%       —                   
+  BIIB      $253.40     27       0       27      0           +29.9%      —                   
+  BIII      $10.15      25       0       25      0           +4.5%       —                   
+  BMO       $173.24     21       0       21      2           +43.4%      —                   
+  BRBS      $4.05       27       0       27      0           +23.1%      —                   
+  BRO       $71.93      27       0       27      0           +24.4%      —                   
+  CAE       $27.93      22       0       22      1           +5.2%       —                   
+  CART      $58.87      30       0       30      0           +68.9%      —                   
+  CASK      $16.97      21       0       21      2           +42.5%      —                   
+  CB        $375.74     24       0       24      3           +70.9%      —                   
+  CBL       $54.61      19       0       19      3           +6.6%       —                   
+  CCI       $90.83      22       0       22      1           +5.2%       —                   
+  CGON      $74.40      30       0       30      0           +159.4%     —                   
+  CHD       $113.00     27       0       27      0           +41.5%      —                   
+  CHDN      $99.72      19       0       19      3           +15.9%      —                   
+  CHWY      $22.52      21       0       21      2           +37.7%      —                   
+  CINF      $189.65     19       0       19      3           +12.4%      —                   
+  CL        $99.67      30       0       30      0           +74.1%      —                   
+  CNC       $71.27      25       0       25      0           +8.1%       —                   
+  CNNE      $17.29      25       0       25      0           +15.8%      —                   
+  COKE      $214.34     30       0       30      0           +71.9%      —                   
+  COLD      $16.69      27       0       27      0           +33.0%      —                   
+  CPB       $22.77      33       6       27      0           +27.2%      —                   
+  CRAI      $205.32     74       44      30      0           +118.9%     Industrials         
+  CRAN      $10.14      30       5       25      0           +0.0%       Financial Services  
+  CROX      $163.72     65       40      25      0           +7.4%       Consumer Cyclical   
+  CSX       $52.05      54       35      19      3           +7.7%       Industrials         
+  CTAS      $226.24     61       40      21      2           +35.5%      Industrials         
+  DEO       $101.59     59       32      27      0           +31.5%      Consumer Defensive  
+  DGICA     $19.06      46       27      19      3           +7.1%       Financial Services  
+  DIN       $36.88      44       25      19      2           +17.4%      Consumer Cyclical   
+  DLTR      $138.08     59       40      19      3           +1.3%       Consumer Defensive  
+  DPZ       $341.72     57       27      30      0           +65.2%      Consumer Cyclical   
+  DUK       $129.16     65       35      30      0           +115.8%     Utilities           
+  DUOL      $165.31     59       34      25      0           +15.1%      Technology          
+  ECL       $309.27     65       40      25      0           +13.3%      Basic Materials     
+  EFT       $10.72      49       19      30      0           +736.9%     Financial Services  
+  EG        $427.19     46       27      19      3           +12.5%      Financial Services  
+  EGBN      $34.44      38       19      19      2           +17.0%      Financial Services  
+  ELF       $117.98     57       30      27      0           +22.9%      Consumer Defensive  
+  ENSG      $188.41     59       40      19      3           +3.2%       Healthcare          
+  EQBK      $49.31      69       39      30      0           +51.9%      Financial Services  
+  EVAC      $10.37      42       18      24      3           +954.2%     Financial Services  
+  EXC       $46.25      57       32      25      0           +8.2%       Utilities           
+  EXPO      $87.31      65       40      25      0           +16.2%      Industrials         
+  FCN       $202.81     65       40      25      0           +5.4%       Industrials         
+  FDX       $324.14     67       40      27      0           +35.6%      Industrials         
+  FIZZ      $37.23      57       32      25      0           +5.6%       Consumer Defensive  
+  FMBH      $51.32      66       39      27      0           +48.7%      Financial Services  
+  FNB       $18.18      52       27      25      0           +13.4%      Financial Services  
+  FOXA      $68.42      69       44      25      0           +16.6%      Communication Services
+  FTV       $67.92      59       40      19      3           +1.8%       Technology          
+  FWRD      $17.39      32       13      19      3           +14.9%      Industrials         
+  GATX      $191.43     66       44      22      1           +10.0%      Industrials         
+  GDDY      $114.12     52       27      25      0           +7.0%       Technology          
+  GDRX      $3.56       37       18      19      2           +6.6%       Healthcare          
+  HAFC      $32.65      60       35      25      0           +1.0%       Financial Services  
+  HBNC      $21.27      54       27      27      0           +23.7%      Financial Services  
+  HBT       $36.95      66       39      27      1           +50.1%      Financial Services  
+  HLF       $15.96      59       32      27      0           +40.7%      Consumer Defensive  
+  HQY       $103.46     65       40      25      0           +14.2%      Healthcare          
+  IBCP      $36.74      66       39      27      0           +35.6%      Financial Services  Pass 2 Fund:  54%|█████▍    | 76/141 [00:35<00:28,  2.29stk/s]Pass 2 Fund:  55%|█████▍    | 77/141 [00:36<00:27,  2.32stk/s]Pass 2 Fund:  55%|█████▌    | 78/141 [00:36<00:26,  2.35stk/s]Pass 2 Fund:  56%|█████▌    | 79/141 [00:37<00:26,  2.37stk/s]Pass 2 Fund:  57%|█████▋    | 80/141 [00:37<00:25,  2.37stk/s]Pass 2 Fund:  57%|█████▋    | 81/141 [00:38<00:25,  2.39stk/s]Pass 2 Fund:  58%|█████▊    | 82/141 [00:38<00:24,  2.40stk/s]Pass 2 Fund:  59%|█████▉    | 83/141 [00:38<00:24,  2.39stk/s]Pass 2 Fund:  60%|█████▉    | 84/141 [00:39<00:23,  2.38stk/s]Pass 2 Fund:  60%|██████    | 85/141 [00:39<00:23,  2.39stk/s]Pass 2 Fund:  61%|██████    | 86/141 [00:40<00:22,  2.41stk/s]Pass 2 Fund:  62%|██████▏   | 87/141 [00:40<00:22,  2.42stk/s]Pass 2 Fund:  62%|██████▏   | 88/141 [00:40<00:22,  2.39stk/s]Pass 2 Fund:  63%|██████▎   | 89/141 [00:41<00:22,  2.36stk/s]Pass 2 Fund:  64%|██████▍   | 90/141 [00:41<00:21,  2.38stk/s]Pass 2 Fund:  65%|██████▍   | 91/141 [00:42<00:20,  2.39stk/s]Pass 2 Fund:  65%|██████▌   | 92/141 [00:42<00:20,  2.42stk/s]Pass 2 Fund:  66%|██████▌   | 93/141 [00:43<00:19,  2.42stk/s]Pass 2 Fund:  67%|██████▋   | 94/141 [00:43<00:19,  2.39stk/s]Pass 2 Fund:  67%|██████▋   | 95/141 [00:43<00:19,  2.40stk/s]Pass 2 Fund:  68%|██████▊   | 96/141 [00:44<00:18,  2.37stk/s]Pass 2 Fund:  69%|██████▉   | 97/141 [00:44<00:18,  2.39stk/s]Pass 2 Fund:  70%|██████▉   | 98/141 [00:45<00:18,  2.38stk/s]Pass 2 Fund:  70%|███████   | 99/141 [00:45<00:17,  2.38stk/s]Pass 2 Fund:  71%|███████   | 100/141 [00:46<00:17,  2.40stk/s]Pass 2 Fund:  72%|███████▏  | 101/141 [00:46<00:16,  2.35stk/s]Pass 2 Fund:  72%|███████▏  | 102/141 [00:46<00:16,  2.35stk/s]Pass 2 Fund:  73%|███████▎  | 103/141 [00:47<00:16,  2.37stk/s]Pass 2 Fund:  74%|███████▍  | 104/141 [00:47<00:15,  2.39stk/s]Pass 2 Fund:  74%|███████▍  | 105/141 [00:48<00:14,  2.40stk/s]Pass 2 Fund:  75%|███████▌  | 106/141 [00:48<00:14,  2.41stk/s]Pass 2 Fund:  76%|███████▌  | 107/141 [00:48<00:14,  2.42stk/s]Pass 2 Fund:  77%|███████▋  | 108/141 [00:49<00:13,  2.43stk/s]Pass 2 Fund:  77%|███████▋  | 109/141 [00:49<00:13,  2.40stk/s]Pass 2 Fund:  78%|███████▊  | 110/141 [00:50<00:12,  2.41stk/s]Pass 2 Fund:  79%|███████▊  | 111/141 [00:50<00:12,  2.42stk/s]Pass 2 Fund:  79%|███████▉  | 112/141 [00:51<00:11,  2.42stk/s]Pass 2 Fund:  80%|████████  | 113/141 [00:51<00:12,  2.32stk/s]Pass 2 Fund:  81%|████████  | 114/141 [00:51<00:11,  2.35stk/s]Pass 2 Fund:  82%|████████▏ | 115/141 [00:52<00:10,  2.39stk/s]Pass 2 Fund:  82%|████████▏ | 116/141 [00:52<00:10,  2.39stk/s]Pass 2 Fund:  83%|████████▎ | 117/141 [00:53<00:10,  2.39stk/s]Pass 2 Fund:  84%|████████▎ | 118/141 [00:53<00:09,  2.39stk/s]Pass 2 Fund:  84%|████████▍ | 119/141 [00:53<00:09,  2.40stk/s]Pass 2 Fund:  85%|████████▌ | 120/141 [00:54<00:08,  2.41stk/s]Pass 2 Fund:  86%|████████▌ | 121/141 [00:54<00:08,  2.34stk/s]Pass 2 Fund:  87%|████████▋ | 122/141 [00:55<00:08,  2.35stk/s]Pass 2 Fund:  87%|████████▋ | 123/141 [00:55<00:07,  2.33stk/s]Pass 2 Fund:  88%|████████▊ | 124/141 [00:56<00:07,  2.36stk/s]Pass 2 Fund:  89%|████████▊ | 125/141 [00:56<00:06,  2.38stk/s]Pass 2 Fund:  89%|████████▉ | 126/141 [00:56<00:06,  2.40stk/s]Pass 2 Fund:  90%|█████████ | 127/141 [00:57<00:05,  2.40stk/s]Pass 2 Fund:  91%|█████████ | 128/141 [00:57<00:05,  2.41stk/s]Pass 2 Fund:  91%|█████████▏| 129/141 [00:58<00:04,  2.41stk/s]Pass 2 Fund:  92%|█████████▏| 130/141 [00:58<00:04,  2.41stk/s]Pass 2 Fund:  93%|█████████▎| 131/141 [00:58<00:04,  2.42stk/s]Pass 2 Fund:  94%|█████████▎| 132/141 [00:59<00:03,  2.41stk/s]Pass 2 Fund:  94%|█████████▍| 133/141 [00:59<00:03,  2.41stk/s]Pass 2 Fund:  95%|█████████▌| 134/141 [01:00<00:02,  2.42stk/s]Pass 2 Fund:  96%|█████████▌| 135/141 [01:00<00:02,  2.42stk/s]Pass 2 Fund:  96%|█████████▋| 136/141 [01:01<00:02,  2.42stk/s]Pass 2 Fund:  97%|█████████▋| 137/141 [01:01<00:01,  2.42stk/s]Pass 2 Fund:  98%|█████████▊| 138/141 [01:01<00:01,  2.42stk/s]Pass 2 Fund:  99%|█████████▊| 139/141 [01:02<00:00,  2.42stk/s]Pass 2 Fund:  99%|█████████▉| 140/141 [01:02<00:00,  2.40stk/s]Pass 2 Fund: 100%|██████████| 141/141 [01:03<00:00,  2.39stk/s]Pass 2 Fund: 100%|██████████| 141/141 [01:03<00:00,  2.23stk/s]
+
+  IDA       $146.50     55       36      19      3           +17.7%      Utilities           
+  IDT       $83.09      71       46      25      0           +0.1%       Communication Services
+  IGD       $6.46       57       32      25      0           +16.3%      Financial Services  
+  JACK      $14.75      46       19      27      0           +37.9%      Consumer Cyclical   
+  JACS      $10.86      40       13      27      1           +560.4%     Financial Services  
+  JBDI      $2.52       56       26      30      0           +142.9%     Consumer Cyclical   
+  JENA      $10.46      29       5       24      2           +305.3%     Financial Services  
+  JKHY      $177.67     67       40      27      0           +24.9%      Technology          
+  KTB       $81.56      67       40      27      0           +20.9%      Consumer Cyclical   
+  KVYO      $22.13      54       30      24      2           +59.2%      Technology          
+  LEVI      $24.29      65       40      25      0           +12.0%      Consumer Cyclical   
+  LTH       $46.52      54       35      19      3           +1.7%       Consumer Cyclical   
+  LYV       $178.45     47       26      21      2           +46.9%      Communication Services
+  MAR       $423.16     48       27      21      3           +42.9%      Consumer Cyclical   
+  MCB       $96.87      58       39      19      2           +7.7%       Financial Services  
+  MCBS      $36.50      64       39      25      0           +5.2%       Financial Services  
+  MDLZ      $67.54      60       35      25      0           +9.4%       Consumer Defensive  
+  MESH      $10.14      29       5       24      3           +60450.0%   Financial Services  
+  MGRC      $128.68     64       40      24      1           +22.7%      Industrials         
+  MORN      $246.26     61       40      21      2           +35.9%      Financial Services  
+  MRSH      $207.78     67       40      27      0           +35.1%      Financial Services  
+  MSCI      $658.17     52       27      25      0           +7.0%       Financial Services  
+  MSGK      $314.46     33       12      21      2           +26.4%      Communication Services
+  NDAQ      $108.47     61       40      21      3           +32.1%      Financial Services  
+  NGG       $84.29      64       39      25      0           +17.6%      Utilities           
+  OBK       $54.06      69       39      30      0           +60.3%      Financial Services  
+  OGS       $83.86      48       27      21      3           +47.1%      Utilities           
+  ORI       $39.68      54       35      19      3           +0.6%       Financial Services  
+  OSPN      $22.31      67       40      27      1           +103.5%     Technology          
+  PLSE      $50.44      41       17      24      2           +66.0%      Healthcare          
+  PRVA      $24.55      59       32      27      0           +21.3%      Healthcare          
+  PSIG      $5.44       43       13      30      0           +177.0%     Industrials         
+  PUBM      $20.61      41       17      24      2           +53.5%      Technology          
+  RDN       $36.59      68       44      24      3           +63.8%      Financial Services  
+  RLGT      $9.34       55       36      19      3           +14.4%      Industrials         
+  RSKD      $9.27       36       17      19      2           +9.5%       Technology          
+  RYTM      $115.02     42       17      25      0           +8.7%       Healthcare          
+  SHO       $12.79      57       32      25      0           +12.9%      Real Estate         
+  SIG       $113.98     56       32      24      2           +75.4%      Consumer Cyclical   
+  SIGI      $102.67     46       27      19      3           +2.0%       Financial Services  
+  SJM       $132.69     46       21      25      0           +16.3%      Consumer Defensive  
+  SNN       $31.28      67       40      27      0           +44.3%      Healthcare          
+  SO        $93.59      62       35      27      0           +38.4%      Utilities           
+  SRCE      $88.13      57       35      22      1           +3.1%       Financial Services  
+  STE       $264.32     70       40      30      0           +90.2%      Healthcare          
+  TAK       $21.43      48       26      22      1           +15.0%      Healthcare          
+  TONT      $10.97      31       7       24      3           +652.4%     Financial Services  
+  TOST      $34.68      71       44      27      0           +26.3%      Technology          
+  TRNO      $66.95      53       32      21      2           +35.8%      Real Estate         
+  TRV       $403.23     48       27      21      3           +27.0%      Financial Services  
+  TUSK      $3.26       50       29      21      3           +25.2%      Industrials         
+  UL        $66.21      60       35      25      0           +16.7%      Consumer Defensive  
+  UPS       $112.40     70       40      30      0           +86.8%      Industrials         
+  UTHR      $591.17     61       40      21      3           +36.8%      Healthcare          
+  UTL       $55.76      57       27      30      0           +103.7%     Utilities           
+  VNCE      $13.67      65       40      25      0           +7.7%       Consumer Cyclical   
+  VRSN      $313.02     51       27      24      3           +70.3%      Technology          
+  WEC       $117.60     65       35      30      0           +87.0%      Utilities           
+  WENN      $10.48      43       18      25      0           +15.6%      Financial Services  
+  WHF       $8.26       45       24      21      2           +23.8%      Financial Services  
+  WMG       $32.30      65       35      30      0           +183.8%     Communication Services
+  WRB       $77.44      48       27      21      3           +41.1%      Financial Services  
+  WSFS      $80.06      62       35      27      0           +28.9%      Financial Services  
+  WTFC      $155.48     65       35      30      0           +119.9%     Financial Services  
+  WTW       $335.34     65       40      25      0           +9.9%       Financial Services  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers    : 6525
+  Got data   : 5630  (86%)
+  Tech passes: 141
+  ✅ Matches  : 141
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                      JMA Price-Cross + MA Stack   2026-11-15   141 matches                     ║
+  ╚════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬─────────┬───────┬──────┬──────┬──────────────────┬───────────┬────────────────────────┐
+  │ Ticker │  Price  │ Total │ Fund │ Tech │ Bars_Since_Cross │ Vol_Chg_% │         Sector         │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CRAI  │ $205.32 │   74  │  44  │  30  │      0d ago      │  +118.9%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  IDT   │  $83.09 │   71  │  46  │  25  │      0d ago      │   +0.1%   │ Communication Services │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  TOST  │  $34.68 │   71  │  44  │  27  │      0d ago      │   +26.3%  │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  STE   │ $264.32 │   70  │  40  │  30  │      0d ago      │   +90.2%  │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  UPS   │ $112.40 │   70  │  40  │  30  │      0d ago      │   +86.8%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  EQBK  │  $49.31 │   69  │  39  │  30  │      0d ago      │   +51.9%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FOXA  │  $68.42 │   69  │  44  │  25  │      0d ago      │   +16.6%  │ Communication Services │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  OBK   │  $54.06 │   69  │  39  │  30  │      0d ago      │   +60.3%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  RDN   │  $36.59 │   68  │  44  │  24  │      3d ago      │   +63.8%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FDX   │ $324.14 │   67  │  40  │  27  │      0d ago      │   +35.6%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  JKHY  │ $177.67 │   67  │  40  │  27  │      0d ago      │   +24.9%  │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  KTB   │  $81.56 │   67  │  40  │  27  │      0d ago      │   +20.9%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MRSH  │ $207.78 │   67  │  40  │  27  │      0d ago      │   +35.1%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  OSPN  │  $22.31 │   67  │  40  │  27  │      1d ago      │  +103.5%  │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  SNN   │  $31.28 │   67  │  40  │  27  │      0d ago      │   +44.3%  │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FMBH  │  $51.32 │   66  │  39  │  27  │      0d ago      │   +48.7%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  GATX  │ $191.43 │   66  │  44  │  22  │      1d ago      │   +10.0%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  HBT   │  $36.95 │   66  │  39  │  27  │      1d ago      │   +50.1%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  IBCP  │  $36.74 │   66  │  39  │  27  │      0d ago      │   +35.6%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CROX  │ $163.72 │   65  │  40  │  25  │      0d ago      │   +7.4%   │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  DUK   │ $129.16 │   65  │  35  │  30  │      0d ago      │  +115.8%  │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ECL   │ $309.27 │   65  │  40  │  25  │      0d ago      │   +13.3%  │    Basic Materials     │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  EXPO  │  $87.31 │   65  │  40  │  25  │      0d ago      │   +16.2%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FCN   │ $202.81 │   65  │  40  │  25  │      0d ago      │   +5.4%   │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  HQY   │ $103.46 │   65  │  40  │  25  │      0d ago      │   +14.2%  │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  LEVI  │  $24.29 │   65  │  40  │  25  │      0d ago      │   +12.0%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  VNCE  │  $13.67 │   65  │  40  │  25  │      0d ago      │   +7.7%   │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WEC   │ $117.60 │   65  │  35  │  30  │      0d ago      │   +87.0%  │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WMG   │  $32.30 │   65  │  35  │  30  │      0d ago      │  +183.8%  │ Communication Services │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WTFC  │ $155.48 │   65  │  35  │  30  │      0d ago      │  +119.9%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WTW   │ $335.34 │   65  │  40  │  25  │      0d ago      │   +9.9%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MCBS  │  $36.50 │   64  │  39  │  25  │      0d ago      │   +5.2%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MGRC  │ $128.68 │   64  │  40  │  24  │      1d ago      │   +22.7%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  NGG   │  $84.29 │   64  │  39  │  25  │      0d ago      │   +17.6%  │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │   SO   │  $93.59 │   62  │  35  │  27  │      0d ago      │   +38.4%  │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WSFS  │  $80.06 │   62  │  35  │  27  │      0d ago      │   +28.9%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CTAS  │ $226.24 │   61  │  40  │  21  │      2d ago      │   +35.5%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MORN  │ $246.26 │   61  │  40  │  21  │      2d ago      │   +35.9%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  NDAQ  │ $108.47 │   61  │  40  │  21  │      3d ago      │   +32.1%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  UTHR  │ $591.17 │   61  │  40  │  21  │      3d ago      │   +36.8%  │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  HAFC  │  $32.65 │   60  │  35  │  25  │      0d ago      │   +1.0%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MDLZ  │  $67.54 │   60  │  35  │  25  │      0d ago      │   +9.4%   │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │   UL   │  $66.21 │   60  │  35  │  25  │      0d ago      │   +16.7%  │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  DEO   │ $101.59 │   59  │  32  │  27  │      0d ago      │   +31.5%  │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  DLTR  │ $138.08 │   59  │  40  │  19  │      3d ago      │   +1.3%   │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  DUOL  │ $165.31 │   59  │  34  │  25  │      0d ago      │   +15.1%  │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ENSG  │ $188.41 │   59  │  40  │  19  │      3d ago      │   +3.2%   │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FTV   │  $67.92 │   59  │  40  │  19  │      3d ago      │   +1.8%   │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  HLF   │  $15.96 │   59  │  32  │  27  │      0d ago      │   +40.7%  │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  PRVA  │  $24.55 │   59  │  32  │  27  │      0d ago      │   +21.3%  │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MCB   │  $96.87 │   58  │  39  │  19  │      2d ago      │   +7.7%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  DPZ   │ $341.72 │   57  │  27  │  30  │      0d ago      │   +65.2%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ELF   │ $117.98 │   57  │  30  │  27  │      0d ago      │   +22.9%  │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  EXC   │  $46.25 │   57  │  32  │  25  │      0d ago      │   +8.2%   │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FIZZ  │  $37.23 │   57  │  32  │  25  │      0d ago      │   +5.6%   │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  IGD   │  $6.46  │   57  │  32  │  25  │      0d ago      │   +16.3%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  SHO   │  $12.79 │   57  │  32  │  25  │      0d ago      │   +12.9%  │      Real Estate       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  SRCE  │  $88.13 │   57  │  35  │  22  │      1d ago      │   +3.1%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  UTL   │  $55.76 │   57  │  27  │  30  │      0d ago      │  +103.7%  │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  JBDI  │  $2.52  │   56  │  26  │  30  │      0d ago      │  +142.9%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  SIG   │ $113.98 │   56  │  32  │  24  │      2d ago      │   +75.4%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  IDA   │ $146.50 │   55  │  36  │  19  │      3d ago      │   +17.7%  │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  RLGT  │  $9.34  │   55  │  36  │  19  │      3d ago      │   +14.4%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CSX   │  $52.05 │   54  │  35  │  19  │      3d ago      │   +7.7%   │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  HBNC  │  $21.27 │   54  │  27  │  27  │      0d ago      │   +23.7%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  KVYO  │  $22.13 │   54  │  30  │  24  │      2d ago      │   +59.2%  │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  LTH   │  $46.52 │   54  │  35  │  19  │      3d ago      │   +1.7%   │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ORI   │  $39.68 │   54  │  35  │  19  │      3d ago      │   +0.6%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  TRNO  │  $66.95 │   53  │  32  │  21  │      2d ago      │   +35.8%  │      Real Estate       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FNB   │  $18.18 │   52  │  27  │  25  │      0d ago      │   +13.4%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  GDDY  │ $114.12 │   52  │  27  │  25  │      0d ago      │   +7.0%   │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MSCI  │ $658.17 │   52  │  27  │  25  │      0d ago      │   +7.0%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  VRSN  │ $313.02 │   51  │  27  │  24  │      3d ago      │   +70.3%  │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  TUSK  │  $3.26  │   50  │  29  │  21  │      3d ago      │   +25.2%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  EFT   │  $10.72 │   49  │  19  │  30  │      0d ago      │  +736.9%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MAR   │ $423.16 │   48  │  27  │  21  │      3d ago      │   +42.9%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  OGS   │  $83.86 │   48  │  27  │  21  │      3d ago      │   +47.1%  │       Utilities        │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  TAK   │  $21.43 │   48  │  26  │  22  │      1d ago      │   +15.0%  │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  TRV   │ $403.23 │   48  │  27  │  21  │      3d ago      │   +27.0%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WRB   │  $77.44 │   48  │  27  │  21  │      3d ago      │   +41.1%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  LYV   │ $178.45 │   47  │  26  │  21  │      2d ago      │   +46.9%  │ Communication Services │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │ DGICA  │  $19.06 │   46  │  27  │  19  │      3d ago      │   +7.1%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │   EG   │ $427.19 │   46  │  27  │  19  │      3d ago      │   +12.5%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  JACK  │  $14.75 │   46  │  19  │  27  │      0d ago      │   +37.9%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  SIGI  │ $102.67 │   46  │  27  │  19  │      3d ago      │   +2.0%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  SJM   │ $132.69 │   46  │  21  │  25  │      0d ago      │   +16.3%  │   Consumer Defensive   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WHF   │  $8.26  │   45  │  24  │  21  │      2d ago      │   +23.8%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  DIN   │  $36.88 │   44  │  25  │  19  │      2d ago      │   +17.4%  │   Consumer Cyclical    │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  PSIG  │  $5.44  │   43  │  13  │  30  │      0d ago      │  +177.0%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  WENN  │  $10.48 │   43  │  18  │  25  │      0d ago      │   +15.6%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  EVAC  │  $10.37 │   42  │  18  │  24  │      3d ago      │  +954.2%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  RYTM  │ $115.02 │   42  │  17  │  25  │      0d ago      │   +8.7%   │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  PLSE  │  $50.44 │   41  │  17  │  24  │      2d ago      │   +66.0%  │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  PUBM  │  $20.61 │   41  │  17  │  24  │      2d ago      │   +53.5%  │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  JACS  │  $10.86 │   40  │  13  │  27  │      1d ago      │  +560.4%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  EGBN  │  $34.44 │   38  │  19  │  19  │      2d ago      │   +17.0%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  GDRX  │  $3.56  │   37  │  18  │  19  │      2d ago      │   +6.6%   │       Healthcare       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  RSKD  │  $9.27  │   36  │  17  │  19  │      2d ago      │   +9.5%   │       Technology       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CPB   │  $22.77 │   33  │  6   │  27  │      0d ago      │   +27.2%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MSGK  │ $314.46 │   33  │  12  │  21  │      2d ago      │   +26.4%  │ Communication Services │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  FWRD  │  $17.39 │   32  │  13  │  19  │      3d ago      │   +14.9%  │      Industrials       │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  TONT  │  $10.97 │   31  │  7   │  24  │      3d ago      │  +652.4%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ADSK  │ $264.42 │   30  │  0   │  30  │      0d ago      │   +55.5%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CART  │  $58.87 │   30  │  0   │  30  │      0d ago      │   +68.9%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CGON  │  $74.40 │   30  │  0   │  30  │      0d ago      │  +159.4%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │   CL   │  $99.67 │   30  │  0   │  30  │      0d ago      │   +74.1%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  COKE  │ $214.34 │   30  │  0   │  30  │      0d ago      │   +71.9%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CRAN  │  $10.14 │   30  │  5   │  25  │      0d ago      │   +0.0%   │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  JENA  │  $10.46 │   29  │  5   │  24  │      2d ago      │  +305.3%  │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  MESH  │  $10.14 │   29  │  5   │  24  │      3d ago      │ +60450.0% │   Financial Services   │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AEE   │ $114.77 │   27  │  0   │  27  │      0d ago      │   +44.9%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ALC   │  $74.12 │   27  │  0   │  27  │      0d ago      │   +23.8%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AVA   │  $40.91 │   27  │  0   │  27  │      0d ago      │   +37.5%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  BIIB  │ $253.40 │   27  │  0   │  27  │      0d ago      │   +29.9%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  BRBS  │  $4.05  │   27  │  0   │  27  │      0d ago      │   +23.1%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  BRO   │  $71.93 │   27  │  0   │  27  │      0d ago      │   +24.4%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CHD   │ $113.00 │   27  │  0   │  27  │      0d ago      │   +41.5%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  COLD  │  $16.69 │   27  │  0   │  27  │      0d ago      │   +33.0%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ABNB  │ $186.78 │   25  │  0   │  25  │      0d ago      │   +13.2%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AJG   │ $282.94 │   25  │  0   │  25  │      0d ago      │   +5.5%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ALLE  │ $191.98 │   25  │  0   │  25  │      0d ago      │   +19.8%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AMPH  │  $29.37 │   25  │  0   │  25  │      0d ago      │   +1.6%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ASB   │  $30.94 │   25  │  0   │  25  │      0d ago      │   +0.8%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AUB   │  $39.38 │   25  │  0   │  25  │      0d ago      │   +9.8%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  BIII  │  $10.15 │   25  │  0   │  25  │      0d ago      │   +4.5%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CNC   │  $71.27 │   25  │  0   │  25  │      0d ago      │   +8.1%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CNNE  │  $17.29 │   25  │  0   │  25  │      0d ago      │   +15.8%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ALUB  │  $10.17 │   24  │  0   │  24  │      2d ago      │  +316.7%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │   CB   │ $375.74 │   24  │  0   │  24  │      3d ago      │   +70.9%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CAE   │  $27.93 │   22  │  0   │  22  │      1d ago      │   +5.2%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CCI   │  $90.83 │   22  │  0   │  22  │      1d ago      │   +5.2%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AFL   │ $127.61 │   21  │  0   │  21  │      3d ago      │   +43.9%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  BMO   │ $173.24 │   21  │  0   │  21  │      2d ago      │   +43.4%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CASK  │  $16.97 │   21  │  0   │  21  │      2d ago      │   +42.5%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CHWY  │  $22.52 │   21  │  0   │  21  │      2d ago      │   +37.7%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AMPL  │  $17.34 │   19  │  0   │  19  │      2d ago      │   +0.8%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  ATO   │ $176.30 │   19  │  0   │  19  │      3d ago      │   +10.0%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  AXS   │ $108.72 │   19  │  0   │  19  │      3d ago      │   +9.3%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CBL   │  $54.61 │   19  │  0   │  19  │      3d ago      │   +6.6%   │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CHDN  │  $99.72 │   19  │  0   │  19  │      3d ago      │   +15.9%  │           —            │
+  ├────────┼─────────┼───────┼──────┼──────┼──────────────────┼───────────┼────────────────────────┤
+  │  CINF  │ $189.65 │   19  │  0   │  19  │      3d ago      │   +12.4%  │           —            │
+  └────────┴─────────┴───────┴──────┴──────┴──────────────────┴───────────┴────────────────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Total               Fund(0-50) + Tech(0-30)
+  Bars_Since_Cross     bars since price closed above JMA from below
+  Vol_Chg_%            today's volume vs yesterday's volume
+  ──────────────────────────────────────────────────────
+  🛑 Default stop: 10-day low — 141/141 tickers
+  💰 Position sizing: max loss $40 per trade — 140 sized, 1 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/jma_stack_cross_20261115_0202.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_jma_stack_cross_20261115_0202.txt
+[Email] Sending to vikramaga24@gmail.com  (141 results)...
+[Email] 📎 Attached: jma_stack_cross_20261115_0202.csv (28,470 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 JMA Price-Cross + MA Stack — 141 signals — 2026-11-15
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/jma_stack_cross_chart_20261115_0202.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SCORE BREAKDOWN  (80 total)
+  Fund  0–50   8 fundamental metrics
+  Tech  0–30   cross freshness + MA stack breadth + volume surge
+
+  📋 SIGNAL (all 3 required)
+  1) Price closed above JMA from below (fresh cross, within
+     price_jma_cross_lookback bars)
+  2) JMA sits above EMA8, SMA21, SMA50, AND SMA150
+  3) Today's volume > yesterday's volume
+
+  📋 Bars_Since_Cross = 0d ago means the cross happened on the
+  latest bar. Vol_Chg_% = today's volume vs yesterday's.
+
+  💡 BEST SETUPS
+  Total > 50              elite fundamental + technical combo
+  Bars_Since_Cross = 0-1   freshest crosses
+  Vol_Chg_% > 50           strong volume confirmation
+  Fund > 35                genuinely strong business quality
+
+  ⚙️  TUNE IF 0 RESULTS
+  min_tech_score              10 → 6
+  min_total_score              15 → 5
+  price_jma_cross_lookback      3 → 6   (widen the cross window)
+  require_jma_above_sma150   True → False
+  require_volume_increase    True → False
+  min_price                     2 → 1
+  min_avg_volume            80000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

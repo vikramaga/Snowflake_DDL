@@ -1,0 +1,721 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 208 bars ($356.27, 2026-11-13)  |  hourly 301 bars
+  ✅ MSFT: daily 208 bars ($523.88, 2026-11-13)  |  hourly 301 bars
+  ✅ NVDA: daily 208 bars ($162.85, 2026-11-13)  |  hourly 301 bars
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3158 → 3158
+  ✅ otherlisted       : +2264 → 5422
+  ✅ NASDAQ API        : +1093 → 6515
+  ✅ Static fallback   : +  10 → 6525
+
+  🎯 Total: 6525 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6525 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (→ Daily + Weekly) and hourly bars (→ 1H + 4H)
+  A stock only matches if ALL 4 timeframes are in an uptrend
+
+Daily fetch:   0%|          | 0/6525 [00:00<?]Daily fetch:   1%|          | 50/6525 [00:03<06:43]Daily fetch:   2%|▏         | 100/6525 [00:07<08:45]Daily fetch:   2%|▏         | 150/6525 [00:11<08:14]Daily fetch:   3%|▎         | 200/6525 [00:15<08:12]Daily fetch:   4%|▍         | 250/6525 [00:21<09:35]Daily fetch:   5%|▍         | 300/6525 [00:26<09:56]Daily fetch:   5%|▌         | 350/6525 [00:30<09:03]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▌         | 400/6525 [00:33<08:29]Daily fetch:   7%|▋         | 450/6525 [00:38<08:44]Daily fetch:   8%|▊         | 500/6525 [00:42<08:28]Daily fetch:   8%|▊         | 550/6525 [00:47<08:53]Daily fetch:   9%|▉         | 600/6525 [00:50<08:09]Daily fetch:  10%|▉         | 650/6525 [00:54<07:43]Daily fetch:  11%|█         | 700/6525 [00:58<07:38]Daily fetch:  11%|█▏        | 750/6525 [01:02<07:47]Daily fetch:  12%|█▏        | 800/6525 [01:07<08:28]Daily fetch:  13%|█▎        | 850/6525 [01:11<07:55]Daily fetch:  14%|█▍        | 900/6525 [01:15<07:54]Daily fetch:  15%|█▍        | 950/6525 [01:20<07:53]Daily fetch:  15%|█▌        | 1000/6525 [01:23<07:31]Daily fetch:  16%|█▌        | 1050/6525 [01:27<07:04]Daily fetch:  17%|█▋        | 1100/6525 [01:31<07:09]$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBO: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CBX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Daily fetch:  18%|█▊        | 1150/6525 [01:34<06:49]Daily fetch:  18%|█▊        | 1200/6525 [01:38<06:32]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1250/6525 [01:41<06:31]Daily fetch:  20%|█▉        | 1300/6525 [01:45<06:18]Daily fetch:  21%|██        | 1350/6525 [01:48<05:56]Daily fetch:  21%|██▏       | 1400/6525 [01:52<06:07]Daily fetch:  22%|██▏       | 1450/6525 [01:56<06:09]Daily fetch:  23%|██▎       | 1500/6525 [01:59<05:59]$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Daily fetch:  24%|██▍       | 1550/6525 [02:03<06:01]Daily fetch:  25%|██▍       | 1600/6525 [02:07<06:05]Daily fetch:  25%|██▌       | 1650/6525 [02:10<06:00]Daily fetch:  26%|██▌       | 1700/6525 [02:14<05:59]Daily fetch:  27%|██▋       | 1750/6525 [02:17<05:41]Daily fetch:  28%|██▊       | 1800/6525 [02:21<05:36]Daily fetch:  28%|██▊       | 1850/6525 [02:24<05:31]Daily fetch:  29%|██▉       | 1900/6525 [02:28<05:21]Daily fetch:  30%|██▉       | 1950/6525 [02:32<05:33]Daily fetch:  31%|███       | 2000/6525 [02:36<05:36]Daily fetch:  31%|███▏      | 2050/6525 [02:39<05:23]$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Daily fetch:  32%|███▏      | 2100/6525 [02:43<05:22]Daily fetch:  33%|███▎      | 2150/6525 [02:46<05:20]Daily fetch:  34%|███▎      | 2200/6525 [02:50<05:12]Daily fetch:  34%|███▍      | 2250/6525 [02:54<05:19]Daily fetch:  35%|███▌      | 2300/6525 [02:57<05:03]Daily fetch:  36%|███▌      | 2350/6525 [03:01<05:02]Daily fetch:  37%|███▋      | 2400/6525 [03:05<05:13]Daily fetch:  38%|███▊      | 2450/6525 [03:08<04:54]Daily fetch:  38%|███▊      | 2500/6525 [03:12<04:56]Daily fetch:  39%|███▉      | 2550/6525 [03:16<04:48]Daily fetch:  40%|███▉      | 2600/6525 [03:19<04:36]Daily fetch:  41%|████      | 2650/6525 [03:23<04:42]Daily fetch:  41%|████▏     | 2700/6525 [03:27<04:44]Daily fetch:  42%|████▏     | 2750/6525 [03:30<04:27]Daily fetch:  43%|████▎     | 2800/6525 [03:34<04:27]Daily fetch:  44%|████▎     | 2850/6525 [03:37<04:22]Daily fetch:  44%|████▍     | 2900/6525 [03:41<04:26]Daily fetch:  45%|████▌     | 2950/6525 [03:45<04:21]Daily fetch:  46%|████▌     | 3000/6525 [03:48<04:18]Daily fetch:  47%|████▋     | 3050/6525 [03:52<04:09]Daily fetch:  48%|████▊     | 3100/6525 [03:56<04:25]Daily fetch:  48%|████▊     | 3150/6525 [04:00<04:11]Daily fetch:  49%|████▉     | 3200/6525 [04:03<04:03]Daily fetch:  50%|████▉     | 3250/6525 [04:07<04:00]Daily fetch:  51%|█████     | 3300/6525 [04:10<03:55]Daily fetch:  51%|█████▏    | 3350/6525 [04:14<03:45]Daily fetch:  52%|█████▏    | 3400/6525 [04:18<03:46]Daily fetch:  53%|█████▎    | 3450/6525 [04:21<03:36]Daily fetch:  54%|█████▎    | 3500/6525 [04:25<03:38]Daily fetch:  54%|█████▍    | 3550/6525 [04:28<03:30]Daily fetch:  55%|█████▌    | 3600/6525 [04:32<03:26]Daily fetch:  56%|█████▌    | 3650/6525 [04:36<03:42]Daily fetch:  57%|█████▋    | 3700/6525 [04:40<03:34]Daily fetch:  57%|█████▋    | 3750/6525 [04:44<03:29]Daily fetch:  58%|█████▊    | 3800/6525 [04:47<03:20]Daily fetch:  59%|█████▉    | 3850/6525 [04:51<03:16]Daily fetch:  60%|█████▉    | 3900/6525 [04:55<03:18]Daily fetch:  61%|██████    | 3950/6525 [04:59<03:16]Daily fetch:  61%|██████▏   | 4000/6525 [05:02<03:09]Daily fetch:  62%|██████▏   | 4050/6525 [05:06<03:09]Daily fetch:  63%|██████▎   | 4100/6525 [05:10<02:59]Daily fetch:  64%|██████▎   | 4150/6525 [05:13<02:58]Daily fetch:  64%|██████▍   | 4200/6525 [05:17<02:52]Daily fetch:  65%|██████▌   | 4250/6525 [05:21<02:48]Daily fetch:  66%|██████▌   | 4300/6525 [05:25<02:50]Daily fetch:  67%|██████▋   | 4350/6525 [05:28<02:41]Daily fetch:  67%|██████▋   | 4400/6525 [05:32<02:35]Daily fetch:  68%|██████▊   | 4450/6525 [05:36<02:31]Daily fetch:  69%|██████▉   | 4500/6525 [05:39<02:30]Daily fetch:  70%|██████▉   | 4550/6525 [05:43<02:25]Daily fetch:  70%|███████   | 4600/6525 [05:46<02:18]Daily fetch:  71%|███████▏  | 4650/6525 [05:50<02:14]Daily fetch:  72%|███████▏  | 4700/6525 [05:53<02:09]Daily fetch:  73%|███████▎  | 4750/6525 [05:57<02:04]$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+Daily fetch:  74%|███████▎  | 4800/6525 [06:01<02:03]Daily fetch:  74%|███████▍  | 4850/6525 [06:04<02:02]Daily fetch:  75%|███████▌  | 4900/6525 [06:08<01:56]Daily fetch:  76%|███████▌  | 4950/6525 [06:11<01:51]Daily fetch:  77%|███████▋  | 5000/6525 [06:15<01:47]Daily fetch:  77%|███████▋  | 5050/6525 [06:19<01:48]Daily fetch:  78%|███████▊  | 5100/6525 [06:23<01:48]Daily fetch:  79%|███████▉  | 5150/6525 [06:27<01:44]Daily fetch:  80%|███████▉  | 5200/6525 [06:31<01:45]Daily fetch:  80%|████████  | 5250/6525 [06:35<01:42]Daily fetch:  81%|████████  | 5300/6525 [06:39<01:34]Daily fetch:  82%|████████▏ | 5350/6525 [06:42<01:28]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5400/6525 [06:45<01:20]Daily fetch:  84%|████████▎ | 5450/6525 [06:49<01:16]Daily fetch:  84%|████████▍ | 5500/6525 [06:52<01:12]Daily fetch:  85%|████████▌ | 5550/6525 [06:56<01:10]Daily fetch:  86%|████████▌ | 5600/6525 [07:00<01:08]Daily fetch:  87%|████████▋ | 5650/6525 [07:04<01:06]Daily fetch:  87%|████████▋ | 5700/6525 [07:08<01:02]Daily fetch:  88%|████████▊ | 5750/6525 [07:11<00:56]Daily fetch:  89%|████████▉ | 5800/6525 [07:15<00:53]Daily fetch:  90%|████████▉ | 5850/6525 [07:19<00:50]Daily fetch:  90%|█████████ | 5900/6525 [07:22<00:44]Daily fetch:  91%|█████████ | 5950/6525 [07:26<00:41]Daily fetch:  92%|█████████▏| 6000/6525 [07:29<00:36]Daily fetch:  93%|█████████▎| 6050/6525 [07:32<00:33]Daily fetch:  93%|█████████▎| 6100/6525 [07:36<00:30]Daily fetch:  94%|█████████▍| 6150/6525 [07:40<00:26]Daily fetch:  95%|█████████▌| 6200/6525 [07:43<00:22]Daily fetch:  96%|█████████▌| 6250/6525 [07:46<00:18]Daily fetch:  97%|█████████▋| 6300/6525 [07:50<00:15]Daily fetch:  97%|█████████▋| 6350/6525 [07:54<00:12]Daily fetch:  98%|█████████▊| 6400/6525 [07:58<00:09]Daily fetch:  99%|█████████▉| 6450/6525 [08:02<00:05]$ZIEXT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+
+6 Failed downloads:
+['ZIEXT', 'ZEXIT', 'ZCZZT']: possibly delisted; no timezone found
+['ZAZZT', 'ZBZX', 'ZBZZT']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+Daily fetch: 100%|█████████▉| 6500/6525 [08:07<00:02]$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+
+3 Failed downloads:
+['ZXIET']: possibly delisted; no timezone found
+['ZVV', 'ZTEST']: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-14 -> 2026-11-15)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6525/6525 [08:10<00:00]Daily fetch: 100%|██████████| 6525/6525 [08:11<00:00]
+Hourly fetch:   0%|          | 0/5630 [00:00<?]Hourly fetch:   1%|          | 30/5630 [00:01<03:11]Hourly fetch:   1%|          | 60/5630 [00:04<06:49]Hourly fetch:   2%|▏         | 90/5630 [00:07<08:09]Hourly fetch:   2%|▏         | 120/5630 [00:10<08:49]Hourly fetch:   3%|▎         | 150/5630 [00:13<09:03]Hourly fetch:   3%|▎         | 180/5630 [00:16<09:11]Hourly fetch:   4%|▎         | 210/5630 [00:20<09:30]Hourly fetch:   4%|▍         | 240/5630 [00:23<09:15]Hourly fetch:   5%|▍         | 270/5630 [00:26<09:07]Hourly fetch:   5%|▌         | 300/5630 [00:29<09:16]Hourly fetch:   6%|▌         | 330/5630 [00:32<09:07]Hourly fetch:   6%|▋         | 360/5630 [00:35<09:20]Hourly fetch:   7%|▋         | 390/5630 [00:38<09:05]Hourly fetch:   7%|▋         | 420/5630 [00:41<09:01]Hourly fetch:   8%|▊         | 450/5630 [00:45<08:59]Hourly fetch:   9%|▊         | 480/5630 [00:48<09:16]Hourly fetch:   9%|▉         | 510/5630 [00:51<09:08]Hourly fetch:  10%|▉         | 540/5630 [00:55<09:22]Hourly fetch:  10%|█         | 570/5630 [00:58<09:23]Hourly fetch:  11%|█         | 600/5630 [01:01<09:06]Hourly fetch:  11%|█         | 630/5630 [01:04<08:58]Hourly fetch:  12%|█▏        | 660/5630 [01:07<08:46]Hourly fetch:  12%|█▏        | 690/5630 [01:11<08:38]Hourly fetch:  13%|█▎        | 720/5630 [01:14<08:36]Hourly fetch:  13%|█▎        | 750/5630 [01:17<08:33]Hourly fetch:  14%|█▍        | 780/5630 [01:20<08:27]Hourly fetch:  14%|█▍        | 810/5630 [01:23<08:19]Hourly fetch:  15%|█▍        | 840/5630 [01:26<08:17]Hourly fetch:  15%|█▌        | 870/5630 [01:29<08:18]Hourly fetch:  16%|█▌        | 900/5630 [01:32<08:09]Hourly fetch:  17%|█▋        | 930/5630 [01:36<08:22]Hourly fetch:  17%|█▋        | 960/5630 [01:39<08:24]Hourly fetch:  18%|█▊        | 990/5630 [01:43<08:36]Hourly fetch:  18%|█▊        | 1020/5630 [01:46<08:20]Hourly fetch:  19%|█▊        | 1050/5630 [01:49<08:09]Hourly fetch:  19%|█▉        | 1080/5630 [01:52<08:04]Hourly fetch:  20%|█▉        | 1110/5630 [01:55<08:03]Hourly fetch:  20%|██        | 1140/5630 [01:59<08:03]Hourly fetch:  21%|██        | 1170/5630 [02:02<07:49]Hourly fetch:  21%|██▏       | 1200/5630 [02:05<07:48]Hourly fetch:  22%|██▏       | 1230/5630 [02:08<07:40]Hourly fetch:  22%|██▏       | 1260/5630 [02:11<07:36]Hourly fetch:  23%|██▎       | 1290/5630 [02:14<07:36]Hourly fetch:  23%|██▎       | 1320/5630 [02:17<07:33]Hourly fetch:  24%|██▍       | 1350/5630 [02:20<07:27]Hourly fetch:  25%|██▍       | 1380/5630 [02:23<07:23]Hourly fetch:  25%|██▌       | 1410/5630 [02:27<07:34]Hourly fetch:  26%|██▌       | 1440/5630 [02:30<07:33]Hourly fetch:  26%|██▌       | 1470/5630 [02:33<07:26]Hourly fetch:  27%|██▋       | 1500/5630 [02:36<07:13]Hourly fetch:  27%|██▋       | 1530/5630 [02:39<07:08]Hourly fetch:  28%|██▊       | 1560/5630 [02:42<06:58]Hourly fetch:  28%|██▊       | 1590/5630 [02:45<06:48]Hourly fetch:  29%|██▉       | 1620/5630 [02:49<06:52]Hourly fetch:  29%|██▉       | 1650/5630 [02:52<06:57]Hourly fetch:  30%|██▉       | 1680/5630 [02:55<06:46]Hourly fetch:  30%|███       | 1710/5630 [02:58<06:45]Hourly fetch:  31%|███       | 1740/5630 [03:01<06:36]Hourly fetch:  31%|███▏      | 1770/5630 [03:04<06:39]Hourly fetch:  32%|███▏      | 1800/5630 [03:07<06:31]Hourly fetch:  33%|███▎      | 1830/5630 [03:10<06:29]Hourly fetch:  33%|███▎      | 1860/5630 [03:14<06:44]Hourly fetch:  34%|███▎      | 1890/5630 [03:17<06:50]Hourly fetch:  34%|███▍      | 1920/5630 [03:20<06:32]Hourly fetch:  35%|███▍      | 1950/5630 [03:23<06:26]Hourly fetch:  35%|███▌      | 1980/5630 [03:26<06:21]Hourly fetch:  36%|███▌      | 2010/5630 [03:29<06:13]Hourly fetch:  36%|███▌      | 2040/5630 [03:32<06:11]Hourly fetch:  37%|███▋      | 2070/5630 [03:36<06:10]Hourly fetch:  37%|███▋      | 2100/5630 [03:39<06:02]Hourly fetch:  38%|███▊      | 2130/5630 [03:42<05:59]Hourly fetch:  38%|███▊      | 2160/5630 [03:45<05:56]Hourly fetch:  39%|███▉      | 2190/5630 [03:48<06:05]Hourly fetch:  39%|███▉      | 2220/5630 [03:52<06:09]Hourly fetch:  40%|███▉      | 2250/5630 [03:55<06:10]Hourly fetch:  40%|████      | 2280/5630 [03:58<05:57]Hourly fetch:  41%|████      | 2310/5630 [04:01<05:54]Hourly fetch:  42%|████▏     | 2340/5630 [04:04<05:54]Hourly fetch:  42%|████▏     | 2370/5630 [04:07<05:44]Hourly fetch:  43%|████▎     | 2400/5630 [04:11<05:39]Hourly fetch:  43%|████▎     | 2430/5630 [04:14<05:30]Hourly fetch:  44%|████▎     | 2460/5630 [04:17<05:31]Hourly fetch:  44%|████▍     | 2490/5630 [04:20<05:23]Hourly fetch:  45%|████▍     | 2520/5630 [04:23<05:24]Hourly fetch:  45%|████▌     | 2550/5630 [04:26<05:19]Hourly fetch:  46%|████▌     | 2580/5630 [04:29<05:18]Hourly fetch:  46%|████▋     | 2610/5630 [04:32<05:16]Hourly fetch:  47%|████▋     | 2640/5630 [04:36<05:16]Hourly fetch:  47%|████▋     | 2670/5630 [04:39<05:13]Hourly fetch:  48%|████▊     | 2700/5630 [04:42<05:22]Hourly fetch:  48%|████▊     | 2730/5630 [04:45<05:11]Hourly fetch:  49%|████▉     | 2760/5630 [04:49<05:16]Hourly fetch:  50%|████▉     | 2790/5630 [04:52<05:04]Hourly fetch:  50%|█████     | 2820/5630 [04:55<04:59]Hourly fetch:  51%|█████     | 2850/5630 [04:58<04:52]Hourly fetch:  51%|█████     | 2880/5630 [05:01<04:50]Hourly fetch:  52%|█████▏    | 2910/5630 [05:04<04:42]Hourly fetch:  52%|█████▏    | 2940/5630 [05:08<04:53]Hourly fetch:  53%|█████▎    | 2970/5630 [05:11<04:52]Hourly fetch:  53%|█████▎    | 3000/5630 [05:14<04:41]Hourly fetch:  54%|█████▍    | 3030/5630 [05:17<04:31]Hourly fetch:  54%|█████▍    | 3060/5630 [05:21<04:31]Hourly fetch:  55%|█████▍    | 3090/5630 [05:24<04:26]Hourly fetch:  55%|█████▌    | 3120/5630 [05:27<04:23]Hourly fetch:  56%|█████▌    | 3150/5630 [05:30<04:16]Hourly fetch:  56%|█████▋    | 3180/5630 [05:33<04:16]Hourly fetch:  57%|█████▋    | 3210/5630 [05:36<04:10]Hourly fetch:  58%|█████▊    | 3240/5630 [05:39<04:08]Hourly fetch:  58%|█████▊    | 3270/5630 [05:42<04:07]Hourly fetch:  59%|█████▊    | 3300/5630 [05:46<04:09]Hourly fetch:  59%|█████▉    | 3330/5630 [05:49<04:05]Hourly fetch:  60%|█████▉    | 3360/5630 [05:53<04:25]Hourly fetch:  60%|██████    | 3390/5630 [05:56<04:15]Hourly fetch:  61%|██████    | 3420/5630 [06:00<04:06]Hourly fetch:  61%|██████▏   | 3450/5630 [06:03<04:01]Hourly fetch:  62%|██████▏   | 3480/5630 [06:06<03:54]Hourly fetch:  62%|██████▏   | 3510/5630 [06:09<03:47]Hourly fetch:  63%|██████▎   | 3540/5630 [06:12<03:40]Hourly fetch:  63%|██████▎   | 3570/5630 [06:15<03:33]Hourly fetch:  64%|██████▍   | 3600/5630 [06:18<03:29]Hourly fetch:  64%|██████▍   | 3630/5630 [06:21<03:26]Hourly fetch:  65%|██████▌   | 3660/5630 [06:25<03:28]Hourly fetch:  66%|██████▌   | 3690/5630 [06:28<03:24]Hourly fetch:  66%|██████▌   | 3720/5630 [06:31<03:19]Hourly fetch:  67%|██████▋   | 3750/5630 [06:34<03:22]Hourly fetch:  67%|██████▋   | 3780/5630 [06:38<03:25]Hourly fetch:  68%|██████▊   | 3810/5630 [06:41<03:20]Hourly fetch:  68%|██████▊   | 3840/5630 [06:44<03:15]Hourly fetch:  69%|██████▊   | 3870/5630 [06:48<03:10]Hourly fetch:  69%|██████▉   | 3900/5630 [06:51<03:04]Hourly fetch:  70%|██████▉   | 3930/5630 [06:54<02:59]Hourly fetch:  70%|███████   | 3960/5630 [06:57<02:56]Hourly fetch:  71%|███████   | 3990/5630 [07:00<02:50]Hourly fetch:  71%|███████▏  | 4020/5630 [07:03<02:47]Hourly fetch:  72%|███████▏  | 4050/5630 [07:06<02:42]Hourly fetch:  72%|███████▏  | 4080/5630 [07:09<02:42]Hourly fetch:  73%|███████▎  | 4110/5630 [07:12<02:38]Hourly fetch:  74%|███████▎  | 4140/5630 [07:16<02:38]Hourly fetch:  74%|███████▍  | 4170/5630 [07:19<02:33]Hourly fetch:  75%|███████▍  | 4200/5630 [07:22<02:29]Hourly fetch:  75%|███████▌  | 4230/5630 [07:25<02:26]Hourly fetch:  76%|███████▌  | 4260/5630 [07:28<02:22]Hourly fetch:  76%|███████▌  | 4290/5630 [07:31<02:22]Hourly fetch:  77%|███████▋  | 4320/5630 [07:34<02:16]Hourly fetch:  77%|███████▋  | 4350/5630 [07:38<02:12]Hourly fetch:  78%|███████▊  | 4380/5630 [07:41<02:09]Hourly fetch:  78%|███████▊  | 4410/5630 [07:44<02:07]Hourly fetch:  79%|███████▉  | 4440/5630 [07:47<02:05]Hourly fetch:  79%|███████▉  | 4470/5630 [07:50<02:01]Hourly fetch:  80%|███████▉  | 4500/5630 [07:54<02:02]Hourly fetch:  80%|████████  | 4530/5630 [07:57<02:02]Hourly fetch:  81%|████████  | 4560/5630 [08:00<01:57]Hourly fetch:  82%|████████▏ | 4590/5630 [08:04<01:52]Hourly fetch:  82%|████████▏ | 4620/5630 [08:07<01:48]Hourly fetch:  83%|████████▎ | 4650/5630 [08:10<01:46]Hourly fetch:  83%|████████▎ | 4680/5630 [08:13<01:41]Hourly fetch:  84%|████████▎ | 4710/5630 [08:16<01:37]Hourly fetch:  84%|████████▍ | 4740/5630 [08:19<01:33]Hourly fetch:  85%|████████▍ | 4770/5630 [08:23<01:31]Hourly fetch:  85%|████████▌ | 4800/5630 [08:26<01:26]Hourly fetch:  86%|████████▌ | 4830/5630 [08:29<01:24]Hourly fetch:  86%|████████▋ | 4860/5630 [08:32<01:19]Hourly fetch:  87%|████████▋ | 4890/5630 [08:35<01:15]Hourly fetch:  87%|████████▋ | 4920/5630 [08:38<01:12]Hourly fetch:  88%|████████▊ | 4950/5630 [08:41<01:09]Hourly fetch:  88%|████████▊ | 4980/5630 [08:44<01:05]Hourly fetch:  89%|████████▉ | 5010/5630 [08:47<01:04]Hourly fetch:  90%|████████▉ | 5040/5630 [08:51<01:02]Hourly fetch:  90%|█████████ | 5070/5630 [08:54<00:59]Hourly fetch:  91%|█████████ | 5100/5630 [08:57<00:55]Hourly fetch:  91%|█████████ | 5130/5630 [09:00<00:53]Hourly fetch:  92%|█████████▏| 5160/5630 [09:03<00:50]Hourly fetch:  92%|█████████▏| 5190/5630 [09:07<00:46]Hourly fetch:  93%|█████████▎| 5220/5630 [09:10<00:43]Hourly fetch:  93%|█████████▎| 5250/5630 [09:13<00:40]Hourly fetch:  94%|█████████▍| 5280/5630 [09:16<00:37]Hourly fetch:  94%|█████████▍| 5310/5630 [09:19<00:34]Hourly fetch:  95%|█████████▍| 5340/5630 [09:23<00:31]Hourly fetch:  95%|█████████▌| 5370/5630 [09:26<00:27]Hourly fetch:  96%|█████████▌| 5400/5630 [09:29<00:24]Hourly fetch:  96%|█████████▋| 5430/5630 [09:32<00:21]Hourly fetch:  97%|█████████▋| 5460/5630 [09:35<00:18]Hourly fetch:  98%|█████████▊| 5490/5630 [09:38<00:14]Hourly fetch:  98%|█████████▊| 5520/5630 [09:41<00:11]Hourly fetch:  99%|█████████▊| 5550/5630 [09:45<00:08]Hourly fetch:  99%|█████████▉| 5580/5630 [09:48<00:05]Hourly fetch: 100%|█████████▉| 5610/5630 [09:51<00:02]Hourly fetch: 100%|██████████| 5630/5630 [09:55<00:00]Hourly fetch: 100%|██████████| 5630/5630 [09:57<00:00]
+
+  Daily data : 5630/6525 tickers
+  Hourly data: 5605/5630 daily-survivors
+
+Checking alignment:   0%|          | 0/5630 [00:00<?, ?stk/s]Checking alignment:   1%|          | 36/5630 [00:00<00:15, 352.15stk/s]Checking alignment:   2%|▏         | 88/5630 [00:00<00:12, 441.53stk/s]Checking alignment:   2%|▏         | 133/5630 [00:00<00:12, 432.06stk/s]Checking alignment:   3%|▎         | 185/5630 [00:00<00:11, 460.16stk/s]Checking alignment:   4%|▍         | 235/5630 [00:00<00:11, 471.26stk/s]Checking alignment:   5%|▌         | 283/5630 [00:00<00:12, 433.44stk/s]Checking alignment:   6%|▌         | 327/5630 [00:00<00:12, 413.27stk/s]Checking alignment:   7%|▋         | 370/5630 [00:00<00:12, 417.95stk/s]Checking alignment:   7%|▋         | 413/5630 [00:00<00:12, 402.08stk/s]Checking alignment:   8%|▊         | 462/5630 [00:01<00:12, 425.34stk/s]Checking alignment:   9%|▉         | 505/5630 [00:01<00:12, 415.07stk/s]Checking alignment:  10%|▉         | 552/5630 [00:01<00:11, 430.26stk/s]Checking alignment:  11%|█         | 596/5630 [00:01<00:12, 406.00stk/s]Checking alignment:  11%|█▏        | 647/5630 [00:01<00:11, 432.45stk/s]Checking alignment:  12%|█▏        | 696/5630 [00:01<00:10, 448.68stk/s]Checking alignment:  13%|█▎        | 743/5630 [00:01<00:10, 454.65stk/s]Checking alignment:  14%|█▍        | 798/5630 [00:01<00:10, 481.67stk/s]Checking alignment:  15%|█▌        | 852/5630 [00:01<00:09, 497.93stk/s]Checking alignment:  16%|█▌        | 903/5630 [00:02<00:10, 460.21stk/s]Checking alignment:  17%|█▋        | 950/5630 [00:02<00:10, 448.48stk/s]Checking alignment:  18%|█▊        | 1001/5630 [00:02<00:09, 465.00stk/s]Checking alignment:  19%|█▊        | 1054/5630 [00:02<00:09, 481.90stk/s]Checking alignment:  20%|█▉        | 1103/5630 [00:02<00:09, 478.13stk/s]Checking alignment:  20%|██        | 1152/5630 [00:02<00:09, 464.79stk/s]Checking alignment:  21%|██▏       | 1199/5630 [00:02<00:09, 453.92stk/s]Checking alignment:  22%|██▏       | 1246/5630 [00:02<00:09, 457.13stk/s]Checking alignment:  23%|██▎       | 1292/5630 [00:03<00:16, 263.55stk/s]Checking alignment:  24%|██▎       | 1335/5630 [00:03<00:14, 293.43stk/s]Checking alignment:  24%|██▍       | 1378/5630 [00:03<00:13, 320.19stk/s]Checking alignment:  25%|██▌       | 1420/5630 [00:03<00:12, 343.27stk/s]Checking alignment:  26%|██▌       | 1464/5630 [00:03<00:11, 365.37stk/s]Checking alignment:  27%|██▋       | 1508/5630 [00:03<00:10, 384.65stk/s]Checking alignment:  28%|██▊       | 1561/5630 [00:03<00:09, 423.20stk/s]Checking alignment:  29%|██▊       | 1606/5630 [00:03<00:09, 424.62stk/s]Checking alignment:  29%|██▉       | 1653/5630 [00:03<00:09, 435.12stk/s]Checking alignment:  30%|███       | 1702/5630 [00:04<00:08, 450.31stk/s]Checking alignment:  31%|███       | 1749/5630 [00:04<00:09, 428.48stk/s]Checking alignment:  32%|███▏      | 1793/5630 [00:04<00:08, 427.56stk/s]Checking alignment:  33%|███▎      | 1840/5630 [00:04<00:08, 435.76stk/s]Checking alignment:  34%|███▎      | 1891/5630 [00:04<00:08, 455.51stk/s]Checking alignment:  34%|███▍      | 1937/5630 [00:04<00:08, 451.11stk/s]Checking alignment:  35%|███▌      | 1983/5630 [00:04<00:08, 452.05stk/s]Checking alignment:  36%|███▌      | 2029/5630 [00:04<00:08, 424.83stk/s]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 4 timeframes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    1H_Dist_%   4H_Dist_%   Daily_Dist_%  Weekly_Dist_%
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  ABBV      $295.03     73       +0.1%       +1.1%       +1.9%         +11.4%       
+  ABNB      $186.78     82       +1.9%       +3.5%       +6.4%         +11.0%       
+  ADMA      $13.68      92       +2.7%       +9.5%       +16.0%        +37.8%       
+  ADP       $309.93     76       +0.7%       +2.0%       +3.5%         +13.5%       
+  AEE       $114.77     73       +0.8%       +1.6%       +3.9%         +6.6%        
+  AFG       $161.02     77       +0.1%       +2.2%       +4.4%         +11.5%       
+  AFL       $127.61     72       +0.6%       +1.4%       +3.2%         +6.4%        
+  AIG       $82.86      70       +0.2%       +1.8%       +1.9%         +6.4%        
+  ALL       $267.64     73       +0.9%       +1.8%       +3.7%         +6.3%        
+  ALLE      $191.98     77       +0.6%       +1.0%       +5.5%         +20.2%       
+  ALUB      $10.17      61       +0.1%       +0.1%       +0.2%         +0.5%        
+  AMPH      $29.37      82       +1.1%       +3.5%       +7.8%         +25.7%       
+  AMT       $191.64     73       +0.6%       +0.6%       +2.2%         +9.4%        
+  AMTB      $30.33      68       +0.1%       +0.8%       +2.0%         +5.6%        
+  APD       $316.53     70       +0.4%       +1.0%       +2.1%         +6.1%        
+  APXT      $10.21      62       +0.2%       +0.3%       +0.5%         +0.8%        
+  ASND      $275.39     90       +3.4%       +6.8%       +9.7%         +9.8%        
+  ASUR      $10.39      85       +0.7%       +3.9%       +18.9%        +24.1%       
+  ATAT      $38.13      89       +1.9%       +6.9%       +11.8%        +13.7%       
+  BANF      $118.75     73       +0.3%       +2.2%       +4.8%         +6.1%        
+  BDX       $218.03     82       +1.2%       +3.6%       +7.2%         +20.2%       
+  BGB       $11.19      63       +0.2%       +0.4%       +1.1%         +1.3%        
+  BIII      $10.15      62       +0.2%       +0.2%       +0.4%         +1.2%        
+  BILL      $54.48      81       +0.2%       +3.8%       +7.4%         +16.0%       
+  BMBL      $5.99       71       +0.2%       +0.3%       +0.2%         +65.9%       
+  BRZE      $46.64      75       +0.1%       +1.1%       +3.3%         +51.5%       
+  BY        $39.20      67       +0.3%       +1.0%       +2.1%         +3.1%        
+  CAC       $59.47      69       +0.5%       +1.2%       +2.3%         +5.2%        
+  CAH       $281.10     83       +1.0%       +4.3%       +7.8%         +17.4%       
+  CART      $58.87      75       +0.3%       +0.8%       +3.6%         +19.4%       
+  CATY      $65.65      68       +0.6%       +0.6%       +2.1%         +5.1%        
+  CB        $375.74     73       +0.9%       +1.6%       +3.2%         +7.6%        
+  CBOE      $375.42     86       +0.8%       +5.1%       +10.2%        +25.6%       
+  CCEP      $118.57     76       +0.7%       +1.8%       +3.8%         +10.2%       
+  CCI       $90.83      78       +1.3%       +1.8%       +4.5%         +17.0%       
+  CCII      $10.38      61       +0.2%       +0.3%       +0.4%         +0.5%        
+  CHA       $14.37      98       +7.7%       +12.5%      +14.5%        +24.5%       
+  CHD       $113.00     77       +0.8%       +1.6%       +4.4%         +12.8%       
+  CHT       $49.87      75       +1.0%       +1.6%       +2.5%         +10.7%       
+  CHYM      $33.55      88       +1.2%       +7.0%       +10.8%        +18.1%       
+  CL        $99.67      77       +1.4%       +1.9%       +4.0%         +9.5%        
+  CLX       $109.46     90       +2.0%       +7.8%       +16.4%        +18.0%       
+  CME       $317.97     78       +0.6%       +2.8%       +4.5%         +15.7%       
+  CNC       $71.27      73       +1.7%       +1.6%       +2.1%         +7.3%        
+  CNXC      $32.72      80       +0.3%       +4.5%       +5.4%         +21.9%       
+  COFS      $36.91      74       +0.5%       +0.3%       +4.0%         +9.2%        
+  COKE      $214.34     76       +1.7%       +2.3%       +2.3%         +10.1%       
+  COLD      $16.69      90       +3.3%       +6.6%       +11.4%        +13.4%       
+  COLM      $73.47      85       +1.6%       +3.1%       +10.3%        +20.6%       
+  COST      $1106.21    82       +1.1%       +4.0%       +7.2%         +15.6%       
+  CPAY      $462.22     84       +0.4%       +4.1%       +9.2%         +15.6%       
+  CRAI      $205.32     81       +2.5%       +3.2%       +5.0%         +17.4%       
+  CRBG      $36.35      75       +0.8%       +2.0%       +3.1%         +9.2%        
+  CRK       $15.18      83       +0.4%       +7.2%       +6.4%         +9.3%        
+  CROX      $163.72     86       +2.3%       +3.9%       +15.7%        +26.4%       
+  CSL       $396.13     78       +0.2%       +1.2%       +7.0%         +12.9%       
+  DDI       $15.77      88       +0.4%       +7.7%       +11.7%        +23.3%       
+  DEO       $101.59     79       +1.0%       +2.2%       +5.2%         +13.6%       
+  DGX       $259.60     76       +0.1%       +1.5%       +4.0%         +10.3%       
+  DLX       $26.78      86       +1.0%       +5.0%       +10.2%        +10.5%       
+  DMII      $10.24      62       +0.1%       +0.2%       +0.3%         +0.9%        
+  DPZ       $341.72     77       +2.3%       +2.9%       +5.9%         +6.2%        
+  DUOL      $165.31     89       +2.3%       +7.0%       +13.0%        +17.3%       
+  ECL       $309.27     74       +0.6%       +0.8%       +3.3%         +9.5%        
+  ED        $121.00     76       +1.1%       +1.4%       +3.6%         +10.0%       
+  EDHL      $6.81       95       +5.1%       +10.2%      +14.3%        +42.3%       
+  EG        $427.19     77       +0.6%       +2.0%       +4.7%         +12.0%       
+  EGBN      $34.44      76       +0.5%       +1.2%       +4.6%         +18.2%       
+  ENGN      $2.41       100      +14.0%      +33.4%      +42.0%        +32.8%       
+  ENSG      $188.41     75       +1.0%       +2.4%       +4.2%         +7.2%        
+  EPRX      $8.15       92       +2.1%       +12.3%      +12.3%        +14.4%       
+  EQH       $56.10      75       +0.6%       +1.9%       +2.9%         +9.2%        
+  EVAC      $10.37      61       +0.0%       +0.0%       +0.2%         +0.8%        
+  EVOX      $10.16      61       +0.2%       +0.2%       +0.2%         +0.6%        
+  EVRG      $88.78      72       +0.3%       +1.5%       +3.4%         +6.7%        
+  EXPO      $87.31      80       +0.9%       +1.4%       +7.6%         +25.3%       
+  FCN       $202.81     85       +1.8%       +3.3%       +13.6%        +29.2%       
+  FISV      $63.78      85       +0.8%       +3.8%       +15.9%        +23.4%       
+  FLYW      $22.26      85       +0.6%       +4.0%       +10.3%        +20.3%       
+  FOX       $61.11      76       +1.5%       +2.3%       +3.5%         +8.4%        
+  FOXA      $68.42      75       +1.5%       +2.0%       +3.3%         +8.4%        
+  FROG      $113.60     92       +2.2%       +15.8%      +16.6%        +22.2%       
+  G         $43.61      81       +0.7%       +3.7%       +6.8%         +23.1%       
+  GATX      $191.43     79       +1.3%       +2.1%       +7.5%         +8.1%        
+  GCT       $66.63      91       +2.1%       +8.9%       +10.9%        +31.5%       Checking alignment:  37%|███▋      | 2084/5630 [00:04<00:07, 458.04stk/s]Checking alignment:  38%|███▊      | 2131/5630 [00:05<00:07, 454.23stk/s]Checking alignment:  39%|███▊      | 2181/5630 [00:05<00:07, 463.81stk/s]Checking alignment:  40%|███▉      | 2228/5630 [00:05<00:07, 462.78stk/s]Checking alignment:  41%|████      | 2281/5630 [00:05<00:06, 481.71stk/s]Checking alignment:  41%|████▏     | 2330/5630 [00:05<00:06, 474.26stk/s]Checking alignment:  42%|████▏     | 2378/5630 [00:05<00:07, 455.92stk/s]Checking alignment:  43%|████▎     | 2424/5630 [00:05<00:07, 430.72stk/s]Checking alignment:  44%|████▍     | 2469/5630 [00:05<00:07, 432.11stk/s]Checking alignment:  45%|████▍     | 2515/5630 [00:05<00:07, 436.13stk/s]Checking alignment:  46%|████▌     | 2564/5630 [00:05<00:06, 451.28stk/s]Checking alignment:  46%|████▋     | 2610/5630 [00:06<00:06, 453.49stk/s]Checking alignment:  47%|████▋     | 2656/5630 [00:06<00:06, 451.63stk/s]Checking alignment:  48%|████▊     | 2702/5630 [00:06<00:06, 443.06stk/s]Checking alignment:  49%|████▉     | 2747/5630 [00:06<00:06, 444.37stk/s]Checking alignment:  50%|████▉     | 2803/5630 [00:06<00:05, 476.79stk/s]Checking alignment:  51%|█████     | 2851/5630 [00:06<00:06, 445.29stk/s]Checking alignment:  51%|█████▏    | 2899/5630 [00:06<00:06, 454.17stk/s]Checking alignment:  52%|█████▏    | 2952/5630 [00:06<00:05, 475.22stk/s]Checking alignment:  53%|█████▎    | 3000/5630 [00:06<00:05, 451.66stk/s]Checking alignment:  54%|█████▍    | 3049/5630 [00:07<00:05, 460.63stk/s]Checking alignment:  55%|█████▍    | 3096/5630 [00:07<00:05, 445.40stk/s]Checking alignment:  56%|█████▌    | 3143/5630 [00:07<00:05, 452.34stk/s]Checking alignment:  57%|█████▋    | 3189/5630 [00:07<00:05, 449.04stk/s]Checking alignment:  58%|█████▊    | 3246/5630 [00:07<00:04, 483.93stk/s]Checking alignment:  59%|█████▊    | 3295/5630 [00:07<00:04, 476.21stk/s]Checking alignment:  59%|█████▉    | 3343/5630 [00:07<00:04, 463.51stk/s]Checking alignment:  60%|██████    | 3390/5630 [00:07<00:04, 460.39stk/s]Checking alignment:  61%|██████    | 3437/5630 [00:07<00:04, 454.44stk/s]Checking alignment:  62%|██████▏   | 3486/5630 [00:07<00:04, 461.95stk/s]Checking alignment:  63%|██████▎   | 3533/5630 [00:08<00:04, 463.77stk/s]Checking alignment:  64%|██████▎   | 3580/5630 [00:08<00:04, 446.61stk/s]Checking alignment:  64%|██████▍   | 3625/5630 [00:08<00:04, 417.66stk/s]Checking alignment:  65%|██████▌   | 3668/5630 [00:08<00:04, 420.87stk/s]Checking alignment:  66%|██████▌   | 3712/5630 [00:08<00:04, 423.26stk/s]Checking alignment:  67%|██████▋   | 3755/5630 [00:08<00:04, 417.85stk/s]Checking alignment:  68%|██████▊   | 3802/5630 [00:08<00:04, 432.35stk/s]Checking alignment:  69%|██████▊   | 3858/5630 [00:08<00:03, 467.60stk/s]Checking alignment:  69%|██████▉   | 3907/5630 [00:08<00:03, 472.43stk/s]Checking alignment:  70%|███████   | 3955/5630 [00:09<00:03, 453.91stk/s]Checking alignment:  71%|███████   | 4001/5630 [00:09<00:03, 447.40stk/s]Checking alignment:  72%|███████▏  | 4050/5630 [00:09<00:03, 459.48stk/s]Checking alignment:  73%|███████▎  | 4097/5630 [00:09<00:03, 449.38stk/s]Checking alignment:  74%|███████▎  | 4143/5630 [00:09<00:03, 434.93stk/s]Checking alignment:  74%|███████▍  | 4191/5630 [00:09<00:03, 447.32stk/s]Checking alignment:  75%|███████▌  | 4247/5630 [00:09<00:02, 479.66stk/s]Checking alignment:  76%|███████▋  | 4296/5630 [00:09<00:02, 462.32stk/s]Checking alignment:  77%|███████▋  | 4347/5630 [00:09<00:02, 475.65stk/s]Checking alignment:  78%|███████▊  | 4395/5630 [00:10<00:02, 444.82stk/s]Checking alignment:  79%|███████▉  | 4442/5630 [00:10<00:02, 447.98stk/s]Checking alignment:  80%|███████▉  | 4496/5630 [00:10<00:02, 473.29stk/s]Checking alignment:  81%|████████  | 4544/5630 [00:10<00:02, 458.24stk/s]Checking alignment:  82%|████████▏ | 4591/5630 [00:10<00:02, 444.93stk/s]Checking alignment:  82%|████████▏ | 4643/5630 [00:10<00:02, 464.24stk/s]Checking alignment:  83%|████████▎ | 4691/5630 [00:10<00:02, 468.67stk/s]Checking alignment:  84%|████████▍ | 4744/5630 [00:10<00:01, 485.73stk/s]Checking alignment:  85%|████████▌ | 4793/5630 [00:10<00:01, 462.42stk/s]Checking alignment:  86%|████████▌ | 4840/5630 [00:10<00:01, 441.59stk/s]Checking alignment:  87%|████████▋ | 4885/5630 [00:11<00:01, 424.00stk/s]Checking alignment:  88%|████████▊ | 4930/5630 [00:11<00:01, 427.47stk/s]Checking alignment:  88%|████████▊ | 4973/5630 [00:11<00:01, 423.96stk/s]Checking alignment:  89%|████████▉ | 5017/5630 [00:11<00:01, 427.99stk/s]Checking alignment:  90%|████████▉ | 5060/5630 [00:11<00:01, 419.35stk/s]Checking alignment:  91%|█████████ | 5103/5630 [00:11<00:01, 413.93stk/s]Checking alignment:  91%|█████████▏| 5145/5630 [00:11<00:01, 415.38stk/s]Checking alignment:  92%|█████████▏| 5187/5630 [00:11<00:01, 399.61stk/s]Checking alignment:  93%|█████████▎| 5228/5630 [00:11<00:01, 398.27stk/s]Checking alignment:  94%|█████████▎| 5268/5630 [00:12<00:00, 394.39stk/s]Checking alignment:  94%|█████████▍| 5309/5630 [00:12<00:00, 395.98stk/s]Checking alignment:  95%|█████████▌| 5349/5630 [00:12<00:00, 392.59stk/s]Checking alignment:  96%|█████████▌| 5392/5630 [00:12<00:00, 399.34stk/s]Checking alignment:  97%|█████████▋| 5434/5630 [00:12<00:00, 404.84stk/s]Checking alignment:  97%|█████████▋| 5475/5630 [00:12<00:00, 400.74stk/s]Checking alignment:  98%|█████████▊| 5520/5630 [00:12<00:00, 412.81stk/s]Checking alignment:  99%|█████████▉| 5573/5630 [00:12<00:00, 447.03stk/s]Checking alignment: 100%|█████████▉| 5626/5630 [00:12<00:00, 469.47stk/s]Checking alignment: 100%|██████████| 5630/5630 [00:12<00:00, 436.87stk/s]
+
+  GTN       $5.99       91       +0.9%       +12.7%      +22.0%        +30.7%       
+  HCMA      $10.34      61       +0.1%       +0.2%       +0.2%         +0.3%        
+  HLF       $15.96      89       +3.1%       +5.7%       +11.7%        +23.2%       
+  HUM       $450.00     83       +1.4%       +5.1%       +6.2%         +12.3%       
+  HZO       $52.80      71       +0.0%       +0.1%       +0.4%         +11.9%       
+  IBEX      $56.92      92       +2.5%       +15.1%      +18.9%        +40.0%       
+  IDXX      $704.23     83       +0.3%       +2.3%       +12.6%        +25.7%       
+  IGD       $6.46       68       +0.7%       +1.9%       +1.9%         +3.0%        
+  JACS      $10.86      61       +0.0%       +0.1%       +0.1%         +0.9%        
+  JENA      $10.46      61       +0.0%       +0.1%       +0.2%         +0.4%        
+  JNJ       $285.75     77       +0.9%       +3.2%       +5.2%         +7.9%        
+  KBON      $10.15      61       +0.2%       +0.3%       +0.4%         +0.5%        
+  KNSA      $96.33      81       +0.9%       +2.1%       +7.5%         +25.2%       
+  KNSL      $395.89     77       +0.8%       +1.7%       +4.4%         +9.6%        
+  KO        $99.25      79       +1.3%       +2.9%       +4.7%         +12.1%       
+  KOD       $111.19     90       +1.9%       +8.3%       +13.9%        +88.6%       
+  KOF       $120.63     75       +0.2%       +2.2%       +2.9%         +9.7%        
+  KOYN      $10.30      61       +0.0%       +0.2%       +0.3%         +0.7%        
+  KVYO      $22.13      84       +2.4%       +4.2%       +7.2%         +23.1%       
+  LIVN      $91.32      81       +0.5%       +2.3%       +7.9%         +13.6%       
+  LKFN      $62.31      68       +0.6%       +0.7%       +2.8%         +3.9%        
+  LKFT      $33.98      77       +0.6%       +1.9%       +4.9%         +14.9%       
+  LLY       $1443.50    79       +0.4%       +2.2%       +6.6%         +18.6%       
+  MA        $661.19     74       +0.4%       +0.5%       +3.3%         +13.7%       
+  MCK       $1102.81    83       +1.8%       +4.1%       +7.2%         +21.5%       
+  MDLZ      $67.54      76       +1.1%       +1.5%       +4.0%         +9.0%        
+  MDT       $102.86     76       +0.9%       +0.9%       +4.5%         +13.9%       
+  MEOH      $70.51      82       +1.3%       +3.9%       +6.8%         +19.1%       
+  MESH      $10.14      62       +0.2%       +0.3%       +0.4%         +0.8%        
+  MO        $78.64      76       +0.9%       +1.9%       +3.5%         +11.2%       
+  MRSH      $207.78     75       +0.3%       +0.6%       +3.7%         +12.0%       
+  NWN       $52.11      71       +0.6%       +1.1%       +3.6%         +6.1%        
+  OBIO      $7.25       100      +15.8%      +22.1%      +23.9%        +39.7%       
+  OGE       $51.56      75       +0.4%       +1.7%       +4.0%         +8.9%        
+  OGN       $13.90      63       +0.1%       +0.3%       +0.7%         +1.6%        
+  OGS       $83.86      77       +1.2%       +2.6%       +5.4%         +7.8%        
+  ORLY      $92.19      69       +1.0%       +1.6%       +2.1%         +4.4%        
+  OUT       $33.54      79       +0.2%       +3.6%       +5.1%         +9.9%        
+  PAYO      $7.20       62       +0.4%       +0.4%       +0.7%         +0.9%        
+  PEP       $145.44     76       +1.4%       +2.4%       +5.0%         +6.9%        
+  PG        $169.80     77       +0.7%       +1.8%       +4.0%         +13.3%       
+  PUBM      $20.61      98       +7.8%       +16.8%      +19.0%        +25.7%       
+  QCRH      $103.99     67       +0.6%       +1.1%       +1.9%         +3.0%        
+  REGN      $955.47     81       +0.6%       +1.9%       +8.7%         +21.9%       
+  RGA       $275.15     76       +0.4%       +2.2%       +3.0%         +10.5%       
+  RUSHB     $60.44      75       +0.7%       +1.0%       +3.5%         +12.2%       
+  SATA      $97.73      64       +0.3%       +0.9%       +0.9%         +1.8%        
+  SBC       $7.35       100      +25.7%      +36.0%      +35.2%        +68.9%       
+  SENS      $10.58      92       +2.3%       +11.1%      +19.0%        +31.9%       
+  SGRY      $26.95      89       +1.1%       +8.2%       +21.8%        +65.0%       
+  SKYH      $11.31      89       +1.1%       +7.4%       +12.7%        +11.4%       
+  SMA       $39.86      83       +1.3%       +3.4%       +8.2%         +17.5%       
+  SNN       $31.28      71       +0.4%       +0.6%       +2.4%         +7.2%        
+  SOPH      $8.21       95       +5.2%       +11.9%      +11.4%        +13.0%       
+  SPOT      $612.63     77       +0.9%       +0.9%       +5.4%         +16.4%       
+  STE       $264.32     88       +2.5%       +5.5%       +10.4%        +17.4%       
+  STN       $85.69      98       +8.1%       +11.1%      +15.7%        +19.9%       
+  SWKS      $89.94      83       +0.7%       +5.7%       +6.3%         +19.7%       
+  SWX       $93.66      69       +0.6%       +1.2%       +2.1%         +5.2%        
+  TACH      $10.59      61       +0.1%       +0.1%       +0.2%         +0.9%        
+  TACO      $10.52      61       +0.1%       +0.1%       +0.2%         +0.4%        
+  TAK       $21.43      77       +1.3%       +1.9%       +4.0%         +15.7%       
+  TARS      $80.28      94       +3.6%       +10.0%      +11.3%        +13.9%       
+  TBBB      $70.02      89       +2.4%       +7.1%       +13.7%        +37.7%       
+  TEVA      $44.50      84       +2.1%       +4.7%       +7.0%         +18.1%       
+  TMCI      $5.27       92       +2.4%       +13.0%      +16.4%        +19.5%       
+  TOP       $17.00      100      +10.5%      +27.2%      +19.9%        +26.6%       
+  TRV       $403.23     70       +0.3%       +0.7%       +1.1%         +7.8%        
+  TS        $61.27      76       +0.4%       +3.7%       +3.7%         +8.2%        
+  TW        $132.74     81       +0.7%       +3.3%       +6.7%         +22.4%       
+  TXNM      $58.87      64       +0.1%       +0.6%       +0.7%         +2.3%        
+  UEIC      $6.85       97       +6.7%       +20.8%      +25.3%        +37.9%       
+  UPS       $112.40     75       +0.4%       +1.3%       +5.3%         +8.3%        
+  USEA      $2.96       94       +4.5%       +15.7%      +17.6%        +12.1%       
+  UVE       $48.57      72       +0.4%       +0.9%       +1.4%         +9.6%        
+  VERX      $17.97      86       +0.7%       +5.4%       +12.8%        +33.8%       
+  VNCE      $13.67      88       +2.8%       +5.2%       +11.6%        +55.5%       
+  VYX       $10.48      90       +2.2%       +7.6%       +16.9%        +27.8%       
+  WENN      $10.48      61       +0.1%       +0.2%       +0.3%         +0.9%        
+  WMG       $32.30      76       +0.8%       +1.8%       +3.4%         +13.7%       
+  WMT       $128.09     77       +1.4%       +1.2%       +3.9%         +13.7%       
+  WRB       $77.44      73       +0.5%       +1.5%       +3.4%         +8.0%        
+  WTRG      $45.23      76       +0.6%       +0.6%       +4.3%         +11.6%       
+  WTW       $335.34     71       +0.7%       +1.2%       +2.7%         +6.2%        
+  XEL       $81.61      71       +0.4%       +1.6%       +3.3%         +6.1%        
+  XERS      $16.66      91       +0.8%       +19.0%      +34.6%        +74.0%       
+  YUMC      $50.86      84       +2.4%       +3.4%       +7.8%         +13.7%       
+  ZTS       $83.82      76       +1.3%       +1.2%       +3.2%         +11.0%       
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6525
+  Daily data      : 5630
+  Hourly data     : 5605
+  ✅ 4-TF Matches  : 173
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔══════════════════════════════════════════════════════════════════════════════════╗
+  ║          Multi-TF Uptrend (1H+4H+Daily+Weekly)   2026-11-15   173 matches        ║
+  ╚══════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬──────────┬───────┬───────────┬───────────┬──────────────┬───────────────┐
+  │ Ticker │  Price   │ Score │ 1H_Dist_% │ 4H_Dist_% │ Daily_Dist_% │ Weekly_Dist_% │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ENGN  │  $2.41   │  100  │   +14.0%  │   +33.4%  │    +42.0%    │     +32.8%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  OBIO  │  $7.25   │  100  │   +15.8%  │   +22.1%  │    +23.9%    │     +39.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SBC   │  $7.35   │  100  │   +25.7%  │   +36.0%  │    +35.2%    │     +68.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TOP   │  $17.00  │  100  │   +10.5%  │   +27.2%  │    +19.9%    │     +26.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CHA   │  $14.37  │   98  │   +7.7%   │   +12.5%  │    +14.5%    │     +24.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  PUBM  │  $20.61  │   98  │   +7.8%   │   +16.8%  │    +19.0%    │     +25.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  STN   │  $85.69  │   98  │   +8.1%   │   +11.1%  │    +15.7%    │     +19.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  UEIC  │  $6.85   │   97  │   +6.7%   │   +20.8%  │    +25.3%    │     +37.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EDHL  │  $6.81   │   95  │   +5.1%   │   +10.2%  │    +14.3%    │     +42.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SOPH  │  $8.21   │   95  │   +5.2%   │   +11.9%  │    +11.4%    │     +13.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TARS  │  $80.28  │   94  │   +3.6%   │   +10.0%  │    +11.3%    │     +13.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  USEA  │  $2.96   │   94  │   +4.5%   │   +15.7%  │    +17.6%    │     +12.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ADMA  │  $13.68  │   92  │   +2.7%   │   +9.5%   │    +16.0%    │     +37.8%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EPRX  │  $8.15   │   92  │   +2.1%   │   +12.3%  │    +12.3%    │     +14.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  FROG  │ $113.60  │   92  │   +2.2%   │   +15.8%  │    +16.6%    │     +22.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  IBEX  │  $56.92  │   92  │   +2.5%   │   +15.1%  │    +18.9%    │     +40.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SENS  │  $10.58  │   92  │   +2.3%   │   +11.1%  │    +19.0%    │     +31.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TMCI  │  $5.27   │   92  │   +2.4%   │   +13.0%  │    +16.4%    │     +19.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  GCT   │  $66.63  │   91  │   +2.1%   │   +8.9%   │    +10.9%    │     +31.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  GTN   │  $5.99   │   91  │   +0.9%   │   +12.7%  │    +22.0%    │     +30.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  XERS  │  $16.66  │   91  │   +0.8%   │   +19.0%  │    +34.6%    │     +74.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ASND  │ $275.39  │   90  │   +3.4%   │   +6.8%   │    +9.7%     │     +9.8%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CLX   │ $109.46  │   90  │   +2.0%   │   +7.8%   │    +16.4%    │     +18.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  COLD  │  $16.69  │   90  │   +3.3%   │   +6.6%   │    +11.4%    │     +13.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  KOD   │ $111.19  │   90  │   +1.9%   │   +8.3%   │    +13.9%    │     +88.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  VYX   │  $10.48  │   90  │   +2.2%   │   +7.6%   │    +16.9%    │     +27.8%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ATAT  │  $38.13  │   89  │   +1.9%   │   +6.9%   │    +11.8%    │     +13.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  DUOL  │ $165.31  │   89  │   +2.3%   │   +7.0%   │    +13.0%    │     +17.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  HLF   │  $15.96  │   89  │   +3.1%   │   +5.7%   │    +11.7%    │     +23.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SGRY  │  $26.95  │   89  │   +1.1%   │   +8.2%   │    +21.8%    │     +65.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SKYH  │  $11.31  │   89  │   +1.1%   │   +7.4%   │    +12.7%    │     +11.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TBBB  │  $70.02  │   89  │   +2.4%   │   +7.1%   │    +13.7%    │     +37.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CHYM  │  $33.55  │   88  │   +1.2%   │   +7.0%   │    +10.8%    │     +18.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  DDI   │  $15.77  │   88  │   +0.4%   │   +7.7%   │    +11.7%    │     +23.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  STE   │ $264.32  │   88  │   +2.5%   │   +5.5%   │    +10.4%    │     +17.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  VNCE  │  $13.67  │   88  │   +2.8%   │   +5.2%   │    +11.6%    │     +55.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CBOE  │ $375.42  │   86  │   +0.8%   │   +5.1%   │    +10.2%    │     +25.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CROX  │ $163.72  │   86  │   +2.3%   │   +3.9%   │    +15.7%    │     +26.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  DLX   │  $26.78  │   86  │   +1.0%   │   +5.0%   │    +10.2%    │     +10.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  VERX  │  $17.97  │   86  │   +0.7%   │   +5.4%   │    +12.8%    │     +33.8%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ASUR  │  $10.39  │   85  │   +0.7%   │   +3.9%   │    +18.9%    │     +24.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  COLM  │  $73.47  │   85  │   +1.6%   │   +3.1%   │    +10.3%    │     +20.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  FCN   │ $202.81  │   85  │   +1.8%   │   +3.3%   │    +13.6%    │     +29.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  FISV  │  $63.78  │   85  │   +0.8%   │   +3.8%   │    +15.9%    │     +23.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  FLYW  │  $22.26  │   85  │   +0.6%   │   +4.0%   │    +10.3%    │     +20.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CPAY  │ $462.22  │   84  │   +0.4%   │   +4.1%   │    +9.2%     │     +15.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  KVYO  │  $22.13  │   84  │   +2.4%   │   +4.2%   │    +7.2%     │     +23.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TEVA  │  $44.50  │   84  │   +2.1%   │   +4.7%   │    +7.0%     │     +18.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  YUMC  │  $50.86  │   84  │   +2.4%   │   +3.4%   │    +7.8%     │     +13.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CAH   │ $281.10  │   83  │   +1.0%   │   +4.3%   │    +7.8%     │     +17.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CRK   │  $15.18  │   83  │   +0.4%   │   +7.2%   │    +6.4%     │     +9.3%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  HUM   │ $450.00  │   83  │   +1.4%   │   +5.1%   │    +6.2%     │     +12.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  IDXX  │ $704.23  │   83  │   +0.3%   │   +2.3%   │    +12.6%    │     +25.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  MCK   │ $1102.81 │   83  │   +1.8%   │   +4.1%   │    +7.2%     │     +21.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SMA   │  $39.86  │   83  │   +1.3%   │   +3.4%   │    +8.2%     │     +17.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SWKS  │  $89.94  │   83  │   +0.7%   │   +5.7%   │    +6.3%     │     +19.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ABNB  │ $186.78  │   82  │   +1.9%   │   +3.5%   │    +6.4%     │     +11.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  AMPH  │  $29.37  │   82  │   +1.1%   │   +3.5%   │    +7.8%     │     +25.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  BDX   │ $218.03  │   82  │   +1.2%   │   +3.6%   │    +7.2%     │     +20.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  COST  │ $1106.21 │   82  │   +1.1%   │   +4.0%   │    +7.2%     │     +15.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  MEOH  │  $70.51  │   82  │   +1.3%   │   +3.9%   │    +6.8%     │     +19.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  BILL  │  $54.48  │   81  │   +0.2%   │   +3.8%   │    +7.4%     │     +16.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CRAI  │ $205.32  │   81  │   +2.5%   │   +3.2%   │    +5.0%     │     +17.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   G    │  $43.61  │   81  │   +0.7%   │   +3.7%   │    +6.8%     │     +23.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  KNSA  │  $96.33  │   81  │   +0.9%   │   +2.1%   │    +7.5%     │     +25.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  LIVN  │  $91.32  │   81  │   +0.5%   │   +2.3%   │    +7.9%     │     +13.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  REGN  │ $955.47  │   81  │   +0.6%   │   +1.9%   │    +8.7%     │     +21.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   TW   │ $132.74  │   81  │   +0.7%   │   +3.3%   │    +6.7%     │     +22.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CNXC  │  $32.72  │   80  │   +0.3%   │   +4.5%   │    +5.4%     │     +21.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EXPO  │  $87.31  │   80  │   +0.9%   │   +1.4%   │    +7.6%     │     +25.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  DEO   │ $101.59  │   79  │   +1.0%   │   +2.2%   │    +5.2%     │     +13.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  GATX  │ $191.43  │   79  │   +1.3%   │   +2.1%   │    +7.5%     │     +8.1%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   KO   │  $99.25  │   79  │   +1.3%   │   +2.9%   │    +4.7%     │     +12.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  LLY   │ $1443.50 │   79  │   +0.4%   │   +2.2%   │    +6.6%     │     +18.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  OUT   │  $33.54  │   79  │   +0.2%   │   +3.6%   │    +5.1%     │     +9.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CCI   │  $90.83  │   78  │   +1.3%   │   +1.8%   │    +4.5%     │     +17.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CME   │ $317.97  │   78  │   +0.6%   │   +2.8%   │    +4.5%     │     +15.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CSL   │ $396.13  │   78  │   +0.2%   │   +1.2%   │    +7.0%     │     +12.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  AFG   │ $161.02  │   77  │   +0.1%   │   +2.2%   │    +4.4%     │     +11.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ALLE  │ $191.98  │   77  │   +0.6%   │   +1.0%   │    +5.5%     │     +20.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CHD   │ $113.00  │   77  │   +0.8%   │   +1.6%   │    +4.4%     │     +12.8%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   CL   │  $99.67  │   77  │   +1.4%   │   +1.9%   │    +4.0%     │     +9.5%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  DPZ   │ $341.72  │   77  │   +2.3%   │   +2.9%   │    +5.9%     │     +6.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   EG   │ $427.19  │   77  │   +0.6%   │   +2.0%   │    +4.7%     │     +12.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  JNJ   │ $285.75  │   77  │   +0.9%   │   +3.2%   │    +5.2%     │     +7.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  KNSL  │ $395.89  │   77  │   +0.8%   │   +1.7%   │    +4.4%     │     +9.6%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  LKFT  │  $33.98  │   77  │   +0.6%   │   +1.9%   │    +4.9%     │     +14.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  OGS   │  $83.86  │   77  │   +1.2%   │   +2.6%   │    +5.4%     │     +7.8%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   PG   │ $169.80  │   77  │   +0.7%   │   +1.8%   │    +4.0%     │     +13.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SPOT  │ $612.63  │   77  │   +0.9%   │   +0.9%   │    +5.4%     │     +16.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TAK   │  $21.43  │   77  │   +1.3%   │   +1.9%   │    +4.0%     │     +15.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  WMT   │ $128.09  │   77  │   +1.4%   │   +1.2%   │    +3.9%     │     +13.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ADP   │ $309.93  │   76  │   +0.7%   │   +2.0%   │    +3.5%     │     +13.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CCEP  │ $118.57  │   76  │   +0.7%   │   +1.8%   │    +3.8%     │     +10.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  COKE  │ $214.34  │   76  │   +1.7%   │   +2.3%   │    +2.3%     │     +10.1%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  DGX   │ $259.60  │   76  │   +0.1%   │   +1.5%   │    +4.0%     │     +10.3%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   ED   │ $121.00  │   76  │   +1.1%   │   +1.4%   │    +3.6%     │     +10.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EGBN  │  $34.44  │   76  │   +0.5%   │   +1.2%   │    +4.6%     │     +18.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  FOX   │  $61.11  │   76  │   +1.5%   │   +2.3%   │    +3.5%     │     +8.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  MDLZ  │  $67.54  │   76  │   +1.1%   │   +1.5%   │    +4.0%     │     +9.0%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  MDT   │ $102.86  │   76  │   +0.9%   │   +0.9%   │    +4.5%     │     +13.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   MO   │  $78.64  │   76  │   +0.9%   │   +1.9%   │    +3.5%     │     +11.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  PEP   │ $145.44  │   76  │   +1.4%   │   +2.4%   │    +5.0%     │     +6.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  RGA   │ $275.15  │   76  │   +0.4%   │   +2.2%   │    +3.0%     │     +10.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   TS   │  $61.27  │   76  │   +0.4%   │   +3.7%   │    +3.7%     │     +8.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  WMG   │  $32.30  │   76  │   +0.8%   │   +1.8%   │    +3.4%     │     +13.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  WTRG  │  $45.23  │   76  │   +0.6%   │   +0.6%   │    +4.3%     │     +11.6%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ZTS   │  $83.82  │   76  │   +1.3%   │   +1.2%   │    +3.2%     │     +11.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  BRZE  │  $46.64  │   75  │   +0.1%   │   +1.1%   │    +3.3%     │     +51.5%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CART  │  $58.87  │   75  │   +0.3%   │   +0.8%   │    +3.6%     │     +19.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CHT   │  $49.87  │   75  │   +1.0%   │   +1.6%   │    +2.5%     │     +10.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CRBG  │  $36.35  │   75  │   +0.8%   │   +2.0%   │    +3.1%     │     +9.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ENSG  │ $188.41  │   75  │   +1.0%   │   +2.4%   │    +4.2%     │     +7.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EQH   │  $56.10  │   75  │   +0.6%   │   +1.9%   │    +2.9%     │     +9.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  FOXA  │  $68.42  │   75  │   +1.5%   │   +2.0%   │    +3.3%     │     +8.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  KOF   │ $120.63  │   75  │   +0.2%   │   +2.2%   │    +2.9%     │     +9.7%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  MRSH  │ $207.78  │   75  │   +0.3%   │   +0.6%   │    +3.7%     │     +12.0%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  OGE   │  $51.56  │   75  │   +0.4%   │   +1.7%   │    +4.0%     │     +8.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │ RUSHB  │  $60.44  │   75  │   +0.7%   │   +1.0%   │    +3.5%     │     +12.2%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  UPS   │ $112.40  │   75  │   +0.4%   │   +1.3%   │    +5.3%     │     +8.3%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  COFS  │  $36.91  │   74  │   +0.5%   │   +0.3%   │    +4.0%     │     +9.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ECL   │ $309.27  │   74  │   +0.6%   │   +0.8%   │    +3.3%     │     +9.5%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   MA   │ $661.19  │   74  │   +0.4%   │   +0.5%   │    +3.3%     │     +13.7%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ABBV  │ $295.03  │   73  │   +0.1%   │   +1.1%   │    +1.9%     │     +11.4%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  AEE   │ $114.77  │   73  │   +0.8%   │   +1.6%   │    +3.9%     │     +6.6%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ALL   │ $267.64  │   73  │   +0.9%   │   +1.8%   │    +3.7%     │     +6.3%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  AMT   │ $191.64  │   73  │   +0.6%   │   +0.6%   │    +2.2%     │     +9.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  BANF  │ $118.75  │   73  │   +0.3%   │   +2.2%   │    +4.8%     │     +6.1%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   CB   │ $375.74  │   73  │   +0.9%   │   +1.6%   │    +3.2%     │     +7.6%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CNC   │  $71.27  │   73  │   +1.7%   │   +1.6%   │    +2.1%     │     +7.3%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  WRB   │  $77.44  │   73  │   +0.5%   │   +1.5%   │    +3.4%     │     +8.0%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  AFL   │ $127.61  │   72  │   +0.6%   │   +1.4%   │    +3.2%     │     +6.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EVRG  │  $88.78  │   72  │   +0.3%   │   +1.5%   │    +3.4%     │     +6.7%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  UVE   │  $48.57  │   72  │   +0.4%   │   +0.9%   │    +1.4%     │     +9.6%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  BMBL  │  $5.99   │   71  │   +0.2%   │   +0.3%   │    +0.2%     │     +65.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  HZO   │  $52.80  │   71  │   +0.0%   │   +0.1%   │    +0.4%     │     +11.9%    │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  NWN   │  $52.11  │   71  │   +0.6%   │   +1.1%   │    +3.6%     │     +6.1%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SNN   │  $31.28  │   71  │   +0.4%   │   +0.6%   │    +2.4%     │     +7.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  WTW   │ $335.34  │   71  │   +0.7%   │   +1.2%   │    +2.7%     │     +6.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  XEL   │  $81.61  │   71  │   +0.4%   │   +1.6%   │    +3.3%     │     +6.1%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  AIG   │  $82.86  │   70  │   +0.2%   │   +1.8%   │    +1.9%     │     +6.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  APD   │ $316.53  │   70  │   +0.4%   │   +1.0%   │    +2.1%     │     +6.1%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TRV   │ $403.23  │   70  │   +0.3%   │   +0.7%   │    +1.1%     │     +7.8%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CAC   │  $59.47  │   69  │   +0.5%   │   +1.2%   │    +2.3%     │     +5.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ORLY  │  $92.19  │   69  │   +1.0%   │   +1.6%   │    +2.1%     │     +4.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SWX   │  $93.66  │   69  │   +0.6%   │   +1.2%   │    +2.1%     │     +5.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  AMTB  │  $30.33  │   68  │   +0.1%   │   +0.8%   │    +2.0%     │     +5.6%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CATY  │  $65.65  │   68  │   +0.6%   │   +0.6%   │    +2.1%     │     +5.1%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  IGD   │  $6.46   │   68  │   +0.7%   │   +1.9%   │    +1.9%     │     +3.0%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  LKFN  │  $62.31  │   68  │   +0.6%   │   +0.7%   │    +2.8%     │     +3.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │   BY   │  $39.20  │   67  │   +0.3%   │   +1.0%   │    +2.1%     │     +3.1%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  QCRH  │ $103.99  │   67  │   +0.6%   │   +1.1%   │    +1.9%     │     +3.0%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  SATA  │  $97.73  │   64  │   +0.3%   │   +0.9%   │    +0.9%     │     +1.8%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TXNM  │  $58.87  │   64  │   +0.1%   │   +0.6%   │    +0.7%     │     +2.3%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  BGB   │  $11.19  │   63  │   +0.2%   │   +0.4%   │    +1.1%     │     +1.3%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  OGN   │  $13.90  │   63  │   +0.1%   │   +0.3%   │    +0.7%     │     +1.6%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  APXT  │  $10.21  │   62  │   +0.2%   │   +0.3%   │    +0.5%     │     +0.8%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  BIII  │  $10.15  │   62  │   +0.2%   │   +0.2%   │    +0.4%     │     +1.2%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  DMII  │  $10.24  │   62  │   +0.1%   │   +0.2%   │    +0.3%     │     +0.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  MESH  │  $10.14  │   62  │   +0.2%   │   +0.3%   │    +0.4%     │     +0.8%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  PAYO  │  $7.20   │   62  │   +0.4%   │   +0.4%   │    +0.7%     │     +0.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  ALUB  │  $10.17  │   61  │   +0.1%   │   +0.1%   │    +0.2%     │     +0.5%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  CCII  │  $10.38  │   61  │   +0.2%   │   +0.3%   │    +0.4%     │     +0.5%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EVAC  │  $10.37  │   61  │   +0.0%   │   +0.0%   │    +0.2%     │     +0.8%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  EVOX  │  $10.16  │   61  │   +0.2%   │   +0.2%   │    +0.2%     │     +0.6%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  HCMA  │  $10.34  │   61  │   +0.1%   │   +0.2%   │    +0.2%     │     +0.3%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  JACS  │  $10.86  │   61  │   +0.0%   │   +0.1%   │    +0.1%     │     +0.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  JENA  │  $10.46  │   61  │   +0.0%   │   +0.1%   │    +0.2%     │     +0.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  KBON  │  $10.15  │   61  │   +0.2%   │   +0.3%   │    +0.4%     │     +0.5%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  KOYN  │  $10.30  │   61  │   +0.0%   │   +0.2%   │    +0.3%     │     +0.7%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TACH  │  $10.59  │   61  │   +0.1%   │   +0.1%   │    +0.2%     │     +0.9%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  TACO  │  $10.52  │   61  │   +0.1%   │   +0.1%   │    +0.2%     │     +0.4%     │
+  ├────────┼──────────┼───────┼───────────┼───────────┼──────────────┼───────────────┤
+  │  WENN  │  $10.48  │   61  │   +0.1%   │   +0.2%   │    +0.3%     │     +0.9%     │
+  └────────┴──────────┴───────┴───────────┴───────────┴──────────────┴───────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Score           0-100, 25 pts/timeframe scaled by distance above SMA20
+  1H/4H/Daily/Weekly_Dist_%   price's distance above that timeframe's SMA20
+  ──────────────────────────────────────────────────────
+  🛑 Default stop: 10-day low — 173/173 tickers
+  💰 Position sizing: max loss $40 per trade — 164 sized, 9 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/multi_tf_uptrend_20261115_0211.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_multi_tf_uptrend_20261115_0211.txt
+
+  📋 Tickers (comma-separated):
+  ENGN, OBIO, SBC, TOP, CHA, PUBM, STN, UEIC, EDHL, SOPH, TARS, USEA, ADMA, EPRX, FROG, IBEX, SENS, TMCI, GCT, GTN, XERS, ASND, CLX, COLD, KOD, VYX, ATAT, DUOL, HLF, SGRY, SKYH, TBBB, CHYM, DDI, STE, VNCE, CBOE, CROX, DLX, VERX, ASUR, COLM, FCN, FISV, FLYW, CPAY, KVYO, TEVA, YUMC, CAH, CRK, HUM, IDXX, MCK, SMA, SWKS, ABNB, AMPH, BDX, COST, MEOH, BILL, CRAI, G, KNSA, LIVN, REGN, TW, CNXC, EXPO, DEO, GATX, KO, LLY, OUT, CCI, CME, CSL, AFG, ALLE, CHD, CL, DPZ, EG, JNJ, KNSL, LKFT, OGS, PG, SPOT, TAK, WMT, ADP, CCEP, COKE, DGX, ED, EGBN, FOX, MDLZ, MDT, MO, PEP, RGA, TS, WMG, WTRG, ZTS, BRZE, CART, CHT, CRBG, ENSG, EQH, FOXA, KOF, MRSH, OGE, RUSHB, UPS, COFS, ECL, MA, ABBV, AEE, ALL, AMT, BANF, CB, CNC, WRB, AFL, EVRG, UVE, BMBL, HZO, NWN, SNN, WTW, XEL, AIG, APD, TRV, CAC, ORLY, SWX, AMTB, CATY, IGD, LKFN, BY, QCRH, SATA, TXNM, BGB, OGN, APXT, BIII, DMII, MESH, PAYO, ALUB, CCII, EVAC, EVOX, HCMA, JACS, JENA, KBON, KOYN, TACH, TACO, WENN
+[Email] Sending to vikramaga24@gmail.com  (173 results)...
+[Email] 📎 Attached: multi_tf_uptrend_20261115_0211.csv (25,281 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 Multi-TF Uptrend (1H+4H+D+W) — 173 signals — 2026-11-15
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/multi_tf_uptrend_chart_20261115_0211.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 UPTREND TEST (same on every timeframe)
+  1) STACK:  Price > EMA8 > SMA20  (on that timeframe's own bars)
+  2) RISING: SMA20 now > SMA20 rising_lookback bars ago
+  Both required, on 1H, 4H, Daily, AND Weekly simultaneously.
+
+  📋 DATA SOURCING
+  Only 2 downloads per ticker:
+    Daily bars  → Daily uptrend directly + resampled to Weekly
+    Hourly bars → 1H uptrend directly    + resampled to 4H
+  (Yahoo/yfinance has no native 4H interval, and no separate
+  weekly fetch is needed since daily resamples into it cleanly.)
+
+  📋 SCORE (0-100)
+  25 points per timeframe, scaled by how far price sits above
+  that timeframe's own rising SMA20 — a stock aligned everywhere
+  but only barely above each SMA scores lower than one with a
+  strong margin on every timeframe.
+
+  💡 BEST SETUPS
+  Score > 80          strong alignment margin on all 4 timeframes
+  Weekly_Dist_% high   the long-term trend has real room, not a
+                       fresh breakout that could fail
+  1H/4H_Dist_% modest  intraday isn't already overextended
+
+  ⚙️  TUNE IF 0 RESULTS
+  sma_period                20 → 10   (looser trend definition)
+  rising_lookback             5 → 3
+  rising_lookback_weekly      3 → 2
+  min_price                   2 → 1
+  min_avg_volume          80000 → 50000
+  intraday_days              729 → 400   (if hourly fetch is failing/slow)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
