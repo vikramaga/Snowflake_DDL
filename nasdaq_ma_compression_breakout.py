@@ -914,7 +914,7 @@ if __name__ == "__main__":
         # Email
         def _send_email(rl, csv_path):
             import smtplib
-            from email.mime.base import MIMEBase; from email import encoders
+            from email.mime.base import MIMEBase; from email import encoders; from email.mime.multipart import MIMEMultipart; from email.mime.text import MIMEText
             gu = os.environ.get("GMAIL_USER",""); gp = os.environ.get("GMAIL_PASS","")
             et = os.environ.get("EMAIL_TO","")
             if not gu or not gp or not et:
