@@ -20,7 +20,8 @@
 #
 # Stages reported: Triggered (all 5) | Retest holding (1-4 + retest, no move up yet)
 #                  | CHoCH, waiting retest (1-4) | Armed (1-2: watch on 5-min next session)
-# Entry = trigger candle close; Stop = min(FVG bottom, retest low) - 0.1%;
+# Entry = trigger candle close; Stop = the 5-min pullback low (the swing the CHoCH
+# came from) - 0.1%; Aggressive_Stop = min(FVG bottom, retest low) - 0.1%;
 # T1 = the 1H swing high (2R if already above it); T2 = 2R. After-entry outcome
 # (high / low / last price, T1 or stop hit) is shown when run after the session.
 # Data: Yahoo daily (400 days), 1-hour (60 days), 5-min (5 days); regular hours.
@@ -206,6 +207,7 @@ def m5_entry(d5, high_time, cfg):
     stop = min(fb, float(l[r])) * (1 - cfg["stop_buffer"])
     after = d.iloc[e + 1:]
     out.update({"stage": "Triggered", "entry_time": d.index[e], "entry": float(c[e]), "stop": float(stop),
+                "stop_struct": float(l[m]) * (1 - cfg["stop_buffer"]),
                 "post_high": float(after["High"].max()) if len(after) else np.nan,
                 "post_low": float(after["Low"].min()) if len(after) else np.nan,
                 "last": float(c[-1]), "last_time": d.index[-1], "_after": after})
@@ -419,14 +421,18 @@ for s, a in arm.items():
         row.update({"FVG_Bottom": round(r["fvg_bot"], 2), "FVG_Top": round(r["fvg_top"], 2),
                     "CHoCH_Level": round(r["choch_level"], 2), "CHoCH_Time": r["choch_time"].strftime("%m-%d %H:%M")})
     if r["stage"] == "Triggered":
-        entry, stop = r["entry"], r["stop"]
+        entry, stop, aggr = r["entry"], r["stop_struct"], r["stop"]
         risk = entry - stop
         if risk <= 0: continue
         t1 = a["high"] if a["high"] > entry else entry + 2 * risk
-        outcome = "open"
-        for _, b in r["_after"].iterrows():
-            if b["Low"] <= stop: outcome = "stopped"; break
-            if b["High"] >= t1: outcome = "T1 hit"; break
+        def _outcome(sl):
+            for _, b in r["_after"].iterrows():
+                if b["Low"] <= sl: return "stopped"
+                if b["High"] >= t1: return "T1 hit"
+            return "open"
+        outcome = _outcome(stop)
+        row.update({"Aggressive_Stop": round(aggr, 2), "Outcome_Aggr": _outcome(aggr),
+                    "Reward_R_Aggr": round((t1 - entry) / (entry - aggr), 1) if entry > aggr else None})
         row.update({"Entry_Price": round(entry, 2), "Stop_Loss": round(stop, 2), "Risk_%": round(risk / entry * 100, 2),
                     "Target_1": round(t1, 2), "Reward_R": round((t1 - entry) / risk, 1), "Target_2": round(entry + 2 * risk, 2),
                     "Entry_Time_ET": r["entry_time"].strftime("%Y-%m-%d %H:%M"), "Outcome": outcome,
@@ -450,7 +456,7 @@ print("=" * 65)
 ts      = datetime.today().strftime("%Y%m%d_%H%M")
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 COLS = ["Ticker","Stage","Price","Entry_Price","Stop_Loss","Risk_%","Target_1","Reward_R","Target_2","Entry_Time_ET",
-        "Outcome","Last_5m","Open_R","FVG_Bottom","FVG_Top","CHoCH_Level","CHoCH_Time","H1_High","H1_High_Time",
+        "Outcome","Aggressive_Stop","Reward_R_Aggr","Outcome_Aggr","Last_5m","Open_R","FVG_Bottom","FVG_Top","CHoCH_Level","CHoCH_Time","H1_High","H1_High_Time",
         "Retrace_%","Pullback_Low","Daily_HL","Daily_HH"]
 df_out = pd.DataFrame(results) if results else pd.DataFrame(columns=COLS)
 df_out = df_out[[c for c in COLS if c in df_out.columns]].reset_index(drop=True)
@@ -502,7 +508,7 @@ except Exception as e:
 print(f"[TradingView] {TV_STATUS}")
 
 # -- Email
-EMAIL_COLS = {"Triggered": ["Ticker","Entry_Time_ET","Entry_Price","Stop_Loss","Risk_%","Target_1","Reward_R","Outcome","Open_R","FVG_Bottom","FVG_Top","Retrace_%"],
+EMAIL_COLS = {"Triggered": ["Ticker","Entry_Time_ET","Entry_Price","Stop_Loss","Risk_%","Target_1","Reward_R","Outcome","Open_R","Aggressive_Stop","Outcome_Aggr","FVG_Bottom","FVG_Top","Retrace_%"],
               "Retest holding": ["Ticker","Price","FVG_Bottom","FVG_Top","CHoCH_Level","CHoCH_Time","H1_High","Retrace_%","Daily_HL"],
               "CHoCH, waiting retest": ["Ticker","Price","FVG_Bottom","FVG_Top","CHoCH_Level","CHoCH_Time","H1_High","Retrace_%","Daily_HL"],
               "Armed": ["Ticker","Price","H1_High","H1_High_Time","Pullback_Low","Retrace_%","Daily_HL","Daily_HH"]}
@@ -547,7 +553,7 @@ def _send_email(rl, csv_path):
 <p style="font-size:11px;color:#64748b">Daily: last two swing highs and lows rising (3 bars each side), close above the higher low and SMA50.
 1H: pullback of {CFG['retrace_min']*100:.1f}-{CFG['retrace_max']*100:.1f}% of the up-leg into the highest high of the last {CFG['h1_window']} hourly bars, above the daily higher low.
 5-min: close above the last lower swing high after the pullback low (CHoCH), bullish FVG in that move, price back into the FVG without a close below it,
-then a close above the retest candle's high = entry. Stop = min(FVG bottom, retest low) - 0.1%; T1 = the 1H high (2R if already above). Times are US Eastern.
+then a close above the retest candle's high = entry. Stop = the 5-min pullback low - 0.1% (Aggressive_Stop = min(FVG bottom, retest low) - 0.1%); T1 = the 1H high (2R if already above). Times are US Eastern.
 Outcome = what happened after the entry in the rest of the data (T1 hit / stopped / open).</p></td></tr>
 <tr><td style="background:#f8fafc;padding:10px;text-align:center;color:#94a3b8;font-size:10px">Not financial advice &middot; Auto-generated by GitHub Actions</td></tr>
 </table></td></tr></table></body></html>"""
