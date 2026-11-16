@@ -106,7 +106,8 @@ def cmd_disable_scheduled():
 
 
 def git(*a):
-    print("+ git", " ".join(a)); subprocess.check_call(["git", *a])
+    shown = " ".join(re.sub(r"//[^@/\s]+@", "//***@", x) for x in a)   # never print the token
+    print("+ git", shown); subprocess.check_call(["git", *a])
 
 
 def cmd_sync():
