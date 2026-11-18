@@ -1,5 +1,5 @@
 # ============================================================
-# NASDAQ / NYSE - SMA50 Closing on SMA150 + RGG JMA Reclaim - daily, v1
+# NASDAQ / NYSE - SMA50 Closing on SMA150 + RGG JMA Reclaim - daily, v1 (RGG within 7 sessions)
 # ============================================================
 #
 # From Vik's chart (2026-11-18): blue SMA50 rising toward the red SMA150 from
@@ -12,15 +12,17 @@
 #      it by at most 1% - "just crossed"), the gap narrower than 10 sessions ago by
 #      at least 0.3 points, and SMA50 higher than 10 sessions ago.
 #   2. Close above SMA150.
-#   3. RGG: 2 sessions ago red, yesterday green, today green; today's volume above
-#      yesterday's.
+#   3. RGG within the last 7 sessions: red, green, green, the second green's volume
+#      above the first green's (the most recent valid RGG is used).
 #   4. FROM EMA8 / SMA21: one of the three RGG candles' low reached EMA8 or SMA21
 #      (within 0.5%).
-#   5. JMA RECLAIM: today's close above JMA, and the red or the first green closed
-#      at or below JMA.
+#   5. JMA RECLAIM: the second green closed above JMA, and the red or the first green
+#      closed at or below JMA.
+#   6. LOW HELD: no candle after the RGG traded below the lowest low of the 3 RGG candles.
 # Preferred (grouped first, +score): close above the monthly Camarilla H4
 #   (H4 = previous month's close + 1.1 x (prev month high - low) / 2);
 #   "crossed H4 today" when yesterday's close was at or below it.
+# Score extras: RGG today, still above JMA today.
 # Entry = today's close | Stop = lowest low of the RGG candles
 # T1 = monthly H4 if still above the entry, else the 60-session high if above,
 #      else 2R | T2 = 2R. Liquidity $5 / 200k.
@@ -120,6 +122,7 @@ CFG = {
     "gap_narrow_pts"   : 0.3,     # gap narrower than 10 sessions ago by >= 0.3 points
     "touch_tol"        : 0.005,   # low within 0.5% of EMA8 / SMA21
     "high_window"      : 60,
+    "rgg_lookback"     : 7,       # RGG may complete in any of the last 7 sessions
     "min_price"        : 5.0,
     "min_avg_volume"   : 200_000,
     "tv_list_prefix"   : "SMA50 Converge RGG",
@@ -128,7 +131,7 @@ CFG = {
 }
 
 FUNNEL = {"tickers_checked": 0, "sma50_closing": 0, "above_sma150": 0, "rgg": 0,
-          "from_ema8_sma21": 0, "jma_reclaim": 0, "above_h4": 0}
+          "from_ema8_sma21": 0, "jma_reclaim": 0, "low_held": 0, "above_h4": 0}
 
 def calc_jma(series, period=13, phase=40, power=2):
     """Jurik Moving Average, same formula as TradingView's "Jurik Moving Average" indicator."""
@@ -175,23 +178,34 @@ def analyze_stock(sym, df):
     FUNNEL["sma50_closing"] += 1
     if not c[i] > s150[i]: return None
     FUNNEL["above_sma150"] += 1
-    if not (c[i - 2] < o[i - 2] and c[i - 1] > o[i - 1] and c[i] > o[i] and v[i] > v[i - 1]): return None
-    FUNNEL["rgg"] += 1
+    # RGG completed on bar g (0-6 sessions ago); the most recent valid one is used
     tol = 1 + CFG["touch_tol"]
-    t8 = [j for j in (i - 2, i - 1, i) if l[j] <= e8[j] * tol]
-    t21 = [j for j in (i - 2, i - 1, i) if l[j] <= s21[j] * tol]
-    if not (t8 or t21): return None
-    FUNNEL["from_ema8_sma21"] += 1
     jma = calc_jma(cs).values
-    if not (c[i] > jma[i] and (c[i - 2] <= jma[i - 2] or c[i - 1] <= jma[i - 1])): return None
-    FUNNEL["jma_reclaim"] += 1
+    stage, found = 0, None
+    for g in range(i, i - CFG["rgg_lookback"], -1):
+        if not (c[g - 2] < o[g - 2] and c[g - 1] > o[g - 1] and c[g] > o[g] and v[g] > v[g - 1]): continue
+        stage = max(stage, 1)
+        t8 = [j for j in (g - 2, g - 1, g) if l[j] <= e8[j] * tol]
+        t21 = [j for j in (g - 2, g - 1, g) if l[j] <= s21[j] * tol]
+        if not (t8 or t21): continue
+        stage = max(stage, 2)
+        if not (c[g] > jma[g] and (c[g - 2] <= jma[g - 2] or c[g - 1] <= jma[g - 1])): continue
+        stage = max(stage, 3)
+        rgg_low = float(min(l[g - 2:g + 1]))
+        if g < i and float(np.min(l[g + 1:i + 1])) < rgg_low: continue      # a later candle broke the RGG low
+        stage = 4; found = (g, t8, t21, rgg_low); break
+    for st, key in ((1, "rgg"), (2, "from_ema8_sma21"), (3, "jma_reclaim"), (4, "low_held")):
+        if stage >= st: FUNNEL[key] += 1
+    if found is None: return None
+    g, t8, t21, rgg_low = found
+    days_ago = i - g
 
     mh3, mh4 = monthly_camarilla(df)
     H4 = mh4[i]
     above_h4 = np.isfinite(H4) and c[i] > H4
     crossed_h4 = above_h4 and c[i - 1] <= mh4[i - 1]
     if above_h4: FUNNEL["above_h4"] += 1
-    stop = float(min(l[i - 2:i + 1])); entry = float(c[i]); risk = entry - stop
+    stop = rgg_low; entry = float(c[i]); risk = entry - stop
     if risk <= 0: return None
     hi = float(np.max(h[max(0, i - CFG["high_window"]):i]))
     if np.isfinite(H4) and H4 > entry: t1, t1_src = float(H4), "monthly H4"
@@ -200,20 +214,25 @@ def analyze_stock(sym, df):
     pc = np.concatenate([[np.nan], c[:-1]])
     tr = np.nanmax(np.vstack([h - l, np.abs(h - pc), np.abs(l - pc)]), axis=0)
     atr = float(pd.Series(tr).rolling(CFG["atr_period"]).mean().values[i])
-    vavg = float(np.mean(v[i - 20:i])); vx = v[i] / vavg if vavg > 0 else np.nan
-    rng = h[i] - l[i]; cpos = (c[i] - l[i]) / rng if rng > 0 else 0.5
+    vavg = float(np.mean(v[g - 20:g])); vx = v[g] / vavg if vavg > 0 else np.nan
+    rng = h[g] - l[g]; cpos = (c[g] - l[g]) / rng if rng > 0 else 0.5
+    above_jma_now = c[i] > jma[i]
     touched = "EMA8 + SMA21" if (t8 and t21) else ("EMA8" if t8 else "SMA21")
     sma_state = "just crossed above SMA150" if gap < 0 else f"{gap:.1f}% below SMA150"
     score = 50 + (15 if above_h4 else 0) + (5 if crossed_h4 else 0) + max(0, 10 - max(gap, 0) * 1.25) \
             + (5 if np.isfinite(vx) and vx >= 1.2 else 0) + (5 if cpos >= 0.7 else 0) + (5 if t8 and t21 else 0) \
-            + (5 if s150[i] >= s150[i - k] else 0)
+            + (5 if s150[i] >= s150[i - k] else 0) + (5 if above_jma_now else 0) + (5 if days_ago == 0 else 0)
     flags = [f"SMA50 {sma_state} (was {gap_then:.1f}%)", f"pullback reached {touched}",
-             "red closed below JMA" if c[i - 2] <= jma[i - 2] else "first green closed below JMA",
-             f"vol x{v[i] / max(v[i - 1], 1):.2f} vs yesterday, x{vx:.1f} 20d avg",
+             "RGG today" if days_ago == 0 else f"RGG {days_ago} session(s) ago, low held since",
+             "red closed below JMA" if c[g - 2] <= jma[g - 2] else "first green closed below JMA",
+             "still above JMA" if above_jma_now else "back below JMA now",
+             f"2nd green vol x{v[g] / max(v[g - 1], 1):.2f} vs 1st, x{vx:.1f} 20d avg",
              ("crossed monthly H4 today" if crossed_h4 else "above monthly H4") if above_h4 else "below monthly H4",
              "SMA150 rising" if s150[i] >= s150[i - k] else "SMA150 falling"]
     return {"Score": round(min(100, score)), "H4_Status": ("Crossed today" if crossed_h4 else "Above") if above_h4 else "Below",
             "Price": round(entry, 2), "Entry_Price": round(entry, 2), "Stop_Loss": round(stop, 2),
+            "RGG_Date": df.index[g].strftime("%Y-%m-%d"), "Days_Since_RGG": days_ago, "RGG_Low": round(rgg_low, 2),
+            "Above_JMA_Now": "Yes" if above_jma_now else "No",
             "Risk_%": round(risk / entry * 100, 2), "Target_1": round(t1, 2), "T1_Source": t1_src,
             "Reward_R": round((t1 - entry) / risk, 2), "Target_2R": round(entry + 2 * risk, 2),
             "Monthly_H4": round(float(H4), 2) if np.isfinite(H4) else None,
@@ -382,7 +401,8 @@ for r in results:
 fc = FUNNEL
 print(f"\n{'=' * 65}\n  SCAN COMPLETE - {len(results)} matches from {got_daily} tickers with data")
 print(f"  checked {fc['tickers_checked']} -> SMA50 closing on SMA150 {fc['sma50_closing']} -> above SMA150 {fc['above_sma150']}"
-      f" -> RGG {fc['rgg']} -> from EMA8/SMA21 {fc['from_ema8_sma21']} -> JMA reclaim {fc['jma_reclaim']}"
+      f" -> RGG (7 sessions) {fc['rgg']} -> from EMA8/SMA21 {fc['from_ema8_sma21']} -> JMA reclaim {fc['jma_reclaim']}"
+      f" -> RGG low held {fc['low_held']}"
       f" (above monthly H4 {fc['above_h4']})")
 for g, _ in GROUPS:
     names = [r["Ticker"] for r in results if r["Group"] == g]
@@ -391,7 +411,8 @@ print("=" * 65)
 
 ts      = datetime.today().strftime("%Y%m%d_%H%M")
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
-COLS = ["Ticker","Group","H4_Status","Score","Price","Entry_Price","Stop_Loss","Risk_%","Target_1","T1_Source","Reward_R",
+COLS = ["Ticker","Group","H4_Status","Score","RGG_Date","Days_Since_RGG","Above_JMA_Now","Price","Entry_Price","Stop_Loss",
+        "RGG_Low","Risk_%","Target_1","T1_Source","Reward_R",
         "Target_2R","Monthly_H4","Monthly_H3","SMA50_Gap_%","Gap_10d_Ago_%","Touched","JMA","EMA8","SMA21","SMA50","SMA150",
         "Vol_x_20d","ATR_%","Signal_Date","Flags"]
 df_out = pd.DataFrame(results) if results else pd.DataFrame(columns=COLS)
@@ -441,8 +462,8 @@ except Exception as e:
     TV_STATUS = f"failed ({type(e).__name__}: {e})"
 print(f"[TradingView] {TV_STATUS}")
 
-EMAIL_COLS = ["Ticker","H4_Status","Score","Price","Stop_Loss","Risk_%","Target_1","T1_Source","Reward_R","Monthly_H4",
-              "SMA50_Gap_%","Touched","Vol_x_20d"]
+EMAIL_COLS = ["Ticker","H4_Status","Score","RGG_Date","Days_Since_RGG","Above_JMA_Now","Price","Stop_Loss","Risk_%",
+              "Target_1","T1_Source","Reward_R","Monthly_H4","SMA50_Gap_%","Touched","Vol_x_20d"]
 def _table(rows):
     th = "".join(f'<th style="background:#1e293b;color:#e2e8f0;padding:6px 8px;font-size:11px;white-space:nowrap">{c}</th>' for c in EMAIL_COLS)
     body = ""
@@ -478,12 +499,13 @@ def _send_email(rl, csv_path):
 &middot; TradingView: {TV_STATUS}</p></td></tr>
 <tr><td style="padding:16px 22px">{secs}
 <p style="font-size:11px;color:#64748b">SMA50 rising toward SMA150 from below (gap &le; {CFG['gap_max_pct']:g}%, or just crossed by &le; {-CFG['gap_min_pct']:g}%; narrower than {CFG['slope_bars']} sessions ago) &middot;
-close above SMA150 &middot; red, green, green with today's volume above yesterday's &middot; one of the three lows reached EMA8 or SMA21 &middot;
-today closes above JMA after the red or first green closed at or below it. Preferred: close above the monthly Camarilla H4
+close above SMA150 &middot; within the last {CFG['rgg_lookback']} sessions a red, green, green with the second green's volume above the first's &middot;
+one of the three lows reached EMA8 or SMA21 &middot; the second green closed above JMA after the red or first green closed at or below it &middot;
+no candle since then below the lowest low of the three. Preferred: close above the monthly Camarilla H4
 (previous month's close + 1.1 &times; range / 2). Entry = today's close &middot; Stop = lowest low of the RGG candles &middot;
 T1 = monthly H4 if above the entry, else the {CFG['high_window']}-session high, else 2R &middot; T2 = 2R. Funnel: checked {FUNNEL['tickers_checked']}
 &rarr; SMA50 closing {FUNNEL['sma50_closing']} &rarr; above SMA150 {FUNNEL['above_sma150']} &rarr; RGG {FUNNEL['rgg']} &rarr; from EMA8/SMA21 {FUNNEL['from_ema8_sma21']}
-&rarr; JMA reclaim {FUNNEL['jma_reclaim']}. Full results (with Quantity for a fixed max loss) attached.</p></td></tr>
+&rarr; JMA reclaim {FUNNEL['jma_reclaim']} &rarr; RGG low held {FUNNEL['low_held']}. Full results (with Quantity for a fixed max loss) attached.</p></td></tr>
 <tr><td style="background:#f8fafc;padding:10px;text-align:center;color:#94a3b8;font-size:10px">Not financial advice &middot; Auto-generated by GitHub Actions</td></tr>
 </table></td></tr></table></body></html>"""
         plain = [f"SMA50 Closing on SMA150 + RGG JMA Reclaim - {datetime.today().strftime('%Y-%m-%d')}", f"{len(rl)} matches", f"TradingView: {TV_STATUS}", ""]
