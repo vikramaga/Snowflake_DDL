@@ -123,6 +123,7 @@ CFG = {
     "new_low_lookback"        : 20,  # L2 = lowest low of this many bars
     "swing_high_lookback"     : 30,  # target = highest high of this many bars up to L1
     "stop_buffer_atr"         : 0.1,  # stop = L2 - 0.1 ATR(14)
+    "max_risk_pct"            : 30,   # skip if the stop is more than 30% below the entry
 
     # -- Filters ---------------------------------------------------
     "min_avg_volume"         : 80_000,
@@ -241,6 +242,8 @@ def analyze_rsi_divergence(sym, df_daily):
     risk_pct = risk / entry_price * 100
     target = sig["swing_high"]
     reward_r = (target - entry_price) / risk
+    if target <= entry_price or risk_pct > CFG["max_risk_pct"]:
+        return None                       # target already passed, or a stop too far away (bad data)
     price_break_pct = (sig["low1"] - sig["low2"]) / sig["low1"] * 100 if sig["low1"] > 0 else 0
     rsi_divergence_pts = sig["rsi2"] - sig["rsi1"]
     bounce_pct = (entry_price - sig["low2"]) / sig["low2"] * 100 if sig["low2"] > 0 else 0

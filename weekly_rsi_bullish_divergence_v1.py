@@ -3,7 +3,7 @@
 # ============================================================
 #
 # Rebuilt 2026-11-18 from the "RSI Divergence + Long Entry" chart: the
-# signal fires on the EXACT ENTRY CANDLE (week bars; weekly bars are built from daily bars and the current week counts while in progress).
+# signal fires on the EXACT ENTRY CANDLE (week bars; weekly bars are built from daily bars and only COMPLETED weeks are used - the entry is the weekly close).
 #
 #   1. LOWER LOW: a new price low (L2) made 1-2 weeks before the
 #      latest bar - the lowest low of the last 12 weeks - that is
@@ -123,6 +123,7 @@ CFG = {
     "new_low_lookback"        : 12,  # L2 = lowest low of this many bars
     "swing_high_lookback"     : 20,  # target = highest high of this many bars up to L1
     "stop_buffer_atr"         : 0.1,  # stop = L2 - 0.1 ATR(14)
+    "max_risk_pct"            : 30,   # skip if the stop is more than 30% below the entry
 
     # -- Filters ---------------------------------------------------
     "min_avg_volume"         : 80_000,
@@ -222,6 +223,8 @@ def analyze_rsi_divergence(sym, df_daily):
     if price   < CFG["min_price"]:      return None
     if avg_vol < CFG["min_avg_volume"]: return None
     df_weekly = resample_ohlcv(df_daily, "W")
+    if df_daily.index[-1].weekday() < 4:  # week still in progress -> use completed weeks only
+        df_weekly = df_weekly.iloc[:-1]
     if len(df_weekly) < CFG["rsi_period"] + CFG["l1_max_gap"] + CFG["new_low_lookback"] + 10:
         return None
     rsi = calc_rsi(df_weekly["Close"], CFG["rsi_period"])
@@ -250,6 +253,8 @@ def analyze_rsi_divergence(sym, df_daily):
     risk_pct = risk / entry_price * 100
     target = sig["swing_high"]
     reward_r = (target - entry_price) / risk
+    if target <= entry_price or risk_pct > CFG["max_risk_pct"]:
+        return None                       # target already passed, or a stop too far away (bad data)
     price_break_pct = (sig["low1"] - sig["low2"]) / sig["low1"] * 100 if sig["low1"] > 0 else 0
     rsi_divergence_pts = sig["rsi2"] - sig["rsi1"]
     bounce_pct = (entry_price - sig["low2"]) / sig["low2"] * 100 if sig["low2"] > 0 else 0
@@ -261,7 +266,7 @@ def analyze_rsi_divergence(sym, df_daily):
     score += min(20, max(0, reward_r) * 5);      reasons.append(f"Target {reward_r:.1f}R")
     score += max(0, min(15, (CFG["l1_rsi_max"] - sig["rsi1"]) * 1.5)); reasons.append(f"L1 RSI {sig['rsi1']:.1f}")
     reasons.append(f"lower low {sig['bars_since_swing_low']} week(s) before entry")
-    if df_daily.index[-1].weekday() < 4: reasons.append("week in progress - confirms at the weekly close")
+    reasons.append(f"weekly close {df_weekly.index[-1] - pd.Timedelta(days=2):%Y-%m-%d}")
     if reward_r < 1: reasons.append("target < 1R")
     score = round(min(100, max(0, score)))
 
