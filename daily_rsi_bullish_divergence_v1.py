@@ -1,35 +1,30 @@
 # ============================================================
-# NASDAQ — Daily RSI Bullish Divergence (v1)
+# NASDAQ - Daily RSI Bullish Divergence + Long Entry (v2)
 # ============================================================
 #
-# SIGNAL — classic bullish divergence between the two most recent
-# confirmed swing lows (fractal lows: strictly lower than
-# swing_arm bars on both sides):
+# Rebuilt 2026-11-18 from the "RSI Divergence + Long Entry" chart: the
+# signal fires on the EXACT ENTRY CANDLE (session bars).
 #
-#   1. PRICE BROKE THE LAST LOW: the most recent swing low's price
-#      is LOWER than the swing low before it.
+#   1. LOWER LOW: a new price low (L2) made 1-3 sessions before the
+#      latest bar - the lowest low of the last 20 sessions - that is
+#      LOWER than an earlier confirmed swing low (L1: lower than the
+#      3 bars on each side) 5-60 sessions before it, with no
+#      low in between below L2.
+#   2. RSI HIGHER LOW: RSI(14) at L2 is HIGHER than RSI at L1, and RSI at
+#      L1 was oversold / near it (<= 35).
+#   3. CONFIRMATION CLOSE = ENTRY: the latest bar is the FIRST confirmation
+#      candle after L2 - green (close > open), close above the previous
+#      close, close in the upper half of its range - and nothing after L2
+#      traded below L2. If an earlier bar after L2 already confirmed, the
+#      entry has passed and the stock is not listed.
 #
-#   2. RSI DID NOT BREAK ITS LAST LOW: RSI(14) at the most recent
-#      swing low is HIGHER than RSI at the swing low before it —
-#      momentum did not confirm the new price low, the classic
-#      divergence signature.
+# Entry  = the confirmation close (latest bar)
+# Stop   = below the lower low: L2 - 0.1 ATR(14)
+# Target = the previous swing high: the highest high of the 30 sessions
+#          up to L1 (where the decline began). Reward_R = (Target - Entry) / risk.
 #
-#   3. FRESHNESS: the most recent swing low must have been confirmed
-#      within the last max_bars_since_swing_low trading days — not
-#      an old, stale divergence.
-#
-# A swing low needs swing_arm bars AFTER it to be confirmed (it's a
-# fractal low), so the most recent usable swing low necessarily lags
-# "today" by at least that many bars — this is inherent to detecting
-# a local low, not a scanner limitation.
-#
-# DATA — only 1 download per ticker: daily bars.
-#
-# OUTPUT: Entry_Price and Stop_Loss are reasonable defaults (Entry =
-# today's close; Stop = the most recent swing low's price), not
-# explicitly requested.
-#
-# SINGLE PASS — purely technical, no fundamentals fetch.
+# DATA - 1 download per ticker: daily bars.
+# SINGLE PASS - purely technical, no fundamentals fetch.
 #
 # ============================================================
 
@@ -115,20 +110,21 @@ print()
 
 # ── CONFIG ────────────────────────────────────────────────────
 CFG = {
-    "history_days"          : 550,   # daily bars — ~390 trading days, comfortable
-                                      # margin above _clean()'s 220-bar floor
+    "history_days"          : 550,   # daily bars - ~390 trading days
 
-    # ── Indicator periods ────────────────────────────────────────
+    # -- Pattern (bars = sessions) ----------------------------------
     "rsi_period"              : 14,
-    "swing_arm"               : 5,   # bars of strictly-higher lows required
-                                      # on each side to confirm a fractal swing low
-    "swing_search_window"     : 150, # how far back (trading days) to search
-                                      # for swing lows
+    "swing_arm"               : 3,   # L1 = a low lower than this many bars on each side
+    "swing_search_window"     : 150,  # bars kept for the RSI / swing search
+    "max_bars_since_swing_low": 3,   # lower low (L2) made 1-3 bars before the entry bar
+    "l1_min_gap"              : 5,   # L1 at least this many bars before L2 ...
+    "l1_max_gap"              : 60,  # ... and at most this many
+    "l1_rsi_max"              : 35,  # RSI at L1 oversold / near it
+    "new_low_lookback"        : 20,  # L2 = lowest low of this many bars
+    "swing_high_lookback"     : 30,  # target = highest high of this many bars up to L1
+    "stop_buffer_atr"         : 0.1,  # stop = L2 - 0.1 ATR(14)
 
-    "max_bars_since_swing_low": 15,  # the most recent swing low must have been
-                                      # confirmed within this many trading days
-
-    # ── Filters ─────────────────────────────────────────────────
+    # -- Filters ---------------------------------------------------
     "min_avg_volume"         : 80_000,
     "min_price"              : 2.0,
 
@@ -147,64 +143,61 @@ def calc_rsi(close, period=14):
     rs = avg_gain / avg_loss
     return 100 - (100 / (1 + rs))
 
-def find_swing_lows(df, arm, window):
+def find_swing_lows(lows, arm, start, end):
+    """Bar indices p in [start, end] whose Low is lower than the `arm` bars
+    before it and not above the `arm` bars after it (swing low). Oldest first."""
+    out = []
+    for p in range(max(arm, start), min(end, len(lows) - arm - 1) + 1):
+        if lows[p] < lows[p - arm:p].min() and lows[p] <= lows[p + 1:p + arm + 1].min():
+            out.append(p)
+    return out
+
+def _confirm(o, h, l, c, k):
+    """Confirmation candle: green, close above the previous close, close in the upper half."""
+    rng = h[k] - l[k]
+    return c[k] > o[k] and c[k] > c[k - 1] and (rng <= 0 or (c[k] - l[k]) / rng >= 0.5)
+
+def check_divergence(df, rsi, cfg):
     """
-    Returns a list of bar indices (within the last `window` bars)
-    that are confirmed fractal swing lows: strictly lower than the
-    Low of `arm` bars on BOTH sides. Oldest first.
+    SINGLE SOURCE OF TRUTH for the pattern. Evaluated on the latest bar i:
+      L2 = lower low 1..max_bars_since_swing_low bars before i,
+      L1 = earlier confirmed swing low with a higher price but lower RSI,
+      bar i = FIRST confirmation close after L2 (the entry).
+    Returns (passed, details); details always holds each stage's boolean.
     """
-    n = len(df)
-    lows = df["Low"].values
-    start = max(arm, n - window)
-    swing_idx = []
-    for i in range(start, n - arm):
-        left = lows[i-arm:i]
-        right = lows[i+1:i+arm+1]
-        if lows[i] < left.min() and lows[i] < right.min():
-            swing_idx.append(i)
-    return swing_idx
+    o, h, l, c = (df[k].values.astype(float) for k in ("Open", "High", "Low", "Close"))
+    r = rsi.values.astype(float)
+    n = len(df); i = n - 1
+    det = {"price_broke_low": False, "rsi_held_higher": False, "fresh": False}
+    K = cfg["max_bars_since_swing_low"]
+    if n < cfg["new_low_lookback"] + cfg["l1_max_gap"] + 10: return False, det
+    win = l[i - K:i]
+    j = i - K + int(np.argmin(win))                                   # lower low L2
+    if not (l[j] <= l[max(0, j - cfg["new_low_lookback"] + 1):j + 1].min()): return False, det
+    if l[j + 1:i + 1].min() <= l[j]: return False, det                # nothing below L2 since
+    pivots = find_swing_lows(l, cfg["swing_arm"], j - cfg["l1_max_gap"], j - cfg["l1_min_gap"])
+    pivots = [p for p in pivots if p + cfg["swing_arm"] < j and l[j] < l[p] and l[p + 1:j].min() > l[j]]
+    if not pivots: return False, det
+    det["price_broke_low"] = True
+    pick = None
+    for p in reversed(pivots):                                        # most recent L1 first
+        if np.isfinite(r[p]) and np.isfinite(r[j]) and r[j] > r[p] and r[p] <= cfg["l1_rsi_max"]:
+            pick = p; break
+    if pick is None: return False, det
+    det["rsi_held_higher"] = True
+    p = pick
+    first = _confirm(o, h, l, c, i) and not any(_confirm(o, h, l, c, k) for k in range(j + 1, i))
+    det["fresh"] = bool(first)
+    det.update({
+        "i1": p, "i2": j, "low1": float(l[p]), "low2": float(l[j]), "rsi1": float(r[p]), "rsi2": float(r[j]),
+        "date1": df.index[p], "date2": df.index[j], "bars_since_swing_low": i - j,
+        "swing_high": float(h[max(0, p - cfg["swing_high_lookback"]):p + 1].max()),
+        "swing_high_date": df.index[max(0, p - cfg["swing_high_lookback"]) +
+                                    int(np.argmax(h[max(0, p - cfg["swing_high_lookback"]):p + 1]))],
+        "entry_date": df.index[i],
+    })
+    return bool(first), det
 
-def check_divergence(df, rsi, swing_idx, cfg):
-    """
-    Checks the two MOST RECENT confirmed swing lows for a bullish
-    RSI divergence: price makes a lower low, but RSI does not. This
-    is the SINGLE SOURCE OF TRUTH for the pattern logic.
-
-    Returns (passed: bool, details: dict). details is {} only when
-    there aren't at least 2 swing lows or indicator data is missing;
-    otherwise it always contains every stage's boolean, even on
-    failure.
-    """
-    if len(swing_idx) < 2:
-        return False, {}
-
-    i2, i1 = swing_idx[-1], swing_idx[-2]   # i2 = most recent, i1 = prior
-    n = len(df)
-
-    low2, low1 = df["Low"].iloc[i2], df["Low"].iloc[i1]
-    rsi2, rsi1 = rsi.iloc[i2], rsi.iloc[i1]
-    if any(np.isnan(v) for v in [low2, low1, rsi2, rsi1]):
-        return False, {}
-
-    price_broke_low = bool(low2 < low1)
-    rsi_held_higher = bool(rsi2 > rsi1)
-    fresh = bool(((n - 1) - i2) <= cfg["max_bars_since_swing_low"])
-
-    passed = price_broke_low and rsi_held_higher and fresh
-
-    return passed, {
-        "i1": i1, "i2": i2, "low1": float(low1), "low2": float(low2),
-        "rsi1": float(rsi1), "rsi2": float(rsi2),
-        "date1": df.index[i1], "date2": df.index[i2],
-        "bars_since_swing_low": (n - 1) - i2,
-        "price_broke_low": price_broke_low, "rsi_held_higher": rsi_held_higher,
-        "fresh": fresh,
-    }
-
-# ── Diagnostic funnel — tallies how far each ticker gets through the
-#    pattern, across the FULL universe scan, so a 0-match run can be
-#    diagnosed empirically instead of guessed at. Evaluated once per
-#    ticker (its two most recent confirmed swing lows) ─────────────
 FUNNEL_COUNTS = {
     "tickers_checked": 0,
     "passed_step1_price_broke_low": 0,
@@ -212,64 +205,54 @@ FUNNEL_COUNTS = {
     "passed_step3_fresh": 0,
 }
 
-# ── Technical signal: daily RSI bullish divergence ─────────────────
 def analyze_rsi_divergence(sym, df_daily):
-    """
-    Returns dict with score and setup details, or None if no
-    required condition is met.
-    """
+    """Returns the entry-candle setup dict, or None."""
     if df_daily is None:
         return None
-
     price   = float(df_daily["Close"].iloc[-1])
     avg_vol = float(df_daily["Volume"].tail(20).mean())
     if price   < CFG["min_price"]:      return None
     if avg_vol < CFG["min_avg_volume"]: return None
-
-    n = len(df_daily)
-    if n < CFG["rsi_period"] + CFG["swing_search_window"] + 20:
+    if len(df_daily) < CFG["rsi_period"] + CFG["l1_max_gap"] + CFG["new_low_lookback"] + 20:
         return None
-
     rsi = calc_rsi(df_daily["Close"], CFG["rsi_period"])
-    swing_idx = find_swing_lows(df_daily, CFG["swing_arm"], CFG["swing_search_window"])
 
     global FUNNEL_COUNTS
-    passed, sig = check_divergence(df_daily, rsi, swing_idx, CFG)
-    if sig:
-        FUNNEL_COUNTS["tickers_checked"] += 1
-        if sig["price_broke_low"]:
-            FUNNEL_COUNTS["passed_step1_price_broke_low"] += 1
-            if sig["rsi_held_higher"]:
-                FUNNEL_COUNTS["passed_step2_rsi_held_higher"] += 1
-                if sig["fresh"]:
-                    FUNNEL_COUNTS["passed_step3_fresh"] += 1
+    FUNNEL_COUNTS["tickers_checked"] += 1
+    passed, sig = check_divergence(df_daily, rsi, CFG)
+    if sig.get("price_broke_low"):
+        FUNNEL_COUNTS["passed_step1_price_broke_low"] += 1
+        if sig.get("rsi_held_higher"):
+            FUNNEL_COUNTS["passed_step2_rsi_held_higher"] += 1
+            if sig.get("fresh"):
+                FUNNEL_COUNTS["passed_step3_fresh"] += 1
     if not passed:
         return None
 
-    # ── Entry / Stop (reasonable defaults — see header note) ─────────
-    entry_price = price
-    stop_loss   = sig["low2"]
+    hh, ll, cc = (df_daily[k].values.astype(float) for k in ("High", "Low", "Close"))
+    pc = np.concatenate([[np.nan], cc[:-1]])
+    tr = np.nanmax(np.vstack([hh - ll, np.abs(hh - pc), np.abs(ll - pc)]), axis=0)
+    atr = float(pd.Series(tr).rolling(14).mean().values[-1])
+    entry_price = float(cc[-1])
+    stop_loss   = sig["low2"] - CFG["stop_buffer_atr"] * (atr if np.isfinite(atr) else 0)
     if entry_price <= stop_loss:
         return None
-    risk_pct = (entry_price - stop_loss) / entry_price * 100 if entry_price > 0 else 0
-
+    risk = entry_price - stop_loss
+    risk_pct = risk / entry_price * 100
+    target = sig["swing_high"]
+    reward_r = (target - entry_price) / risk
     price_break_pct = (sig["low1"] - sig["low2"]) / sig["low1"] * 100 if sig["low1"] > 0 else 0
     rsi_divergence_pts = sig["rsi2"] - sig["rsi1"]
+    bounce_pct = (entry_price - sig["low2"]) / sig["low2"] * 100 if sig["low2"] > 0 else 0
 
-    # ── Score (0-100) ────────────────────────────────────────────
-    score = 0
+    score = 25
     reasons = []
-    score += min(30, rsi_divergence_pts * 1.5)
-    reasons.append(f"RSIDiverge+{rsi_divergence_pts:.1f}")
-    score += min(20, price_break_pct * 10)
-    reasons.append(f"PriceBreak-{price_break_pct:.1f}%")
-    freshness_pts = max(0, 15 - sig["bars_since_swing_low"])
-    score += freshness_pts
-    reasons.append(f"{sig['bars_since_swing_low']}dSinceLow")
-    bounce_pct = (price - sig["low2"]) / sig["low2"] * 100 if sig["low2"] > 0 else 0
-    score += max(0, min(10, bounce_pct))
-    reasons.append(f"Bounce+{bounce_pct:.1f}%")
-    score += 25   # base for clearing every gate
+    score += min(25, rsi_divergence_pts * 1.5); reasons.append(f"RSIDiverge+{rsi_divergence_pts:.1f}")
+    score += min(15, price_break_pct * 5);      reasons.append(f"PriceBreak-{price_break_pct:.1f}%")
+    score += min(20, max(0, reward_r) * 5);      reasons.append(f"Target {reward_r:.1f}R")
+    score += max(0, min(15, (CFG["l1_rsi_max"] - sig["rsi1"]) * 1.5)); reasons.append(f"L1 RSI {sig['rsi1']:.1f}")
+    reasons.append(f"lower low {sig['bars_since_swing_low']} session(s) before entry")
+    if reward_r < 1: reasons.append("target < 1R")
     score = round(min(100, max(0, score)))
 
     return {
@@ -278,6 +261,10 @@ def analyze_rsi_divergence(sym, df_daily):
         "Entry_Price"    : round(entry_price, 2),
         "Stop_Loss"      : round(stop_loss, 2),
         "Risk_%"         : round(risk_pct, 1),
+        "Target"         : round(target, 2),
+        "Reward_R"       : round(reward_r, 2),
+        "Entry_Date"     : sig["entry_date"].strftime("%Y-%m-%d"),
+        "Swing_High_Date": sig["swing_high_date"].strftime("%Y-%m-%d"),
         "RSI_At_Low2"    : round(sig["rsi2"], 1),
         "RSI_At_Low1"    : round(sig["rsi1"], 1),
         "RSI_Divergence_Pts": round(rsi_divergence_pts, 1),
@@ -456,8 +443,8 @@ print("━"*65)
 print(f"  STEP 3  SCANNING {len(TICKERS)} TICKERS")
 print("━"*65)
 print("  Fetching daily bars (single download per ticker)")
-print("  A stock only matches if the divergence and freshness conditions")
-print("  and SMA structure all fire within the lookback window\n")
+print("  A stock only matches on the bar that confirms the divergence entry")
+print("  (the first confirmation close after the lower low)\n")
 
 _hdr_done = False
 results = []
@@ -500,21 +487,20 @@ print(f"{'━'*65}")
 # ── Diagnostic funnel — where ticker-days were filtered out ──────
 print(f"\n{'━'*65}")
 print(f"  🔍 FUNNEL — where ticker-days were filtered out")
-print(f"  (evaluated once per liquid ticker, on its 2 most recent confirmed swing lows)")
+print(f"  (evaluated once per liquid ticker on its latest bar)")
 print(f"{'━'*65}")
 fc = FUNNEL_COUNTS
 print(f"  Tickers checked                            : {fc['tickers_checked']}")
-print(f"  Step 1 — price broke its last swing low     : {fc['passed_step1_price_broke_low']}")
-print(f"  Step 2 — + RSI held above its last swing low : {fc['passed_step2_rsi_held_higher']}")
-print(f"  Step 3 — + fresh (within {CFG['max_bars_since_swing_low']}d)              : {fc['passed_step3_fresh']}  (= full pattern)")
+print(f"  Step 1 — price made a lower low (L2 < L1)   : {fc['passed_step1_price_broke_low']}")
+print(f"  Step 2 — + RSI higher low, L1 RSI oversold   : {fc['passed_step2_rsi_held_higher']}")
+print(f"  Step 3 — + confirmation close today (entry)  : {fc['passed_step3_fresh']}  (= full pattern)")
 print(f"{'━'*65}")
 
 if not results:
     print("\n  No matches. Try relaxing (see the FUNNEL above to see which")
     print("  step is actually the bottleneck before guessing):")
-    print("   max_bars_since_swing_low        15 → 25    (allow an older divergence)")
-    print("   swing_arm                        5 → 3    (less strict swing confirmation)")
-    print("   swing_search_window            150 → 250   (search further back)")
+    print("   l1_rsi_max        raise (e.g. 35 -> 40): accept a less oversold first low")
+    print("   max_bars_since_swing_low  2-3 -> 5: allow more bars between the lower low and the entry")
     print("   min_price                      2 → 1")
     print("   min_avg_volume              80000 → 50000")
 
@@ -526,7 +512,7 @@ out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 
 COLS = [
     "Ticker","Price","Score",
-    "Entry_Price","Stop_Loss","Risk_%",
+    "Entry_Price","Stop_Loss","Risk_%","Target","Reward_R","Entry_Date","Swing_High_Date",
     "RSI_At_Low2","RSI_At_Low1","RSI_Divergence_Pts",
     "Price_Low2","Price_Low1","Price_Break_%","Bounce_From_Low_%",
     "Swing_Low_Date","Prior_Swing_Low_Date","Days_Since_Swing_Low",
@@ -632,7 +618,7 @@ if _IN_NOTEBOOK and results:
   <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
     {datetime.today().strftime('%Y-%m-%d %H:%M')} &nbsp;·&nbsp;
     <b style="color:#22c55e">{len(results)} matches</b> from {len(TICKERS)} tickers
-    &nbsp;·&nbsp; swing low confirmed within the last {CFG['max_bars_since_swing_low']} trading days
+    &nbsp;·&nbsp; entry = first confirmation close after the lower low
   </p>
 </div>"""
 
@@ -684,9 +670,9 @@ elif results:
   COLUMN KEY
   ──────────────────────────────────────────────────────
   Score           0-100 (RSI divergence magnitude + price-break
-                  depth + freshness + initial bounce strength)
-  Entry_Price     today's close
-  Stop_Loss       the most recent swing low's price
+                  depth + Reward_R + how oversold L1 was)
+  Entry_Price     the confirmation close (latest bar)
+  Stop_Loss       below the lower low (L2 - 0.1 ATR)
   RSI_At_Low2 / RSI_At_Low1  RSI at the recent / prior swing low
   RSI_Divergence_Pts  RSI_At_Low2 - RSI_At_Low1 (must be positive)
   Price_Low2 / Price_Low1    the recent / prior swing low's price
@@ -747,7 +733,7 @@ def _send_email(rl, csv_path):
             f'<th style="background:#1e293b;color:#e2e8f0;padding:8px 11px;'
             f'font-size:11px;font-weight:700;border-bottom:2px solid #3b82f6;'
             f'white-space:nowrap">{c}</th>'
-            for c in ["Ticker","Price","Score","Entry_Price","Stop_Loss",
+            for c in ["Ticker","Price","Score","Entry_Price","Stop_Loss","Target","Reward_R",
                       "RSI_At_Low2","RSI_At_Low1","RSI_Divergence_Pts","Swing_Low_Date"]
         )
         rows_e = ""
@@ -770,6 +756,8 @@ def _send_email(rl, csv_path):
                 f'background:#166534;color:#fff;text-align:center">{float(score):.0f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#22c55e">${float(entry):.2f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#ef4444">${float(stop):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;color:#3b82f6">${float(r.get("Target",0) or 0):.2f}</td>'
+                f'<td style="padding:6px 11px;font-size:12px;font-weight:600">{float(r.get("Reward_R",0) or 0):.1f}R</td>'
                 f'<td style="padding:6px 11px;font-size:12px;color:#3b82f6">{float(rsi2v):.1f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px">{float(rsi1v):.1f}</td>'
                 f'<td style="padding:6px 11px;font-size:12px;font-weight:600">+{float(divpts):.1f}</td>'
@@ -777,7 +765,7 @@ def _send_email(rl, csv_path):
                 f'color:#a78bfa;font-weight:600">{sdate}</td>'
                 f'</tr>'
             )
-        no_results_msg = ('<tr><td colspan="9" style="padding:20px;text-align:center;'
+        no_results_msg = ('<tr><td colspan="11" style="padding:20px;text-align:center;'
                            'color:#94a3b8;font-size:13px">No matches today</td></tr>')
 
         html_e = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;
@@ -791,8 +779,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 </h1>
 <p style="margin:6px 0 0;color:#94a3b8;font-size:12px">
   {datetime.today().strftime('%Y-%m-%d %H:%M UTC')} &nbsp;·&nbsp;
-  {cnt} match{'es' if cnt!=1 else ''} found — red, red (higher low), green
-  price broke its last swing low, RSI did not
+  {cnt} match{'es' if cnt!=1 else ''} found — lower low + RSI higher low, confirmation close today = entry
 </p>
   </td></tr>
   <tr><td style="padding:14px 28px 4px;background:#0b1220">
@@ -802,9 +789,9 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
   </p>
   <p style="margin:0;color:#cbd5e1;font-size:12px">
     {FUNNEL_COUNTS['tickers_checked']} tickers checked &nbsp;→&nbsp;
-    {FUNNEL_COUNTS['passed_step1_price_broke_low']} passed Step 1 (price broke low) &nbsp;→&nbsp;
-    {FUNNEL_COUNTS['passed_step2_rsi_held_higher']} passed Step 2 (RSI held higher) &nbsp;→&nbsp;
-    <b style="color:#facc15">{FUNNEL_COUNTS['passed_step3_fresh']} passed Step 3 (fresh) = full match</b>
+    {FUNNEL_COUNTS['passed_step1_price_broke_low']} passed Step 1 (lower low) &nbsp;→&nbsp;
+    {FUNNEL_COUNTS['passed_step2_rsi_held_higher']} passed Step 2 (RSI higher low) &nbsp;→&nbsp;
+    <b style="color:#facc15">{FUNNEL_COUNTS['passed_step3_fresh']} passed Step 3 (confirmation close today) = entry signal</b>
   </p>
 </div>
   </td></tr>
@@ -839,12 +826,12 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
 
         plain_lines = [
             f"Daily RSI Bullish Divergence — {datetime.today().strftime('%Y-%m-%d')}",
-            f"{cnt} matches (price broke its last swing low, RSI held above its last swing low)",
+            f"{cnt} entry signals (lower low + RSI higher low, confirmation close today)",
             "="*60,
             f"FUNNEL: {FUNNEL_COUNTS['tickers_checked']} tickers -> "
-            f"{FUNNEL_COUNTS['passed_step1_price_broke_low']} passed price-broke-low -> "
-            f"{FUNNEL_COUNTS['passed_step2_rsi_held_higher']} passed rsi-held-higher -> "
-            f"{FUNNEL_COUNTS['passed_step3_fresh']} passed fresh (=full match)",
+            f"{FUNNEL_COUNTS['passed_step1_price_broke_low']} passed lower-low -> "
+            f"{FUNNEL_COUNTS['passed_step2_rsi_held_higher']} passed rsi-higher-low -> "
+            f"{FUNNEL_COUNTS['passed_step3_fresh']} passed confirmation close today (=entry)",
             "="*60,
         ]
         if rl:
@@ -860,7 +847,7 @@ background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif">
                 sdate  = r.get("Swing_Low_Date","—")
                 plain_lines.append(
                     f"{ticker:<7} ${float(price):.2f}  Score:{float(score):.0f}  "
-                    f"Entry:${float(entry):.2f}  SL:${float(stop):.2f}  "
+                    f"Entry:${float(entry):.2f}  SL:${float(stop):.2f}  Target:${float(r.get('Target',0) or 0):.2f} ({float(r.get('Reward_R',0) or 0):.1f}R)  "
                     f"RSI@Low2:{float(rsi2v):.1f}  RSI@Low1:{float(rsi1v):.1f}  Divergence:+{float(divpts):.1f}  SwingLow:{sdate}"
                 )
             plain_lines.append("")
@@ -954,6 +941,10 @@ if results:
                     label="Price lower low", zorder=6)
         ax.axhline(r["Stop_Loss"], color="#ef4444", lw=1.0, ls=":", alpha=0.7,
                   label=f"Stop ${r['Stop_Loss']:.2f}")
+        ax.axhline(r["Target"], color="#3b82f6", lw=1.0, ls="--", alpha=0.8,
+                  label=f"Target ${r['Target']:.2f}")
+        ax.axhline(r["Entry_Price"], color="#22c55e", lw=0.8, ls="-", alpha=0.6,
+                  label=f"Entry ${r['Entry_Price']:.2f}")
         ax.set_title(
             f"{r['Ticker']}  |  ${r['Price']:.2f}  |  Score {r['Score']}  |  "
             f"RSI divergence +{r['RSI_Divergence_Pts']:.1f}pts",
@@ -993,52 +984,26 @@ if results:
 
 print(f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  📋 SIGNAL (all required — evaluated on the two most recent
-  confirmed swing lows per ticker, searched over the last
-  swing_search_window ({CFG['swing_search_window']}) trading days)
+  📋 SIGNAL - "RSI Divergence + Long Entry" (Daily bars). Fires on the EXACT
+  entry candle: the latest session bar is the first confirmation close.
 
-  A swing low is a fractal low: strictly lower than the Low of
-  swing_arm ({CFG['swing_arm']}) bars on BOTH sides — it needs that many
-  bars AFTER it to be confirmed, so the most recent usable swing low
-  necessarily lags "today" by at least that many bars.
+  1) LOWER LOW: L2 = a new low 1-{CFG['max_bars_since_swing_low']} sessions before the latest bar
+     (lowest low of {CFG['new_low_lookback']} sessions), LOWER than an earlier swing low L1
+     ({CFG['l1_min_gap']}-{CFG['l1_max_gap']} sessions before it; lower than {CFG['swing_arm']} bars each side).
+  2) RSI HIGHER LOW: RSI(14) at L2 > RSI at L1, and RSI at L1 <= {CFG['l1_rsi_max']}.
+  3) CONFIRMATION CLOSE = ENTRY: the latest bar is green, closes above the
+     previous close and in the upper half of its range, it is the FIRST such
+     candle since L2, and nothing traded below L2 since.
 
-  1) PRICE BROKE THE LAST LOW: the most recent confirmed swing low
-     is LOWER than the swing low before it.
-  2) RSI DID NOT BREAK ITS LAST LOW: RSI(14) at that same swing low
-     is HIGHER than RSI at the prior swing low — momentum did not
-     confirm the new price low (the divergence).
-  3) FRESHNESS: the most recent swing low must have been confirmed
-     within the last max_bars_since_swing_low ({CFG['max_bars_since_swing_low']})
-     trading days — not an old, stale divergence.
-
-  📋 DATA SOURCING
-  Only 1 download per ticker: daily bars (~550 days).
-
-  📋 OUTPUT (reasonable defaults — not explicitly requested)
-  Entry_Price = today's CLOSE
-  Stop_Loss   = the most recent swing low's price
-  Swing_Low_Date / Prior_Swing_Low_Date = the two swing lows compared
-  Days_Since_Swing_Low = how many trading days since the most recent one
+  📋 OUTPUT
+  Entry_Price = the confirmation close (Entry_Date)
+  Stop_Loss   = L2 - {CFG['stop_buffer_atr']} ATR(14)  (below the lower low)
+  Target      = previous swing high (highest high of {CFG['swing_high_lookback']} sessions up to L1)
+  Reward_R    = (Target - Entry) / (Entry - Stop)
+  Swing_Low_Date / Prior_Swing_Low_Date = L2 / L1
 
   📋 SCORE (0-100)
-  RSI divergence magnitude (0-30) + how far price broke below the
-  prior low (0-20) + freshness (0-15) + initial bounce off the low
-  (0-10) + base points for clearing every gate (25)
-
-  💡 BEST SETUPS
-  Score > 70                     strong divergence, fresh, already
-                                  bouncing
-  RSI_Divergence_Pts large           a decisive, not marginal,
-                                      divergence
-  Days_Since_Swing_Low low              the freshest divergence
-  Bounce_From_Low_%  positive              price already reacting off
-                                            the low, not just sitting there
-
-  ⚙️  TUNE IF 0 RESULTS
-  max_bars_since_swing_low        15 → 25    (allow an older divergence)
-  swing_arm                        5 → 3    (less strict swing confirmation)
-  swing_search_window            150 → 250   (search further back)
-  min_price                        2 → 1
-  min_avg_volume               80000 → 50000
+  25 base + RSI divergence (0-25) + depth of the lower low (0-15)
+  + Reward_R (0-20) + how oversold L1 was (0-15)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """)
