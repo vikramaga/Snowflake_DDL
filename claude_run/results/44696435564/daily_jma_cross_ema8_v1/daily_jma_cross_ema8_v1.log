@@ -1,0 +1,286 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 380 bars ($349.21, 2026-11-19)
+  ✅ MSFT: daily 380 bars ($498.30, 2026-11-19)
+  ✅ NVDA: daily 380 bars ($145.98, 2026-11-19)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3154 → 3154
+  ✅ otherlisted       : +2262 → 5416
+  ✅ NASDAQ API        : +1134 → 6550
+  ✅ Static fallback   : +  10 → 6560
+
+  🎯 Total: 6560 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6560 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (single download per ticker)
+  Signal: JMA(13) crossed above EMA8 from below, and the next day closed above JMA (stop = the JMA/EMA8 cross price)
+
+Daily fetch:   0%|          | 0/6560 [00:00<?]Daily fetch:   1%|          | 50/6560 [00:03<08:40]Daily fetch:   2%|▏         | 100/6560 [00:09<09:53]Daily fetch:   2%|▏         | 150/6560 [00:13<10:03]Daily fetch:   3%|▎         | 200/6560 [00:18<10:15]Daily fetch:   4%|▍         | 250/6560 [00:23<10:18]Daily fetch:   5%|▍         | 300/6560 [00:28<10:09]Daily fetch:   5%|▌         | 350/6560 [00:33<10:02]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▌         | 400/6560 [00:38<10:09]Daily fetch:   7%|▋         | 450/6560 [00:43<10:08]Daily fetch:   8%|▊         | 500/6560 [00:48<09:43]Daily fetch:   8%|▊         | 550/6560 [00:53<09:44]Daily fetch:   9%|▉         | 600/6560 [00:57<09:19]Daily fetch:  10%|▉         | 650/6560 [01:02<09:09]Daily fetch:  11%|█         | 700/6560 [01:06<09:15]Daily fetch:  11%|█▏        | 750/6560 [01:11<09:07]Daily fetch:  12%|█▏        | 800/6560 [01:16<09:00]Daily fetch:  13%|█▎        | 850/6560 [01:20<08:45]Daily fetch:  14%|█▎        | 900/6560 [01:25<09:00]Daily fetch:  14%|█▍        | 950/6560 [01:30<08:50]Daily fetch:  15%|█▌        | 1000/6560 [01:35<08:47]Daily fetch:  16%|█▌        | 1050/6560 [01:39<08:31]Daily fetch:  17%|█▋        | 1100/6560 [01:44<08:34]$CBO: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$CBX: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+
+2 Failed downloads:
+['CBO', 'CBX']: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$CBO: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$CBO: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$CBX: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$CBX: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+Daily fetch:  18%|█▊        | 1150/6560 [01:49<08:35]Daily fetch:  18%|█▊        | 1200/6560 [01:53<08:12]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1250/6560 [01:58<08:19]Daily fetch:  20%|█▉        | 1300/6560 [02:03<08:09]Daily fetch:  21%|██        | 1350/6560 [02:07<07:47]Daily fetch:  21%|██▏       | 1400/6560 [02:11<07:35]Daily fetch:  22%|██▏       | 1450/6560 [02:16<07:45]Daily fetch:  23%|██▎       | 1500/6560 [02:20<07:25]$CTEST: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+Daily fetch:  24%|██▎       | 1550/6560 [02:25<07:36]Daily fetch:  24%|██▍       | 1600/6560 [02:29<07:32]Daily fetch:  25%|██▌       | 1650/6560 [02:34<07:20]Daily fetch:  26%|██▌       | 1700/6560 [02:38<07:16]Daily fetch:  27%|██▋       | 1750/6560 [02:42<07:08]Daily fetch:  27%|██▋       | 1800/6560 [02:47<07:08]Daily fetch:  28%|██▊       | 1850/6560 [02:52<07:02]Daily fetch:  29%|██▉       | 1900/6560 [02:56<06:50]Daily fetch:  30%|██▉       | 1950/6560 [03:00<06:48]Daily fetch:  30%|███       | 2000/6560 [03:05<06:40]Daily fetch:  31%|███▏      | 2050/6560 [03:09<06:43]$EXAS: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+Daily fetch:  32%|███▏      | 2100/6560 [03:15<07:10]Daily fetch:  33%|███▎      | 2150/6560 [03:20<07:03]Daily fetch:  34%|███▎      | 2200/6560 [03:24<06:50]Daily fetch:  34%|███▍      | 2250/6560 [03:29<06:44]Daily fetch:  35%|███▌      | 2300/6560 [03:33<06:35]Daily fetch:  36%|███▌      | 2350/6560 [03:38<06:27]Daily fetch:  37%|███▋      | 2400/6560 [03:43<06:35]Daily fetch:  37%|███▋      | 2450/6560 [03:48<06:28]Daily fetch:  38%|███▊      | 2500/6560 [03:52<06:26]Daily fetch:  39%|███▉      | 2550/6560 [03:57<06:17]Daily fetch:  40%|███▉      | 2600/6560 [04:02<06:13]Daily fetch:  40%|████      | 2650/6560 [04:06<06:05]Daily fetch:  41%|████      | 2700/6560 [04:11<06:10]Daily fetch:  42%|████▏     | 2750/6560 [04:16<06:01]Daily fetch:  43%|████▎     | 2800/6560 [04:21<05:59]Daily fetch:  43%|████▎     | 2850/6560 [04:25<05:51]Daily fetch:  44%|████▍     | 2900/6560 [04:30<05:50]Daily fetch:  45%|████▍     | 2950/6560 [04:35<05:47]Daily fetch:  46%|████▌     | 3000/6560 [04:40<05:36]Daily fetch:  46%|████▋     | 3050/6560 [04:44<05:22]Daily fetch:  47%|████▋     | 3100/6560 [04:49<05:34]Daily fetch:  48%|████▊     | 3150/6560 [04:54<05:26]Daily fetch:  49%|████▉     | 3200/6560 [04:59<05:15]Daily fetch:  50%|████▉     | 3250/6560 [05:03<05:12]Daily fetch:  50%|█████     | 3300/6560 [05:08<05:09]Daily fetch:  51%|█████     | 3350/6560 [05:13<05:10]Daily fetch:  52%|█████▏    | 3400/6560 [05:18<05:02]Daily fetch:  53%|█████▎    | 3450/6560 [05:23<04:57]Daily fetch:  53%|█████▎    | 3500/6560 [05:27<04:42]Daily fetch:  54%|█████▍    | 3550/6560 [05:32<04:45]Daily fetch:  55%|█████▍    | 3600/6560 [05:36<04:34]Daily fetch:  56%|█████▌    | 3650/6560 [05:41<04:26]Daily fetch:  56%|█████▋    | 3700/6560 [05:46<04:25]Daily fetch:  57%|█████▋    | 3750/6560 [05:50<04:18]Daily fetch:  58%|█████▊    | 3800/6560 [05:55<04:15]Daily fetch:  59%|█████▊    | 3850/6560 [05:59<04:06]Daily fetch:  59%|█████▉    | 3900/6560 [06:04<04:05]Daily fetch:  60%|██████    | 3950/6560 [06:09<04:07]Daily fetch:  61%|██████    | 4000/6560 [06:14<04:02]Daily fetch:  62%|██████▏   | 4050/6560 [06:19<04:13]Daily fetch:  62%|██████▎   | 4100/6560 [06:24<04:04]Daily fetch:  63%|██████▎   | 4150/6560 [06:28<03:49]Daily fetch:  64%|██████▍   | 4200/6560 [06:33<03:43]Daily fetch:  65%|██████▍   | 4250/6560 [06:38<03:40]Daily fetch:  66%|██████▌   | 4300/6560 [06:43<03:38]Daily fetch:  66%|██████▋   | 4350/6560 [06:47<03:28]Daily fetch:  67%|██████▋   | 4400/6560 [06:52<03:17]Daily fetch:  68%|██████▊   | 4450/6560 [06:56<03:12]Daily fetch:  69%|██████▊   | 4500/6560 [07:01<03:13]Daily fetch:  69%|██████▉   | 4550/6560 [07:06<03:09]Daily fetch:  70%|███████   | 4600/6560 [07:10<03:01]Daily fetch:  71%|███████   | 4650/6560 [07:15<02:55]Daily fetch:  72%|███████▏  | 4700/6560 [07:20<02:52]Daily fetch:  72%|███████▏  | 4750/6560 [07:24<02:49]$PSTG: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+Daily fetch:  73%|███████▎  | 4800/6560 [07:29<02:44]Daily fetch:  74%|███████▍  | 4850/6560 [07:34<02:38]Daily fetch:  75%|███████▍  | 4900/6560 [07:38<02:33]Daily fetch:  75%|███████▌  | 4950/6560 [07:42<02:25]Daily fetch:  76%|███████▌  | 5000/6560 [07:47<02:22]Daily fetch:  77%|███████▋  | 5050/6560 [07:52<02:19]Daily fetch:  78%|███████▊  | 5100/6560 [07:57<02:21]Daily fetch:  79%|███████▊  | 5150/6560 [08:02<02:16]Daily fetch:  79%|███████▉  | 5200/6560 [08:07<02:16]Daily fetch:  80%|████████  | 5250/6560 [08:13<02:16]Daily fetch:  81%|████████  | 5300/6560 [08:17<02:05]Daily fetch:  82%|████████▏ | 5350/6560 [08:22<01:58]Daily fetch:  82%|████████▏ | 5400/6560 [08:27<01:52]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5450/6560 [08:32<01:46]Daily fetch:  84%|████████▍ | 5500/6560 [08:36<01:39]Daily fetch:  85%|████████▍ | 5550/6560 [08:41<01:32]Daily fetch:  85%|████████▌ | 5600/6560 [08:45<01:25]Daily fetch:  86%|████████▌ | 5650/6560 [08:50<01:24]Daily fetch:  87%|████████▋ | 5700/6560 [08:54<01:20]Daily fetch:  88%|████████▊ | 5750/6560 [08:59<01:13]Daily fetch:  88%|████████▊ | 5800/6560 [09:03<01:08]Daily fetch:  89%|████████▉ | 5850/6560 [09:08<01:04]Daily fetch:  90%|████████▉ | 5900/6560 [09:12<01:00]Daily fetch:  91%|█████████ | 5950/6560 [09:17<00:55]Daily fetch:  91%|█████████▏| 6000/6560 [09:22<00:51]Daily fetch:  92%|█████████▏| 6050/6560 [09:26<00:45]Daily fetch:  93%|█████████▎| 6100/6560 [09:30<00:41]Daily fetch:  94%|█████████▍| 6150/6560 [09:35<00:36]Daily fetch:  95%|█████████▍| 6200/6560 [09:39<00:32]Daily fetch:  95%|█████████▌| 6250/6560 [09:44<00:27]Daily fetch:  96%|█████████▌| 6300/6560 [09:48<00:23]Daily fetch:  97%|█████████▋| 6350/6560 [09:53<00:19]Daily fetch:  98%|█████████▊| 6400/6560 [09:57<00:14]Daily fetch:  98%|█████████▊| 6450/6560 [10:02<00:10]$ZAZZT: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+
+1 Failed download:
+['ZAZZT']: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+Daily fetch:  99%|█████████▉| 6500/6560 [10:07<00:05]$ZVV: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZCZZT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+
+7 Failed downloads:
+['ZVV', 'ZBZX', 'ZTEST', 'ZBZZT']: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+['ZCZZT', 'ZEXIT', 'ZIEXT']: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-19 -> 2026-11-20)
+Daily fetch: 100%|█████████▉| 6550/6560 [10:12<00:00]$ZXIET: possibly delisted; no timezone found
+
+1 Failed download:
+['ZXIET']: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6560/6560 [10:15<00:00]Daily fetch: 100%|██████████| 6560/6560 [10:16<00:00]
+
+  Daily data : 5588/6560 tickers
+
+Checking JMA/EMA8 cross:   0%|          | 0/5588 [00:00<?, ?stk/s]Checking JMA/EMA8 cross:   5%|▌         | 286/5588 [00:00<00:01, 2856.70stk/s]Checking JMA/EMA8 cross:  10%|█         | 572/5588 [00:00<00:01, 2672.33stk/s]Checking JMA/EMA8 cross:  16%|█▌        | 888/5588 [00:00<00:01, 2884.90stk/s]Checking JMA/EMA8 cross:  21%|██        | 1178/5588 [00:00<00:01, 2877.80stk/s]Checking JMA/EMA8 cross:  26%|██▋       | 1467/5588 [00:00<00:01, 2759.38stk/s]Checking JMA/EMA8 cross:  31%|███▏      | 1757/5588 [00:00<00:01, 2805.23stk/s]Checking JMA/EMA8 cross:  36%|███▋      | 2039/5588 [00:00<00:01, 2766.20stk/s]Checking JMA/EMA8 cross:  42%|████▏     | 2343/5588 [00:00<00:01, 2845.07stk/s]Checking JMA/EMA8 cross:  47%|████▋     | 2629/5588 [00:00<00:01, 2842.75stk/s]Checking JMA/EMA8 cross:  52%|█████▏    | 2914/5588 [00:01<00:00, 2820.64stk/s]Checking JMA/EMA8 cross:  57%|█████▋    | 3197/5588 [00:01<00:00, 2782.27stk/s]Checking JMA/EMA8 cross:  63%|██████▎   | 3494/5588 [00:01<00:00, 2831.86stk/s]Checking JMA/EMA8 cross:  68%|██████▊   | 3817/5588 [00:01<00:00, 2945.42stk/s]Checking JMA/EMA8 cross:  74%|███████▎  | 4112/5588 [00:01<00:00, 2886.38stk/s]Checking JMA/EMA8 cross:  79%|███████▉  | 4423/5588 [00:01<00:00, 2952.11stk/s]Checking JMA/EMA8 cross:  84%|████████▍ | 4719/5588 [00:01<00:00, 2917.78stk/s]Checking JMA/EMA8 cross:  90%|████████▉ | 5012/5588 [00:01<00:00, 2847.73stk/s]Checking JMA/EMA8 cross:  95%|█████████▍| 5298/5588 [00:01<00:00, 2792.65stk/s]Checking JMA/EMA8 cross: 100%|█████████▉| 5579/5588 [00:01<00:00, 2795.98stk/s]Checking JMA/EMA8 cross: 100%|██████████| 5588/5588 [00:01<00:00, 2831.77stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 3 steps
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Entry_Price   Stop_Loss    Risk_%    Cross_Date    Confirm_Date 
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  EXPD      $193.14     80       $193.14       $192.83      0.2%      2026-11-18    2026-11-19   
+  JBSS      $60.77      68       $60.77        $58.54       3.7%      2026-11-18    2026-11-19   
+  JCAP      $20.94      76       $20.94        $20.42       2.5%      2026-11-18    2026-11-19   
+  LSTR      $151.81     64       $151.81       $149.88      1.3%      2026-11-18    2026-11-19   
+  MOD       $134.56     60       $134.56       $121.27      9.9%      2026-11-18    2026-11-19   
+  ROKU      $160.52     91       $160.52       $158.50      1.3%      2026-11-05    2026-11-06   
+  UTZ       $14.29      85       $14.29        $14.27       0.2%      2026-11-18    2026-11-19   
+  VXX       $23.83      42       $23.83        $20.10       15.6%     2026-11-18    2026-11-19   
+  ZYN       $10.35      63       $10.35        $9.45        8.7%      2026-11-18    2026-11-19   
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6560
+  Daily data      : 5588
+  ✅ Matches       : 9
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔍 FUNNEL — where ticker-days were filtered out
+  (tallied across every liquid ticker's last 1 trading day(s))
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker-days checked                              : 2371
+  Step 1 — JMA crossed above EMA8 the day before    : 28
+  Step 2 — + next day closed above JMA            : 9
+  Step 3 — + close above the cross price (stop)   : 9  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                     Daily JMA Cross Above EMA8   2026-11-20   9 matches                                   ║
+  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬─────────┬───────┬─────────────┬───────────┬────────┬────────────┬──────────────┬────────────────┬────────────────┐
+  │ Ticker │  Price  │ Score │ Entry_Price │ Stop_Loss │ Risk_% │ Cross_Date │ Confirm_Date │ Close_vs_JMA_% │ Vol_vs_20d_Avg │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  ROKU  │ $160.52 │   91  │   $160.52   │  $158.50  │  1.3%  │ 2026-11-05 │  2026-11-06  │     +0.3%      │     x4.11      │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  UTZ   │  $14.29 │   85  │    $14.29   │   $14.27  │  0.2%  │ 2026-11-18 │  2026-11-19  │     +0.1%      │     x11.02     │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  EXPD  │ $193.14 │   80  │   $193.14   │  $192.83  │  0.2%  │ 2026-11-18 │  2026-11-19  │     +0.6%      │     x1.71      │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  JCAP  │  $20.94 │   76  │    $20.94   │   $20.42  │  2.5%  │ 2026-11-18 │  2026-11-19  │     +0.8%      │     x0.90      │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  JBSS  │  $60.77 │   68  │    $60.77   │   $58.54  │  3.7%  │ 2026-11-18 │  2026-11-19  │     +0.7%      │     x1.00      │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  LSTR  │ $151.81 │   64  │   $151.81   │  $149.88  │  1.3%  │ 2026-11-18 │  2026-11-19  │     +0.6%      │     x0.78      │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+ZYN: No earnings dates found, symbol may be delisted
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+VXX: No earnings dates found, symbol may be delisted
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+
+  │  ZYN   │  $10.35 │   63  │    $10.35   │   $9.45   │  8.7%  │ 2026-11-18 │  2026-11-19  │     +6.3%      │     x6.98      │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  MOD   │ $134.56 │   60  │   $134.56   │  $121.27  │  9.9%  │ 2026-11-18 │  2026-11-19  │     +2.5%      │     x0.97      │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼────────────┼──────────────┼────────────────┼────────────────┤
+  │  VXX   │  $23.83 │   42  │    $23.83   │   $20.10  │ 15.6%  │ 2026-11-18 │  2026-11-19  │     +12.2%     │     x1.16      │
+  └────────┴─────────┴───────┴─────────────┴───────────┴────────┴────────────┴──────────────┴────────────────┴────────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Score           0-100 (JMA/EMA8 gap + close vs JMA + tight stop
+                  + volume + above SMA50)
+  Cross_Date      day JMA crossed above EMA8
+  Confirm_Date    next day, closed above JMA (= signal)
+  Stop_Loss       the price where JMA and EMA8 intersect (Cross_Price)
+  Entry_Price     confirm-day close
+  ──────────────────────────────────────────────────────
+  💰 Position sizing: max loss $40 per trade — 9 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 9 qualified stocks (trend, catalyst, value) ...
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_daily_jma_cross_ema8_v1_20261120_0751.csv  (151s)
+     #1  ROKU        63  (trend 30, catalyst 12, value 21)  above SMA200, SMA50 rising, SMA200 rising, contract/order news, beat last EPS, PEG <= 1.5
+     #2  EXPD        51  (trend 30, catalyst 6, value 15)  above SMA200, SMA50 rising, SMA200 rising, beat last EPS
+     #3  UTZ         47  (trend 30, catalyst 6, value 11)  above SMA200, SMA50 rising, SMA200 rising, contract/order news
+     #4  ZYN         38  (trend 35, catalyst 0, value 3)  above SMA200, SMA50 rising, SMA200 turning up
+     #5  JCAP        37  (trend 12, catalyst 10, value 15)  above SMA200, positive news, beat last EPS
+     #6  MOD         18  (trend 0, catalyst 12, value 6)  contract/order news, PEG <= 1.5
+     #7  VXX         10  (trend 10, catalyst 0, value 0)  SMA50 rising
+     #8  LSTR         6  (trend 0, catalyst 0, value 6)  positive news, PEG <= 1.5
+     #9  JBSS         0  (trend 0, catalyst 0, value 0)  
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_jma_cross_ema8_20261120_0749.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_daily_jma_cross_ema8_20261120_0749.txt
+
+  📋 Tickers (comma-separated):
+  ROKU, UTZ, EXPD, JCAP, JBSS, LSTR, ZYN, MOD, VXX
+[Email] Sending to vikramaga24@gmail.com  (9 results)...
+[Email] 📎 Attached: daily_jma_cross_ema8_20261120_0749.csv (2,055 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+  🏅 Best 10 added to the email (html text)
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 JMA Cross Above EMA8 — 9 signals — 2026-11-20
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_jma_cross_ema8_chart_20261120_0749.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required; confirm day = latest daily candle)
+  JMA = JMA(13, phase 40, power 2); EMA8 on daily closes.
+
+  1) Cross day: JMA was at or below EMA8 the day before and is
+     above it on the cross day.
+  2) Confirm day (next day): the close is above JMA.
+  3) The confirm-day close is above the cross price (valid stop).
+
+  CROSS PRICE = where JMA and EMA8 intersect, interpolated between the
+  day before the cross and the cross day. It is the STOP LOSS.
+
+  📋 OUTPUT
+  Stop_Loss   = cross price (requested)
+  Entry_Price = confirm-day CLOSE (reasonable default)
+  Quantity / Total_Amount = sized for a $40 max loss (position_sizing.py)
+  Universe    = price >= 10 USD, 20d avg volume >= 100k
+
+  📋 SCORE (0-100)
+  Base 30 + JMA above EMA8 gap (0-15) + close 0-3% over JMA (15; 8 if
+  further; -5 if > 6%) + tight stop (0-15) + volume vs 20d avg (0-15)
+  + above SMA50 (10); -10 if stop risk > 12%
+
+  ⚙️  TUNE IF 0 RESULTS
+  signal_lookback_days            1 → 3
+  min_price                      10 → 5
+  min_avg_volume             100000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
