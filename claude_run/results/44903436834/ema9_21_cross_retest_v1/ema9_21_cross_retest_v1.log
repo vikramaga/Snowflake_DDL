@@ -1,0 +1,164 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 209 bars ($342.56, 2026-11-20)
+  ✅ MSFT: daily 209 bars ($484.52, 2026-11-20)
+  ✅ NVDA: daily 209 bars ($125.53, 2026-11-20)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ⚠️  nasdaqlisted: 503 Server Error: Service Unavailable for url: https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt
+  ⚠️  otherlisted: 503 Server Error: Service Unavailable for url: https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt
+  ✅ NASDAQ API        : +4274 → 4274
+  ✅ Static fallback   : +  20 → 4294
+
+  🎯 Total: 4294 tickers
+
+=================================================================
+  STEP 3  SCANNING 4294 TICKERS
+=================================================================
+Daily fetch:   0%|          | 0/4294 [00:00<?, ?stk/s]Daily fetch:   1%|          | 50/4294 [00:03<04:35, 15.42stk/s]Failed to get ticker 'ADP' reason: Failed to perform, curl: (28) Operation timed out after 10001 milliseconds with 0 out of 1335 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+Failed to get ticker 'ADEA' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+Daily fetch:   1%|          | 50/4294 [00:20<04:35, 15.42stk/s]Daily fetch:   2%|▏         | 100/4294 [00:33<26:57,  2.59stk/s]Failed to get ticker 'AFRIW' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AFRIW: possibly delisted; no timezone found
+
+1 Failed download:
+['AFRIW']: possibly delisted; no timezone found
+Failed to get ticker 'AESP' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AESP: possibly delisted; no timezone found
+Daily fetch:   3%|▎         | 150/4294 [00:59<30:34,  2.26stk/s]Failed to get ticker 'ALHC' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$ALHC: possibly delisted; no timezone found
+Failed to get ticker 'AIP' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIP: possibly delisted; no timezone found
+Failed to get ticker 'AIIR' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIIR: possibly delisted; no timezone found
+Failed to get ticker 'ALKS' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$ALKS: possibly delisted; no timezone found
+
+4 Failed downloads:
+['ALHC', 'AIP', 'AIIR', 'ALKS']: possibly delisted; no timezone found
+Failed to get ticker 'AIIR' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIIR: possibly delisted; no timezone found
+Failed to get ticker 'AIIR' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIIR: possibly delisted; no timezone found
+Failed to get ticker 'AIMDW' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIMDW: possibly delisted; no timezone found
+Failed to get ticker 'AIMDW' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIMDW: possibly delisted; no timezone found
+Failed to get ticker 'AIOK' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIOK: possibly delisted; no timezone found
+Failed to get ticker 'AIOK' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AIOK: possibly delisted; no timezone found
+Daily fetch:   5%|▍         | 200/4294 [02:22<1:03:19,  1.08stk/s]Failed to get ticker 'ALRS' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+Failed to get ticker 'AMSS' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$ALRS: possibly delisted; no timezone found
+$AMSS: possibly delisted; no timezone found
+
+2 Failed downloads:
+['ALRS', 'AMSS']: possibly delisted; no timezone found
+Daily fetch:   6%|▌         | 250/4294 [02:37<47:06,  1.43stk/s]  Failed to get ticker 'APXC' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$APXC: possibly delisted; no timezone found
+Failed to get ticker 'ANL' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$ANL: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Failed to get ticker 'AOUT' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$AOUT: possibly delisted; no timezone found
+
+4 Failed downloads:
+['APXC', 'ANL', 'ANSS', 'AOUT']: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   7%|▋         | 300/4294 [03:05<43:34,  1.53stk/s]Daily fetch:   8%|▊         | 350/4294 [03:10<31:00,  2.12stk/s]Daily fetch:   9%|▉         | 400/4294 [03:15<22:57,  2.83stk/s]Daily fetch:  10%|█         | 450/4294 [03:20<17:27,  3.67stk/s]Daily fetch:  12%|█▏        | 500/4294 [03:25<13:41,  4.62stk/s]Daily fetch:  13%|█▎        | 550/4294 [03:30<11:38,  5.36stk/s]Daily fetch:  14%|█▍        | 600/4294 [03:38<10:44,  5.73stk/s]Daily fetch:  15%|█▌        | 650/4294 [03:45<09:54,  6.13stk/s]Daily fetch:  16%|█▋        | 700/4294 [03:49<08:16,  7.24stk/s]Daily fetch:  17%|█▋        | 750/4294 [03:55<07:49,  7.55stk/s]Daily fetch:  19%|█▊        | 800/4294 [03:59<06:58,  8.36stk/s]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  20%|█▉        | 850/4294 [04:05<06:52,  8.34stk/s]Daily fetch:  21%|██        | 900/4294 [04:11<06:41,  8.46stk/s]Daily fetch:  22%|██▏       | 950/4294 [04:15<06:06,  9.12stk/s]Daily fetch:  23%|██▎       | 1000/4294 [04:22<06:25,  8.54stk/s]Daily fetch:  24%|██▍       | 1050/4294 [04:27<05:56,  9.09stk/s]Daily fetch:  26%|██▌       | 1100/4294 [04:31<05:34,  9.54stk/s]Daily fetch:  27%|██▋       | 1150/4294 [04:36<05:11, 10.09stk/s]Daily fetch:  28%|██▊       | 1200/4294 [04:40<04:56, 10.42stk/s]Daily fetch:  29%|██▉       | 1250/4294 [04:45<04:48, 10.56stk/s]Daily fetch:  30%|███       | 1300/4294 [04:49<04:40, 10.68stk/s]$EXAS: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$EXAS: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$EXAS: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+Daily fetch:  31%|███▏      | 1350/4294 [04:54<04:34, 10.71stk/s]Daily fetch:  33%|███▎      | 1400/4294 [05:00<04:59,  9.65stk/s]Daily fetch:  34%|███▍      | 1450/4294 [05:05<04:46,  9.92stk/s]Daily fetch:  35%|███▍      | 1500/4294 [05:10<04:48,  9.69stk/s]Daily fetch:  36%|███▌      | 1550/4294 [05:15<04:37,  9.89stk/s]Daily fetch:  37%|███▋      | 1600/4294 [05:20<04:24, 10.18stk/s]Daily fetch:  38%|███▊      | 1650/4294 [05:24<04:14, 10.41stk/s]Daily fetch:  40%|███▉      | 1700/4294 [05:29<04:08, 10.43stk/s]Daily fetch:  41%|████      | 1750/4294 [05:34<04:07, 10.29stk/s]Daily fetch:  42%|████▏     | 1800/4294 [05:38<03:47, 10.95stk/s]Daily fetch:  43%|████▎     | 1850/4294 [05:42<03:39, 11.15stk/s]Daily fetch:  44%|████▍     | 1900/4294 [05:47<03:33, 11.21stk/s]Daily fetch:  45%|████▌     | 1950/4294 [05:51<03:28, 11.25stk/s]Daily fetch:  47%|████▋     | 2000/4294 [05:55<03:18, 11.53stk/s]Daily fetch:  48%|████▊     | 2050/4294 [06:00<03:25, 10.92stk/s]Daily fetch:  49%|████▉     | 2100/4294 [06:04<03:13, 11.33stk/s]Daily fetch:  50%|█████     | 2150/4294 [06:09<03:14, 11.01stk/s]Daily fetch:  51%|█████     | 2200/4294 [06:13<03:01, 11.54stk/s]Daily fetch:  52%|█████▏    | 2250/4294 [06:17<02:55, 11.64stk/s]Daily fetch:  54%|█████▎    | 2300/4294 [06:22<02:51, 11.65stk/s]Daily fetch:  55%|█████▍    | 2350/4294 [06:26<02:50, 11.39stk/s]Daily fetch:  56%|█████▌    | 2400/4294 [06:30<02:45, 11.46stk/s]Daily fetch:  57%|█████▋    | 2450/4294 [06:35<02:44, 11.22stk/s]Daily fetch:  58%|█████▊    | 2500/4294 [06:40<02:45, 10.86stk/s]Daily fetch:  59%|█████▉    | 2550/4294 [06:45<02:39, 10.97stk/s]Failed to get ticker 'NA' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NA: possibly delisted; no timezone found
+Failed to get ticker 'MVBF' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$MVBF: possibly delisted; no timezone found
+Failed to get ticker 'MSGM' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$MSGM: possibly delisted; no timezone found
+
+3 Failed downloads:
+['NA', 'MVBF', 'MSGM']: possibly delisted; no timezone found
+Daily fetch:  59%|█████▉    | 2550/4294 [07:00<02:39, 10.97stk/s]Failed to get ticker 'MSGM' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$MSGM: possibly delisted; no timezone found
+Daily fetch:  61%|██████    | 2600/4294 [07:11<06:17,  4.49stk/s]Failed to get ticker 'NCI' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NCI: possibly delisted; no timezone found
+Failed to get ticker 'NEOV' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+Failed to get ticker 'NBIX' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NEOV: possibly delisted; no timezone found
+$NBIX: possibly delisted; no timezone found
+
+3 Failed downloads:
+['NCI', 'NEOV', 'NBIX']: possibly delisted; no timezone found
+Failed to get ticker 'NARA' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NARA: possibly delisted; no timezone found
+Failed to get ticker 'NARA' reason: Failed to perform, curl: (28) Connection timed out after 10001 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NARA: possibly delisted; no timezone found
+Failed to get ticker 'NBIX' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NBIX: possibly delisted; no timezone found
+Failed to get ticker 'NBIX' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NBIX: possibly delisted; no timezone found
+Failed to get ticker 'NCI' reason: Failed to perform, curl: (28) Connection timed out after 10000 milliseconds. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+$NCI: possibly delisted; no timezone found
+Daily fetch:  62%|██████▏   | 2650/4294 [08:16<14:54,  1.84stk/s]Daily fetch:  63%|██████▎   | 2700/4294 [08:20<10:52,  2.44stk/s]Daily fetch:  64%|██████▍   | 2750/4294 [08:25<08:03,  3.19stk/s]Daily fetch:  65%|██████▌   | 2800/4294 [08:29<06:08,  4.05stk/s]Daily fetch:  66%|██████▋   | 2850/4294 [08:35<04:57,  4.85stk/s]Daily fetch:  68%|██████▊   | 2900/4294 [08:39<03:55,  5.91stk/s]Daily fetch:  69%|██████▊   | 2950/4294 [08:44<03:14,  6.90stk/s]Daily fetch:  70%|██████▉   | 3000/4294 [08:49<02:50,  7.58stk/s]Daily fetch:  71%|███████   | 3050/4294 [08:53<02:28,  8.39stk/s]Daily fetch:  72%|███████▏  | 3100/4294 [08:58<02:10,  9.12stk/s]Daily fetch:  73%|███████▎  | 3150/4294 [09:02<01:55,  9.92stk/s]$PSTG: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$PSTG: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$PSTG: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+Daily fetch:  75%|███████▍  | 3200/4294 [09:06<01:46, 10.28stk/s]Daily fetch:  76%|███████▌  | 3250/4294 [09:11<01:39, 10.47stk/s]Daily fetch:  77%|███████▋  | 3300/4294 [09:15<01:34, 10.51stk/s]Daily fetch:  78%|███████▊  | 3350/4294 [09:20<01:28, 10.62stk/s]Daily fetch:  79%|███████▉  | 3400/4294 [09:24<01:22, 10.79stk/s]Daily fetch:  80%|████████  | 3450/4294 [09:29<01:20, 10.55stk/s]Daily fetch:  82%|████████▏ | 3500/4294 [09:34<01:13, 10.79stk/s]Daily fetch:  83%|████████▎ | 3550/4294 [09:38<01:08, 10.94stk/s]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  84%|████████▍ | 3600/4294 [09:42<01:02, 11.14stk/s]Daily fetch:  85%|████████▌ | 3650/4294 [09:47<00:57, 11.27stk/s]Daily fetch:  86%|████████▌ | 3700/4294 [09:51<00:51, 11.56stk/s]Daily fetch:  87%|████████▋ | 3750/4294 [09:56<00:48, 11.14stk/s]Daily fetch:  88%|████████▊ | 3800/4294 [10:01<00:48, 10.25stk/s]Daily fetch:  90%|████████▉ | 3850/4294 [10:06<00:42, 10.40stk/s]Daily fetch:  91%|█████████ | 3900/4294 [10:11<00:39, 10.07stk/s]Daily fetch:  92%|█████████▏| 3950/4294 [10:16<00:32, 10.46stk/s]Daily fetch:  93%|█████████▎| 4000/4294 [10:20<00:27, 10.85stk/s]Daily fetch:  94%|█████████▍| 4050/4294 [10:24<00:21, 11.26stk/s]Daily fetch:  95%|█████████▌| 4100/4294 [10:28<00:16, 11.50stk/s]Daily fetch:  97%|█████████▋| 4150/4294 [10:33<00:12, 11.10stk/s]Daily fetch:  98%|█████████▊| 4200/4294 [10:37<00:08, 11.15stk/s]Daily fetch:  99%|█████████▉| 4250/4294 [10:42<00:04, 10.85stk/s]Daily fetch: 100%|██████████| 4294/4294 [10:46<00:00, 11.03stk/s]Daily fetch: 100%|██████████| 4294/4294 [10:48<00:00,  6.62stk/s]
+
+  Daily data : 3607/4294 tickers
+
+Checking pattern:   0%|          | 0/3607 [00:00<?, ?stk/s]Checking pattern:  21%|██▏       | 773/3607 [00:00<00:00, 7714.87stk/s]Checking pattern:  44%|████▎     | 1574/3607 [00:00<00:00, 7883.93stk/s]Checking pattern:  66%|██████▌   | 2363/3607 [00:00<00:00, 7802.49stk/s]Checking pattern:  87%|████████▋ | 3144/3607 [00:00<00:00, 7759.93stk/s]Checking pattern: 100%|██████████| 3607/3607 [00:00<00:00, 6597.90stk/s]
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+
+=================================================================
+  SCAN COMPLETE - 1 matches from 3607 tickers with data
+  checked 1179 -> 9/21 cross 264 -> rally 188 -> retest 186 -> hold 81 -> entry today 1
+  Retest tagged EMA21: 1  FIZZ
+  Retest held above EMA21: 0  
+=================================================================
+  💰 Position sizing: max loss $40 per trade — 1 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 1 qualified stocks (trend, catalyst, value) ...
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_ema9_21_cross_retest_v1_20261121_1233.csv  (17s)
+     #1  FIZZ        46  (trend 35, catalyst 0, value 11)  above SMA200, SMA50 rising, SMA200 turning up
+
+  CSV -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/ema9_21_cross_retest_20261121_1232.csv
+  TradingView file -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_ema9_21_cross_retest_20261121_1232.txt
+[TradingView] replaced watchlist 'EMA 9-21 Retest - 2026-11-21' (id 356450591) via /replace/?unsafe=true
+[TradingView] 'EMA 9-21 Retest - 2026-11-21' - 1 symbols
+  🏅 Best 10 added to the email (html text)
+[Email] Sent to vikramaga24@gmail.com - 9/21 EMA Cross-Retest-Hold - 1 entries, 1 tagged EMA21 - 2026-11-21
