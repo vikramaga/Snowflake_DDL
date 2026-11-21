@@ -1,0 +1,434 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 380 bars ($342.56, 2026-11-20)
+  ✅ MSFT: daily 380 bars ($484.52, 2026-11-20)
+  ✅ NVDA: daily 380 bars ($125.53, 2026-11-20)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3151 → 3151
+  ✅ otherlisted       : +2261 → 5412
+  ✅ NASDAQ API        : +1139 → 6551
+  ✅ Static fallback   : +  10 → 6561
+
+  🎯 Total: 6561 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6561 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (single download per ticker)
+  Signal: RSI(14) breaks its most recent peak from the last 7 days (first break), and RSI > its 9-day average
+
+Daily fetch:   0%|          | 0/6561 [00:00<?]Daily fetch:   1%|          | 50/6561 [00:02<05:27]Daily fetch:   2%|▏         | 100/6561 [00:05<06:36]Daily fetch:   2%|▏         | 150/6561 [00:09<06:54]Daily fetch:   3%|▎         | 200/6561 [00:12<07:06]Daily fetch:   4%|▍         | 250/6561 [00:16<07:10]Daily fetch:   5%|▍         | 300/6561 [00:19<07:10]Daily fetch:   5%|▌         | 350/6561 [00:23<06:58]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   6%|▌         | 400/6561 [00:26<07:06]Daily fetch:   7%|▋         | 450/6561 [00:30<07:12]Daily fetch:   8%|▊         | 500/6561 [00:33<07:03]Daily fetch:   8%|▊         | 550/6561 [00:37<07:06]Daily fetch:   9%|▉         | 600/6561 [00:40<06:50]Daily fetch:  10%|▉         | 650/6561 [00:44<06:39]Daily fetch:  11%|█         | 700/6561 [00:47<06:40]Daily fetch:  11%|█▏        | 750/6561 [00:50<06:37]Daily fetch:  12%|█▏        | 800/6561 [00:54<06:33]Daily fetch:  13%|█▎        | 850/6561 [00:57<06:21]Daily fetch:  14%|█▎        | 900/6561 [01:01<06:32]Daily fetch:  14%|█▍        | 950/6561 [01:04<06:31]Daily fetch:  15%|█▌        | 1000/6561 [01:08<06:32]Daily fetch:  16%|█▌        | 1050/6561 [01:11<06:17]Daily fetch:  17%|█▋        | 1100/6561 [01:15<06:22]$CBX: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$CBO: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$CBO: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$CBO: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$CBX: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$CBX: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+Daily fetch:  18%|█▊        | 1150/6561 [01:18<06:12]Daily fetch:  18%|█▊        | 1200/6561 [01:21<06:00]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1250/6561 [01:25<05:56]Daily fetch:  20%|█▉        | 1300/6561 [01:28<05:53]Daily fetch:  21%|██        | 1350/6561 [01:31<05:37]Daily fetch:  21%|██▏       | 1400/6561 [01:34<05:32]Daily fetch:  22%|██▏       | 1450/6561 [01:37<05:33]Daily fetch:  23%|██▎       | 1500/6561 [01:41<05:22]$CTEST: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$CTEST: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+Daily fetch:  24%|██▎       | 1550/6561 [01:44<05:32]Daily fetch:  24%|██▍       | 1600/6561 [01:47<05:27]Daily fetch:  25%|██▌       | 1650/6561 [01:51<05:33]Daily fetch:  26%|██▌       | 1700/6561 [01:54<05:26]Daily fetch:  27%|██▋       | 1750/6561 [01:57<05:14]Daily fetch:  27%|██▋       | 1800/6561 [02:01<05:11]Daily fetch:  28%|██▊       | 1850/6561 [02:04<05:03]Daily fetch:  29%|██▉       | 1900/6561 [02:07<04:58]Daily fetch:  30%|██▉       | 1950/6561 [02:10<05:00]Daily fetch:  30%|███       | 2000/6561 [02:14<04:56]Daily fetch:  31%|███       | 2050/6561 [02:17<04:58]$EXAS: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$EXAS: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+Daily fetch:  32%|███▏      | 2100/6561 [02:20<04:54]Daily fetch:  33%|███▎      | 2150/6561 [02:24<04:58]Daily fetch:  34%|███▎      | 2200/6561 [02:27<04:54]Daily fetch:  34%|███▍      | 2250/6561 [02:31<04:51]Daily fetch:  35%|███▌      | 2300/6561 [02:34<04:47]Daily fetch:  36%|███▌      | 2350/6561 [02:37<04:42]Daily fetch:  37%|███▋      | 2400/6561 [02:41<04:50]Daily fetch:  37%|███▋      | 2450/6561 [02:44<04:41]Daily fetch:  38%|███▊      | 2500/6561 [02:48<04:36]Daily fetch:  39%|███▉      | 2550/6561 [02:51<04:33]Daily fetch:  40%|███▉      | 2600/6561 [02:54<04:27]Daily fetch:  40%|████      | 2650/6561 [02:58<04:22]Daily fetch:  41%|████      | 2700/6561 [03:01<04:26]Daily fetch:  42%|████▏     | 2750/6561 [03:05<04:20]Daily fetch:  43%|████▎     | 2800/6561 [03:08<04:11]Daily fetch:  43%|████▎     | 2850/6561 [03:11<04:06]Daily fetch:  44%|████▍     | 2900/6561 [03:15<04:07]Daily fetch:  45%|████▍     | 2950/6561 [03:18<04:09]Daily fetch:  46%|████▌     | 3000/6561 [03:21<04:00]Daily fetch:  46%|████▋     | 3050/6561 [03:25<03:52]Daily fetch:  47%|████▋     | 3100/6561 [03:29<04:02]Daily fetch:  48%|████▊     | 3150/6561 [03:32<03:57]Daily fetch:  49%|████▉     | 3200/6561 [03:35<03:48]Daily fetch:  50%|████▉     | 3250/6561 [03:39<03:43]Daily fetch:  50%|█████     | 3300/6561 [03:42<03:39]Daily fetch:  51%|█████     | 3350/6561 [03:45<03:34]Daily fetch:  52%|█████▏    | 3400/6561 [03:48<03:29]Daily fetch:  53%|█████▎    | 3450/6561 [03:52<03:26]Daily fetch:  53%|█████▎    | 3500/6561 [03:55<03:21]Daily fetch:  54%|█████▍    | 3550/6561 [03:58<03:22]Daily fetch:  55%|█████▍    | 3600/6561 [04:02<03:17]Daily fetch:  56%|█████▌    | 3650/6561 [04:05<03:13]Daily fetch:  56%|█████▋    | 3700/6561 [04:08<03:10]Daily fetch:  57%|█████▋    | 3750/6561 [04:12<03:12]Daily fetch:  58%|█████▊    | 3800/6561 [04:16<03:11]Daily fetch:  59%|█████▊    | 3850/6561 [04:19<03:04]Daily fetch:  59%|█████▉    | 3900/6561 [04:22<03:01]Daily fetch:  60%|██████    | 3950/6561 [04:26<02:57]Daily fetch:  61%|██████    | 4000/6561 [04:29<02:55]Daily fetch:  62%|██████▏   | 4050/6561 [04:33<02:53]Daily fetch:  62%|██████▏   | 4100/6561 [04:36<02:50]Daily fetch:  63%|██████▎   | 4150/6561 [04:39<02:42]Daily fetch:  64%|██████▍   | 4200/6561 [04:43<02:37]Daily fetch:  65%|██████▍   | 4250/6561 [04:46<02:36]Daily fetch:  66%|██████▌   | 4300/6561 [04:50<02:37]Daily fetch:  66%|██████▋   | 4350/6561 [04:53<02:35]Daily fetch:  67%|██████▋   | 4400/6561 [04:57<02:29]Daily fetch:  68%|██████▊   | 4450/6561 [05:00<02:23]Daily fetch:  69%|██████▊   | 4500/6561 [05:03<02:20]Daily fetch:  69%|██████▉   | 4550/6561 [05:07<02:18]Daily fetch:  70%|███████   | 4600/6561 [05:10<02:12]Daily fetch:  71%|███████   | 4650/6561 [05:14<02:10]Daily fetch:  72%|███████▏  | 4700/6561 [05:17<02:05]Daily fetch:  72%|███████▏  | 4750/6561 [05:20<02:03]$PSTG: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$PSTG: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+Daily fetch:  73%|███████▎  | 4800/6561 [05:24<02:00]Daily fetch:  74%|███████▍  | 4850/6561 [05:27<01:57]Daily fetch:  75%|███████▍  | 4900/6561 [05:31<01:55]Daily fetch:  75%|███████▌  | 4950/6561 [05:34<01:48]Daily fetch:  76%|███████▌  | 5000/6561 [05:37<01:44]Daily fetch:  77%|███████▋  | 5050/6561 [05:41<01:40]Daily fetch:  78%|███████▊  | 5100/6561 [05:44<01:38]Daily fetch:  78%|███████▊  | 5150/6561 [05:48<01:36]Daily fetch:  79%|███████▉  | 5200/6561 [05:51<01:35]Daily fetch:  80%|████████  | 5250/6561 [05:55<01:36]Daily fetch:  81%|████████  | 5300/6561 [05:58<01:28]Daily fetch:  82%|████████▏ | 5350/6561 [06:02<01:24]Daily fetch:  82%|████████▏ | 5400/6561 [06:05<01:19]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5450/6561 [06:08<01:14]Daily fetch:  84%|████████▍ | 5500/6561 [06:12<01:10]Daily fetch:  85%|████████▍ | 5550/6561 [06:15<01:08]Daily fetch:  85%|████████▌ | 5600/6561 [06:18<01:02]Daily fetch:  86%|████████▌ | 5650/6561 [06:22<01:02]Daily fetch:  87%|████████▋ | 5700/6561 [06:25<00:58]Daily fetch:  88%|████████▊ | 5750/6561 [06:28<00:54]Daily fetch:  88%|████████▊ | 5800/6561 [06:32<00:51]Daily fetch:  89%|████████▉ | 5850/6561 [06:35<00:47]Daily fetch:  90%|████████▉ | 5900/6561 [06:39<00:45]Daily fetch:  91%|█████████ | 5950/6561 [06:42<00:41]Daily fetch:  91%|█████████▏| 6000/6561 [06:45<00:37]Daily fetch:  92%|█████████▏| 6050/6561 [06:48<00:33]Daily fetch:  93%|█████████▎| 6100/6561 [06:52<00:30]Daily fetch:  94%|█████████▎| 6150/6561 [06:55<00:27]Daily fetch:  94%|█████████▍| 6200/6561 [06:58<00:23]Daily fetch:  95%|█████████▌| 6250/6561 [07:02<00:20]Daily fetch:  96%|█████████▌| 6300/6561 [07:05<00:16]Daily fetch:  97%|█████████▋| 6350/6561 [07:08<00:14]Daily fetch:  98%|█████████▊| 6400/6561 [07:12<00:10]Daily fetch:  98%|█████████▊| 6450/6561 [07:16<00:08]Daily fetch:  99%|█████████▉| 6500/6561 [07:19<00:04]$ZBZX: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZEXIT: possibly delisted; no timezone found
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZCZZT: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+
+7 Failed downloads:
+['ZBZX', 'ZTEST', 'ZBZZT', 'ZAZZT']: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+['ZIEXT', 'ZEXIT', 'ZCZZT']: possibly delisted; no timezone found
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZAZZT: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZBZX: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZBZZT: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZTEST: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+Daily fetch: 100%|█████████▉| 6550/6561 [07:23<00:00]$ZXIET: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+
+2 Failed downloads:
+['ZXIET']: possibly delisted; no timezone found
+['ZVV']: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZVV: possibly delisted; no price data found  (1d 2025-05-20 -> 2026-11-21)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6561/6561 [07:25<00:00]Daily fetch: 100%|██████████| 6561/6561 [07:27<00:00]
+
+  Daily data : 5588/6561 tickers
+
+Checking RSI breakout:   0%|          | 0/5588 [00:00<?, ?stk/s]Checking RSI breakout:   5%|▌         | 284/5588 [00:00<00:01, 2825.18stk/s]Checking RSI breakout:  10%|█         | 567/5588 [00:00<00:01, 2625.03stk/s]Checking RSI breakout:  16%|█▌        | 881/5588 [00:00<00:01, 2846.47stk/s]Checking RSI breakout:  21%|██        | 1168/5588 [00:00<00:01, 2815.95stk/s]Checking RSI breakout:  26%|██▌       | 1451/5588 [00:00<00:01, 2741.42stk/s]Checking RSI breakout:  31%|███       | 1744/5588 [00:00<00:01, 2796.95stk/s]Checking RSI breakout:  36%|███▌      | 2025/5588 [00:00<00:01, 2785.29stk/s]Checking RSI breakout:  42%|████▏     | 2341/5588 [00:00<00:01, 2898.57stk/s]Checking RSI breakout:  47%|████▋     | 2632/5588 [00:00<00:01, 2900.79stk/s]Checking RSI breakout:  52%|█████▏    | 2927/5588 [00:01<00:00, 2910.13stk/s]Checking RSI breakout:  58%|█████▊    | 3219/5588 [00:01<00:00, 2866.35stk/s]Checking RSI breakout:  63%|██████▎   | 3531/5588 [00:01<00:00, 2941.52stk/s]Checking RSI breakout:  69%|██████▉   | 3847/5588 [00:01<00:00, 3003.50stk/s]Checking RSI breakout:  74%|███████▍  | 4148/5588 [00:01<00:00, 2981.55stk/s]Checking RSI breakout:  80%|███████▉  | 4456/5588 [00:01<00:00, 3008.40stk/s]Checking RSI breakout:  85%|████████▌ | 4758/5588 [00:01<00:00, 2957.13stk/s]Checking RSI breakout:  90%|█████████ | 5055/5588 [00:01<00:00, 2860.60stk/s]Checking RSI breakout:  96%|█████████▌| 5342/5588 [00:01<00:00, 2809.58stk/s]Checking RSI breakout: 100%|██████████| 5588/5588 [00:01<00:00, 2873.91stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 4 steps
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Entry_Price   Stop_Loss    RSI      RSI_Peak   Signal_Date  
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  AD        $27.23      45       $27.23        $25.87       28.6     26.5       2026-11-20   
+  AGNCZ     $23.20      57       $23.20        $22.92       35.9     30.1       2026-11-20   
+  ATRC      $55.39      34       $55.39        $53.96       44.8     43.8       2026-11-20   
+  BKE       $44.15      92       $44.15        $41.61       50.3     43.5       2026-11-20   
+  BOX       $43.89      64       $43.89        $42.74       64.7     61.0       2026-11-20   
+  BRO       $73.07      53       $73.07        $71.20       57.5     57.4       2026-11-20   
+  CAG       $14.92      58       $14.92        $14.24       53.7     52.8       2026-11-20   
+  CALM      $72.33      79       $72.33        $64.40       62.9     60.0       2026-11-20   
+  CBLL      $27.39      77       $27.39        $25.20       55.6     49.7       2026-11-20   
+  DHI       $145.44     56       $145.44       $140.50      50.4     48.7       2026-11-20   
+  ECO       $84.83      74       $84.83        $74.54       56.8     46.2       2026-11-20   
+  EMA       $52.01      57       $52.01        $50.82       69.0     67.7       2026-11-20   
+  EPC       $28.47      60       $28.47        $27.14       51.3     49.8       2026-11-20   
+  FICO      $694.31     45       $694.31       $654.14      41.7     36.8       2026-11-20   
+  GIS       $35.74      78       $35.74        $33.55       57.9     55.5       2026-11-20   
+  GPN       $91.83      86       $91.83        $83.32       52.7     43.8       2026-11-20   
+  HDB       $27.42      69       $27.42        $25.87       78.9     73.5       2026-11-20   
+  HRL       $23.54      57       $23.54        $22.34       70.1     67.9       2026-11-20   
+  HURN      $172.21     47       $172.21       $164.74      48.6     48.2       2026-11-20   
+  IFF       $79.62      41       $79.62        $78.57       35.4     34.4       2026-11-20   
+  IPAR      $137.42     68       $137.42       $130.41      69.6     66.1       2026-11-20   
+  IRTC      $94.72      37       $94.72        $91.00       40.1     40.0       2026-11-20   
+  JENA      $10.48      98       $10.48        $10.46       68.3     58.9       2026-11-20   
+  MKC       $47.40      80       $47.40        $44.88       51.1     46.6       2026-11-20   
+  NTLA      $10.00      56       $10.00        $9.07        40.7     37.8       2026-11-20   
+  PSMT      $170.07     77       $170.07       $165.19      56.4     51.1       2026-11-20   
+  PSTL      $22.54      58       $22.54        $21.87       56.2     56.1       2026-11-20   
+  RCI       $35.45      80       $35.45        $33.36       64.6     61.2       2026-11-20   
+  SFD       $19.13      51       $19.13        $18.46       54.3     54.3       2026-11-20   
+  SKWD      $64.43      65       $64.43        $62.34       62.4     62.0       2026-11-20   
+  STC       $44.49      43       $44.49        $42.57       43.3     41.8       2026-11-20   
+  STN       $84.04      64       $84.04        $82.33       68.9     67.6       2026-11-20   
+  SYY       $78.17      38       $78.17        $76.53       48.5     48.1       2026-11-20   
+  T         $22.31      46       $22.31        $21.52       50.8     50.7       2026-11-20   
+  TBB       $17.90      66       $17.90        $17.54       47.4     38.0       2026-11-20   
+  TGLS      $47.72      70       $47.72        $44.79       65.8     63.4       2026-11-20   
+  TSN       $65.12      48       $65.12        $62.76       76.6     76.5       2026-11-20   
+  TYRA      $20.12      41       $20.12        $19.26       45.3     42.8       2026-11-20   
+  VOR       $19.19      51       $19.19        $17.71       49.4     48.8       2026-11-20   
+  VZ        $46.48      60       $46.48        $45.08       56.6     54.5       2026-11-20   
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6561
+  Daily data      : 5588
+  ✅ Matches       : 40
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔍 FUNNEL — where ticker-days were filtered out
+  (tallied across every liquid ticker's last 1 trading day(s))
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker-days checked                          : 2355
+  Step 1 — RSI peak in last 7 days             : 2244
+  Step 2 — + RSI above that peak today         : 91
+  Step 3 — + first break (not broken earlier)  : 56
+  Step 4 — + RSI above its 9-day average        : 40  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                    Daily RSI High Breakout   2026-11-21   40 matches                                   ║
+  ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬─────────┬───────┬─────────────┬───────────┬────────┬──────┬──────────┬─────────┬────────────────┬─────────────┐
+  │ Ticker │  Price  │ Score │ Entry_Price │ Stop_Loss │ Risk_% │ RSI  │ RSI_Peak │ RSI_Avg │ Vol_vs_20d_Avg │ Signal_Date │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  JENA  │  $10.48 │   98  │    $10.48   │   $10.46  │  0.2%  │ 68.3 │   58.9   │   59.5  │     x4.33      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  BKE   │  $44.15 │   92  │    $44.15   │   $41.61  │  5.8%  │ 50.3 │   43.5   │   44.5  │     x1.90      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  GPN   │  $91.83 │   86  │    $91.83   │   $83.32  │  9.3%  │ 52.7 │   43.8   │   51.9  │     x2.37      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  MKC   │  $47.40 │   80  │    $47.40   │   $44.88  │  5.3%  │ 51.1 │   46.6   │   46.3  │     x1.64      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  RCI   │  $35.45 │   80  │    $35.45   │   $33.36  │  5.9%  │ 64.6 │   61.2   │   57.3  │     x1.60      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  CALM  │  $72.33 │   79  │    $72.33   │   $64.40  │ 11.0%  │ 62.9 │   60.0   │   54.0  │     x1.48      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  GIS   │  $35.74 │   78  │    $35.74   │   $33.55  │  6.1%  │ 57.9 │   55.5   │   52.0  │     x1.81      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  CBLL  │  $27.39 │   77  │    $27.39   │   $25.20  │  8.0%  │ 55.6 │   49.7   │   50.5  │     x1.12      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  PSMT  │ $170.07 │   77  │   $170.07   │  $165.19  │  2.9%  │ 56.4 │   51.1   │   48.7  │     x0.95      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  ECO   │  $84.83 │   74  │    $84.83   │   $74.54  │ 12.1%  │ 56.8 │   46.2   │   47.3  │     x0.83      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  TGLS  │  $47.72 │   70  │    $47.72   │   $44.79  │  6.1%  │ 65.8 │   63.4   │   65.2  │     x1.75      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  HDB   │  $27.42 │   69  │    $27.42   │   $25.87  │  5.7%  │ 78.9 │   73.5   │   73.4  │     x2.76      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  IPAR  │ $137.42 │   68  │   $137.42   │  $130.41  │  5.1%  │ 69.6 │   66.1   │   68.2  │     x1.36      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  TBB   │  $17.90 │   66  │    $17.90   │   $17.54  │  2.0%  │ 47.4 │   38.0   │   42.1  │     x1.55      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  SKWD  │  $64.43 │   65  │    $64.43   │   $62.34  │  3.2%  │ 62.4 │   62.0   │   60.0  │     x1.67      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  BOX   │  $43.89 │   64  │    $43.89   │   $42.74  │  2.6%  │ 64.7 │   61.0   │   63.9  │     x1.13      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  STN   │  $84.04 │   64  │    $84.04   │   $82.33  │  2.0%  │ 68.9 │   67.6   │   66.1  │     x1.39      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  EPC   │  $28.47 │   60  │    $28.47   │   $27.14  │  4.7%  │ 51.3 │   49.8   │   50.6  │     x1.32      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │   VZ   │  $46.48 │   60  │    $46.48   │   $45.08  │  3.0%  │ 56.6 │   54.5   │   55.8  │     x1.19      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  CAG   │  $14.92 │   58  │    $14.92   │   $14.24  │  4.6%  │ 53.7 │   52.8   │   53.4  │     x1.32      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  PSTL  │  $22.54 │   58  │    $22.54   │   $21.87  │  3.0%  │ 56.2 │   56.1   │   54.5  │     x1.31      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │ AGNCZ  │  $23.20 │   57  │    $23.20   │   $22.92  │  1.2%  │ 35.9 │   30.1   │   29.2  │     x1.01      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  EMA   │  $52.01 │   57  │    $52.01   │   $50.82  │  2.3%  │ 69.0 │   67.7   │   67.2  │     x0.52      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  HRL   │  $23.54 │   57  │    $23.54   │   $22.34  │  5.1%  │ 70.1 │   67.9   │   63.5  │     x1.07      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  DHI   │ $145.44 │   56  │   $145.44   │  $140.50  │  3.4%  │ 50.4 │   48.7   │   49.6  │     x0.91      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  NTLA  │  $10.00 │   56  │    $10.00   │   $9.07   │  9.3%  │ 40.7 │   37.8   │   39.7  │     x2.94      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  BRO   │  $73.07 │   53  │    $73.07   │   $71.20  │  2.6%  │ 57.5 │   57.4   │   56.4  │     x1.07      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  SFD   │  $19.13 │   51  │    $19.13   │   $18.46  │  3.5%  │ 54.3 │   54.3   │   53.6  │     x0.57      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  VOR   │  $19.19 │   51  │    $19.19   │   $17.71  │  7.7%  │ 49.4 │   48.8   │   46.9  │     x2.15      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  TSN   │  $65.12 │   48  │    $65.12   │   $62.76  │  3.6%  │ 76.6 │   76.5   │   72.2  │     x1.73      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  HURN  │ $172.21 │   47  │   $172.21   │  $164.74  │  4.3%  │ 48.6 │   48.2   │   44.6  │     x0.40      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │   T    │  $22.31 │   46  │    $22.31   │   $21.52  │  3.5%  │ 50.8 │   50.7   │   48.0  │     x1.12      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │   AD   │  $27.23 │   45  │    $27.23   │   $25.87  │  5.0%  │ 28.6 │   26.5   │   24.9  │     x1.22      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+JENA: No earnings dates found, symbol may be delisted
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+
+  │  FICO  │ $694.31 │   45  │   $694.31   │  $654.14  │  5.8%  │ 41.7 │   36.8   │   41.7  │     x0.82      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  STC   │  $44.49 │   43  │    $44.49   │   $42.57  │  4.3%  │ 43.3 │   41.8   │   38.1  │     x0.76      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  IFF   │  $79.62 │   41  │    $79.62   │   $78.57  │  1.3%  │ 35.4 │   34.4   │   34.2  │     x1.37      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  TYRA  │  $20.12 │   41  │    $20.12   │   $19.26  │  4.3%  │ 45.3 │   42.8   │   43.1  │     x0.79      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  SYY   │  $78.17 │   38  │    $78.17   │   $76.53  │  2.1%  │ 48.5 │   48.1   │   45.6  │     x1.19      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  IRTC  │  $94.72 │   37  │    $94.72   │   $91.00  │  3.9%  │ 40.1 │   40.0   │   35.5  │     x0.82      │  2026-11-20 │
+  ├────────┼─────────┼───────┼─────────────┼───────────┼────────┼──────┼──────────┼─────────┼────────────────┼─────────────┤
+  │  ATRC  │  $55.39 │   34  │    $55.39   │   $53.96  │  2.6%  │ 44.8 │   43.8   │   44.2  │     x1.01      │  2026-11-20 │
+  └────────┴─────────┴───────┴─────────────┴───────────┴────────┴──────┴──────────┴─────────┴────────────────┴─────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Score           0-100 (how far RSI broke its peak + RSI above its
+                  average + RSI in 50-70 + volume + above SMA50 + freshness)
+  Entry_Price     signal day's close
+  Stop_Loss       lowest low since the RSI peak
+  RSI_Peak        the RSI high that was broken (Peak_Date)
+  Break_Pts       RSI points above that peak
+  RSI_Avg         9-day simple average of RSI
+  Signal_Date     date RSI broke the peak
+  ──────────────────────────────────────────────────────
+  💰 Position sizing: max loss $40 per trade — 39 sized, 1 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 40 qualified stocks (trend, catalyst, value) ...
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_daily_rsi_high_breakout_v1_20261121_0757.csv  (373s)
+     #1  GPN         78  (trend 35, catalyst 22, value 21)  above SMA200, SMA50 rising, SMA200 turning up, contract/order news, positive news, beat last EPS, PEG <= 1.5
+     #2  BOX         74  (trend 35, catalyst 26, value 13)  above SMA200, SMA50 rising, SMA200 turning up, contract/order news, positive news, beat last EPS, PEG <= 1.5
+     #3  CBLL        68  (trend 35, catalyst 18, value 15)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS
+     #4  EMA         66  (trend 35, catalyst 16, value 15)  above SMA200, SMA50 rising, SMA200 turning up, contract/order news, positive news
+     #5  HURN        64  (trend 35, catalyst 14, value 15)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS
+     #6  SKWD        62  (trend 35, catalyst 16, value 11)  above SMA200, SMA50 rising, SMA200 turning up, contract/order news, positive news, beat last EPS
+     #7  VZ          59  (trend 20, catalyst 18, value 21)  above SMA200, SMA200 rising, contract/order news, beat last EPS, PEG <= 1.5
+     #8  TGLS        57  (trend 22, catalyst 22, value 13)  above SMA200, SMA50 rising, contract/order news, positive news, beat last EPS, PEG <= 1.5
+     #9  IPAR        56  (trend 35, catalyst 14, value 7)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS
+     #10 ATRC        52  (trend 35, catalyst 14, value 3)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_rsi_high_breakout_20261121_0751.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_daily_rsi_high_breakout_20261121_0751.txt
+
+  📋 Tickers (comma-separated):
+  JENA, BKE, GPN, MKC, RCI, CALM, GIS, CBLL, PSMT, ECO, TGLS, HDB, IPAR, TBB, SKWD, BOX, STN, EPC, VZ, CAG, PSTL, AGNCZ, EMA, HRL, DHI, NTLA, BRO, SFD, VOR, TSN, HURN, T, AD, FICO, STC, IFF, TYRA, SYY, IRTC, ATRC
+[Email] Sending to vikramaga24@gmail.com  (40 results)...
+[Email] 📎 Attached: daily_rsi_high_breakout_20261121_0751.csv (7,561 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+  🏅 Best 10 added to the email (html text)
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 RSI High Breakout — 40 signals — 2026-11-21
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/daily_rsi_high_breakout_chart_20261121_0751.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (all required, on the latest daily candle)
+  RSI = Wilder RSI(14); RSI average = 9-day simple average of RSI.
+
+  1) RSI made a peak (higher than the day before and after) within
+     the last 7 trading days — the most recent one is used.
+  2) Today's RSI is ABOVE that peak.
+  3) First break — no day since the peak already closed above it.
+  4) Today's RSI is ABOVE its 9-day average.
+
+  📋 OUTPUT (reasonable defaults — not explicitly requested)
+  Entry_Price = signal day's CLOSE
+  Stop_Loss   = lowest LOW since the RSI peak
+  SMA50       = trend context (score bonus only, not a gate)
+  Universe    = price >= 10 USD, 20d avg volume >= 100k
+
+  📋 SCORE (0-100)
+  Base 20 + RSI points above the peak (0-20) + RSI above its average
+  (0-15) + RSI in 50-70 (+10; -10 if above 75) + volume vs 20d avg
+  (0-15) + above SMA50 (10) + freshness (0-10); -10 if stop risk > 12%
+
+  ⚙️  TUNE IF 0 RESULTS
+  signal_lookback_days            1 → 3
+  peak_window_days                7 → 10
+  min_price                      10 → 5
+  min_avg_volume             100000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
