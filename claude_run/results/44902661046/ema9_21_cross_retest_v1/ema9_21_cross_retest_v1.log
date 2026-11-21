@@ -1,0 +1,91 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 209 bars ($342.56, 2026-11-20)
+  ✅ MSFT: daily 209 bars ($484.52, 2026-11-20)
+  ✅ NVDA: daily 209 bars ($125.53, 2026-11-20)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ⚠️  nasdaqlisted: 503 Server Error: Service Unavailable for url: https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt
+  ⚠️  otherlisted: 503 Server Error: Service Unavailable for url: https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt
+  ✅ NASDAQ API        : +4274 → 4274
+  ✅ Static fallback   : +  20 → 4294
+
+  🎯 Total: 4294 tickers
+
+=================================================================
+  STEP 3  SCANNING 4294 TICKERS
+=================================================================
+Daily fetch:   0%|          | 0/4294 [00:00<?, ?stk/s]Daily fetch:   1%|          | 50/4294 [00:03<04:43, 14.95stk/s]Daily fetch:   2%|▏         | 100/4294 [00:07<05:38, 12.37stk/s]Daily fetch:   3%|▎         | 150/4294 [00:13<06:23, 10.79stk/s]Daily fetch:   5%|▍         | 200/4294 [00:17<06:14, 10.92stk/s]Daily fetch:   6%|▌         | 250/4294 [00:23<06:54,  9.76stk/s]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+
+1 Failed download:
+['ANSS']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ANSS"}}}
+$ANSS: possibly delisted; no timezone found
+$ANSS: possibly delisted; no timezone found
+Daily fetch:   7%|▋         | 300/4294 [00:29<07:09,  9.29stk/s]Daily fetch:   8%|▊         | 350/4294 [00:34<06:49,  9.64stk/s]Daily fetch:   9%|▉         | 400/4294 [00:39<06:29,  9.99stk/s]Daily fetch:  10%|█         | 450/4294 [00:43<06:08, 10.44stk/s]Daily fetch:  12%|█▏        | 500/4294 [00:49<06:33,  9.65stk/s]Daily fetch:  13%|█▎        | 550/4294 [00:54<06:24,  9.74stk/s]Daily fetch:  14%|█▍        | 600/4294 [00:59<06:07, 10.05stk/s]Daily fetch:  15%|█▌        | 650/4294 [01:04<06:10,  9.85stk/s]Daily fetch:  16%|█▋        | 700/4294 [01:08<05:43, 10.45stk/s]Daily fetch:  17%|█▋        | 750/4294 [01:13<05:45, 10.26stk/s]Daily fetch:  19%|█▊        | 800/4294 [01:18<05:36, 10.37stk/s]$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  20%|█▉        | 850/4294 [01:23<05:41, 10.10stk/s]Daily fetch:  21%|██        | 900/4294 [01:27<05:23, 10.48stk/s]Daily fetch:  22%|██▏       | 950/4294 [01:32<05:12, 10.71stk/s]Daily fetch:  23%|██▎       | 1000/4294 [01:37<05:10, 10.61stk/s]Daily fetch:  24%|██▍       | 1050/4294 [01:41<04:58, 10.88stk/s]Daily fetch:  26%|██▌       | 1100/4294 [01:46<05:01, 10.58stk/s]Daily fetch:  27%|██▋       | 1150/4294 [01:50<04:48, 10.91stk/s]Daily fetch:  28%|██▊       | 1200/4294 [01:55<04:40, 11.04stk/s]Daily fetch:  29%|██▉       | 1250/4294 [01:59<04:37, 10.97stk/s]Daily fetch:  30%|███       | 1300/4294 [02:04<04:34, 10.90stk/s]$EXAS: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$EXAS: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$EXAS: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+Daily fetch:  31%|███▏      | 1350/4294 [02:09<04:37, 10.60stk/s]Daily fetch:  33%|███▎      | 1400/4294 [02:14<04:32, 10.63stk/s]Daily fetch:  34%|███▍      | 1450/4294 [02:19<04:32, 10.42stk/s]Daily fetch:  35%|███▍      | 1500/4294 [02:23<04:20, 10.71stk/s]Daily fetch:  36%|███▌      | 1550/4294 [02:28<04:25, 10.35stk/s]Daily fetch:  37%|███▋      | 1600/4294 [02:33<04:14, 10.60stk/s]Daily fetch:  38%|███▊      | 1650/4294 [02:38<04:11, 10.51stk/s]Daily fetch:  40%|███▉      | 1700/4294 [02:42<04:04, 10.61stk/s]Daily fetch:  41%|████      | 1750/4294 [02:47<04:08, 10.26stk/s]Daily fetch:  42%|████▏     | 1800/4294 [02:52<03:52, 10.72stk/s]Daily fetch:  43%|████▎     | 1850/4294 [02:57<03:53, 10.48stk/s]Daily fetch:  44%|████▍     | 1900/4294 [03:02<03:55, 10.17stk/s]Daily fetch:  45%|████▌     | 1950/4294 [03:06<03:45, 10.37stk/s]Daily fetch:  47%|████▋     | 2000/4294 [03:10<03:30, 10.92stk/s]Daily fetch:  48%|████▊     | 2050/4294 [03:16<03:39, 10.23stk/s]Daily fetch:  49%|████▉     | 2100/4294 [03:21<03:31, 10.36stk/s]Daily fetch:  50%|█████     | 2150/4294 [03:26<03:32, 10.10stk/s]Daily fetch:  51%|█████     | 2200/4294 [03:30<03:18, 10.56stk/s]Daily fetch:  52%|█████▏    | 2250/4294 [03:36<03:20, 10.19stk/s]Daily fetch:  54%|█████▎    | 2300/4294 [03:40<03:07, 10.63stk/s]Daily fetch:  55%|█████▍    | 2350/4294 [03:45<03:07, 10.37stk/s]Daily fetch:  56%|█████▌    | 2400/4294 [03:49<02:58, 10.62stk/s]Daily fetch:  57%|█████▋    | 2450/4294 [03:54<02:50, 10.84stk/s]Daily fetch:  58%|█████▊    | 2500/4294 [03:58<02:45, 10.83stk/s]Daily fetch:  59%|█████▉    | 2550/4294 [04:03<02:41, 10.78stk/s]Daily fetch:  61%|██████    | 2600/4294 [04:08<02:40, 10.53stk/s]Daily fetch:  62%|██████▏   | 2650/4294 [04:15<02:55,  9.37stk/s]Daily fetch:  63%|██████▎   | 2700/4294 [04:19<02:41,  9.88stk/s]Daily fetch:  64%|██████▍   | 2750/4294 [04:24<02:34,  9.98stk/s]Daily fetch:  65%|██████▌   | 2800/4294 [04:29<02:26, 10.22stk/s]Daily fetch:  66%|██████▋   | 2850/4294 [04:34<02:26,  9.84stk/s]Daily fetch:  68%|██████▊   | 2900/4294 [04:39<02:18, 10.07stk/s]Daily fetch:  69%|██████▊   | 2950/4294 [04:43<02:09, 10.38stk/s]Daily fetch:  70%|██████▉   | 3000/4294 [04:48<02:05, 10.30stk/s]Daily fetch:  71%|███████   | 3050/4294 [04:53<01:59, 10.39stk/s]Daily fetch:  72%|███████▏  | 3100/4294 [04:58<01:55, 10.34stk/s]Daily fetch:  73%|███████▎  | 3150/4294 [05:02<01:44, 10.90stk/s]$PSTG: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$PSTG: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+$PSTG: possibly delisted; no price data found  (1d 2026-01-25 -> 2026-11-21)
+Daily fetch:  75%|███████▍  | 3200/4294 [05:07<01:43, 10.62stk/s]Daily fetch:  76%|███████▌  | 3250/4294 [05:12<01:38, 10.64stk/s]Daily fetch:  77%|███████▋  | 3300/4294 [05:16<01:32, 10.80stk/s]Daily fetch:  78%|███████▊  | 3350/4294 [05:21<01:27, 10.76stk/s]Daily fetch:  79%|███████▉  | 3400/4294 [05:25<01:23, 10.65stk/s]Daily fetch:  80%|████████  | 3450/4294 [05:31<01:25,  9.87stk/s]Daily fetch:  82%|████████▏ | 3500/4294 [05:36<01:20,  9.92stk/s]Daily fetch:  83%|████████▎ | 3550/4294 [05:41<01:13, 10.09stk/s]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  84%|████████▍ | 3600/4294 [05:45<01:06, 10.51stk/s]Daily fetch:  85%|████████▌ | 3650/4294 [05:50<01:00, 10.57stk/s]Daily fetch:  86%|████████▌ | 3700/4294 [05:54<00:54, 10.87stk/s]Daily fetch:  87%|████████▋ | 3750/4294 [05:59<00:50, 10.78stk/s]Daily fetch:  88%|████████▊ | 3800/4294 [06:04<00:46, 10.68stk/s]Daily fetch:  90%|████████▉ | 3850/4294 [06:09<00:42, 10.42stk/s]Daily fetch:  91%|█████████ | 3900/4294 [06:14<00:37, 10.55stk/s]Daily fetch:  92%|█████████▏| 3950/4294 [06:18<00:32, 10.68stk/s]Daily fetch:  93%|█████████▎| 4000/4294 [06:22<00:26, 10.92stk/s]Daily fetch:  94%|█████████▍| 4050/4294 [06:27<00:21, 11.10stk/s]Daily fetch:  95%|█████████▌| 4100/4294 [06:31<00:17, 11.32stk/s]Daily fetch:  97%|█████████▋| 4150/4294 [06:36<00:13, 11.03stk/s]Daily fetch:  98%|█████████▊| 4200/4294 [06:40<00:08, 11.09stk/s]Daily fetch:  99%|█████████▉| 4250/4294 [06:46<00:04, 10.50stk/s]Daily fetch: 100%|██████████| 4294/4294 [06:50<00:00, 10.37stk/s]Daily fetch: 100%|██████████| 4294/4294 [06:52<00:00, 10.42stk/s]
+
+  Daily data : 3609/4294 tickers
+
+Checking pattern:   0%|          | 0/3609 [00:00<?, ?stk/s]Checking pattern:  21%|██        | 760/3609 [00:00<00:00, 7580.02stk/s]Checking pattern:  43%|████▎     | 1540/3609 [00:00<00:00, 7700.19stk/s]Checking pattern:  64%|██████▍   | 2311/3609 [00:00<00:00, 7699.30stk/s]Checking pattern:  85%|████████▌ | 3081/3609 [00:00<00:00, 5082.18stk/s]Checking pattern: 100%|██████████| 3609/3609 [00:00<00:00, 6023.25stk/s]
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+
+=================================================================
+  SCAN COMPLETE - 1 matches from 3609 tickers with data
+  checked 1180 -> 9/21 cross 265 -> rally 189 -> retest 187 -> hold 81 -> entry today 1
+  Retest tagged EMA21: 1  FIZZ
+  Retest held above EMA21: 0  
+=================================================================
+  💰 Position sizing: max loss $40 per trade — 1 sized, 0 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 1 qualified stocks (trend, catalyst, value) ...
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_ema9_21_cross_retest_v1_20261121_1219.csv  (18s)
+     #1  FIZZ        46  (trend 35, catalyst 0, value 11)  above SMA200, SMA50 rising, SMA200 turning up
+
+  CSV -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/ema9_21_cross_retest_20261121_1219.csv
+  TradingView file -> /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_ema9_21_cross_retest_20261121_1219.txt
+[TradingView] created watchlist 'EMA 9-21 Retest - 2026-11-21' (id 356450591)
+[TradingView] 'EMA 9-21 Retest - 2026-11-21' - 1 symbols
+  🏅 Best 10 added to the email (html text)
+[Email] Sent to vikramaga24@gmail.com - 9/21 EMA Cross-Retest-Hold - 1 entries, 1 tagged EMA21 - 2026-11-21
