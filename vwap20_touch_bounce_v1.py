@@ -1,5 +1,5 @@
 # ============================================================
-# NASDAQ / NYSE - Rolling 20-day VWAP Turn-Up + Touch + Green Bounce - daily, v1
+# NASDAQ / NYSE - Rolling 20-day VWAP Turn-Up + Touch + Green Bounce - daily, v1 (from below VWAP, first retest)
 # ============================================================
 #
 # Vik's setup (2026-11-21). VWAP = rolling 20-day VWAP:
@@ -8,11 +8,15 @@
 # Rules on the latest daily candle (all required):
 #   1. VWAP JUST TURNED UP: VWAP higher today than 2 sessions ago, and before that it
 #      was flat or falling (change over the 10 sessions ending 2 sessions ago <= +0.5%).
-#   2. TOUCH (yesterday): a green or red candle whose low touched VWAP - low at or
-#      below VWAP + 0.5% - and that closed no more than 1% below VWAP.
-#   3. BOUNCE (today): a green candle whose low is above VWAP and above yesterday's low.
+#   2. CAME FROM BELOW: price closed below VWAP on at least 5 of the 15 sessions
+#      before crossing up through it (at least one close >= 3% under VWAP), the cross was within the last 12 sessions, and
+#      no close since then fell more than 1% under VWAP (first retest after the cross).
+#   3. TOUCH (yesterday): a green or red candle whose low touched VWAP - low at or
+#      below VWAP + 0.5% - and that closed no more than 1% below VWAP (one or more
+#      touch candles in a row, as in Vik's chart).
+#   4. BOUNCE (today): a green candle whose low is above VWAP and above yesterday's low.
 # Preferred: today's volume above yesterday's (grouped first, +score).
-# Entry = today's close | Stop = the touch candle's low - 0.1 ATR(14)
+# Entry = today's close | Stop = lowest low of the touch candle(s) - 0.1 ATR(14)
 # T1 = the 20-session high if above the entry, else 2R | T2 = 2R.
 # Liquidity $5 / 200k. TradingView list "VWAP Bounce - YYYY-MM-DD" (IST). Settings in CFG.
 #
@@ -109,6 +113,10 @@ CFG = {
     "flat_max_pct"     : 0.5,     # ... at most +0.5% (flat or falling)
     "touch_tol"        : 0.005,   # touch: low <= VWAP + 0.5%
     "touch_close_min"  : 0.01,    # touch candle closed no more than 1% below VWAP
+    "cross_within"     : 12,      # price crossed up through VWAP within the last 12 sessions ...
+    "below_lookback"   : 15,      # ... after closing below VWAP on at least 5 of the 15 sessions before
+    "below_min"        : 5,
+    "below_depth"      : 0.03,    # and at least one of those closes >= 3% under VWAP
     "atr_period"       : 14,
     "stop_buffer_atr"  : 0.1,
     "high_window"      : 20,
@@ -119,7 +127,7 @@ CFG = {
     "batch_sleep"      : 1.5,
 }
 
-FUNNEL = {"tickers_checked": 0, "vwap_turn_up": 0, "touch": 0, "bounce": 0, "higher_volume": 0}
+FUNNEL = {"tickers_checked": 0, "vwap_turn_up": 0, "came_from_below": 0, "touch": 0, "bounce": 0, "higher_volume": 0}
 
 def rolling_vwap(df, n):
     tp = (df["High"] + df["Low"] + df["Close"]) / 3
@@ -141,6 +149,17 @@ def analyze_stock(sym, df):
     if not (vw[i] > vw[a] and vw[i] >= vw[i - 1] and prior_chg <= CFG["flat_max_pct"]): return None
     FUNNEL["vwap_turn_up"] += 1
     t = i - 1
+    # came from below: a close crossed up through VWAP in the last 12 sessions (before the touch),
+    # price had been below VWAP before it, and no close since the cross fell more than 1% under VWAP
+    xs = [x for x in range(max(1, i - CFG["cross_within"]), t + 1) if c[x - 1] < vw[x - 1] and c[x] > vw[x]]
+    if not xs: return None
+    x = xs[-1]
+    lb = CFG["below_lookback"]
+    below_before = int(np.sum(c[x - lb:x] < vw[x - lb:x]))
+    depth = float(np.min(c[x - lb:x] / vw[x - lb:x]))
+    if below_before < CFG["below_min"] or depth > 1 - CFG["below_depth"]: return None
+    if any(c[j] < vw[j] * (1 - CFG["touch_close_min"]) for j in range(x, i + 1)): return None
+    FUNNEL["came_from_below"] += 1
     if not (l[t] <= vw[t] * (1 + CFG["touch_tol"]) and c[t] >= vw[t] * (1 - CFG["touch_close_min"])): return None
     FUNNEL["touch"] += 1
     if not (c[i] > o[i] and l[i] > vw[i] and l[i] > l[t]): return None
@@ -151,7 +170,10 @@ def analyze_stock(sym, df):
     pc = np.concatenate([[np.nan], c[:-1]])
     tr = np.nanmax(np.vstack([h - l, np.abs(h - pc), np.abs(l - pc)]), axis=0)
     atr = float(pd.Series(tr).rolling(CFG["atr_period"]).mean().values[i])
-    entry = float(c[i]); stop = float(l[t]) - CFG["stop_buffer_atr"] * atr; risk = entry - stop
+    ts_ = t                                                    # consecutive touch candles ending yesterday
+    while ts_ - 1 > x and l[ts_ - 1] <= vw[ts_ - 1] * (1 + CFG["touch_tol"]): ts_ -= 1
+    touch_low = float(l[ts_:t + 1].min())
+    entry = float(c[i]); stop = touch_low - CFG["stop_buffer_atr"] * atr; risk = entry - stop
     if risk <= 0: return None
     hi = float(np.max(h[i - CFG["high_window"]:i]))
     t1, t1_src = (hi, f"{CFG['high_window']}-session high") if hi > entry else (entry + 2 * risk, "2R")
@@ -161,8 +183,10 @@ def analyze_stock(sym, df):
     above_vw = (c[i] / vw[i] - 1) * 100
     score = 50 + (15 if higher_vol else 0) + (min(10, (vx - 1) * 10) if np.isfinite(vx) and vx > 1 else 0) \
             + (5 if wick_through else 0) + (5 if cpos >= 0.7 else 0) + min(10, turn_chg * 5) \
-            + max(0, 5 - above_vw)
+            + max(0, 5 - above_vw) + min(5, below_before - CFG["below_min"])
     flags = [f"VWAP {prior_chg:+.2f}% over the prior {w} sessions, now {turn_chg:+.2f}% in {k}",
+             f"crossed above VWAP {i - x} session(s) ago after {below_before}/{lb} closes below it (down to {(depth - 1) * 100:.1f}%)",
+             f"{t - ts_ + 1} touch candle(s)",
              f"touch candle {'green' if c[t] > o[t] else 'red' if c[t] < o[t] else 'doji'}, low {'pierced' if wick_through else 'tagged'} VWAP",
              f"bounce low {(l[i] / vw[i] - 1) * 100:+.2f}% above VWAP",
              (f"higher volume (x{v[i] / max(v[t], 1):.2f} vs touch day)" if higher_vol else f"lower volume (x{v[i] / max(v[t], 1):.2f} vs touch day)"),
@@ -172,7 +196,9 @@ def analyze_stock(sym, df):
             "Risk_%": round(risk / entry * 100, 2), "Target_1": round(t1, 2), "T1_Source": t1_src,
             "Reward_R": round((t1 - entry) / risk, 2), "Target_2R": round(entry + 2 * risk, 2),
             "VWAP20": round(float(vw[i]), 2), "VWAP_Prior_Chg_%": round(prior_chg, 2), "VWAP_Turn_Chg_%": round(turn_chg, 2),
-            "Touch_Date": df.index[t].strftime("%Y-%m-%d"), "Touch_Low": round(float(l[t]), 2),
+            "Cross_Date": df.index[x].strftime("%Y-%m-%d"), "Closes_Below_Before": below_before,
+            "Touch_Candles": int(t - ts_ + 1),
+            "Touch_Date": df.index[t].strftime("%Y-%m-%d"), "Touch_Low": round(touch_low, 2),
             "Touch_VWAP": round(float(vw[t]), 2), "Bounce_Low": round(float(l[i]), 2),
             "Vol_vs_Touch_x": round(v[i] / max(v[t], 1), 2), "Vol_x_20d": round(vx, 2) if np.isfinite(vx) else None,
             "Above_VWAP_%": round(above_vw, 2), "Signal_Date": df.index[i].strftime("%Y-%m-%d"), "Flags": " | ".join(flags)}
@@ -334,8 +360,8 @@ for r in results:
     r["Group"] = next(g for g, f in GROUPS if f(r))
 fc = FUNNEL
 print(f"\n{'=' * 65}\n  SCAN COMPLETE - {len(results)} matches from {got_daily} tickers with data")
-print(f"  checked {fc['tickers_checked']} -> VWAP turned up {fc['vwap_turn_up']} -> touch {fc['touch']}"
-      f" -> green bounce {fc['bounce']} (higher volume {fc['higher_volume']})")
+print(f"  checked {fc['tickers_checked']} -> VWAP turned up {fc['vwap_turn_up']} -> came from below {fc['came_from_below']}"
+      f" -> touch {fc['touch']} -> green bounce {fc['bounce']} (higher volume {fc['higher_volume']})")
 for g, _ in GROUPS:
     names = [r["Ticker"] for r in results if r["Group"] == g]
     print(f"  {g}: {len(names)}  {', '.join(names[:60])}")
@@ -344,7 +370,7 @@ print("=" * 65)
 ts      = datetime.today().strftime("%Y%m%d_%H%M")
 out_dir = os.environ.get("GITHUB_WORKSPACE", os.getcwd())
 COLS = ["Ticker","Group","Higher_Volume","Score","Price","Entry_Price","Stop_Loss","Risk_%","Target_1","T1_Source","Reward_R",
-        "Target_2R","VWAP20","VWAP_Prior_Chg_%","VWAP_Turn_Chg_%","Touch_Date","Touch_Low","Touch_VWAP","Bounce_Low",
+        "Target_2R","VWAP20","VWAP_Prior_Chg_%","VWAP_Turn_Chg_%","Cross_Date","Closes_Below_Before","Touch_Candles","Touch_Date","Touch_Low","Touch_VWAP","Bounce_Low",
         "Vol_vs_Touch_x","Vol_x_20d","Above_VWAP_%","Signal_Date","Flags"]
 df_out = pd.DataFrame(results) if results else pd.DataFrame(columns=COLS)
 df_out = df_out[[c for c in COLS if c in df_out.columns]].reset_index(drop=True)
@@ -394,7 +420,7 @@ except Exception as e:
 print(f"[TradingView] {TV_STATUS}")
 
 EMAIL_COLS = ["Ticker","Score","Price","Stop_Loss","Risk_%","Target_1","Reward_R","VWAP20","VWAP_Turn_Chg_%",
-              "Touch_Date","Vol_vs_Touch_x","Vol_x_20d","Above_VWAP_%"]
+              "Cross_Date","Touch_Candles","Vol_vs_Touch_x","Vol_x_20d","Above_VWAP_%"]
 def _table(rows):
     th = "".join(f'<th style="background:#1e293b;color:#e2e8f0;padding:6px 8px;font-size:11px;white-space:nowrap">{c}</th>' for c in EMAIL_COLS)
     body = ""
@@ -430,11 +456,13 @@ def _send_email(rl, csv_path):
 &middot; TradingView: {TV_STATUS}</p></td></tr>
 <tr><td style="padding:16px 22px">{secs}
 <p style="font-size:11px;color:#64748b">VWAP = rolling {CFG['vwap_period']}-day VWAP (typical price &times; volume). It just turned up: higher than {CFG['turn_bars']} sessions ago
-after being flat or falling (&le; +{CFG['flat_max_pct']:g}% over the {CFG['flat_window']} sessions before). Yesterday a green or red candle's low touched VWAP
+after being flat or falling (&le; +{CFG['flat_max_pct']:g}% over the {CFG['flat_window']} sessions before). Price came from below: it closed under VWAP on at least
+{CFG['below_min']} of the {CFG['below_lookback']} sessions (one close &ge; {CFG['below_depth'] * 100:g}% under) before crossing up through it in the last {CFG['cross_within']} sessions, with no close since then more than
+{CFG['touch_close_min'] * 100:g}% below it. Yesterday a green or red candle's low touched VWAP
 (low &le; VWAP + {CFG['touch_tol'] * 100:g}%, close no more than {CFG['touch_close_min'] * 100:g}% below it). Today a green candle with its low above VWAP and above
-yesterday's low. Higher volume than yesterday is preferred (listed first). Entry = today's close &middot; Stop = touch-candle low - {CFG['stop_buffer_atr']:g} ATR &middot;
+yesterday's low. Higher volume than yesterday is preferred (listed first). Entry = today's close &middot; Stop = lowest touch-candle low - {CFG['stop_buffer_atr']:g} ATR &middot;
 T1 = {CFG['high_window']}-session high (2R if already above) &middot; T2 = 2R. Funnel: checked {FUNNEL['tickers_checked']} &rarr; VWAP turned up {FUNNEL['vwap_turn_up']}
-&rarr; touch {FUNNEL['touch']} &rarr; green bounce {FUNNEL['bounce']} (higher volume {FUNNEL['higher_volume']}).
+&rarr; came from below {FUNNEL['came_from_below']} &rarr; touch {FUNNEL['touch']} &rarr; green bounce {FUNNEL['bounce']} (higher volume {FUNNEL['higher_volume']}).
 Full results (with Quantity for a fixed max loss) attached.</p></td></tr>
 <tr><td style="background:#f8fafc;padding:10px;text-align:center;color:#94a3b8;font-size:10px">Not financial advice &middot; Auto-generated by GitHub Actions</td></tr>
 </table></td></tr></table></body></html>"""
