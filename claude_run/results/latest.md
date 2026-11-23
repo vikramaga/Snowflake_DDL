@@ -1,10 +1,10 @@
-# ClaudeRunner run 45214843364
+# ClaudeRunner run 45217574031
 
 - Trigger: push (claude_run/run.txt)
-- Finished: 2026-11-23 16:19 UTC
-- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/45214843364
+- Finished: 2026-11-23 16:33 UTC
+- Run page: https://github.com/vikramaga/Snowflake_DDL/actions/runs/45217574031
 - Scripts: 1 — ok 1, failed 0, no result 0
 
 | Script | Exit | Results folder |
 |---|---|---|
-| claude_run/tools/chart_review.py | 0 | claude_run/results/45214843364/chart_review/ |
+| monday_red_candle_breakout_v1.py | 0 | claude_run/results/45217574031/monday_red_candle_breakout_v1/ |
