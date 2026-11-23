@@ -28,6 +28,20 @@
 #     entry (15): close 0-8% above SMA50 -> 8 (8-15% -> 4); close no more
 #       than 30% above SMA200 -> 7 (30-50% -> 3)
 #
+# STOP-LOSS RULES (added 2026-11-23 from the stop-loss review of the Best 10 lists and the
+# 1-year backtest, claude/stop-review-2026-11.md). Applied to the Best 10 only; the scanner's
+# full list is unchanged:
+#   1. Minimum stop distance: Stop_Loss = min(scanner stop, entry - STOP_FLOOR_ATR x ATR(14)).
+#      Stops closer than ~1 ATR were hit 76-88% of the time by normal daily noise; in the
+#      backtest a 1.5 ATR floor raised the average trade from +0.05R to +0.07R. Quantity is
+#      re-sized so the loss at the new stop is still the fixed max loss. Scanner_Stop keeps
+#      the scanner's own stop.
+#   2. Earnings: a stock reporting within EARNINGS_SKIP_DAYS business days is left out of the
+#      Best 10 (backtest -0.09R to -0.02R per trade).
+#   3. Skip_If_Open_Below: don't buy if the next session opens more than GAP_DOWN_SKIP_PCT below
+#      the signal close (backtest -0.08R per trade).
+# The three values come from the newest stop_rules_*.csv written by claude_run/tools/stop_review.py
+# (the weekly review re-checks them on the live picks), else the defaults below.
 # News and analyst data come from Yahoo through yfinance and can be missing
 # or late; a stock with no data simply scores 0 on that part. A headline only
 # counts if it is about the stock (it is the story's first tagged ticker, or
@@ -57,9 +71,70 @@ NEGATIVE_WORDS = (r"\b(downgrade|downgraded|downgrades|miss|misses|missed|cut|cu
 NAME_SUFFIXES = {"inc", "inc.", "corp", "corp.", "corporation", "co", "co.", "company", "ltd", "ltd.", "limited", "plc",
                  "holdings", "holding", "group", "n.v.", "s.a.", "ag", "se", "incorporated", "the", "&"}
 
+RULE_DEFAULTS = {"stop_floor_atr": 1.5, "earnings_skip_days": 5, "gap_down_skip_pct": 2.0}
+RULE_BOUNDS = {"stop_floor_atr": (0.0, 3.0), "earnings_skip_days": (0, 10), "gap_down_skip_pct": (0.0, 10.0)}
+
+
+def load_rules():
+    """Stop-loss rules: newest claude_run/results/*/stop_review/stop_rules_YYYYMMDD.csv, else defaults."""
+    rules, src = dict(RULE_DEFAULTS), "defaults (2026-11-23 review)"
+    try:
+        import glob
+        here = os.path.dirname(os.path.abspath(__file__))
+        fs = glob.glob(os.path.join(here, "claude_run", "results", "*", "stop_review", "stop_rules_*.csv"))
+        if fs:
+            f = max(fs, key=lambda x: (os.path.basename(x), x))
+            for _, r in pd.read_csv(f).iterrows():
+                k = str(r["rule"])
+                if k in RULE_BOUNDS:
+                    lo, hi = RULE_BOUNDS[k]
+                    v = float(r["value"])
+                    if lo <= v <= hi:
+                        rules[k] = v
+            src = os.path.basename(f)
+    except Exception as e:
+        print(f"  ⚠️  stop rules: using defaults ({type(e).__name__}: {e})")
+    return rules, src
+
+
+def _atr14(d):
+    h, l, c = (d[k].astype(float).values for k in ("High", "Low", "Close"))
+    pc = np.r_[np.nan, c[:-1]]
+    tr = np.nanmax(np.vstack([h - l, np.abs(h - pc), np.abs(l - pc)]), axis=0)
+    a = pd.Series(tr).rolling(14).mean().values
+    return float(a[-1]) if len(a) and np.isfinite(a[-1]) else np.nan
+
+
+def _next_earnings(tk):
+    """Next earnings date (Timestamp, tz-naive) from Yahoo, or None."""
+    today = pd.Timestamp.today().normalize()
+    try:
+        cal = tk.calendar
+        ed = cal.get("Earnings Date") if isinstance(cal, dict) else None
+        if ed is not None:
+            ds = [pd.Timestamp(x).tz_localize(None) if pd.Timestamp(x).tzinfo else pd.Timestamp(x) for x in list(ed)]
+            ds = [x for x in ds if x >= today - pd.Timedelta(days=1)]
+            if ds:
+                return min(ds)
+    except Exception:
+        pass
+    try:
+        e = tk.get_earnings_dates(limit=6)
+        if e is not None and len(e.index):
+            ds = sorted(pd.Timestamp(x).tz_localize(None).normalize() for x in e.index)
+            ds = [x for x in ds if x >= today - pd.Timedelta(days=1)]
+            if ds:
+                return ds[0]
+    except Exception:
+        pass
+    return None
+
+
 LAST = None          # last result of rank_best (DataFrame) — used by attach_to_email
 LAST_CSV = None      # path of the saved best-10 CSV
 LAST_NOTE = ""       # shown in the email when there is nothing to rank
+LAST_RULES = ""      # stop-rule summary shown in the email
+LAST_SKIPPED = []    # (ticker, reason) left out of the Best 10 by the stop rules
 _SCANNER = None
 
 
@@ -261,6 +336,73 @@ def _download(tickers):
     return out
 
 
+def _apply_stop_rules(res, data, n, t0):
+    """Walk the ranked list: leave out stocks reporting earnings soon, widen stops closer than the
+    ATR floor (re-sizing Quantity for the same max loss), add Skip_If_Open_Below. Returns the top n."""
+    global LAST_RULES, LAST_SKIPPED
+    import yfinance as yf
+    rules, src = load_rules()
+    k_atr, e_days, gap = rules["stop_floor_atr"], int(rules["earnings_skip_days"]), rules["gap_down_skip_pct"]
+    LAST_RULES = (f"Stop rules ({src}): stop at least {k_atr:g} ATR below entry"
+                  + (f", no earnings within {e_days} business days" if e_days else "")
+                  + (f", skip if the next open is more than {gap:g}% below the signal close" if gap else "") + ".")
+    LAST_SKIPPED = []
+    rows = []
+    for _, r in res.iterrows():
+        if len(rows) >= n:
+            break
+        t = r["Ticker"]; d = data.get(t)
+        r = r.copy()
+        close = float(d["Close"].iloc[-1]) if d is not None and len(d) else np.nan
+        atr = _atr14(d) if d is not None and len(d) > 15 else np.nan
+        r["ATR_14"] = round(atr, 4) if np.isfinite(atr) else np.nan
+        r["Next_Earnings"] = ""
+        if e_days and time.time() - t0 < TIME_BUDGET_S + 120:
+            try:
+                ne = _next_earnings(yf.Ticker(t))
+            except Exception:
+                ne = None
+            if ne is not None:
+                r["Next_Earnings"] = ne.strftime("%Y-%m-%d")
+                bd = int(np.busday_count(pd.Timestamp.today().date(), ne.date()))
+                if 0 <= bd <= e_days:
+                    LAST_SKIPPED.append((t, f"earnings {ne:%d %b}"))
+                    continue
+        entry = r.get("Entry_Price", r.get("Price", np.nan))
+        entry = float(entry) if pd.notna(entry) else close
+        stop0 = float(r["Stop_Loss"]) if "Stop_Loss" in r and pd.notna(r["Stop_Loss"]) else np.nan
+        r["Scanner_Stop"] = stop0
+        r["Stop_Note"] = ""
+        ref = min(x for x in (entry, close) if np.isfinite(x)) if np.isfinite(entry) or np.isfinite(close) else np.nan
+        if k_atr > 0 and np.isfinite(atr) and np.isfinite(ref):
+            floor = ref - k_atr * atr
+            if not np.isfinite(stop0) or floor < stop0:
+                new = round(floor, 4 if floor < 1 else 2)
+                if new > 0 and np.isfinite(entry) and new < entry:
+                    r["Stop_Loss"] = new
+                    r["Stop_Note"] = (f"widened to {k_atr:g} ATR (scanner stop {stop0:.2f} was "
+                                      f"{(entry - stop0) / atr:.1f} ATR)" if np.isfinite(stop0) else f"set at {k_atr:g} ATR")
+                    q0 = r.get("Quantity", np.nan)
+                    if np.isfinite(stop0) and pd.notna(q0) and entry > stop0:
+                        q = int(np.floor(float(q0) * (entry - stop0) / (entry - new) + 1e-9))
+                    else:
+                        try:
+                            from position_sizing import size_position, MAX_LOSS_USD
+                            q = size_position(entry, new, MAX_LOSS_USD)[0]
+                        except Exception:
+                            q = np.nan
+                    if "Quantity" in r or pd.notna(q):
+                        r["Quantity"] = q
+                        r["Total_Amount"] = round(q * entry, 2) if pd.notna(q) else np.nan
+        r["Skip_If_Open_Below"] = round(close * (1 - gap / 100), 2) if gap and np.isfinite(close) else np.nan
+        rows.append(r)
+    if LAST_SKIPPED:
+        print(f"  🏅 stop rules: left out {', '.join(f'{a} ({b})' for a, b in LAST_SKIPPED)}")
+    widened = sum(1 for r in rows if r.get("Stop_Note"))
+    print(f"  🏅 stop rules: {widened} of {len(rows)} stops widened to {k_atr:g} ATR  [{src}]")
+    return pd.DataFrame(rows).reset_index(drop=True)
+
+
 def rank_best(df_out, n=None, csv_dir=None):
     """Rank the scanner's qualified stocks and return the best n as a DataFrame.
     Never raises; on any problem returns an empty DataFrame."""
@@ -327,7 +469,8 @@ def rank_best(df_out, n=None, csv_dir=None):
         res = pd.DataFrame(out).merge(base[["Ticker"] + keep].rename(columns={"Score": "Scanner_Score"}),
                                       on="Ticker", how="left")
         order = ["Best_Score", "Trend_Score"] + (["Scanner_Score"] if "Scanner_Score" in res else [])
-        res = res.sort_values(order, ascending=False, na_position="last").head(n)
+        res = res.sort_values(order, ascending=False, na_position="last").reset_index(drop=True)
+        res = _apply_stop_rules(res, data, n, t0)
         res.insert(0, "Best_Rank", range(1, len(res) + 1))
         LAST = res.reset_index(drop=True)
         try:
@@ -361,7 +504,8 @@ def _html(best):
         body = f'<p style="margin:0;color:#64748b;font-size:12px">{LAST_NOTE or "No qualified stocks to rank today."}</p>'
     else:
         inr = best["Ticker"].astype(str).str.endswith(".NS").any()
-        cols = ["#", "Ticker", "Best", "Trend", "Catalyst", "Value", "Entry", "Stop", "Qty", "Analyst upside", "Why", "Catalyst headline"]
+        cols = ["#", "Ticker", "Best", "Trend", "Catalyst", "Value", "Entry", "Stop", "Qty", "Skip if opens below", "Earnings",
+                "Analyst upside", "Why", "Catalyst headline"]
         th = "".join(f'<th style="background:#14532d;color:#ecfdf5;padding:6px 8px;font-size:11px;text-align:left;'
                      f'white-space:nowrap">{c}</th>' for c in cols)
         rows = ""
@@ -370,8 +514,11 @@ def _html(best):
             up = r.get("Analyst_Upside_%")
             vals = [r["Best_Rank"], f"<b>{r['Ticker']}</b>", f"<b>{r['Best_Score']}</b>", r["Trend_Score"],
                     r["Catalyst_Score"], r["Value_Score"],
-                    _fmt_money(r.get("Entry_Price", r.get("Price")), inr), _fmt_money(r.get("Stop_Loss"), inr),
+                    _fmt_money(r.get("Entry_Price", r.get("Price")), inr),
+                    _fmt_money(r.get("Stop_Loss"), inr) + ("<br><span style='color:#b45309'>widened</span>" if r.get("Stop_Note") else ""),
                     "" if pd.isna(r.get("Quantity", np.nan)) else int(r.get("Quantity")),
+                    _fmt_money(r.get("Skip_If_Open_Below"), inr) if pd.notna(r.get("Skip_If_Open_Below", np.nan)) else "—",
+                    r.get("Next_Earnings") or "—",
                     "—" if pd.isna(up) else f"{up:+.0f}%", r.get("Why", ""),
                     (r.get("Catalyst_Headline") or "—")]
             rows += f'<tr style="background:{bg}">' + "".join(
@@ -385,7 +532,10 @@ def _html(best):
             f'<p style="margin:0 0 8px;color:#475569;font-size:11px">Score = Trend 35 (above SMA200, SMA50 rising, SMA200 rising / turning up) '
             f'+ Catalyst 30 (contract/order and positive news, analyst upgrades, EPS beat) + Value 35 (analyst upside, P/E or PEG, '
             f'rating, entry not extended above SMA50/SMA200). News is keyword-matched from Yahoo — read the headline. '
-            f'Full list below; Best 10 CSV attached.</p>{body}</td></tr></table></td></tr></table>')
+            f'Full list below; Best 10 CSV attached.</p>'
+            f'<p style="margin:0 0 8px;color:#92400e;font-size:11px">{LAST_RULES}'
+            + (f" Left out: {', '.join(f'{a} ({b})' for a, b in LAST_SKIPPED)}." if LAST_SKIPPED else "")
+            + f'</p>{body}</td></tr></table></td></tr></table>')
 
 
 def _text(best):
@@ -397,8 +547,12 @@ def _text(best):
             up = r.get("Analyst_Upside_%")
             lines.append(f"#{r['Best_Rank']:<2} {r['Ticker']:<10} {r['Best_Score']:>3} (T{r['Trend_Score']} C{r['Catalyst_Score']} "
                          f"V{r['Value_Score']})  upside {'—' if pd.isna(up) else f'{up:+.0f}%'}  {r.get('Why', '')}")
+            lines.append(f"      stop {r.get('Stop_Loss')}{' (widened)' if r.get('Stop_Note') else ''}"
+                         f"  skip if opens below {r.get('Skip_If_Open_Below')}  earnings {r.get('Next_Earnings') or '-'}")
             if r.get("Catalyst_Headline"):
                 lines.append(f"      news: {r['Catalyst_Headline']}")
+    if LAST_RULES:
+        lines.append(LAST_RULES)
     lines += ["-" * 60, "FULL LIST", ""]
     return "\n".join(lines) + "\n"
 
