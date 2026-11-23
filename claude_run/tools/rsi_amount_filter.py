@@ -10,7 +10,8 @@
 #      RSI_MIN=58 RSI_MAX=64 MAX_AMOUNT=550
 #      GMAIL_USER / GMAIL_PASS / EMAIL_TO (or EMAIL_FROM / EMAIL_PASSWORD) for --email
 # Run daily by .github/workflows/rsi_digest.yml after the 06:00 IST ClaudeRunner run.
-# With --email it then runs best10_digest.py: one email with every scanner's Best 10.
+# With --email it then runs best10_digest.py: one email with every scanner's Best 10,
+# and chart_review.py: buy today / watch / avoid for every Best 10 stock.
 # NSE tickers (.NS/.BO) are priced in rupees: their limit is MAX_AMOUNT converted
 # at the live USD/INR rate, and Amount_USD shows the dollar equivalent.
 import glob, os, re, sys
@@ -251,6 +252,12 @@ def main():
             subprocess.call([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "best10_digest.py"), str(run)])
         except Exception as err:
             print(f"[Best 10 email] not sent: {err}")
+        # third email: chart review of every Best 10 stock (buy today / watch / avoid), never stops the digest
+        try:
+            import subprocess
+            subprocess.call([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "chart_review.py"), str(run), "--email"])
+        except Exception as err:
+            print(f"[Chart review] not run: {err}")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,18 @@
-# Chart review of the latest Best 10 watchlist (all scanners' Best 10 from the newest scheduled run).
+# Chart review of the Best 10 watchlist (all scanners' Best 10 from one scheduled run).
+# Runs automatically after every scheduled 06:00 IST run: the RSI Digest workflow calls
+# rsi_amount_filter.py --email, which runs best10_digest.py and then this script with the run id.
 # For every stock: trend, pullback/reclaim trigger, extension, relative strength vs SPY, volume,
-# room to resistance, earnings date. Each stock gets BUY TODAY / WATCH (with the trigger price) / AVOID
-# and the reasons. Stops follow the Best 10 stop rules (at least 2 ATR below the close).
-# Outputs: chart_review_YYYYMMDD.csv, chart_review_buys_YYYYMMDD.png (charts of the buy list)
+# room to resistance, earnings date. Each stock gets BUY TODAY / WATCH (with the trigger price) /
+# PASS / AVOID and the reasons. Stops follow the Best 10 stop rules (at least 2 ATR below the close,
+# no deeper than 3 ATR).
+# BUY TODAY = all of: uptrend (above SMA200 and SMA50 > SMA200, or above a rising SMA200); green close
+#   back above JMA and EMA8 after a pullback, in the top half of the day's range; not extended
+#   (<= 2 ATR above EMA21, RSI 45-70); 20-day return >= SPY's; >= 1.5R to the 60-day high; stop <= 10%.
+# AVOID = earnings within 5 business days, < $3 or < $5M/day, downtrend, extended (> 3 ATR / RSI > 75),
+#   or below a falling SMA50 and EMA21.
+# Usage: python claude_run/tools/chart_review.py [run_id] [--email] [--no-tv]
+# Outputs: chart_review_YYYYMMDD.csv, chart_review_buys/watch_YYYYMMDD.png (email attachments),
+#   TradingView list "Chart Review - YYYY-MM-DD" (Buy today + Watch), email.
 import glob, os, re, subprocess, sys, time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -15,11 +25,11 @@ ROOT = "claude_run/results"
 STOP_ATR = 2.0
 
 
-def latest_best10():
+def latest_best10(want=""):
     runs = {}
     for f in glob.glob(f"{ROOT}/[0-9]*/*/best10_*.csv"):
         runs.setdefault(f.split("/")[2], set()).add(f.split("/")[3])
-    run = max((r for r, s in runs.items() if len(s) >= 10), key=int)
+    run = want if want in runs else max((r for r, s in runs.items() if len(s) >= 10), key=int)
     fs = glob.glob(f"{ROOT}/{run}/*/best10_*.csv")
     a = pd.concat([pd.read_csv(f).assign(Scanner=f.split("/")[3]) for f in fs], ignore_index=True)
     a["Ticker"] = a.Ticker.astype(str).str.upper()
@@ -172,13 +182,81 @@ def charts(buys, data, path):
     fig.tight_layout(); fig.savefig(path, dpi=90); plt.close(fig)
 
 
-def main():
-    run, g = latest_best10()
+def tv_list(o):
+    if not (os.environ.get("TV_SESSIONID") and os.environ.get("TV_SESSIONID_SIGN")):
+        return "skipped (TV_SESSIONID secrets not set)"
+    from zoneinfo import ZoneInfo
+    name = f"Chart Review - {datetime.now(ZoneInfo('Asia/Kolkata')):%Y-%m-%d}"
+    os.environ["TV_WATCHLIST"] = name
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import tv_watchlist_sync as tvs
+    tvs.NAME = name
+    s = tvs.session(); lists = tvs.get_lists(s); ex = tvs.exchange_map()
+    syms = []
+    for v, lab in (("BUY TODAY", "Buy today"), ("WATCH", "Watch - buy above trigger")):
+        t = [tvs.tv_symbol(x, ex) for x in o[o.Verdict == v].Ticker]
+        if t: syms += [f"###{lab} ({len(t)})"] + t
+    if not syms:
+        return "skipped (no buy or watch stocks)"
+    tvs.replace_list(s, lists, syms)
+    return f"'{name}' - {sum(1 for x in syms if not x.startswith('###'))} symbols"
+
+
+def email(o, run, spy_line, files, tv_status):
+    import html, smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    from email.mime.base import MIMEBase
+    from email import encoders
+    gu = os.environ.get("GMAIL_USER") or os.environ.get("EMAIL_FROM", "")
+    gp = os.environ.get("GMAIL_PASS") or os.environ.get("EMAIL_PASSWORD", "")
+    et = os.environ.get("EMAIL_TO", "")
+    if not (gu and gp and et):
+        print("[Chart review email] secrets missing - skipped"); return
+    e = lambda v: html.escape("" if v is None or (isinstance(v, float) and np.isnan(v)) else str(v))
+    css = ("<style>body{font-family:Segoe UI,Arial;font-size:13px;color:#0f172a}table{border-collapse:collapse;margin:6px 0 14px}"
+           "td,th{border:1px solid #e2e8f0;padding:4px 7px;font-size:12px;vertical-align:top}th{background:#1e293b;color:#fff}</style>")
+    b = o[o.Verdict == "BUY TODAY"]; w = o[o.Verdict == "WATCH"]
+    buy_rows = "".join(f"<tr><td><b>{e(r.Ticker)}</b></td><td>{e(r.Close)}</td><td>{e(r.Stop)} ({e(r['Risk_%'])}%)</td><td>{e(r.Target)} ({e(r.Reward_R)}R)</td>"
+                       f"<td>{round(r.Close * 0.98, 2)}</td><td>{e(r.Why_Buy)}</td><td>{e(r.Scanners)}</td><td>{e(r.Headline)}</td></tr>" for _, r in b.iterrows())
+    watch_rows = "".join(f"<tr><td><b>{e(r.Ticker)}</b></td><td>{e(r.Close)}</td><td><b>{e(r.Buy_Trigger)}</b></td><td>{e(r.Stop)}</td><td>{e(r.RSI)}</td>"
+                         f"<td>{e(r.RS20_vs_SPY)}</td><td>{e(r.Why_Not)}</td><td>{e(r.Next_Earnings)}</td></tr>" for _, r in w.head(25).iterrows())
+    avoid = o[o.Verdict == "AVOID"].Why_Not.str.split(";").explode().str.strip().str.replace(r" ?\(.*", "", regex=True).value_counts()
+    body = (f"<html><head>{css}</head><body><h2>Chart review of the Best 10 watchlist · {datetime.today():%d %b %Y}</h2>"
+            f"<p>{len(o)} stocks from run {run}. {e(spy_line)}<br>Buy today <b>{len(b)}</b> · Watch {len(w)} · Pass {(o.Verdict == 'PASS').sum()} · "
+            f"Avoid {(o.Verdict == 'AVOID').sum()} · TradingView: {e(tv_status)}</p>"
+            f"<h3>Buy today ({len(b)})</h3>" + (f"<table><tr><th>Ticker</th><th>Close</th><th>Stop</th><th>Target</th><th>Skip if opens below</th>"
+            f"<th>Why</th><th>Scanners</th><th>News</th></tr>{buy_rows}</table>" if len(b) else "<p>None today.</p>") +
+            f"<h3>Watch: buy only on a daily close above the trigger ({len(w)}, top 25)</h3><table><tr><th>Ticker</th><th>Close</th><th>Buy above</th>"
+            f"<th>Stop</th><th>RSI</th><th>vs SPY 20d</th><th>Missing</th><th>Earnings</th></tr>{watch_rows}</table>"
+            f"<h3>Avoid reasons</h3><p>{'<br>'.join(f'{e(k)}: {v}' for k, v in avoid.items())}</p>"
+            f"<p style='color:#64748b;font-size:11px'>Buy today = uptrend + green close back above JMA/EMA8 after a pullback (top half of the range) + not extended "
+            f"(<= 2 ATR above EMA21, RSI 45-70) + beating SPY over 20 days + >= 1.5R to the 60-day high + stop <= 10%. Stop = at least 2 ATR below the close. "
+            f"Indian (.NS) bars are the last NSE close. Full list and reasons in the CSV. Not financial advice.</p></body></html>")
+    plain = [f"Chart review {datetime.today():%Y-%m-%d}: buy today {', '.join(b.Ticker) or 'none'}",
+             "Watch: " + ", ".join(f"{t} > {x}" for t, x in zip(w.Ticker.head(25), w.Buy_Trigger.head(25)))]
+    msg = MIMEMultipart("mixed")
+    msg["Subject"] = f"Chart review · Buy today: {', '.join(b.Ticker.head(5)) or 'none'} · {len(w)} to watch · {datetime.today():%d %b}"
+    msg["From"], msg["To"] = gu, et
+    alt = MIMEMultipart("alternative"); alt.attach(MIMEText("\n".join(plain), "plain")); alt.attach(MIMEText(body, "html", "utf-8")); msg.attach(alt)
+    for f in files:
+        if os.path.exists(f):
+            part = MIMEBase("application", "octet-stream"); part.set_payload(open(f, "rb").read())
+            encoders.encode_base64(part); part.add_header("Content-Disposition", f"attachment; filename={os.path.basename(f)}"); msg.attach(part)
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as srv:
+        srv.login(gu, gp.replace(" ", "")); srv.sendmail(gu, [x.strip() for x in et.split(",") if x.strip()], msg.as_string())
+    print(f"[Chart review email] sent: {msg['Subject']}")
+
+
+def main(argv):
+    want = next((x for x in argv if x.isdigit()), "")
+    run, g = latest_best10(want)
     print(f"Best 10 run {run}: {len(g)} stocks")
     data = download(sorted(set(g.Ticker) | {"SPY"}))
     spy = data["SPY"].Close; spy_ret20 = (spy.iloc[-1] / spy.iloc[-21] - 1) * 100
-    print(f"SPY {spy.iloc[-1]:.2f} ({spy.index[-1]:%Y-%m-%d}): 20d {spy_ret20:+.1f}%, vs SMA50 {(spy.iloc[-1] / spy.rolling(50).mean().iloc[-1] - 1) * 100:+.1f}%, "
-          f"vs SMA200 {(spy.iloc[-1] / spy.rolling(200).mean().iloc[-1] - 1) * 100:+.1f}%")
+    spy_line = (f"SPY {spy.iloc[-1]:.2f} ({spy.index[-1]:%Y-%m-%d}): 20d {spy_ret20:+.1f}%, vs SMA50 {(spy.iloc[-1] / spy.rolling(50).mean().iloc[-1] - 1) * 100:+.1f}%, "
+                f"vs SMA200 {(spy.iloc[-1] / spy.rolling(200).mean().iloc[-1] - 1) * 100:+.1f}%")
+    print(spy_line)
     with ThreadPoolExecutor(8) as ex:
         earn = dict(ex.map(next_earn, [t for t in g.Ticker if t in data]))
     out = []
@@ -201,9 +279,21 @@ def main():
         print(f"\n{r.Ticker}: {r.Why_Buy} | scanners: {r.Scanners} | {r.Headline}")
     print("\nWATCH (top 15):")
     print(o[o.Verdict == "WATCH"].head(15)[["Ticker", "Score", "Close", "Buy_Trigger", "Stop", "RSI", "RS20_vs_SPY", "Why_Not"]].to_string(index=False))
-    charts(o[o.Verdict == "BUY TODAY"].head(12), data, f"chart_review_buys_{ds}.png")
-    charts(o[o.Verdict == "WATCH"].head(9), data, f"chart_review_watch_{ds}.png")
+    files = [f"chart_review_{ds}.csv"]
+    for v, f, k in (("BUY TODAY", f"chart_review_buys_{ds}.png", 12), ("WATCH", f"chart_review_watch_{ds}.png", 9)):
+        try:
+            charts(o[o.Verdict == v].head(k), data, f); files.append(f)
+        except Exception as err:
+            print(f"chart {f} skipped: {err}")
+    tv = "not created"
+    if "--no-tv" not in argv:
+        try: tv = tv_list(o)
+        except Exception as err: tv = f"failed ({type(err).__name__}: {err})"
+    print(f"[TradingView] {tv}")
+    if "--email" in argv:
+        try: email(o, run, spy_line, files, tv)
+        except Exception as err: print(f"[Chart review email] {type(err).__name__}: {err}")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
