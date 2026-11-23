@@ -9,8 +9,8 @@
 # BUY TODAY = all of: uptrend (above SMA200 and SMA50 > SMA200, or above a rising SMA200); green close
 #   back above JMA and EMA8 after a pullback, in the top half of the day's range; not extended
 #   (<= 2 ATR above EMA21, RSI 45-70); 20-day return >= SPY's; >= 1.5R to the 60-day high; stop <= 10%.
-# AVOID = earnings within 5 business days, < $3 or < $5M/day, downtrend, extended (> 3 ATR / RSI > 75),
-#   or below a falling SMA50 and EMA21.
+# AVOID = earnings within 5 business days, < $3 or < $5M/day, ATR < 1% of price (pinned by a pending deal /
+#   SPAC), downtrend, extended (> 3 ATR / RSI > 75), or below a falling SMA50 and EMA21.
 # Usage: python claude_run/tools/chart_review.py [run_id] [--email] [--no-tv]
 #   run_id = the newest run to include (lists after it are ignored); env CHART_REVIEW_DAYS=90.
 # Columns First_Seen / Last_Seen / Times_Listed / In_Latest_List / Chg_Since_First_% show each stock's
@@ -159,6 +159,7 @@ def review(t, d, spy_ret20, row, earn):
     # avoid
     if bd is not None and 0 <= bd <= 5: reasons_bad.append(f"earnings {earn:%d %b}")
     if close < 3 or dollar_vol < 5: reasons_bad.append(f"thin/penny (${dollar_vol:.1f}M/day)")
+    if a / close < 0.01: reasons_bad.append(f"pinned (ATR {a / close * 100:.2f}% of price: likely a pending deal or SPAC)")
     if close < x["s200"][i] and not s200_up and x["s50"][i] < x["s200"][i]: reasons_bad.append("downtrend (below falling SMA200, SMA50 < SMA200)")
     if ext > 3 or x["rsi"][i] > 75: reasons_bad.append(f"extended ({ext:.1f} ATR above EMA21, RSI {x['rsi'][i]:.0f})")
     if close < x["s50"][i] and not s50_up and close < x["e21"][i]: reasons_bad.append("below falling SMA50 and EMA21")
