@@ -1,4 +1,5 @@
-# Chart review of the Best 10 watchlist (all scanners' Best 10 from one scheduled run).
+# Chart review of the Best 10 watchlists: every stock that appeared in any scanner's Best 10 in the
+# scheduled runs of the last CHART_REVIEW_DAYS days (default 90; 0 = all), not only the newest list.
 # Runs automatically after every scheduled 06:00 IST run: the RSI Digest workflow calls
 # rsi_amount_filter.py --email, which runs best10_digest.py and then this script with the run id.
 # For every stock: trend, pullback/reclaim trigger, extension, relative strength vs SPY, volume,
@@ -11,6 +12,9 @@
 # AVOID = earnings within 5 business days, < $3 or < $5M/day, downtrend, extended (> 3 ATR / RSI > 75),
 #   or below a falling SMA50 and EMA21.
 # Usage: python claude_run/tools/chart_review.py [run_id] [--email] [--no-tv]
+#   run_id = the newest run to include (lists after it are ignored); env CHART_REVIEW_DAYS=90.
+# Columns First_Seen / Last_Seen / Times_Listed / In_Latest_List / Chg_Since_First_% show each stock's
+# history on the lists. Earnings dates are looked up only for stocks that pass the chart checks.
 # Outputs: chart_review_YYYYMMDD.csv, chart_review_buys/watch_YYYYMMDD.png (email attachments),
 #   TradingView list "Chart Review - YYYY-MM-DD" (Buy today + Watch), email.
 import glob, os, re, subprocess, sys, time
@@ -25,18 +29,49 @@ ROOT = "claude_run/results"
 STOP_ATR = 2.0
 
 
-def latest_best10(want=""):
+DAYS = int(os.environ.get("CHART_REVIEW_DAYS", "90"))
+TS = re.compile(r"_(20\d{6})_\d{4}\.csv$")
+
+
+def load_best10(want=""):
+    """All Best 10 lists of the scheduled runs (>= 10 scanners) up to run `want`, last DAYS days."""
     runs = {}
     for f in glob.glob(f"{ROOT}/[0-9]*/*/best10_*.csv"):
         runs.setdefault(f.split("/")[2], set()).add(f.split("/")[3])
-    run = want if want in runs else max((r for r, s in runs.items() if len(s) >= 10), key=int)
-    fs = glob.glob(f"{ROOT}/{run}/*/best10_*.csv")
-    a = pd.concat([pd.read_csv(f).assign(Scanner=f.split("/")[3]) for f in fs], ignore_index=True)
+    sched = sorted((r for r, s in runs.items() if len(s) >= 10), key=int)
+    if want and want in runs:
+        sched = [r for r in sched if int(r) <= int(want)] + ([] if want in sched else [want])
+    rows = []
+    for r in sched:
+        for f in glob.glob(f"{ROOT}/{r}/*/best10_*.csv"):
+            m = TS.search(f)
+            if not m: continue
+            try: x = pd.read_csv(f)
+            except Exception: continue
+            if not len(x) or "Ticker" not in x: continue
+            rows.append(x.assign(Scanner=f.split("/")[3], Run=r, Listed=pd.Timestamp(m.group(1))))
+    a = pd.concat(rows, ignore_index=True)
     a["Ticker"] = a.Ticker.astype(str).str.upper()
+    if DAYS > 0:
+        a = a[a.Listed >= a.Listed.max() - pd.Timedelta(days=DAYS)]
+    latest_run = max(a.Run, key=int)
+    a["_px"] = pd.to_numeric(a.get("Entry_Price", a.get("Price")), errors="coerce")
+    a = a.sort_values(["Listed", "Run"])
+    last = a.groupby("Ticker").tail(1).set_index("Ticker")
     g = a.groupby("Ticker").agg(Scanners=("Scanner", lambda x: ", ".join(sorted(set(x)))), N_Scanners=("Scanner", "nunique"),
-                                Best_Score=("Best_Score", "max"), Scanner_Stop=("Stop_Loss", "min"),
-                                Analyst_Upside=("Analyst_Upside_%", "max"), Headline=("Catalyst_Headline", "first")).reset_index()
-    return run, g
+                                Best_Score=("Best_Score", "max"), Times_Listed=("Run", "nunique"),
+                                First_Seen=("Listed", "min"), Last_Seen=("Listed", "max"), Price_First=("_px", "first"))
+    # stop / news / upside from the stock's most recent listing (lowest stop if several scanners listed it that day)
+    lr = a.merge(last[["Run"]].rename(columns={"Run": "_lr"}), left_on="Ticker", right_index=True)
+    lr = lr[lr.Run == lr._lr]
+    g["Scanner_Stop"] = lr.groupby("Ticker").Stop_Loss.min()
+    g["Analyst_Upside"] = lr.groupby("Ticker")["Analyst_Upside_%"].max() if "Analyst_Upside_%" in lr else np.nan
+    g["Headline"] = last.get("Catalyst_Headline")
+    g["In_Latest_List"] = g.index.isin(a[a.Run == latest_run].Ticker)
+    g = g.reset_index()
+    print(f"Best 10 lists: {a.Run.nunique()} runs ({a.Listed.min():%d %b} - {a.Listed.max():%d %b}), {len(a)} rows, {len(g)} stocks, "
+          f"{int(g.In_Latest_List.sum())} in the newest list (run {latest_run})")
+    return latest_run, g
 
 
 def calc_jma(c, period=13, phase=40, power=2):
@@ -148,14 +183,18 @@ def review(t, d, spy_ret20, row, earn):
     else: verdict = "PASS"
     missing = [k for k, ok in checks.items() if not ok]
     score = (25 * checks["uptrend"] + 25 * checks["trigger"] + 15 * checks["not_extended"] + min(15, max(0, rs20)) +
-             min(10, rr * 3) + (5 if volx >= 1.2 and green else 0) + 3 * min(row.N_Scanners - 1, 3) + np.nan_to_num(row.Best_Score) / 20)
+             min(10, rr * 3) + (5 if volx >= 1.2 and green else 0) + 3 * min(row.N_Scanners - 1, 3) + np.nan_to_num(row.Best_Score) / 20
+             + (3 if row.In_Latest_List else 0) + min(4, row.Times_Listed - 1))
     return {"Ticker": t, "Verdict": verdict, "Score": round(score, 1), "Close": round(close, 2), "Stop": round(stop, 2),
             "Risk_%": round(risk / close * 100, 1), "Target": round(target, 2), "Reward_R": round(rr, 2),
             "Buy_Trigger": round(trig, 2) if verdict == "WATCH" else np.nan,
             "Why_Buy": "; ".join(reasons_good), "Why_Not": "; ".join(reasons_bad) or ("missing: " + ", ".join(missing) if missing else ""),
             "RSI": round(x["rsi"][i], 1), "Ext_ATR": round(ext, 2), "RS20_vs_SPY": round(rs20, 1), "Vol_x": round(volx, 2),
             "ATR_%": round(a / close * 100, 2), "Next_Earnings": earn.strftime("%Y-%m-%d") if earn is not None else "",
-            "N_Scanners": row.N_Scanners, "Scanners": row.Scanners, "Best_Score": row.Best_Score,
+            "N_Scanners": row.N_Scanners, "Times_Listed": row.Times_Listed, "First_Seen": row.First_Seen.strftime("%Y-%m-%d"),
+            "Last_Seen": row.Last_Seen.strftime("%Y-%m-%d"), "In_Latest_List": "Yes" if row.In_Latest_List else "No",
+            "Chg_Since_First_%": round((close / row.Price_First - 1) * 100, 1) if np.isfinite(row.Price_First) and row.Price_First > 0 else np.nan,
+            "Scanners": row.Scanners, "Best_Score": row.Best_Score,
             "Analyst_Upside": row.Analyst_Upside, "Headline": row.Headline, "Date": d.index[i].strftime("%Y-%m-%d")}
 
 
@@ -218,25 +257,26 @@ def email(o, run, spy_line, files, tv_status):
            "td,th{border:1px solid #e2e8f0;padding:4px 7px;font-size:12px;vertical-align:top}th{background:#1e293b;color:#fff}</style>")
     b = o[o.Verdict == "BUY TODAY"]; w = o[o.Verdict == "WATCH"]
     buy_rows = "".join(f"<tr><td><b>{e(r.Ticker)}</b></td><td>{e(r.Close)}</td><td>{e(r.Stop)} ({e(r['Risk_%'])}%)</td><td>{e(r.Target)} ({e(r.Reward_R)}R)</td>"
-                       f"<td>{round(r.Close * 0.98, 2)}</td><td>{e(r.Why_Buy)}</td><td>{e(r.Scanners)}</td><td>{e(r.Headline)}</td></tr>" for _, r in b.iterrows())
+                       f"<td>{round(r.Close * 0.98, 2)}</td><td>{e(r.Why_Buy)}</td><td>{e(r.Scanners)}</td><td>{e(r.Headline)}</td>"
+                       f"<td>{e(r.First_Seen)} ({e(r.Times_Listed)}x){' · new today' if r.In_Latest_List == 'Yes' and r.Times_Listed == 1 else ''}</td></tr>" for _, r in b.iterrows())
     watch_rows = "".join(f"<tr><td><b>{e(r.Ticker)}</b></td><td>{e(r.Close)}</td><td><b>{e(r.Buy_Trigger)}</b></td><td>{e(r.Stop)}</td><td>{e(r.RSI)}</td>"
-                         f"<td>{e(r.RS20_vs_SPY)}</td><td>{e(r.Why_Not)}</td><td>{e(r.Next_Earnings)}</td></tr>" for _, r in w.head(25).iterrows())
+                         f"<td>{e(r.RS20_vs_SPY)}</td><td>{e(r.Why_Not)}</td><td>{e(r.Next_Earnings)}</td><td>{e(r.First_Seen)}</td></tr>" for _, r in w.head(40).iterrows())
     avoid = o[o.Verdict == "AVOID"].Why_Not.str.split(";").explode().str.strip().str.replace(r" ?\(.*", "", regex=True).value_counts()
-    body = (f"<html><head>{css}</head><body><h2>Chart review of the Best 10 watchlist · {datetime.today():%d %b %Y}</h2>"
-            f"<p>{len(o)} stocks from run {run}. {e(spy_line)}<br>Buy today <b>{len(b)}</b> · Watch {len(w)} · Pass {(o.Verdict == 'PASS').sum()} · "
+    body = (f"<html><head>{css}</head><body><h2>Chart review of all Best 10 watchlists · {datetime.today():%d %b %Y}</h2>"
+            f"<p>{len(o)} stocks from every Best 10 list of the last {DAYS or 'all'} days (newest run {run}). {e(spy_line)}<br>Buy today <b>{len(b)}</b> · Watch {len(w)} · Pass {(o.Verdict == 'PASS').sum()} · "
             f"Avoid {(o.Verdict == 'AVOID').sum()} · TradingView: {e(tv_status)}</p>"
             f"<h3>Buy today ({len(b)})</h3>" + (f"<table><tr><th>Ticker</th><th>Close</th><th>Stop</th><th>Target</th><th>Skip if opens below</th>"
-            f"<th>Why</th><th>Scanners</th><th>News</th></tr>{buy_rows}</table>" if len(b) else "<p>None today.</p>") +
-            f"<h3>Watch: buy only on a daily close above the trigger ({len(w)}, top 25)</h3><table><tr><th>Ticker</th><th>Close</th><th>Buy above</th>"
-            f"<th>Stop</th><th>RSI</th><th>vs SPY 20d</th><th>Missing</th><th>Earnings</th></tr>{watch_rows}</table>"
+            f"<th>Why</th><th>Scanners</th><th>News</th><th>Listed</th></tr>{buy_rows}</table>" if len(b) else "<p>None today.</p>") +
+            f"<h3>Watch: buy only on a daily close above the trigger ({len(w)}, top 40)</h3><table><tr><th>Ticker</th><th>Close</th><th>Buy above</th>"
+            f"<th>Stop</th><th>RSI</th><th>vs SPY 20d</th><th>Missing</th><th>Earnings</th><th>First listed</th></tr>{watch_rows}</table>"
             f"<h3>Avoid reasons</h3><p>{'<br>'.join(f'{e(k)}: {v}' for k, v in avoid.items())}</p>"
             f"<p style='color:#64748b;font-size:11px'>Buy today = uptrend + green close back above JMA/EMA8 after a pullback (top half of the range) + not extended "
             f"(<= 2 ATR above EMA21, RSI 45-70) + beating SPY over 20 days + >= 1.5R to the 60-day high + stop <= 10%. Stop = at least 2 ATR below the close. "
             f"Indian (.NS) bars are the last NSE close. Full list and reasons in the CSV. Not financial advice.</p></body></html>")
     plain = [f"Chart review {datetime.today():%Y-%m-%d}: buy today {', '.join(b.Ticker) or 'none'}",
-             "Watch: " + ", ".join(f"{t} > {x}" for t, x in zip(w.Ticker.head(25), w.Buy_Trigger.head(25)))]
+             "Watch: " + ", ".join(f"{t} > {x}" for t, x in zip(w.Ticker.head(40), w.Buy_Trigger.head(40)))]
     msg = MIMEMultipart("mixed")
-    msg["Subject"] = f"Chart review · Buy today: {', '.join(b.Ticker.head(5)) or 'none'} · {len(w)} to watch · {datetime.today():%d %b}"
+    msg["Subject"] = f"Chart review (all Best 10 lists) · Buy today: {', '.join(b.Ticker.head(5)) or 'none'} · {len(w)} to watch · {datetime.today():%d %b}"
     msg["From"], msg["To"] = gu, et
     alt = MIMEMultipart("alternative"); alt.attach(MIMEText("\n".join(plain), "plain")); alt.attach(MIMEText(body, "html", "utf-8")); msg.attach(alt)
     for f in files:
@@ -250,24 +290,30 @@ def email(o, run, spy_line, files, tv_status):
 
 def main(argv):
     want = next((x for x in argv if x.isdigit()), "")
-    run, g = latest_best10(want)
-    print(f"Best 10 run {run}: {len(g)} stocks")
+    run, g = load_best10(want)
     data = download(sorted(set(g.Ticker) | {"SPY"}))
     spy = data["SPY"].Close; spy_ret20 = (spy.iloc[-1] / spy.iloc[-21] - 1) * 100
     spy_line = (f"SPY {spy.iloc[-1]:.2f} ({spy.index[-1]:%Y-%m-%d}): 20d {spy_ret20:+.1f}%, vs SMA50 {(spy.iloc[-1] / spy.rolling(50).mean().iloc[-1] - 1) * 100:+.1f}%, "
                 f"vs SMA200 {(spy.iloc[-1] / spy.rolling(200).mean().iloc[-1] - 1) * 100:+.1f}%")
     print(spy_line)
-    with ThreadPoolExecutor(8) as ex:
-        earn = dict(ex.map(next_earn, [t for t in g.Ticker if t in data]))
-    out = []
+    out = {}
     for _, row in g.iterrows():
         if row.Ticker not in data: continue
         try:
-            r = review(row.Ticker, data[row.Ticker], spy_ret20, row, earn.get(row.Ticker))
-            if r: out.append(r)
+            r = review(row.Ticker, data[row.Ticker], spy_ret20, row, None)
+            if r: out[row.Ticker] = r
         except Exception as e:
             print(row.Ticker, e)
-    o = pd.DataFrame(out)
+    # earnings dates only for the stocks that pass the chart checks (keeps the run fast as the lists grow)
+    cand = [t for t, r in out.items() if r["Verdict"] in ("BUY TODAY", "WATCH")]
+    with ThreadPoolExecutor(8) as ex:
+        earn = dict(ex.map(next_earn, cand))
+    rows = g.set_index("Ticker")
+    for t in cand:
+        try: out[t] = review(t, data[t], spy_ret20, rows.loc[t], earn.get(t)) or out[t]
+        except Exception as e: print(t, e)
+    print(f"earnings checked for {len(cand)} buy/watch candidates ({sum(1 for v in earn.values() if v is not None)} dates found)")
+    o = pd.DataFrame(list(out.values()))
     o["rank"] = o.Verdict.map({"BUY TODAY": 0, "WATCH": 1, "PASS": 2, "AVOID": 3})
     o = o.sort_values(["rank", "Score"], ascending=[True, False]).drop(columns="rank")
     ds = datetime.today().strftime("%Y%m%d")
