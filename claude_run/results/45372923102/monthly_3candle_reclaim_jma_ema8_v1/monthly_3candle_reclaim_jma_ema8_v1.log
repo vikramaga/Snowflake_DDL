@@ -1,0 +1,444 @@
+✅  Dependencies installed
+✅  yfinance 1.8.0  |  numpy 2.4.6  |  [Script/CI]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  EMAIL CONFIGURATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ GMAIL_USER  : vikr***.com
+  ✅ GMAIL_PASS  : ****************  (16 chars)
+  ✅ EMAIL_TO    : vikramaga24@gmail.com
+  ✅ Email will be sent after scan
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 1  DATA CHECK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ AAPL: daily 1721 bars ($349.08, 2026-11-23)
+  ✅ MSFT: daily 1721 bars ($492.50, 2026-11-23)
+  ✅ NVDA: daily 1721 bars ($165.05, 2026-11-23)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 2  FETCH TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ nasdaqlisted      : +3151 → 3151
+  ✅ otherlisted       : +2261 → 5412
+  ✅ NASDAQ API        : +1145 → 6557
+  ✅ Static fallback   : +  10 → 6567
+
+  🎯 Total: 6567 tickers
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  STEP 3  SCANNING 6567 TICKERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Fetching daily bars (single download per ticker)
+  A stock only matches if the monthly candle pattern and monthly
+  and SMA structure all fire within the lookback window
+
+Daily fetch:   0%|          | 0/6567 [00:00<?]Daily fetch:   1%|          | 50/6567 [00:04<09:51]Daily fetch:   2%|▏         | 100/6567 [00:09<10:09]Daily fetch:   2%|▏         | 150/6567 [00:14<10:50]Daily fetch:   3%|▎         | 200/6567 [00:20<11:30]Daily fetch:   4%|▍         | 250/6567 [00:26<11:56]Daily fetch:   5%|▍         | 300/6567 [00:32<11:31]Daily fetch:   5%|▌         | 350/6567 [00:37<11:06]Daily fetch:   6%|▌         | 400/6567 [00:43<11:20]Daily fetch:   7%|▋         | 450/6567 [00:48<11:23]Daily fetch:   8%|▊         | 500/6567 [00:53<11:01]Daily fetch:   8%|▊         | 550/6567 [00:59<11:00]Daily fetch:   9%|▉         | 600/6567 [01:04<10:40]Daily fetch:  10%|▉         | 650/6567 [01:10<10:37]Daily fetch:  11%|█         | 700/6567 [01:15<10:21]Daily fetch:  11%|█▏        | 750/6567 [01:21<10:37]Daily fetch:  12%|█▏        | 800/6567 [01:26<10:15]Daily fetch:  13%|█▎        | 850/6567 [01:31<10:23]Daily fetch:  14%|█▎        | 900/6567 [01:36<10:08]Daily fetch:  14%|█▍        | 950/6567 [01:42<10:13]Daily fetch:  15%|█▌        | 1000/6567 [01:48<10:12]Daily fetch:  16%|█▌        | 1050/6567 [01:52<09:36]Daily fetch:  17%|█▋        | 1100/6567 [01:58<09:54]$CBX: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$CBO: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+
+2 Failed downloads:
+['CBX', 'CBO']: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$CBO: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$CBO: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$CBX: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$CBX: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+Daily fetch:  18%|█▊        | 1150/6567 [02:07<11:25]Daily fetch:  18%|█▊        | 1200/6567 [02:11<10:31]HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CFLT"}}}
+$CFLT: possibly delisted; no timezone found
+
+1 Failed download:
+['CFLT']: possibly delisted; no timezone found
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: CFLT"}}}
+$CFLT: possibly delisted; no timezone found
+$CFLT: possibly delisted; no timezone found
+Daily fetch:  19%|█▉        | 1250/6567 [02:18<10:31]Daily fetch:  20%|█▉        | 1300/6567 [02:22<09:54]Daily fetch:  21%|██        | 1350/6567 [02:27<09:03]Daily fetch:  21%|██▏       | 1400/6567 [02:31<08:24]Daily fetch:  22%|██▏       | 1450/6567 [02:36<08:19]Daily fetch:  23%|██▎       | 1500/6567 [02:41<08:13]$CTEST: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+
+1 Failed download:
+['CTEST']: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$CTEST: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$CTEST: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+Daily fetch:  24%|██▎       | 1550/6567 [02:46<08:32]Daily fetch:  24%|██▍       | 1600/6567 [02:51<08:26]Daily fetch:  25%|██▌       | 1650/6567 [02:56<08:20]Daily fetch:  26%|██▌       | 1700/6567 [03:01<08:11]Daily fetch:  27%|██▋       | 1750/6567 [03:06<08:01]Daily fetch:  27%|██▋       | 1800/6567 [03:11<07:54]Daily fetch:  28%|██▊       | 1850/6567 [03:16<07:50]Daily fetch:  29%|██▉       | 1900/6567 [03:21<07:45]Daily fetch:  30%|██▉       | 1950/6567 [03:27<08:01]Daily fetch:  30%|███       | 2000/6567 [03:32<07:54]Daily fetch:  31%|███       | 2050/6567 [03:37<07:43]$EXAS: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+
+1 Failed download:
+['EXAS']: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$EXAS: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$EXAS: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+Daily fetch:  32%|███▏      | 2100/6567 [03:42<07:28]Daily fetch:  33%|███▎      | 2150/6567 [03:48<07:55]Daily fetch:  34%|███▎      | 2200/6567 [03:53<07:53]Daily fetch:  34%|███▍      | 2250/6567 [03:59<07:49]Daily fetch:  35%|███▌      | 2300/6567 [04:04<07:33]Daily fetch:  36%|███▌      | 2350/6567 [04:09<07:31]Daily fetch:  37%|███▋      | 2400/6567 [04:15<07:29]Daily fetch:  37%|███▋      | 2450/6567 [04:20<07:25]Daily fetch:  38%|███▊      | 2500/6567 [04:26<07:14]Daily fetch:  39%|███▉      | 2550/6567 [04:32<07:31]Daily fetch:  40%|███▉      | 2600/6567 [04:37<07:12]Daily fetch:  40%|████      | 2650/6567 [04:42<07:10]Daily fetch:  41%|████      | 2700/6567 [04:48<07:16]Daily fetch:  42%|████▏     | 2750/6567 [04:54<07:15]Daily fetch:  43%|████▎     | 2800/6567 [04:59<06:43]Daily fetch:  43%|████▎     | 2850/6567 [05:04<06:25]Daily fetch:  44%|████▍     | 2900/6567 [05:09<06:14]Daily fetch:  45%|████▍     | 2950/6567 [05:14<06:08]$IGZ: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+
+1 Failed download:
+['IGZ']: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$IGZ: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$IGZ: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+Daily fetch:  46%|████▌     | 3000/6567 [05:19<06:06]Daily fetch:  46%|████▋     | 3050/6567 [05:24<06:03]Daily fetch:  47%|████▋     | 3100/6567 [05:30<06:02]Daily fetch:  48%|████▊     | 3150/6567 [05:35<05:59]Daily fetch:  49%|████▊     | 3200/6567 [05:40<05:53]Daily fetch:  49%|████▉     | 3250/6567 [05:46<05:57]Daily fetch:  50%|█████     | 3300/6567 [05:51<05:50]Daily fetch:  51%|█████     | 3350/6567 [05:56<05:44]Daily fetch:  52%|█████▏    | 3400/6567 [06:02<05:43]Daily fetch:  53%|█████▎    | 3450/6567 [06:07<05:32]Daily fetch:  53%|█████▎    | 3500/6567 [06:13<05:39]Daily fetch:  54%|█████▍    | 3550/6567 [06:19<05:36]Daily fetch:  55%|█████▍    | 3600/6567 [06:24<05:21]Daily fetch:  56%|█████▌    | 3650/6567 [06:30<05:29]Daily fetch:  56%|█████▋    | 3700/6567 [06:36<05:26]Daily fetch:  57%|█████▋    | 3750/6567 [06:42<05:29]Daily fetch:  58%|█████▊    | 3800/6567 [06:48<05:17]Daily fetch:  59%|█████▊    | 3850/6567 [06:52<04:50]Daily fetch:  59%|█████▉    | 3900/6567 [06:57<04:47]Daily fetch:  60%|██████    | 3950/6567 [07:02<04:30]Daily fetch:  61%|██████    | 4000/6567 [07:08<04:39]Daily fetch:  62%|██████▏   | 4050/6567 [07:14<04:37]Daily fetch:  62%|██████▏   | 4100/6567 [07:19<04:22]Daily fetch:  63%|██████▎   | 4150/6567 [07:24<04:23]Daily fetch:  64%|██████▍   | 4200/6567 [07:30<04:16]Daily fetch:  65%|██████▍   | 4250/6567 [07:35<04:08]Daily fetch:  65%|██████▌   | 4300/6567 [07:40<04:00]Daily fetch:  66%|██████▌   | 4350/6567 [07:45<03:53]Daily fetch:  67%|██████▋   | 4400/6567 [07:50<03:44]Daily fetch:  68%|██████▊   | 4450/6567 [07:56<03:42]Daily fetch:  69%|██████▊   | 4500/6567 [08:01<03:42]Daily fetch:  69%|██████▉   | 4550/6567 [08:08<03:46]Daily fetch:  70%|███████   | 4600/6567 [08:12<03:30]Daily fetch:  71%|███████   | 4650/6567 [08:18<03:22]Daily fetch:  72%|███████▏  | 4700/6567 [08:23<03:23]Daily fetch:  72%|███████▏  | 4750/6567 [08:29<03:16]$PSTG: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+
+1 Failed download:
+['PSTG']: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$PSTG: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$PSTG: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+Daily fetch:  73%|███████▎  | 4800/6567 [08:33<03:04]Daily fetch:  74%|███████▍  | 4850/6567 [08:39<03:02]$QSPC: possibly delisted; no timezone found
+
+1 Failed download:
+['QSPC']: possibly delisted; no timezone found
+$QSPC: possibly delisted; no timezone found
+$QSPC: possibly delisted; no timezone found
+Daily fetch:  75%|███████▍  | 4900/6567 [08:45<02:59]Daily fetch:  75%|███████▌  | 4950/6567 [08:50<02:52]Daily fetch:  76%|███████▌  | 5000/6567 [08:55<02:47]Daily fetch:  77%|███████▋  | 5050/6567 [09:00<02:34]Daily fetch:  78%|███████▊  | 5100/6567 [09:05<02:31]Daily fetch:  78%|███████▊  | 5150/6567 [09:10<02:28]Daily fetch:  79%|███████▉  | 5200/6567 [09:17<02:33]Daily fetch:  80%|███████▉  | 5250/6567 [09:23<02:30]Daily fetch:  81%|████████  | 5300/6567 [09:28<02:21]Daily fetch:  81%|████████▏ | 5350/6567 [09:33<02:11]Daily fetch:  82%|████████▏ | 5400/6567 [09:38<02:04]$SMAR: possibly delisted; no timezone found
+
+1 Failed download:
+['SMAR']: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+$SMAR: possibly delisted; no timezone found
+Daily fetch:  83%|████████▎ | 5450/6567 [09:43<01:55]Daily fetch:  84%|████████▍ | 5500/6567 [09:50<02:00]Daily fetch:  85%|████████▍ | 5550/6567 [09:55<01:53]Daily fetch:  85%|████████▌ | 5600/6567 [10:00<01:43]Daily fetch:  86%|████████▌ | 5650/6567 [10:06<01:42]Daily fetch:  87%|████████▋ | 5700/6567 [10:12<01:37]Daily fetch:  88%|████████▊ | 5750/6567 [10:17<01:30]Daily fetch:  88%|████████▊ | 5800/6567 [10:22<01:22]Daily fetch:  89%|████████▉ | 5850/6567 [10:28<01:18]Daily fetch:  90%|████████▉ | 5900/6567 [10:34<01:13]Daily fetch:  91%|█████████ | 5950/6567 [10:39<01:06]Daily fetch:  91%|█████████▏| 6000/6567 [10:44<01:01]Daily fetch:  92%|█████████▏| 6050/6567 [10:49<00:52]Daily fetch:  93%|█████████▎| 6100/6567 [10:53<00:46]Daily fetch:  94%|█████████▎| 6150/6567 [10:59<00:43]Daily fetch:  94%|█████████▍| 6200/6567 [11:04<00:38]Daily fetch:  95%|█████████▌| 6250/6567 [11:09<00:32]Daily fetch:  96%|█████████▌| 6300/6567 [11:15<00:27]Daily fetch:  97%|█████████▋| 6350/6567 [11:20<00:23]Daily fetch:  97%|█████████▋| 6400/6567 [11:26<00:18]Daily fetch:  98%|█████████▊| 6450/6567 [11:31<00:12]Daily fetch:  99%|█████████▉| 6500/6567 [11:38<00:07]$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZBZX: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZTEST: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZAZZT: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZBZZT: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+
+7 Failed downloads:
+['ZCZZT', 'ZEXIT', 'ZIEXT']: possibly delisted; no timezone found
+['ZBZX', 'ZTEST', 'ZAZZT', 'ZBZZT']: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZAZZT: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZAZZT: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZBZX: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZBZX: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZBZZT: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZBZZT: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZCZZT: possibly delisted; no timezone found
+$ZCZZT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZEXIT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZIEXT: possibly delisted; no timezone found
+$ZTEST: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZTEST: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+Daily fetch: 100%|█████████▉| 6550/6567 [11:45<00:02]$ZVV: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZXIET: possibly delisted; no timezone found
+
+2 Failed downloads:
+['ZVV']: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+['ZXIET']: possibly delisted; no timezone found
+$ZVV: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZVV: possibly delisted; no price data found  (1d 2020-01-20 -> 2026-11-24)
+$ZXIET: possibly delisted; no timezone found
+$ZXIET: possibly delisted; no timezone found
+Daily fetch: 100%|██████████| 6567/6567 [11:48<00:00]Daily fetch: 100%|██████████| 6567/6567 [11:49<00:00]
+
+  Daily data : 4583/6567 tickers
+
+Checking monthly reversal:   0%|          | 0/4583 [00:00<?, ?stk/s]Checking monthly reversal:   1%|          | 33/4583 [00:00<00:13, 329.93stk/s]Checking monthly reversal:   2%|▏         | 74/4583 [00:00<00:12, 371.67stk/s]Checking monthly reversal:   2%|▏         | 112/4583 [00:00<00:11, 374.68stk/s]Checking monthly reversal:   4%|▎         | 162/4583 [00:00<00:10, 421.19stk/s]Checking monthly reversal:   4%|▍         | 205/4583 [00:00<00:10, 408.56stk/s]Checking monthly reversal:   5%|▌         | 246/4583 [00:00<00:10, 398.79stk/s]Checking monthly reversal:   6%|▌         | 286/4583 [00:00<00:11, 368.84stk/s]Checking monthly reversal:   7%|▋         | 328/4583 [00:00<00:11, 383.70stk/s]Checking monthly reversal:   8%|▊         | 367/4583 [00:00<00:11, 379.75stk/s]Checking monthly reversal:   9%|▉         | 406/4583 [00:01<00:11, 371.51stk/s]Checking monthly reversal:  10%|▉         | 444/4583 [00:01<00:11, 365.75stk/s]Checking monthly reversal:  10%|█         | 481/4583 [00:01<00:14, 291.44stk/s]Checking monthly reversal:  11%|█▏        | 520/4583 [00:01<00:12, 315.05stk/s]Checking monthly reversal:  12%|█▏        | 568/4583 [00:01<00:11, 356.81stk/s]Checking monthly reversal:  13%|█▎        | 612/4583 [00:01<00:10, 378.10stk/s]Checking monthly reversal:  15%|█▍        | 666/4583 [00:01<00:09, 419.10stk/s]Checking monthly reversal:  15%|█▌        | 710/4583 [00:01<00:09, 402.40stk/s]Checking monthly reversal:  16%|█▋        | 752/4583 [00:01<00:09, 403.36stk/s]Checking monthly reversal:  17%|█▋        | 794/4583 [00:02<00:09, 388.27stk/s]Checking monthly reversal:  18%|█▊        | 841/4583 [00:02<00:09, 407.03stk/s]Checking monthly reversal:  19%|█▉        | 886/4583 [00:02<00:08, 415.38stk/s]Checking monthly reversal:  20%|██        | 928/4583 [00:02<00:09, 400.16stk/s]Checking monthly reversal:  21%|██▏       | 980/4583 [00:02<00:08, 431.86stk/s]Checking monthly reversal:  22%|██▏       | 1024/4583 [00:02<00:08, 410.10stk/s]Checking monthly reversal:  23%|██▎       | 1066/4583 [00:02<00:09, 386.88stk/s]Checking monthly reversal:  24%|██▍       | 1106/4583 [00:02<00:09, 376.21stk/s]Checking monthly reversal:  25%|██▍       | 1145/4583 [00:02<00:09, 378.47stk/s]Checking monthly reversal:  26%|██▌       | 1187/4583 [00:03<00:08, 386.49stk/s]Checking monthly reversal:  27%|██▋       | 1226/4583 [00:03<00:08, 380.70stk/s]Checking monthly reversal:  28%|██▊       | 1268/4583 [00:03<00:08, 388.51stk/s]Checking monthly reversal:  29%|██▊       | 1312/4583 [00:03<00:08, 399.04stk/s]Checking monthly reversal:  30%|██▉       | 1353/4583 [00:03<00:08, 390.93stk/s]Checking monthly reversal:  31%|███       | 1400/4583 [00:03<00:07, 413.29stk/s]Checking monthly reversal:  31%|███▏      | 1442/4583 [00:03<00:08, 391.38stk/s]Checking monthly reversal:  32%|███▏      | 1482/4583 [00:03<00:07, 389.36stk/s]Checking monthly reversal:  33%|███▎      | 1522/4583 [00:03<00:07, 383.82stk/s]Checking monthly reversal:  34%|███▍      | 1566/4583 [00:04<00:07, 395.65stk/s]Checking monthly reversal:  35%|███▌      | 1607/4583 [00:04<00:07, 396.20stk/s]Checking monthly reversal:  36%|███▌      | 1647/4583 [00:04<00:07, 387.97stk/s]Checking monthly reversal:  37%|███▋      | 1686/4583 [00:04<00:07, 385.86stk/s]Checking monthly reversal:  38%|███▊      | 1732/4583 [00:04<00:07, 406.64stk/s]Checking monthly reversal:  39%|███▊      | 1773/4583 [00:04<00:07, 398.30stk/s]Checking monthly reversal:  40%|███▉      | 1813/4583 [00:04<00:06, 395.97stk/s]Checking monthly reversal:  40%|████      | 1855/4583 [00:04<00:06, 401.51stk/s]Checking monthly reversal:  41%|████▏     | 1896/4583 [00:04<00:06, 396.75stk/s]Checking monthly reversal:  42%|████▏     | 1936/4583 [00:04<00:06, 386.36stk/s]Checking monthly reversal:  43%|████▎     | 1975/4583 [00:05<00:06, 377.79stk/s]Checking monthly reversal:  44%|████▍     | 2013/4583 [00:05<00:06, 371.97stk/s]Checking monthly reversal:  45%|████▍     | 2058/4583 [00:05<00:06, 390.57stk/s]Checking monthly reversal:  46%|████▌     | 2099/4583 [00:05<00:06, 394.14stk/s]Checking monthly reversal:  47%|████▋     | 2145/4583 [00:05<00:05, 410.48stk/s]Checking monthly reversal:  48%|████▊     | 2189/4583 [00:05<00:05, 417.32stk/s]Checking monthly reversal:  49%|████▊     | 2231/4583 [00:05<00:05, 403.83stk/s]Checking monthly reversal:  50%|████▉     | 2273/4583 [00:05<00:05, 404.54stk/s]Checking monthly reversal:  51%|█████     | 2321/4583 [00:05<00:05, 422.15stk/s]Checking monthly reversal:  52%|█████▏    | 2364/4583 [00:06<00:05, 395.42stk/s]Checking monthly reversal:  53%|█████▎    | 2411/4583 [00:06<00:05, 412.49stk/s]Checking monthly reversal:  54%|█████▎    | 2456/4583 [00:06<00:05, 421.01stk/s]Checking monthly reversal:  55%|█████▍    | 2499/4583 [00:06<00:05, 407.70stk/s]Checking monthly reversal:  55%|█████▌    | 2541/4583 [00:06<00:05, 393.02stk/s]Checking monthly reversal:  56%|█████▋    | 2582/4583 [00:06<00:05, 395.08stk/s]Checking monthly reversal:  57%|█████▋    | 2622/4583 [00:06<00:05, 377.95stk/s]Checking monthly reversal:  58%|█████▊    | 2668/4583 [00:06<00:04, 396.84stk/s]Checking monthly reversal:  59%|█████▉    | 2713/4583 [00:06<00:04, 409.76stk/s]Checking monthly reversal:  60%|██████    | 2755/4583 [00:07<00:04, 400.18stk/s]Checking monthly reversal:  61%|██████    | 2800/4583 [00:07<00:04, 414.33stk/s]Checking monthly reversal:  62%|██████▏   | 2843/4583 [00:07<00:04, 415.30stk/s]Checking monthly reversal:  63%|██████▎   | 2885/4583 [00:07<00:04, 398.41stk/s]Checking monthly reversal:  64%|██████▍   | 2926/4583 [00:07<00:04, 389.95stk/s]Checking monthly reversal:  65%|██████▍   | 2966/4583 [00:07<00:04, 379.69stk/s]Checking monthly reversal:  66%|██████▌   | 3007/4583 [00:07<00:04, 384.74stk/s]Checking monthly reversal:  67%|██████▋   | 3048/4583 [00:07<00:03, 388.49stk/s]Checking monthly reversal:  67%|██████▋   | 3088/4583 [00:07<00:03, 388.24stk/s]Checking monthly reversal:  68%|██████▊   | 3127/4583 [00:08<00:03, 366.98stk/s]Checking monthly reversal:  69%|██████▉   | 3171/4583 [00:08<00:03, 386.59stk/s]Checking monthly reversal:  70%|███████   | 3210/4583 [00:08<00:03, 385.02stk/s]Checking monthly reversal:  71%|███████   | 3249/4583 [00:08<00:03, 381.01stk/s]Checking monthly reversal:  72%|███████▏  | 3288/4583 [00:08<00:03, 379.79stk/s]Checking monthly reversal:  73%|███████▎  | 3330/4583 [00:08<00:03, 387.89stk/s]Checking monthly reversal:  74%|███████▎  | 3373/4583 [00:08<00:03, 398.57stk/s]Checking monthly reversal:  74%|███████▍  | 3413/4583 [00:08<00:03, 380.41stk/s]Checking monthly reversal:  75%|███████▌  | 3460/4583 [00:08<00:02, 402.22stk/s]Checking monthly reversal:  76%|███████▋  | 3501/4583 [00:08<00:02, 402.33stk/s]Checking monthly reversal:  77%|███████▋  | 3542/4583 [00:09<00:02, 401.87stk/s]Checking monthly reversal:  78%|███████▊  | 3583/4583 [00:09<00:02, 401.95stk/s]Checking monthly reversal:  79%|███████▉  | 3624/4583 [00:09<00:02, 383.50stk/s]Checking monthly reversal:  80%|████████  | 3667/4583 [00:09<00:02, 393.06stk/s]Checking monthly reversal:  81%|████████  | 3716/4583 [00:09<00:02, 417.51stk/s]Checking monthly reversal:  82%|████████▏ | 3758/4583 [00:09<00:02, 400.22stk/s]Checking monthly reversal:  83%|████████▎ | 3804/4583 [00:09<00:01, 417.07stk/s]Checking monthly reversal:  84%|████████▍ | 3847/4583 [00:09<00:01, 420.17stk/s]Checking monthly reversal:  85%|████████▍ | 3890/4583 [00:09<00:01, 406.58stk/s]Checking monthly reversal:  86%|████████▌ | 3931/4583 [00:10<00:01, 405.71stk/s]Checking monthly reversal:  87%|████████▋ | 3972/4583 [00:10<00:01, 390.32stk/s]Checking monthly reversal:  88%|████████▊ | 4012/4583 [00:10<00:01, 389.11stk/s]Checking monthly reversal:  88%|████████▊ | 4052/4583 [00:10<00:01, 372.03stk/s]Checking monthly reversal:  89%|████████▉ | 4094/4583 [00:10<00:01, 382.82stk/s]Checking monthly reversal:  90%|█████████ | 4133/4583 [00:10<00:01, 369.23stk/s]Checking monthly reversal:  91%|█████████ | 4171/4583 [00:10<00:01, 365.99stk/s]Checking monthly reversal:  92%|█████████▏| 4208/4583 [00:10<00:01, 364.52stk/s]Checking monthly reversal:  93%|█████████▎| 4245/4583 [00:10<00:00, 364.16stk/s]Checking monthly reversal:  94%|█████████▎| 4286/4583 [00:10<00:00, 376.22stk/s]Checking monthly reversal:  94%|█████████▍| 4328/4583 [00:11<00:00, 386.19stk/s]Checking monthly reversal:  95%|█████████▌| 4367/4583 [00:11<00:00, 376.71stk/s]Checking monthly reversal:  96%|█████████▌| 4406/4583 [00:11<00:00, 377.77stk/s]Checking monthly reversal:  97%|█████████▋| 4444/4583 [00:11<00:00, 376.26stk/s]Checking monthly reversal:  98%|█████████▊| 4484/4583 [00:11<00:00, 379.88stk/s]Checking monthly reversal:  99%|█████████▊| 4524/4583 [00:11<00:00, 385.49stk/s]Checking monthly reversal: 100%|█████████▉| 4574/4583 [00:11<00:00, 414.73stk/s]Checking monthly reversal: 100%|██████████| 4583/4583 [00:11<00:00, 390.89stk/s]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊  LIVE MATCHES  —  each stock printed the moment it passes all 3 timeframes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker    Price       Score    Entry_Price   Stop_Loss    EMA8        JMA         SMA50     
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  AEHR      $48.51      70       $99.62        $63.32       76.05       91.94       30.43     
+  APA       $44.06      73       $42.93        $32.10       35.37       38.57       29.2      
+  APH       $77.41      57       $84.30        $69.73       77.25       82.31       40.06     
+  ARMK      $56.75      52       $56.75        $53.55       52.82       56.74       36.3      
+  ASML      $1383.78    56       $1809.28      $1528.62     1601.01     1779.81     891.96    
+  AYA       $18.75      92       $27.92        $15.84       19.94       21.39       10.18     
+  BAND      $38.92      78       $60.71        $35.20       44.81       53.76       20.38     
+  EGBN      $33.18      88       $33.27        $27.00       27.97       29.2        24.5      
+  EGY       $4.71       60       $5.86         $4.65        5.22        5.6         4.25      
+  EPSN      $4.76       61       $6.17         $5.03        5.63        5.69        5.28      
+  FEIM      $58.25      87       $84.53        $49.22       62.44       68.17       22.13     
+  GASS      $7.54       60       $9.56         $7.80        8.71        9.2         5.9       
+  GNL       $6.29       52       $8.96         $8.44        8.58        8.96        7.19      
+  GTE       $8.62       100      $10.15        $5.91        7.62        8.22        7.26      
+  HLT       $364.94     68       $356.92       $310.31      323.31      331.49      224.98    
+  HOS       $5.22       58       $10.30        $8.42        9.21        9.78        8.45      
+  HST       $24.74      63       $25.30        $21.61       22.22       23.8        16.12     
+  IBRX      $5.86       77       $9.44         $6.65        7.61        8.57        4.44      
+  IEX       $227.92     50       $233.84       $227.54      219.97      231.38      201.82    
+  IHG       $176.10     64       $167.81       $153.97      156.66      165.38      104.51    
+  IMPP      $4.03       79       $5.25         $4.57        4.69        4.92        3.69      
+  INN       $7.50       77       $7.04         $5.73        6.0         6.35        5.45      
+  INTC      $59.66      68       $120.23       $81.79       92.87       111.13      40.36     
+  KTB       $82.08      68       $82.08        $62.76       74.53       75.31       60.87     
+  LIVN      $92.11      76       $92.11        $74.11       78.53       82.74       56.07     
+  NGVT      $57.11      53       $74.32        $68.11       70.4        73.71       56.08     
+  OMER      $13.32      86       $18.79        $6.70        12.72       13.11       6.23      
+  PANL      $8.22       63       $8.02         $6.36        7.29        7.6         5.78      
+  PFGC      $110.48     72       $110.48       $88.95       101.44      102.41      79.98     
+  RELL      $16.95      87       $19.67        $16.26       16.83       18.55       13.39     
+  RLJ       $12.67      71       $12.61        $10.54       10.62       11.64       8.57      
+  ROG       $120.72     68       $152.99       $114.53      130.46      143.02      122.95    
+  RS        $413.02     69       $435.59       $378.72      379.79      400.8       284.45    
+  SHO       $12.97      79       $12.79        $10.21       11.09       11.64       9.44      
+  SITM      $438.82     53       $652.03       $459.01      557.26      644.01      224.22    
+  SMTC      $104.13     76       $178.35       $103.10      130.6       146.78      53.24     
+  SYNA      $117.01     85       $117.86       $93.29       103.98      112.15      88.75     
+  SYRE      $95.40      53       $96.56        $86.40       80.57       96.0        30.62     
+  TGB       $5.74       75       $9.04         $6.25        7.16        7.73        3.02      
+  TXN       $291.19     63       $300.84       $253.94      267.86      289.35      185.73    
+  USAC      $23.08      59       $26.49        $23.81       25.33       26.3        19.48     
+  VTOL      $37.69      57       $45.25        $40.50       43.39       45.07       32.78     
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SCAN COMPLETE
+  Tickers scanned : 6567
+  Daily data      : 4583
+  ✅ Matches       : 42
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔍 FUNNEL — where tickers were filtered out
+  (scanned over the last 4 monthly windows per ticker)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ticker-windows checked                      : 12024
+  Step 1 — candle A red                       : 6361
+  Step 2 — + candle B green, partial reclaim  : 467
+  Step 3 — + candle C green, full reclaim     : 118
+  Step 4 — + volume increasing (B to C)       : 47
+  Step 5 — + EMA8/JMA both above SMA50         : 42  (= full pattern)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║                                Monthly 3-Candle Reclaim (JMA/EMA8/SMA50)   2026-11-24   42 matches                              ║
+  ╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+  ┌────────┬──────────┬───────┬─────────────┬───────────┬──────────┬──────────┬─────────┬───────────┬─────────┬─────────────────────┐
+  │ Ticker │  Price   │ Score │ Entry_Price │ Stop_Loss │   EMA8   │   JMA    │  SMA50  │ Vol_Ratio │ Month_C │ Months_Since_Signal │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  GTE   │  $8.62   │  100  │    $10.15   │   $5.91   │  $7.62   │  $8.22   │  $7.26  │   5.87x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  AYA   │  $18.75  │   92  │    $27.92   │   $15.84  │  $19.94  │  $21.39  │  $10.18 │   1.83x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  EGBN  │  $33.18  │   88  │    $33.27   │   $27.00  │  $27.97  │  $29.20  │  $24.50 │   1.64x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  FEIM  │  $58.25  │   87  │    $84.53   │   $49.22  │  $62.44  │  $68.17  │  $22.13 │   1.61x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  RELL  │  $16.95  │   87  │    $19.67   │   $16.26  │  $16.83  │  $18.55  │  $13.39 │   3.98x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  OMER  │  $13.32  │   86  │    $18.79   │   $6.70   │  $12.72  │  $13.11  │  $6.23  │   1.56x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  SYNA  │ $117.01  │   85  │   $117.86   │   $93.29  │ $103.98  │ $112.15  │  $88.75 │   2.38x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  IMPP  │  $4.03   │   79  │    $5.25    │   $4.57   │  $4.69   │  $4.92   │  $3.69  │   1.77x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  SHO   │  $12.97  │   79  │    $12.79   │   $10.21  │  $11.09  │  $11.64  │  $9.44  │   1.45x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  BAND  │  $38.92  │   78  │    $60.71   │   $35.20  │  $44.81  │  $53.76  │  $20.38 │   1.16x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  IBRX  │  $5.86   │   77  │    $9.44    │   $6.65   │  $7.61   │  $8.57   │  $4.44  │   1.32x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  INN   │  $7.50   │   77  │    $7.04    │   $5.73   │  $6.00   │  $6.35   │  $5.45  │   1.26x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  LIVN  │  $92.11  │   76  │    $92.11   │   $74.11  │  $78.53  │  $82.74  │  $56.07 │   1.19x   │ 2026-11 │       0mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  SMTC  │ $104.13  │   76  │   $178.35   │  $103.10  │ $130.60  │ $146.78  │  $53.24 │   1.03x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  TGB   │  $5.74   │   75  │    $9.04    │   $6.25   │  $7.16   │  $7.73   │  $3.02  │   1.00x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  APA   │  $44.06  │   73  │    $42.93   │   $32.10  │  $35.37  │  $38.57  │  $29.20 │   1.02x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  PFGC  │ $110.48  │   72  │   $110.48   │   $88.95  │ $101.44  │ $102.41  │  $79.98 │   1.30x   │ 2026-11 │       0mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  RLJ   │  $12.67  │   71  │    $12.61   │   $10.54  │  $10.62  │  $11.64  │  $8.57  │   1.19x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  AEHR  │  $48.51  │   70  │    $99.62   │   $63.32  │  $76.05  │  $91.94  │  $30.43 │   1.17x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │   RS   │ $413.02  │   69  │   $435.59   │  $378.72  │ $379.79  │ $400.80  │ $284.45 │   1.10x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  HLT   │ $364.94  │   68  │   $356.92   │  $310.31  │ $323.31  │ $331.49  │ $224.98 │   1.14x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  INTC  │  $59.66  │   68  │   $120.23   │   $81.79  │  $92.87  │ $111.13  │  $40.36 │   1.07x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  KTB   │  $82.08  │   68  │    $82.08   │   $62.76  │  $74.53  │  $75.31  │  $60.87 │   1.01x   │ 2026-11 │       0mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  ROG   │ $120.72  │   68  │   $152.99   │  $114.53  │ $130.46  │ $143.02  │ $122.95 │   1.23x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  IHG   │ $176.10  │   64  │   $167.81   │  $153.97  │ $156.66  │ $165.38  │ $104.51 │   1.57x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  HST   │  $24.74  │   63  │    $25.30   │   $21.61  │  $22.22  │  $23.80  │  $16.12 │   1.03x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  PANL  │  $8.22   │   63  │    $8.02    │   $6.36   │  $7.29   │  $7.60   │  $5.78  │   1.08x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  TXN   │ $291.19  │   63  │   $300.84   │  $253.94  │ $267.86  │ $289.35  │ $185.73 │   1.23x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  EPSN  │  $4.76   │   61  │    $6.17    │   $5.03   │  $5.63   │  $5.69   │  $5.28  │   1.12x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  EGY   │  $4.71   │   60  │    $5.86    │   $4.65   │  $5.22   │  $5.60   │  $4.25  │   1.05x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"Invalid Crumb"}}}
+HTTP Error 401: {"finance":{"result":null,"error":{"code":"Unauthorized","description":"User is unable to access this feature - https://bit.ly/yahoo-finance-api-feedback"}}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: AYA"}}}
+
+  │  GASS  │  $7.54   │   60  │    $9.56    │   $7.80   │  $8.71   │  $9.20   │  $5.90  │   1.11x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  USAC  │  $23.08  │   59  │    $26.49   │   $23.81  │  $25.33  │  $26.30  │  $19.48 │   1.39x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  HOS   │  $5.22   │   58  │    $10.30   │   $8.42   │  $9.21   │  $9.78   │  $8.45  │   1.03x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  APH   │  $77.41  │   57  │    $84.30   │   $69.73  │  $77.25  │  $82.31  │  $40.06 │   1.10x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  VTOL  │  $37.69  │   57  │    $45.25   │   $40.50  │  $43.39  │  $45.07  │  $32.78 │   1.29x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  ASML  │ $1383.78 │   56  │   $1809.28  │  $1528.62 │ $1601.01 │ $1779.81 │ $891.96 │   1.12x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  NGVT  │  $57.11  │   53  │    $74.32   │   $68.11  │  $70.40  │  $73.71  │  $56.08 │   1.05x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  SITM  │ $438.82  │   53  │   $652.03   │  $459.01  │ $557.26  │ $644.01  │ $224.22 │   1.04x   │ 2026-09 │       2mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  SYRE  │  $95.40  │   53  │    $96.56   │   $86.40  │  $80.57  │  $96.00  │  $30.62 │   1.09x   │ 2026-10 │       1mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  ARMK  │  $56.75  │   52  │    $56.75   │   $53.55  │  $52.82  │  $56.74  │  $36.30 │   1.08x   │ 2026-11 │       0mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  GNL   │  $6.29   │   52  │    $8.96    │   $8.44   │  $8.58   │  $8.96   │  $7.19  │   1.11x   │ 2026-08 │       3mo ago       │
+  ├────────┼──────────┼───────┼─────────────┼───────────┼──────────┼──────────┼─────────┼───────────┼─────────┼─────────────────────┤
+  │  IEX   │ $227.92  │   50  │   $233.84   │  $227.54  │ $219.97  │ $231.38  │ $201.82 │   1.36x   │ 2026-10 │       1mo ago       │
+  └────────┴──────────┴───────┴─────────────┴───────────┴──────────┴──────────┴─────────┴───────────┴─────────┴─────────────────────┘
+
+  COLUMN KEY
+  ──────────────────────────────────────────────────────
+  Score           0-100 (volume-increase strength + how far candle C
+                  clears JMA + distance above the monthly SMA50)
+  Entry_Price     candle C's (the current month's) close
+  Stop_Loss       candle A's (the red month's) low
+  EMA8 / JMA / SMA50  the three monthly moving averages, as of candle C
+  Vol_Ratio       candle C's volume / candle B's volume
+  Month_A / Month_B / Month_C  the three monthly periods (YYYY-MM):
+                                red, partial reclaim, full reclaim
+  ──────────────────────────────────────────────────────
+  💰 Position sizing: max loss $40 per trade — 36 sized, 6 with Quantity 0 (stop wider than the max loss per share, or no valid stop)
+  🏅 Best 10: ranking 42 qualified stocks (trend, catalyst, value) ...
+  🏅 stop rules: 2 of 10 stops widened to 2 ATR  [stop_rules_20261123.csv]
+  🏅 Best 10 → /home/runner/work/Snowflake_DDL/Snowflake_DDL/best10_monthly_3candle_reclaim_jma_ema8_v1_20261124_1048.csv  (292s)
+     #1  IHG         76  (trend 35, catalyst 20, value 21)  above SMA200, SMA50 rising, SMA200 turning up, contract/order news, positive news, PEG <= 1.5
+     #2  SHO         68  (trend 35, catalyst 18, value 15)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS
+     #3  PFGC        66  (trend 35, catalyst 14, value 17)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, PEG <= 1.5
+     #4  TXN         65  (trend 30, catalyst 14, value 21)  above SMA200, SMA50 rising, SMA200 rising, positive news, beat last EPS, PEG <= 1.5
+     #5  ARMK        63  (trend 20, catalyst 12, value 31)  above SMA200, SMA200 rising, positive news, PEG <= 1.5, analysts Buy, target +19%
+     #6  LIVN        62  (trend 35, catalyst 10, value 17)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS, PEG <= 1.5
+     #7  SYNA        61  (trend 30, catalyst 16, value 15)  above SMA200, SMA50 rising, SMA200 rising, contract/order news, positive news, beat last EPS
+     #8  HST         60  (trend 35, catalyst 10, value 15)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS
+     #9  IEX         57  (trend 30, catalyst 10, value 17)  above SMA200, SMA50 rising, SMA200 rising, positive news, beat last EPS, analysts Buy, target +15%
+     #10 EGBN        56  (trend 35, catalyst 10, value 11)  above SMA200, SMA50 rising, SMA200 turning up, positive news, beat last EPS
+
+  💾 CSV → /home/runner/work/Snowflake_DDL/Snowflake_DDL/monthly_3candle_reclaim_jma_ema8_20261124_1043.csv
+  📋 TradingView → /home/runner/work/Snowflake_DDL/Snowflake_DDL/tv_monthly_3candle_reclaim_jma_ema8_20261124_1043.txt
+
+  📋 Tickers (comma-separated):
+  GTE, AYA, EGBN, FEIM, RELL, OMER, SYNA, IMPP, SHO, BAND, IBRX, INN, LIVN, SMTC, TGB, APA, PFGC, RLJ, AEHR, RS, HLT, INTC, KTB, ROG, IHG, HST, PANL, TXN, EPSN, EGY, GASS, USAC, HOS, APH, VTOL, ASML, NGVT, SITM, SYRE, ARMK, GNL, IEX
+[Email] Sending to vikramaga24@gmail.com  (42 results)...
+[Email] 📎 Attached: monthly_3candle_reclaim_jma_ema8_20261124_1043.csv (6,587 bytes)
+[Email] Connecting to smtp.gmail.com:465 ...
+  🏅 Best 10 added to the email (html text)
+[Email] ✅  Sent successfully to: vikramaga24@gmail.com
+[Email]    Subject: 📊 Monthly 3-Candle Reclaim (JMA/EMA8/SMA50) — 42 signals — 2026-11-24
+  (CI: files in workspace, email sent)
+  📊 Chart → /home/runner/work/Snowflake_DDL/Snowflake_DDL/monthly_3candle_reclaim_jma_ema8_chart_20261124_1043.png
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 SIGNAL (evaluated on the most recent 3 monthly candles per
+  ticker — A (oldest), B, C (current month) — a slow, monthly-
+  timeframe pattern, not a rolling daily-window scan)
+
+  1) CANDLE A: RED — closed below its open.
+  2) CANDLE B: GREEN — closed above its open, AND closed above
+     EMA8 but BELOW JMA (a partial reclaim).
+  3) CANDLE C: GREEN — closed above its open, AND closed above
+     BOTH JMA and EMA8 (a full reclaim).
+  4) VOLUME: candle C's volume is higher than candle B's.
+  5) STRUCTURE: both EMA8 and JMA are above SMA50 on candle C.
+
+  All MAs (EMA8, JMA, SMA50) are computed on MONTHLY closes.
+
+  📋 DATA SOURCING
+  Only 1 download per ticker: daily bars (~2500 days, ~7 years —
+  needed for a stable monthly SMA50), resampled to monthly ('ME') —
+  no separate network calls needed.
+
+  📋 OUTPUT (reasonable defaults — not explicitly requested)
+  Entry_Price = candle C's (the current month's) CLOSE
+  Stop_Loss   = candle A's (the red month's) LOW
+  EMA8 / JMA / SMA50 = the three monthly moving averages at candle C
+  Vol_Ratio = candle C's volume / candle B's volume
+  Month_A / Month_B / Month_C = the three monthly periods (YYYY-MM)
+
+  📋 SCORE (0-100)
+  Volume-increase strength (0-25) + how far candle C clears JMA
+  (0-25) + distance above the monthly SMA50 (0-25) + base points
+  for clearing every gate (25)
+
+  💡 BEST SETUPS
+  Score > 70                      strong volume, decisive JMA
+                                   clearance, well above SMA50
+  Vol_Ratio large                     a clean, convincing volume
+                                       increase, not a marginal one
+  Above_SMA50_% high                     genuinely strong long-term
+                                          position, not a borderline one
+
+  ⚙️  TUNE IF 0 RESULTS (see the FUNNEL above to see which step is
+  actually the bottleneck before guessing)
+  ema8_period                       8 → 5    (faster, more reactive EMA)
+  sma50_period                     50 → 30    (shorter monthly SMA)
+  min_price                         2 → 1
+  min_avg_volume                80000 → 50000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
